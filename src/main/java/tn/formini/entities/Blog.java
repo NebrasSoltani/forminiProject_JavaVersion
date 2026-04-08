@@ -41,11 +41,7 @@ public class Blog {
         if (categorie.length() > 100)
             throw new IllegalArgumentException("La catégorie ne doit pas dépasser 100 caractères.");
 
-        if (auteur_id <= 0)
-            throw new IllegalArgumentException("L'identifiant de l'auteur est invalide.");
 
-        if (evenement_id != null && evenement_id <= 0)
-            throw new IllegalArgumentException("L'identifiant de l'événement est invalide.");
     }
 
     // ── Getters / Setters ──────────────────────────────────────────────────────
@@ -85,30 +81,37 @@ public class Blog {
     public String getTags() { return tags; }
     public void setTags(String tags) { this.tags = tags; }
 
-    public int getAuteur_id() { return auteur_id; }
-    public void setAuteur_id(int auteur_id) {
-        if (auteur_id <= 0) throw new IllegalArgumentException("ID auteur invalide.");
-        this.auteur_id = auteur_id;
+    public User getAuteur() {
+        return auteur;
     }
 
-    public User getAuteur() { return auteur; }
     public void setAuteur(User auteur) {
         this.auteur = auteur;
-        if (auteur != null) this.auteur_id = auteur.getId();
     }
 
-    public Integer getEvenement_id() { return evenement_id; }
-    public void setEvenement_id(Integer evenement_id) { this.evenement_id = evenement_id; }
+    public Evenement getEvenement() {
+        return evenement;
+    }
 
-    public Evenement getEvenement() { return evenement; }
     public void setEvenement(Evenement evenement) {
         this.evenement = evenement;
-        this.evenement_id = (evenement != null) ? evenement.getId() : null;
     }
 
     @Override
     public String toString() {
-        return "Blog{id=" + id + ", titre='" + titre + "', categorie='" + categorie + "', publie=" + is_publie + "}";
+        return "Blog{" +
+                "id=" + id +
+                ", titre='" + titre + '\'' +
+                ", contenu='" + contenu + '\'' +
+                ", image='" + image + '\'' +
+                ", date_publication=" + date_publication +
+                ", categorie='" + categorie + '\'' +
+                ", is_publie=" + is_publie +
+                ", resume='" + resume + '\'' +
+                ", tags='" + tags + '\'' +
+                ", auteur=" + auteur +
+                ", evenement=" + evenement +
+                '}';
     }
 }
 
