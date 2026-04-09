@@ -18,22 +18,76 @@ public class Formateur {
     public Formateur() {}
 
     public void valider() {
- if (experience_annees != null && experience_annees < 0)
-            throw new IllegalArgumentException("Les années d'expérience ne peuvent pas être négatives.");
-        if (note_moyenne != null && (note_moyenne < 0 || note_moyenne > 5))
-            throw new IllegalArgumentException("La note moyenne doit être comprise entre 0 et 5.");
-        if (linkedin != null && !linkedin.isEmpty() && !linkedin.startsWith("http"))
-            throw new IllegalArgumentException("L'URL LinkedIn doit commencer par http.");
-        if (specialite != null && specialite.length() > 255)
+        // Validation de la spécialité (obligatoire)
+        if (specialite == null || specialite.trim().isEmpty())
+            throw new IllegalArgumentException("La spécialité est obligatoire.");
+        if (specialite.length() > 255)
             throw new IllegalArgumentException("La spécialité ne doit pas dépasser 255 caractères.");
+
+        // Validation de la bio (optionnelle mais si fournie doit avoir une longueur raisonnable)
+        if (bio != null && !bio.trim().isEmpty()) {
+            if (bio.length() > 2000)
+                throw new IllegalArgumentException("La bio ne doit pas dépasser 2000 caractères.");
+        }
+
+        // Validation des années d'expérience (optionnelles mais si fournies doivent être valides)
+        if (experience_annees != null) {
+            if (experience_annees < 0)
+                throw new IllegalArgumentException("Les années d'expérience ne peuvent pas être négatives.");
+            if (experience_annees > 70)
+                throw new IllegalArgumentException("Les années d'expérience ne peuvent pas dépasser 70 ans.");
+        }
+
+        // Validation de la note moyenne (optionnelle mais si fournie doit être valide)
+        if (note_moyenne != null) {
+            if (note_moyenne < 0 || note_moyenne > 5)
+                throw new IllegalArgumentException("La note moyenne doit être comprise entre 0 et 5.");
+        }
+
+        // Validation des URLs (optionnelles mais si fournies doivent être valides)
+        if (linkedin != null && !linkedin.trim().isEmpty()) {
+            if (!linkedin.startsWith("http://") && !linkedin.startsWith("https://"))
+                throw new IllegalArgumentException("L'URL LinkedIn doit commencer par http:// ou https://.");
+            if (linkedin.length() > 500)
+                throw new IllegalArgumentException("L'URL LinkedIn ne doit pas dépasser 500 caractères.");
+        }
+
+        if (portfolio != null && !portfolio.trim().isEmpty()) {
+            if (!portfolio.startsWith("http://") && !portfolio.startsWith("https://"))
+                throw new IllegalArgumentException("L'URL portfolio doit commencer par http:// ou https://.");
+            if (portfolio.length() > 500)
+                throw new IllegalArgumentException("L'URL portfolio ne doit pas dépasser 500 caractères.");
+        }
+
+        if (cv != null && !cv.trim().isEmpty()) {
+            if (cv.length() > 500)
+                throw new IllegalArgumentException("L'URL du CV ne doit pas dépasser 500 caractères.");
+        }
+
+        // Validation de l'utilisateur obligatoire
+        if (user == null)
+            throw new IllegalArgumentException("L'utilisateur est obligatoire pour un formateur.");
+        
+        // Valider l'utilisateur associé
+        user.valider();
     }
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public String getSpecialite() { return specialite; }
-    public void setSpecialite(String specialite) { this.specialite = specialite; }
+    public void setSpecialite(String specialite) {
+        if (specialite != null && !specialite.trim().isEmpty()) {
+            if (specialite.length() > 255)
+                throw new IllegalArgumentException("La spécialité ne doit pas dépasser 255 caractères.");
+        }
+        this.specialite = specialite;
+    }
     public String getBio() { return bio; }
-    public void setBio(String bio) { this.bio = bio; }
+    public void setBio(String bio) {
+        if (bio != null && bio.length() > 2000)
+            throw new IllegalArgumentException("La bio ne doit pas dépasser 2000 caractères.");
+        this.bio = bio;
+    }
     public Integer getExperience_annees() { return experience_annees; }
     public void setExperience_annees(Integer experience_annees) {
         if (experience_annees != null && experience_annees < 0)
@@ -41,11 +95,31 @@ public class Formateur {
         this.experience_annees = experience_annees;
     }
     public String getLinkedin() { return linkedin; }
-    public void setLinkedin(String linkedin) { this.linkedin = linkedin; }
+    public void setLinkedin(String linkedin) {
+        if (linkedin != null && !linkedin.trim().isEmpty()) {
+            if (!linkedin.startsWith("http://") && !linkedin.startsWith("https://"))
+                throw new IllegalArgumentException("L'URL LinkedIn doit commencer par http:// ou https://.");
+            if (linkedin.length() > 500)
+                throw new IllegalArgumentException("L'URL LinkedIn ne doit pas dépasser 500 caractères.");
+        }
+        this.linkedin = linkedin;
+    }
     public String getPortfolio() { return portfolio; }
-    public void setPortfolio(String portfolio) { this.portfolio = portfolio; }
+    public void setPortfolio(String portfolio) {
+        if (portfolio != null && !portfolio.trim().isEmpty()) {
+            if (!portfolio.startsWith("http://") && !portfolio.startsWith("https://"))
+                throw new IllegalArgumentException("L'URL portfolio doit commencer par http:// ou https://.");
+            if (portfolio.length() > 500)
+                throw new IllegalArgumentException("L'URL portfolio ne doit pas dépasser 500 caractères.");
+        }
+        this.portfolio = portfolio;
+    }
     public String getCv() { return cv; }
-    public void setCv(String cv) { this.cv = cv; }
+    public void setCv(String cv) {
+        if (cv != null && cv.length() > 500)
+            throw new IllegalArgumentException("L'URL du CV ne doit pas dépasser 500 caractères.");
+        this.cv = cv;
+    }
     public Double getNote_moyenne() { return note_moyenne; }
     public void setNote_moyenne(Double note_moyenne) {
         if (note_moyenne != null && (note_moyenne < 0 || note_moyenne > 5))
