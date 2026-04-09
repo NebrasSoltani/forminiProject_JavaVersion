@@ -20,7 +20,7 @@ public class UserService implements service<User> {
 
         String req = "INSERT INTO user (email, roles, password, nom, prenom, telephone, gouvernorat, date_naissance, role_utilisateur) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
-            PreparedStatement ps = cnx.prepareStatement(req);
+            PreparedStatement ps = cnx.prepareStatement(req, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, u.getEmail());
             ps.setString(2, u.getRoles());
             ps.setString(3, u.getPassword());
@@ -31,9 +31,19 @@ public class UserService implements service<User> {
             ps.setTimestamp(8, u.getDate_naissance() != null ? new Timestamp(u.getDate_naissance().getTime()) : null);
             ps.setString(9, u.getRole_utilisateur());
             ps.executeUpdate();
-            System.out.println("Utilisateur ajouté avec succès !");
+            
+            // Récupérer l'ID généré
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                u.setId(rs.getInt(1));
+                System.out.println("Utilisateur ajouté avec succès ! ID: " + u.getId());
+            } else {
+                System.out.println("Erreur: Aucun ID généré pour l'utilisateur");
+            }
         } catch (SQLException ex) {
             System.out.println("Erreur ajouter utilisateur : " + ex.getMessage());
+            // En cas d'erreur, s'assurer que l'ID n'est pas défini
+            u.setId(0);
         }
     }
 

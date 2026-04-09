@@ -44,34 +44,60 @@ public class User {
     // ── Validation ────────────────────────────────────────────────────────────
 
     public void valider() {
+        // Validation de l'email (obligatoire)
         if (email == null || email.trim().isEmpty())
             throw new IllegalArgumentException("L'email est obligatoire.");
         if (!email.matches("^[\\w._%+\\-]+@[\\w.\\-]+\\.[a-zA-Z]{2,}$"))
             throw new IllegalArgumentException("Format d'email invalide.");
+        if (email.length() > 255)
+            throw new IllegalArgumentException("L'email ne doit pas dépasser 255 caractères.");
 
+        // Validation du mot de passe (obligatoire)
         if (password == null || password.length() < 8)
             throw new IllegalArgumentException("Le mot de passe doit contenir au moins 8 caractères.");
+        if (password.length() > 255)
+            throw new IllegalArgumentException("Le mot de passe ne doit pas dépasser 255 caractères.");
+        if (!password.matches(".*[A-Z].*"))
+            throw new IllegalArgumentException("Le mot de passe doit contenir au moins une majuscule.");
+        if (!password.matches(".*[a-z].*"))
+            throw new IllegalArgumentException("Le mot de passe doit contenir au moins une minuscule.");
+        if (!password.matches(".*[0-9].*"))
+            throw new IllegalArgumentException("Le mot de passe doit contenir au moins un chiffre.");
 
+        // Validation du nom (obligatoire)
         if (nom == null || nom.trim().isEmpty())
             throw new IllegalArgumentException("Le nom est obligatoire.");
         if (nom.length() > 100)
             throw new IllegalArgumentException("Le nom ne doit pas dépasser 100 caractères.");
+        if (!nom.matches("^[a-zA-Z\\u00C0-\\u017F\\s\\-']+$"))
+            throw new IllegalArgumentException("Le nom ne doit contenir que des lettres, espaces, tirets et apostrophes.");
 
+        // Validation du prénom (obligatoire)
         if (prenom == null || prenom.trim().isEmpty())
             throw new IllegalArgumentException("Le prénom est obligatoire.");
         if (prenom.length() > 100)
             throw new IllegalArgumentException("Le prénom ne doit pas dépasser 100 caractères.");
+        if (!prenom.matches("^[a-zA-Z\\u00C0-\\u017F\\s\\-']+$"))
+            throw new IllegalArgumentException("Le prénom ne doit contenir que des lettres, espaces, tirets et apostrophes.");
 
+        // Validation du téléphone (obligatoire)
         if (telephone == null || telephone.trim().isEmpty())
             throw new IllegalArgumentException("Le téléphone est obligatoire.");
         if (!telephone.matches("^\\+?[0-9]{8,12}$"))
             throw new IllegalArgumentException("Format de téléphone invalide (8 à 12 chiffres).");
 
+        // Validation de la date de naissance (obligatoire)
         if (date_naissance == null)
             throw new IllegalArgumentException("La date de naissance est obligatoire.");
         if (date_naissance.after(new Date()))
             throw new IllegalArgumentException("La date de naissance ne peut pas être dans le futur.");
+        
+        // Vérifier que l'utilisateur a au moins 13 ans
+        Date minDate = new Date(System.currentTimeMillis() - (13L * 365 * 24 * 60 * 60 * 1000));
+        if (date_naissance.after(minDate))
+            throw new IllegalArgumentException("L'utilisateur doit avoir au moins 13 ans.");
 
+        // Validation du rôle utilisateur (obligatoire)
         if (role_utilisateur == null || role_utilisateur.trim().isEmpty())
             throw new IllegalArgumentException("Le rôle utilisateur est obligatoire.");
         boolean roleOk = false;
@@ -80,6 +106,22 @@ public class User {
         }
         if (!roleOk)
             throw new IllegalArgumentException("Rôle invalide. Valeurs acceptées : admin, formateur, apprenant, societe.");
+
+        // Validation du gouvernorat (optionnel)
+        if (gouvernorat != null && !gouvernorat.trim().isEmpty()) {
+            if (gouvernorat.length() > 50)
+                throw new IllegalArgumentException("Le gouvernorat ne doit pas dépasser 50 caractères.");
+        }
+
+        // Validation des champs optionnels
+        if (profession != null && profession.length() > 100)
+            throw new IllegalArgumentException("La profession ne doit pas dépasser 100 caractères.");
+        
+        if (niveau_etude != null && niveau_etude.length() > 100)
+            throw new IllegalArgumentException("Le niveau d'étude ne doit pas dépasser 100 caractères.");
+        
+        if (photo != null && photo.length() > 500)
+            throw new IllegalArgumentException("L'URL de la photo ne doit pas dépasser 500 caractères.");
     }
 
     // ── Getters / Setters ─────────────────────────────────────────────────────
@@ -89,8 +131,12 @@ public class User {
 
     public String getEmail() { return email; }
     public void setEmail(String email) {
-        if (email != null && !email.matches("^[\\w._%+\\-]+@[\\w.\\-]+\\.[a-zA-Z]{2,}$"))
-            throw new IllegalArgumentException("Format d'email invalide.");
+        if (email != null && !email.trim().isEmpty()) {
+            if (!email.matches("^[\\w._%+\\-]+@[\\w.\\-]+\\.[a-zA-Z]{2,}$"))
+                throw new IllegalArgumentException("Format d'email invalide.");
+            if (email.length() > 255)
+                throw new IllegalArgumentException("L'email ne doit pas dépasser 255 caractères.");
+        }
         this.email = email;
     }
 
@@ -99,22 +145,40 @@ public class User {
 
     public String getPassword() { return password; }
     public void setPassword(String password) {
-        if (password != null && password.length() < 8)
-            throw new IllegalArgumentException("Le mot de passe doit contenir au moins 8 caractères.");
+        if (password != null && !password.trim().isEmpty()) {
+            if (password.length() < 8)
+                throw new IllegalArgumentException("Le mot de passe doit contenir au moins 8 caractères.");
+            if (password.length() > 255)
+                throw new IllegalArgumentException("Le mot de passe ne doit pas dépasser 255 caractères.");
+            if (!password.matches(".*[A-Z].*"))
+                throw new IllegalArgumentException("Le mot de passe doit contenir au moins une majuscule.");
+            if (!password.matches(".*[a-z].*"))
+                throw new IllegalArgumentException("Le mot de passe doit contenir au moins une minuscule.");
+            if (!password.matches(".*[0-9].*"))
+                throw new IllegalArgumentException("Le mot de passe doit contenir au moins un chiffre.");
+        }
         this.password = password;
     }
 
     public String getNom() { return nom; }
     public void setNom(String nom) {
-        if (nom != null && nom.length() > 100)
-            throw new IllegalArgumentException("Le nom ne doit pas dépasser 100 caractères.");
+        if (nom != null && !nom.trim().isEmpty()) {
+            if (nom.length() > 100)
+                throw new IllegalArgumentException("Le nom ne doit pas dépasser 100 caractères.");
+            if (!nom.matches("^[a-zA-Z\\u00C0-\\u017F\\s\\-']+$"))
+                throw new IllegalArgumentException("Le nom ne doit contenir que des lettres, espaces, tirets et apostrophes.");
+        }
         this.nom = nom;
     }
 
     public String getPrenom() { return prenom; }
     public void setPrenom(String prenom) {
-        if (prenom != null && prenom.length() > 100)
-            throw new IllegalArgumentException("Le prénom ne doit pas dépasser 100 caractères.");
+        if (prenom != null && !prenom.trim().isEmpty()) {
+            if (prenom.length() > 100)
+                throw new IllegalArgumentException("Le prénom ne doit pas dépasser 100 caractères.");
+            if (!prenom.matches("^[a-zA-Z\\u00C0-\\u017F\\s\\-']+$"))
+                throw new IllegalArgumentException("Le prénom ne doit contenir que des lettres, espaces, tirets et apostrophes.");
+        }
         this.prenom = prenom;
     }
 
@@ -126,7 +190,11 @@ public class User {
     }
 
     public String getGouvernorat() { return gouvernorat; }
-    public void setGouvernorat(String gouvernorat) { this.gouvernorat = gouvernorat; }
+    public void setGouvernorat(String gouvernorat) {
+        if (gouvernorat != null && gouvernorat.length() > 50)
+            throw new IllegalArgumentException("Le gouvernorat ne doit pas dépasser 50 caractères.");
+        this.gouvernorat = gouvernorat;
+    }
 
     public Date getDate_naissance() { return date_naissance; }
     public void setDate_naissance(Date date_naissance) {
@@ -136,16 +204,28 @@ public class User {
     }
 
     public String getProfession() { return profession; }
-    public void setProfession(String profession) { this.profession = profession; }
+    public void setProfession(String profession) {
+        if (profession != null && profession.length() > 100)
+            throw new IllegalArgumentException("La profession ne doit pas dépasser 100 caractères.");
+        this.profession = profession;
+    }
 
     public String getNiveau_etude() { return niveau_etude; }
-    public void setNiveau_etude(String niveau_etude) { this.niveau_etude = niveau_etude; }
+    public void setNiveau_etude(String niveau_etude) {
+        if (niveau_etude != null && niveau_etude.length() > 100)
+            throw new IllegalArgumentException("Le niveau d'étude ne doit pas dépasser 100 caractères.");
+        this.niveau_etude = niveau_etude;
+    }
 
     public String getRole_utilisateur() { return role_utilisateur; }
     public void setRole_utilisateur(String role_utilisateur) { this.role_utilisateur = role_utilisateur; }
 
     public String getPhoto() { return photo; }
-    public void setPhoto(String photo) { this.photo = photo; }
+    public void setPhoto(String photo) {
+        if (photo != null && photo.length() > 500)
+            throw new IllegalArgumentException("L'URL de la photo ne doit pas dépasser 500 caractères.");
+        this.photo = photo;
+    }
 
     public boolean isIs_email_verified() { return is_email_verified; }
     public void setIs_email_verified(boolean is_email_verified) { this.is_email_verified = is_email_verified; }
