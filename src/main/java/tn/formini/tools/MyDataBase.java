@@ -12,10 +12,17 @@ public class MyDataBase {
     static MyDataBase  MyDB;
     private MyDataBase() {
         try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
             cnx = DriverManager.getConnection(url, user, pwd);
-            System.out.println("cnx etablie !!!");
+            if (cnx != null) {
+                System.out.println("cnx etablie !!!");
+            } else {
+                System.out.println("Erreur : La connexion a retourné null.");
+            }
+        } catch (ClassNotFoundException e) {
+            System.out.println("Driver non trouvé : " + e.getMessage());
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Erreur SQL lors de la connexion : " + e.getMessage());
         }
     }
     public static MyDataBase getInstance(){

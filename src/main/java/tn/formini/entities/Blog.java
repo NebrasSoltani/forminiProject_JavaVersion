@@ -11,13 +11,13 @@ public class Blog {
     private String image;
     private Date date_publication;
     private String categorie;
-    private boolean is_publie;
-    private String resume;
-    private String tags; // JSON
-
+    private int user_id;
+    private String resume_auto;
+    private int is_actif;
+    private int live;
+    private String url_live;
 
     private User auteur; // objet lié
-
     private Evenement evenement; // objet lié (peut être null)
 
     public Blog() {}
@@ -33,15 +33,6 @@ public class Blog {
         if (contenu == null || contenu.trim().isEmpty())
             throw new IllegalArgumentException("Le contenu est obligatoire.");
 
-        if (date_publication == null)
-            throw new IllegalArgumentException("La date de publication est obligatoire.");
-
-        if (categorie == null || categorie.trim().isEmpty())
-            throw new IllegalArgumentException("La catégorie est obligatoire.");
-        if (categorie.length() > 100)
-            throw new IllegalArgumentException("La catégorie ne doit pas dépasser 100 caractères.");
-
-
     }
 
     // ── Getters / Setters ──────────────────────────────────────────────────────
@@ -51,8 +42,6 @@ public class Blog {
 
     public String getTitre() { return titre; }
     public void setTitre(String titre) {
-        if (titre != null && titre.length() > 255)
-            throw new IllegalArgumentException("Le titre ne doit pas dépasser 255 caractères.");
         this.titre = titre;
     }
 
@@ -67,35 +56,29 @@ public class Blog {
 
     public String getCategorie() { return categorie; }
     public void setCategorie(String categorie) {
-        if (categorie != null && categorie.length() > 100)
-            throw new IllegalArgumentException("La catégorie ne doit pas dépasser 100 caractères.");
         this.categorie = categorie;
     }
 
-    public boolean isIs_publie() { return is_publie; }
-    public void setIs_publie(boolean is_publie) { this.is_publie = is_publie; }
+    public int getUser_id() { return user_id; }
+    public void setUser_id(int user_id) { this.user_id = user_id; }
 
-    public String getResume() { return resume; }
-    public void setResume(String resume) { this.resume = resume; }
+    public String getResume_auto() { return resume_auto; }
+    public void setResume_auto(String resume_auto) { this.resume_auto = resume_auto; }
 
-    public String getTags() { return tags; }
-    public void setTags(String tags) { this.tags = tags; }
+    public int getIs_actif() { return is_actif; }
+    public void setIs_actif(int is_actif) { this.is_actif = is_actif; }
 
-    public User getAuteur() {
-        return auteur;
-    }
+    public int getLive() { return live; }
+    public void setLive(int live) { this.live = live; }
 
-    public void setAuteur(User auteur) {
-        this.auteur = auteur;
-    }
+    public String getUrl_live() { return url_live; }
+    public void setUrl_live(String url_live) { this.url_live = url_live; }
 
-    public Evenement getEvenement() {
-        return evenement;
-    }
+    public User getAuteur() { return auteur; }
+    public void setAuteur(User auteur) { this.auteur = auteur; }
 
-    public void setEvenement(Evenement evenement) {
-        this.evenement = evenement;
-    }
+    public Evenement getEvenement() { return evenement; }
+    public void setEvenement(Evenement evenement) { this.evenement = evenement; }
 
     @Override
     public String toString() {
@@ -106,11 +89,11 @@ public class Blog {
                 ", image='" + image + '\'' +
                 ", date_publication=" + date_publication +
                 ", categorie='" + categorie + '\'' +
-                ", is_publie=" + is_publie +
-                ", resume='" + resume + '\'' +
-                ", tags='" + tags + '\'' +
-                ", auteur=" + auteur +
-                ", evenement=" + evenement +
+                ", user_id=" + user_id +
+                ", resume_auto='" + resume_auto + '\'' +
+                ", is_actif=" + is_actif +
+                ", live=" + live +
+                ", url_live='" + url_live + '\'' +
                 '}';
     }
 }
