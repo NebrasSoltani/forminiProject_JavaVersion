@@ -10,14 +10,14 @@ import java.util.List;
 
 public class SocieteService implements service<Societe> {
 
-    private Connection getCnx() {
-        return MyDataBase.getInstance().getCnx();
+    Connection cnx;
+    public SocieteService() {
+        cnx= MyDataBase.getInstance().getCnx();
     }
 
     @Override
     public void ajouter(Societe s) {
-        Connection cnx = getCnx();
-        if (cnx == null) return;
+
 
         String req = "INSERT INTO societe (nom_societe, secteur, description, adresse, site_web, user_id) VALUES (?, ?, ?, ?, ?, ?)";
         try {
@@ -52,8 +52,7 @@ public class SocieteService implements service<Societe> {
 
     @Override
     public void modifier(Societe s) {
-        Connection cnx = getCnx();
-        if (cnx == null) return;
+
 
         String req = "UPDATE societe SET nom_societe=?, secteur=?, description=?, adresse=?, site_web=?, user_id=? WHERE id=?";
         try {
@@ -80,8 +79,7 @@ public class SocieteService implements service<Societe> {
 
     @Override
     public void supprimer(int id) {
-        Connection cnx = getCnx();
-        if (cnx == null) return;
+
         
         String req = "DELETE FROM societe WHERE id=?";
         try {
@@ -96,7 +94,6 @@ public class SocieteService implements service<Societe> {
 
     @Override
     public List<Societe> afficher() {
-        Connection cnx = getCnx();
         List<Societe> list = new ArrayList<>();
         if (cnx == null) return list;
 
@@ -128,8 +125,7 @@ public class SocieteService implements service<Societe> {
     }
 
     public Societe findById(int id) {
-        Connection cnx = getCnx();
-        if (cnx == null) return null;
+
 
         String req = "SELECT * FROM societe WHERE id=?";
         try {
@@ -160,7 +156,6 @@ public class SocieteService implements service<Societe> {
     }
 
     public List<Societe> findByNom(String nom) {
-        Connection cnx = getCnx();
         List<Societe> list = new ArrayList<>();
         if (cnx == null) return list;
 
@@ -193,7 +188,6 @@ public class SocieteService implements service<Societe> {
     }
 
     public List<Societe> findBySecteur(String secteur) {
-        Connection cnx = getCnx();
         List<Societe> list = new ArrayList<>();
         if (cnx == null) return list;
 
@@ -226,7 +220,6 @@ public class SocieteService implements service<Societe> {
     }
 
     public List<Societe> findByAdresse(String adresse) {
-        Connection cnx = getCnx();
         List<Societe> list = new ArrayList<>();
         if (cnx == null) return list;
 
@@ -259,8 +252,7 @@ public class SocieteService implements service<Societe> {
     }
 
     public boolean exists(int id) {
-        Connection cnx = getCnx();
-        if (cnx == null) return false;
+
 
         String req = "SELECT COUNT(*) FROM societe WHERE id=?";
         try {
@@ -277,8 +269,7 @@ public class SocieteService implements service<Societe> {
     }
 
     public boolean existsByNom(String nom) {
-        Connection cnx = getCnx();
-        if (cnx == null) return false;
+
 
         String req = "SELECT COUNT(*) FROM societe WHERE nom_societe=?";
         try {
@@ -295,8 +286,7 @@ public class SocieteService implements service<Societe> {
     }
 
     private User getUserById(int userId) {
-        Connection cnx = getCnx();
-        if (cnx == null) return null;
+
 
         String req = "SELECT * FROM user WHERE id=?";
         try {

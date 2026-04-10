@@ -9,14 +9,14 @@ import java.util.List;
 
 public class UserService implements service<User> {
 
-    private Connection getCnx() {
-        return MyDataBase.getInstance().getCnx();
+    Connection cnx;
+    public UserService(){
+        cnx= MyDataBase.getInstance().getCnx();
     }
 
     @Override
     public void ajouter(User u) {
-        Connection cnx = getCnx();
-        if (cnx == null) return;
+
 
         String req = "INSERT INTO user (email, roles, password, nom, prenom, telephone, gouvernorat, date_naissance, role_utilisateur) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
@@ -49,8 +49,6 @@ public class UserService implements service<User> {
 
     @Override
     public void modifier(User u) {
-        Connection cnx = getCnx();
-        if (cnx == null) return;
 
         String req = "UPDATE user SET email=?, roles=?, password=?, nom=?, prenom=?, telephone=?, gouvernorat=?, date_naissance=?, role_utilisateur=? WHERE id=?";
         try {
@@ -74,8 +72,7 @@ public class UserService implements service<User> {
 
     @Override
     public void supprimer(int id) {
-        Connection cnx = getCnx();
-        if (cnx == null) return;
+
         String req = "DELETE FROM user WHERE id=?";
         try {
             PreparedStatement ps = cnx.prepareStatement(req);
@@ -89,7 +86,6 @@ public class UserService implements service<User> {
 
     @Override
     public List<User> afficher() {
-        Connection cnx = getCnx();
         List<User> list = new ArrayList<>();
         if (cnx == null) return list;
 
