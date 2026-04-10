@@ -13,8 +13,7 @@ import java.util.Date;
 
 public class ApprenantMain {
     public static void main(String[] args) {
-        // Initialize database connection
-        MyDataBase.getInstance();
+
         
         ApprenantService apprenantService = new ApprenantService();
         UserService userService = new UserService();
