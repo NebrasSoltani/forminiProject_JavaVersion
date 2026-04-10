@@ -11,8 +11,7 @@ import java.util.List;
 
 public class FormateurMain {
     public static void main(String[] args) {
-        // Initialize database connection
-        MyDataBase.getInstance();
+
         
         FormateurService formateurService = new FormateurService();
         UserService userService = new UserService();

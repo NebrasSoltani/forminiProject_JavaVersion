@@ -28,7 +28,7 @@ public class Apprenant {
             if (!ok) throw new IllegalArgumentException("Genre invalide. Valeurs : homme, femme, autre.");
         }
 
-        // Validation de l'état civil (optionnel mais si fourni doit être valide)
+        // Validation de l'état civil
         if (etat_civil != null && !etat_civil.trim().isEmpty()) {
             boolean ok = false;
             for (String e : ETATS_CIVILS_VALIDES) if (e.equalsIgnoreCase(etat_civil.trim())) { ok = true; break; }

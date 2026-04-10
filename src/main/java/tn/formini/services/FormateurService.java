@@ -10,14 +10,16 @@ import java.util.List;
 
 public class FormateurService implements service<Formateur> {
 
-    private Connection getCnx() {
-        return MyDataBase.getInstance().getCnx();
+    Connection cnx;
+
+    public FormateurService() {
+        cnx= MyDataBase.getInstance().getCnx();
     }
+
 
     @Override
     public void ajouter(Formateur f) {
-        Connection cnx = getCnx();
-        if (cnx == null) return;
+
 
         String req = "INSERT INTO formateur (specialite, bio, experience_annees, linkedin, portfolio, cv, note_moyenne, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try {
@@ -65,8 +67,7 @@ public class FormateurService implements service<Formateur> {
 
     @Override
     public void modifier(Formateur f) {
-        Connection cnx = getCnx();
-        if (cnx == null) return;
+
 
         String req = "UPDATE formateur SET specialite=?, bio=?, experience_annees=?, linkedin=?, portfolio=?, cv=?, note_moyenne=?, user_id=? WHERE id=?";
         try {
@@ -106,8 +107,7 @@ public class FormateurService implements service<Formateur> {
 
     @Override
     public void supprimer(int id) {
-        Connection cnx = getCnx();
-        if (cnx == null) return;
+
         
         String req = "DELETE FROM formateur WHERE id=?";
         try {
@@ -122,7 +122,6 @@ public class FormateurService implements service<Formateur> {
 
     @Override
     public List<Formateur> afficher() {
-        Connection cnx = getCnx();
         List<Formateur> list = new ArrayList<>();
         if (cnx == null) return list;
 
@@ -165,8 +164,7 @@ public class FormateurService implements service<Formateur> {
     }
 
     public Formateur findById(int id) {
-        Connection cnx = getCnx();
-        if (cnx == null) return null;
+
 
         String req = "SELECT * FROM formateur WHERE id=?";
         try {
@@ -208,7 +206,6 @@ public class FormateurService implements service<Formateur> {
     }
 
     public List<Formateur> findBySpecialite(String specialite) {
-        Connection cnx = getCnx();
         List<Formateur> list = new ArrayList<>();
         if (cnx == null) return list;
 
@@ -252,7 +249,6 @@ public class FormateurService implements service<Formateur> {
     }
 
     public List<Formateur> findByExperienceMin(int minExperience) {
-        Connection cnx = getCnx();
         List<Formateur> list = new ArrayList<>();
         if (cnx == null) return list;
 
@@ -296,7 +292,6 @@ public class FormateurService implements service<Formateur> {
     }
 
     public List<Formateur> findByNoteMin(double minNote) {
-        Connection cnx = getCnx();
         List<Formateur> list = new ArrayList<>();
         if (cnx == null) return list;
 
@@ -340,8 +335,7 @@ public class FormateurService implements service<Formateur> {
     }
 
     private User getUserById(int userId) {
-        Connection cnx = getCnx();
-        if (cnx == null) return null;
+
 
         String req = "SELECT * FROM user WHERE id=?";
         try {
