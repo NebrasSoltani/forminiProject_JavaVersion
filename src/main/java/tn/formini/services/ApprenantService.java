@@ -11,14 +11,14 @@ import java.util.List;
 
 public class ApprenantService implements service<Apprenant> {
 
-    private Connection getCnx() {
-        return MyDataBase.getInstance().getCnx();
+    Connection cnx;
+
+    public ApprenantService(){
+        cnx= MyDataBase.getInstance().getCnx();
     }
 
     @Override
     public void ajouter(Apprenant a) {
-        Connection cnx = getCnx();
-        if (cnx == null) return;
 
         String req = "INSERT INTO apprenant (genre, etat_civil, objectif, domaines_interet, user_id, domaine_id) VALUES (?, ?, ?, ?, ?, ?)";
         try {
@@ -49,8 +49,7 @@ public class ApprenantService implements service<Apprenant> {
 
     @Override
     public void modifier(Apprenant a) {
-        Connection cnx = getCnx();
-        if (cnx == null) return;
+
 
         String req = "UPDATE apprenant SET genre=?, etat_civil=?, objectif=?, domaines_interet=?, user_id=?, domaine_id=? WHERE id=?";
         try {
@@ -82,8 +81,7 @@ public class ApprenantService implements service<Apprenant> {
 
     @Override
     public void supprimer(int id) {
-        Connection cnx = getCnx();
-        if (cnx == null) return;
+
         
         String req = "DELETE FROM apprenant WHERE id=?";
         try {
@@ -98,7 +96,7 @@ public class ApprenantService implements service<Apprenant> {
 
     @Override
     public List<Apprenant> afficher() {
-        Connection cnx = getCnx();
+
         List<Apprenant> list = new ArrayList<>();
         if (cnx == null) return list;
 
@@ -135,7 +133,6 @@ public class ApprenantService implements service<Apprenant> {
     }
 
     public Apprenant findById(int id) {
-        Connection cnx = getCnx();
         if (cnx == null) return null;
 
         String req = "SELECT * FROM apprenant WHERE id=?";
@@ -172,7 +169,6 @@ public class ApprenantService implements service<Apprenant> {
     }
 
     public List<Apprenant> findByDomaine(int domaineId) {
-        Connection cnx = getCnx();
         List<Apprenant> list = new ArrayList<>();
         if (cnx == null) return list;
 
@@ -207,8 +203,7 @@ public class ApprenantService implements service<Apprenant> {
     }
 
     private User getUserById(int userId) {
-        Connection cnx = getCnx();
-        if (cnx == null) return null;
+
 
         String req = "SELECT * FROM user WHERE id=?";
         try {
@@ -236,8 +231,7 @@ public class ApprenantService implements service<Apprenant> {
     }
 
     private Domaine getDomaineById(int domaineId) {
-        Connection cnx = getCnx();
-        if (cnx == null) return null;
+
 
         String req = "SELECT * FROM domaine WHERE id=?";
         try {

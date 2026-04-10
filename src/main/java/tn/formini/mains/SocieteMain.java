@@ -11,8 +11,7 @@ import java.util.List;
 
 public class SocieteMain {
     public static void main(String[] args) {
-        // Initialize database connection
-        MyDataBase.getInstance();
+
         
         SocieteService societeService = new SocieteService();
         UserService userService = new UserService();
