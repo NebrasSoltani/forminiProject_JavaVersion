@@ -17,11 +17,9 @@ public class BlogMain {
         b1.setImage("image.jpg");
         b1.setDate_publication(new Date());
         b1.setCategorie("Technologie");
-        b1.setUser_id(1);
-        b1.setResume_auto("Résumé automatique...");
-        b1.setIs_actif(1);
-        b1.setLive(0);
-        b1.setUrl_live("");
+        b1.setAuteur_id(1);
+        b1.setIs_publie(true);
+        b1.setTags("[\"test\"]");
 
         System.out.println("--- Ajout d'un blog ---");
         bs.ajouter(b1);

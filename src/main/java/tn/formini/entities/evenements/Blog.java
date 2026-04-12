@@ -13,18 +13,16 @@ public class Blog {
     private String image;
     private Date date_publication;
     private String categorie;
-    private int user_id;
-    private String resume_auto;
-    private int is_actif;
-    private int live;
-    private String url_live;
+    private int auteur_id;
+    private Integer evenement_id;
+    private String resume;
+    private boolean is_publie;
+    private String tags;
 
-    private User auteur; // objet lié
-    private Evenement evenement; // objet lié (peut être null)
+    private User auteur;
+    private Evenement evenement;
 
     public Blog() {}
-
-    // ── Validation ─────────────────────────────────────────────────────────────
 
     public void valider() {
         if (titre == null || titre.trim().isEmpty())
@@ -34,18 +32,13 @@ public class Blog {
 
         if (contenu == null || contenu.trim().isEmpty())
             throw new IllegalArgumentException("Le contenu est obligatoire.");
-
     }
-
-    // ── Getters / Setters ──────────────────────────────────────────────────────
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
     public String getTitre() { return titre; }
-    public void setTitre(String titre) {
-        this.titre = titre;
-    }
+    public void setTitre(String titre) { this.titre = titre; }
 
     public String getContenu() { return contenu; }
     public void setContenu(String contenu) { this.contenu = contenu; }
@@ -57,24 +50,22 @@ public class Blog {
     public void setDate_publication(Date date_publication) { this.date_publication = date_publication; }
 
     public String getCategorie() { return categorie; }
-    public void setCategorie(String categorie) {
-        this.categorie = categorie;
-    }
+    public void setCategorie(String categorie) { this.categorie = categorie; }
 
-    public int getUser_id() { return user_id; }
-    public void setUser_id(int user_id) { this.user_id = user_id; }
+    public int getAuteur_id() { return auteur_id; }
+    public void setAuteur_id(int auteur_id) { this.auteur_id = auteur_id; }
 
-    public String getResume_auto() { return resume_auto; }
-    public void setResume_auto(String resume_auto) { this.resume_auto = resume_auto; }
+    public Integer getEvenement_id() { return evenement_id; }
+    public void setEvenement_id(Integer evenement_id) { this.evenement_id = evenement_id; }
 
-    public int getIs_actif() { return is_actif; }
-    public void setIs_actif(int is_actif) { this.is_actif = is_actif; }
+    public String getResume() { return resume; }
+    public void setResume(String resume) { this.resume = resume; }
 
-    public int getLive() { return live; }
-    public void setLive(int live) { this.live = live; }
+    public boolean isIs_publie() { return is_publie; }
+    public void setIs_publie(boolean is_publie) { this.is_publie = is_publie; }
 
-    public String getUrl_live() { return url_live; }
-    public void setUrl_live(String url_live) { this.url_live = url_live; }
+    public String getTags() { return tags; }
+    public void setTags(String tags) { this.tags = tags; }
 
     public User getAuteur() { return auteur; }
     public void setAuteur(User auteur) { this.auteur = auteur; }
@@ -91,12 +82,11 @@ public class Blog {
                 ", image='" + image + '\'' +
                 ", date_publication=" + date_publication +
                 ", categorie='" + categorie + '\'' +
-                ", user_id=" + user_id +
-                ", resume_auto='" + resume_auto + '\'' +
-                ", is_actif=" + is_actif +
-                ", live=" + live +
-                ", url_live='" + url_live + '\'' +
+                ", auteur_id=" + auteur_id +
+                ", evenement_id=" + evenement_id +
+                ", resume='" + resume + '\'' +
+                ", is_publie=" + is_publie +
+                ", tags='" + tags + '\'' +
                 '}';
     }
 }
-

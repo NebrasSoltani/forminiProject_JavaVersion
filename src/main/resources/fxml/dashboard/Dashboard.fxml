@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      spacing="30" alignment="TOP_LEFT"
+      style="-fx-padding: 40;"
+      stylesheets="@/css/style.css">
+
+    <Label text="🏠 Tableau de bord" styleClass="page-title" style="-fx-font-size: 32px;"/>
+    
+    <FlowPane hgap="20" vgap="20">
+        <!-- Card 1 -->
+        <VBox styleClass="modern-card" prefWidth="250" style="-fx-padding: 24;">
+            <Label text="📝 Blogs" styleClass="card-tag"/>
+            <Label text="24" style="-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: #4f46e5;"/>
+            <Label text="+3 cette semaine" styleClass="card-body"/>
+        </VBox>
+
+        <!-- Card 2 -->
+        <VBox styleClass="modern-card" prefWidth="250" style="-fx-padding: 24;">
+            <Label text="📅 Événements" styleClass="card-tag" style="-fx-background-color: #f7fafc; -fx-text-fill: #2d3748;"/>
+            <Label text="12" style="-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: #ed64a6;"/>
+            <Label text="5 en cours" styleClass="card-body"/>
+        </VBox>
+
+        <!-- Card 3 -->
+        <VBox styleClass="modern-card" prefWidth="250" style="-fx-padding: 24;">
+            <Label text="👥 Participants" styleClass="card-tag" style="-fx-background-color: #ebf8ff; -fx-text-fill: #2b6cb0;"/>
+            <Label text="156" style="-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: #4299e1;"/>
+            <Label text="Activité élevée" styleClass="card-body"/>
+        </VBox>
+    </FlowPane>
+
+
+
+</VBox>
