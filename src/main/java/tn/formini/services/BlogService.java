@@ -8,16 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BlogService implements service<Blog> {
-    Connection cnx;
-
-    public BlogService() {
-        cnx = MyDataBase.getInstance().getCnx();
+    private Connection getCnx() {
+        return MyDataBase.getInstance().getCnx();
     }
 
     @Override
     public void ajouter(Blog b) {
+        Connection cnx = getCnx();
         if (cnx == null) return;
-        String req = "INSERT INTO blog (titre, contenu, image, date_publication, categorie, user_id, resume_auto, is_actif, live, url_live) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String req = "INSERT INTO blog (titre, contenu, image, date_publication, categorie, auteur_id, resume, is_publie, evenement_id, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             PreparedStatement ps = cnx.prepareStatement(req);
             ps.setString(1, b.getTitre());
@@ -25,22 +24,23 @@ public class BlogService implements service<Blog> {
             ps.setString(3, b.getImage());
             ps.setTimestamp(4, b.getDate_publication() != null ? new Timestamp(b.getDate_publication().getTime()) : null);
             ps.setString(5, b.getCategorie());
-            ps.setInt(6, b.getUser_id());
-            ps.setString(7, b.getResume_auto());
-            ps.setInt(8, b.getIs_actif());
-            ps.setInt(9, b.getLive());
-            ps.setString(10, b.getUrl_live());
+            ps.setInt(6, b.getAuteur_id());
+            ps.setString(7, b.getResume());
+            ps.setBoolean(8, b.isIs_publie());
+            ps.setObject(9, b.getEvenement_id());
+            ps.setString(10, b.getTags());
             ps.executeUpdate();
-            System.out.println("Blog ajouté !");
+            System.out.println("Blog ajouté avec succès !");
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Erreur ajouter blog : " + e.getMessage());
         }
     }
 
     @Override
     public void modifier(Blog b) {
+        Connection cnx = getCnx();
         if (cnx == null) return;
-        String req = "UPDATE blog SET titre=?, contenu=?, image=?, date_publication=?, categorie=?, user_id=?, resume_auto=?, is_actif=?, live=?, url_live=? WHERE id=?";
+        String req = "UPDATE blog SET titre=?, contenu=?, image=?, date_publication=?, categorie=?, auteur_id=?, resume=?, is_publie=?, evenement_id=?, tags=? WHERE id=?";
         try {
             PreparedStatement ps = cnx.prepareStatement(req);
             ps.setString(1, b.getTitre());
@@ -48,35 +48,37 @@ public class BlogService implements service<Blog> {
             ps.setString(3, b.getImage());
             ps.setTimestamp(4, b.getDate_publication() != null ? new Timestamp(b.getDate_publication().getTime()) : null);
             ps.setString(5, b.getCategorie());
-            ps.setInt(6, b.getUser_id());
-            ps.setString(7, b.getResume_auto());
-            ps.setInt(8, b.getIs_actif());
-            ps.setInt(9, b.getLive());
-            ps.setString(10, b.getUrl_live());
+            ps.setInt(6, b.getAuteur_id());
+            ps.setString(7, b.getResume());
+            ps.setBoolean(8, b.isIs_publie());
+            ps.setObject(9, b.getEvenement_id());
+            ps.setString(10, b.getTags());
             ps.setInt(11, b.getId());
             ps.executeUpdate();
-            System.out.println("Blog modifié !");
+            System.out.println("Blog modifié avec succès !");
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Erreur modifier blog : " + e.getMessage());
         }
     }
 
     @Override
     public void supprimer(int id) {
+        Connection cnx = getCnx();
         if (cnx == null) return;
         String req = "DELETE FROM blog WHERE id=?";
         try {
             PreparedStatement ps = cnx.prepareStatement(req);
             ps.setInt(1, id);
             ps.executeUpdate();
-            System.out.println("Blog supprimé !");
+            System.out.println("Blog supprimé avec succès !");
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Erreur supprimer blog : " + e.getMessage());
         }
     }
 
     @Override
     public List<Blog> afficher() {
+        Connection cnx = getCnx();
         List<Blog> list = new ArrayList<>();
         if (cnx == null) return list;
         String req = "SELECT * FROM blog";
@@ -91,15 +93,17 @@ public class BlogService implements service<Blog> {
                 b.setImage(rs.getString("image"));
                 b.setDate_publication(rs.getTimestamp("date_publication"));
                 b.setCategorie(rs.getString("categorie"));
-                b.setUser_id(rs.getInt("user_id"));
-                b.setResume_auto(rs.getString("resume_auto"));
-                b.setIs_actif(rs.getInt("is_actif"));
-                b.setLive(rs.getInt("live"));
-                b.setUrl_live(rs.getString("url_live"));
+                b.setAuteur_id(rs.getInt("auteur_id"));
+                b.setResume(rs.getString("resume"));
+                b.setIs_publie(rs.getBoolean("is_publie"));
+                int evtId = rs.getInt("evenement_id");
+                if (rs.wasNull()) b.setEvenement_id(null);
+                else b.setEvenement_id(evtId);
+                b.setTags(rs.getString("tags"));
                 list.add(b);
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Erreur afficher blog : " + e.getMessage());
         }
         return list;
     }

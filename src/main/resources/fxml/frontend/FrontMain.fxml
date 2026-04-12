@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<?import java.net.URL?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="tn.formini.controllers.frontend.FrontMainController"
+            style="-fx-background-color: #f8fafc;">
+
+    <stylesheets>
+        <URL value="@/css/style.css" />
+    </stylesheets>
+
+    <!-- Top Navbar -->
+    <top>
+        <HBox spacing="30" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-padding: 15 40; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 2);">
+            <VBox spacing="-2">
+                <Label text="Formini.tn" styleClass="logo-text-bold" style="-fx-text-fill: #6366f1;"/>
+                <Label text="فروميني.تونس" styleClass="logo-arabic" style="-fx-text-fill: #94a3b8;"/>
+            </VBox>
+            
+            <Region HBox.hgrow="ALWAYS"/>
+            
+            <HBox spacing="25" alignment="CENTER">
+                <Hyperlink text="Accueil" onAction="#showHome" styleClass="front-nav-link" style="-fx-text-fill: #6974e8; -fx-font-weight: bold;"/>
+            </HBox>
+            
+            <Region HBox.hgrow="ALWAYS"/>
+            
+            <HBox spacing="15" alignment="CENTER">
+                <Button text="Connexion" styleClass="btn-secondary"/>
+                <Button text="Dashboard Admin" onAction="#switchToAdmin" styleClass="btn-primary"/>
+            </HBox>
+        </HBox>
+    </top>
+
+    <center>
+        <StackPane fx:id="contentArea"/>
+    </center>
+
+</BorderPane>

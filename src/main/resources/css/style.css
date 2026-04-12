@@ -1,0 +1,243 @@
+/* ════════════════════════════════════════════════════════════
+   FORMINI.TN – MODERN SAAS JavaFX STYLESHEET
+   Style : Onix Digital Inspired
+   ════════════════════════════════════════════════════════════ */
+
+.root {
+    -fx-primary: #6974e8;
+    -fx-secondary: #8f94f6;
+    -fx-accent: #ff4b5c;
+    -fx-bg: #fdfdfd;
+    -fx-surface: white;
+    -fx-text: #2f3542;
+    -fx-text-muted: #747d8c;
+    -fx-success: #2ed573;
+    -fx-warning: #ffa502;
+    -fx-error: #ff4757;
+
+    /* Onix Digital Gradients */
+    -fx-primary-gradient: linear-gradient(to right, #6974e8, #8f94f6);
+    -fx-banner-gradient: linear-gradient(from 0% 0% to 100% 100%, #6a85b6 0%, #bac8e0 100%);
+
+    -fx-background-color: -fx-bg;
+    -fx-font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* ── Sidebar Redesign ─────────────────────────────────────── */
+.sidebar {
+    -fx-background-color: #0f172a;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 30, 0, 0, 0);
+}
+
+.sidebar-logo {
+    -fx-padding: 30px 24px;
+    -fx-alignment: center-left;
+}
+
+.logo-icon-bg {
+    -fx-background-color: -fx-primary-gradient;
+    -fx-min-width: 40;
+    -fx-min-height: 40;
+    -fx-max-width: 40;
+    -fx-max-height: 40;
+    -fx-background-radius: 10;
+}
+
+.logo-icon-text {
+    -fx-text-fill: white;
+    -fx-font-size: 22;
+    -fx-font-weight: bold;
+}
+
+.logo-text-bold {
+    -fx-font-size: 18px;
+    -fx-font-weight: 900;
+    -fx-text-fill: white;
+}
+
+.logo-arabic {
+    -fx-font-size: 14px;
+    -fx-text-fill: #94a3b8;
+    -fx-font-weight: bold;
+}
+
+.nav-accordion {
+    -fx-background-color: transparent;
+}
+
+.nav-accordion .titled-pane {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+}
+
+.nav-accordion .titled-pane>.title {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 15px 24px;
+}
+
+.nav-accordion .titled-pane>.title:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-text-fill: white;
+}
+
+.nav-accordion .titled-pane:expanded>.title {
+    -fx-text-fill: -fx-primary;
+}
+
+.nav-accordion .titled-pane>.content {
+    -fx-background-color: #0f172a;
+    -fx-border-color: transparent;
+    -fx-padding: 0 0 10px 0;
+}
+
+.nav-sub {
+    -fx-background-color: transparent;
+    -fx-text-fill: #64748b;
+    -fx-alignment: center-left;
+    -fx-padding: 10px 24px 10px 48px;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}
+
+.nav-sub:hover {
+    -fx-text-fill: white;
+    -fx-background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* ── Table System (Standardized) ────────────────────────────── */
+.modern-table {
+    -fx-background-color: white;
+    -fx-background-radius: 20px;
+    -fx-padding: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 15, 0, 0, 5);
+    -fx-border-color: transparent;
+}
+
+.modern-table .column-header-background {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 15px 15px 0 0;
+}
+
+.modern-table .column-header {
+    -fx-background-color: transparent;
+    -fx-size: 50px;
+}
+
+.modern-table .column-header .label {
+    -fx-text-fill: #64748b;
+    -fx-font-weight: 700;
+    -fx-font-size: 13px;
+}
+
+.modern-table .table-row-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: #f1f5f9;
+    -fx-border-width: 0 0 1px 0;
+    -fx-cell-size: 65px;
+}
+
+.modern-table .table-row-cell:hover {
+    -fx-background-color: #f8faff;
+}
+
+/* ── Onix Digital Inspired Styles (Front) ────────────────── */
+.hero-section {
+    -fx-background-color: -fx-banner-gradient;
+    -fx-background-radius: 40 40 150 40;
+    -fx-padding: 100px 80px;
+    -fx-effect: dropshadow(three-pass-box, rgba(106, 133, 182, 0.3), 30, 0, 0, 15);
+}
+
+.hero-title {
+    -fx-text-fill: white;
+    -fx-font-size: 48px;
+    -fx-font-weight: 900;
+}
+
+.hero-subtitle {
+    -fx-text-fill: rgba(255, 255, 255, 0.9);
+    -fx-font-size: 20px;
+    -fx-font-weight: 500;
+}
+
+.event-card {
+    -fx-background-color: white;
+    -fx-background-radius: 20px;
+    -fx-padding: 0;
+    -fx-border-color: #f0f0f0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 15, 0, 0, 5);
+    -fx-cursor: hand;
+}
+
+.event-card:hover {
+    -fx-translate-y: -10px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 30, 0, 0, 15);
+    -fx-border-color: #6974e8;
+}
+
+.card-image-cover {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 20 20 0 0;
+    -fx-min-height: 160px;
+    -fx-alignment: center;
+}
+
+.card-badge {
+    -fx-background-color: -fx-primary;
+    -fx-text-fill: white;
+    -fx-padding: 5 15;
+    -fx-background-radius: 5px;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.main-button-onix {
+    -fx-background-color: -fx-primary;
+    -fx-text-fill: white;
+    -fx-padding: 12 35;
+    -fx-background-radius: 25px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.section-heading-onix {
+    -fx-font-size: 32px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #1e293b;
+}
+
+.section-tag-onix {
+    -fx-text-fill: -fx-primary;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-letter-spacing: 1px;
+}
+
+.view-all-link {
+    -fx-text-fill: -fx-primary;
+    -fx-font-weight: bold;
+    -fx-underline: false;
+}
+
+/* ── ScrollPane Styling ────────────────────────────────────── */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #cbd5e1;
+    -fx-background-radius: 10;
+}

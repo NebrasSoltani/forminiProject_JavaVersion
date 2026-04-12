@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+<ScrollPane fitToWidth="true" styleClass="scroll-pane" 
+          vbarPolicy="AS_NEEDED" hbarPolicy="NEVER"
+          xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+          fx:controller="tn.formini.controllers.frontend.HomeController"
+          style="-fx-background-color: #fdfdfd;">
+    
+    <VBox spacing="60" style="-fx-background-color: #fdfdfd;">
+        <padding><Insets top="40" right="60" bottom="60" left="60"/></padding>
+
+        <!-- Hero Section Inspired by Onix Digital -->
+        <VBox styleClass="hero-section" spacing="25" alignment="CENTER_LEFT">
+            <VBox spacing="10">
+                <Label text="Bienvenue sur Formini.tn" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-weight: bold; -fx-font-size: 18px;"/>
+                <TextFlow lineSpacing="5">
+                    <Text text="Formations " styleClass="hero-title"/>
+                    <Text text="certifiantes" styleClass="hero-title" style="-fx-fill: #ffa502; -fx-font-style: italic;"/>
+                    <Text text=" avec des " styleClass="hero-title"/>
+                    <Text text="experts" styleClass="hero-title" style="-fx-fill: #ffa502;"/>
+                </TextFlow>
+            </VBox>
+            
+            <Label text="Développez vos compétences avec des formateurs expérimentés et obtenez des certifications reconnues sur le marché tunisien." 
+                   styleClass="hero-subtitle" wrapText="true" maxWidth="650"/>
+            
+            <HBox spacing="20">
+                <Button text="Rejoindre Formini" styleClass="main-button-onix" style="-fx-background-color: #ff4b5c; -fx-padding: 15 40;"/>
+                <Button text="Nos Formations" styleClass="main-button-onix" style="-fx-padding: 15 40;"/>
+            </HBox>
+        </VBox>
+
+        <!-- Evenements Area -->
+        <VBox spacing="30">
+            <VBox spacing="5">
+                <Label text="Nos ÉVÉNEMENTS à venir" styleClass="section-tag-onix"/>
+                <Label text="Découvrez nos sessions interactives" styleClass="section-heading-onix"/>
+            </VBox>
+            <FlowPane fx:id="eventGrid" hgap="35" vgap="40" prefWrapLength="1100"/>
+        </VBox>
+
+        <!-- Removed Blogs Section per User Request -->
+    </VBox>
+</ScrollPane>

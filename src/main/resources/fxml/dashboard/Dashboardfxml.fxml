@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      spacing="20" alignment="CENTER"
+      style="-fx-padding: 40;">
+    <Label text="🏠 Bienvenue sur le Tableau de bord"
+           style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
+    <Label text="Sélectionnez une section dans le menu de gauche."
+           style="-fx-font-size: 16px; -fx-text-fill: #718096;"/>
+</VBox>

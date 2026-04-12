@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.evenement.EvenementFormController"
+      spacing="24" styleClass="content-area">
+
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <Button text="⬅" onAction="#goBack" styleClass="icon-btn"/>
+        <Label fx:id="labelFormTitle" text="Ajouter un Événement" styleClass="page-title"/>
+    </HBox>
+
+    <VBox styleClass="form-container" VBox.vgrow="ALWAYS" alignment="TOP_CENTER">
+        <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+            <GridPane hgap="30" vgap="20">
+                <padding><Insets bottom="30" left="30" right="30" top="30"/></padding>
+                <columnConstraints>
+                    <ColumnConstraints hgrow="ALWAYS" minWidth="300" />
+                    <ColumnConstraints hgrow="ALWAYS" minWidth="300" />
+                </columnConstraints>
+
+                <!-- Section: Informations de base -->
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="Titre de l'événement *" styleClass="form-label"/>
+                    <TextField fx:id="fieldTitre" styleClass="form-control" promptText="Saisissez le titre"/>
+                    <Label fx:id="errTitre" styleClass="error-label" visible="false"/>
+                </VBox>
+
+                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label text="Type *" styleClass="form-label"/>
+                    <ComboBox fx:id="fieldType" styleClass="form-control" maxWidth="Infinity" promptText="Type d'événement"/>
+                </VBox>
+
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
+                    <Label text="Description *" styleClass="form-label"/>
+                    <TextArea fx:id="fieldDescription" styleClass="form-control" prefHeight="120" promptText="Décrivez votre événement..." wrapText="true"/>
+                    <Label fx:id="errDescription" styleClass="error-label" visible="false"/>
+                </VBox>
+
+                <!-- Section: Détails temporels -->
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                    <Label text="Date de début *" styleClass="form-label"/>
+                    <DatePicker fx:id="fieldDateDebut" styleClass="form-control" maxWidth="Infinity"/>
+                    <Label fx:id="errDateDebut" styleClass="error-label" visible="false"/>
+                </VBox>
+                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                    <Label text="Date de fin *" styleClass="form-label"/>
+                    <DatePicker fx:id="fieldDateFin" styleClass="form-control" maxWidth="Infinity"/>
+                    <Label fx:id="errDateFin" styleClass="error-label" visible="false"/>
+                </VBox>
+
+                <!-- Lieu & Logistique -->
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                    <Label text="Lieu / Plateforme" styleClass="form-label"/>
+                    <TextField fx:id="fieldLieu" styleClass="form-control" promptText="Localisation"/>
+                </VBox>
+                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                    <Label text="Nombre de places" styleClass="form-label"/>
+                    <TextField fx:id="fieldNombrePlaces" styleClass="form-control" promptText="Capacité"/>
+                </VBox>
+
+                <!-- Multimédia -->
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="4">
+                    <Label text="Image principale" styleClass="form-label"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <TextField fx:id="fieldImage" styleClass="form-control" promptText="URL de l'image" HBox.hgrow="ALWAYS"/>
+                        <Button text="📁" onAction="#browseImage" styleClass="icon-btn"/>
+                    </HBox>
+                </VBox>
+                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                    <Label text="Image 360°" styleClass="form-label"/>
+                    <TextField fx:id="fieldImage360" styleClass="form-control" promptText="URL 360° (Optionnel)"/>
+                </VBox>
+
+                <!-- Statut & Options -->
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="5">
+                    <Label text="Lien du Stream (Live)" styleClass="form-label"/>
+                    <TextField fx:id="fieldStreamUrl" styleClass="form-control" promptText="Lien de diffusion"/>
+                </VBox>
+                <HBox spacing="30" GridPane.columnIndex="1" GridPane.rowIndex="5" alignment="CENTER_LEFT">
+                    <CheckBox fx:id="fieldIsActif" text="Actif" styleClass="form-label"/>
+                    <CheckBox fx:id="fieldLive" text="En direct (Live)" styleClass="form-label"/>
+                </HBox>
+
+                <!-- Catégorisation -->
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="6">
+                    <Label text="Tags" styleClass="form-label"/>
+                    <TextField fx:id="fieldTags" styleClass="form-control" promptText="Tags (séparés par des virgules)"/>
+                </VBox>
+                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                    <Label text="Filières" styleClass="form-label"/>
+                    <TextField fx:id="fieldFilieres" styleClass="form-control" promptText="Filières concernées"/>
+                </VBox>
+            </GridPane>
+        </ScrollPane>
+    </VBox>
+
+    <HBox spacing="20" alignment="CENTER_RIGHT">
+        <Button text="Annuler" onAction="#goBack" styleClass="btn-secondary" style="-fx-padding: 12 30;"/>
+        <Button fx:id="btnSave" text="🚀 Enregistrer l'événement" onAction="#saveEvenement" styleClass="btn-primary" style="-fx-padding: 12 40;"/>
+    </HBox>
+
+</VBox>

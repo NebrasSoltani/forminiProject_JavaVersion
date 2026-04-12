@@ -30,7 +30,8 @@ public class EvenementService implements service<Evenement> {
             ps.setTimestamp(4, e.getDate_fin() != null ? new Timestamp(e.getDate_fin().getTime()) : null);
             ps.setString(5, e.getLieu());
             ps.setString(6, e.getImage());
-            ps.setInt(7, e.getNombre_places());
+            if (e.getNombre_places() != null) ps.setInt(7, e.getNombre_places());
+            else ps.setNull(7, Types.INTEGER);
             ps.setBoolean(8, e.isIs_actif());
             ps.setString(9, e.getType());
             ps.setString(10, e.getFilieres());
@@ -67,7 +68,8 @@ public class EvenementService implements service<Evenement> {
             ps.setTimestamp(4, e.getDate_fin() != null ? new Timestamp(e.getDate_fin().getTime()) : null);
             ps.setString(5, e.getLieu());
             ps.setString(6, e.getImage());
-            ps.setInt(7, e.getNombre_places());
+            if (e.getNombre_places() != null) ps.setInt(7, e.getNombre_places());
+            else ps.setNull(7, Types.INTEGER);
             ps.setBoolean(8, e.isIs_actif());
             ps.setString(9, e.getType());
             ps.setString(10, e.getFilieres());
@@ -110,7 +112,7 @@ public class EvenementService implements service<Evenement> {
         List<Evenement> list = new ArrayList<>();
         if (cnx == null) return list;
 
-        String req = "SELECT * FROM evenement";
+        String req = "SELECT * FROM evenement ORDER BY id DESC";
         try {
             Statement ste = cnx.createStatement();
             ResultSet rs = ste.executeQuery(req);
@@ -123,7 +125,9 @@ public class EvenementService implements service<Evenement> {
                 e.setDate_fin(rs.getTimestamp("date_fin"));
                 e.setLieu(rs.getString("lieu"));
                 e.setImage(rs.getString("image"));
-                e.setNombre_places(rs.getInt("nombre_places"));
+                int nb = rs.getInt("nombre_places");
+                if (rs.wasNull()) e.setNombre_places(null);
+                else e.setNombre_places(nb);
                 e.setIs_actif(rs.getBoolean("is_actif"));
                 e.setType(rs.getString("type"));
                 e.setFilieres(rs.getString("filieres"));
@@ -141,6 +145,7 @@ public class EvenementService implements service<Evenement> {
         } catch (SQLException ex) {
             System.out.println("Erreur afficher : " + ex.getMessage());
         }
+        System.out.println("Service: " + list.size() + " événements récupérés du DB");
         return list;
     }
 }
