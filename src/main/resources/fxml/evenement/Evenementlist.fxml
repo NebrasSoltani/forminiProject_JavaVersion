@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.evenement.EvenementListController"
+      spacing="20" styleClass="content-area">
+
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <Label text="📅 Liste des Événements" styleClass="page-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="➕ Nouvel Événement" onAction="#goToAdd" styleClass="nav-btn-active"/>
+    </HBox>
+
+    <!-- Filters -->
+    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="topbar" style="-fx-background-radius: 10;">
+        <TextField fx:id="searchField" promptText="Rechercher par nom..." prefWidth="200"/>
+        <ComboBox fx:id="filterType" promptText="Type" prefWidth="150"/>
+        <CheckBox fx:id="filterLive" text="Live 🔴"/>
+        <CheckBox fx:id="filterActif" text="Actif"/>
+        <Button text="Réinitialiser" onAction="#resetFilters" styleClass="icon-btn"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="labelCount" text="0 événement(s)" styleClass="topbar-date"/>
+    </HBox>
+
+    <TableView fx:id="tableEvenements" VBox.vgrow="ALWAYS" styleClass="modern-table">
+        <columns>
+            <TableColumn fx:id="colType" text="Type" prefWidth="100" styleClass="cell-title"/>
+            <TableColumn fx:id="colTitre" text="Titre" prefWidth="400"/>
+            <TableColumn fx:id="colLieu" text="Lieu" prefWidth="180"/>
+            <TableColumn fx:id="colPlaces" text="Places" prefWidth="80"/>
+            <TableColumn fx:id="colStatus" text="Statut" prefWidth="100"/>
+            <TableColumn fx:id="colActions" text="Actions" prefWidth="120" styleClass="cell-actions"/>
+        </columns>
+    </TableView>
+
+    <HBox alignment="CENTER_RIGHT" spacing="10">
+        <Pagination fx:id="pagination" pageCount="10" maxPageIndicatorCount="5"/>
+    </HBox>
+
+</VBox>
