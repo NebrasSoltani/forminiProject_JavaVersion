@@ -247,3 +247,232 @@
     -fx-background-color: #cbd5e1;
     -fx-background-radius: 10;
 }
+
+/* ── Formulaires (admin / auth) ───────────────────────────── */
+.content-area {
+    -fx-background-color: transparent;
+}
+
+.page-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+.form-container {
+    -fx-background-color: transparent;
+}
+
+.form-group {
+    -fx-spacing: 6px;
+}
+
+.form-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #475569;
+}
+
+.form-control {
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1px;
+    -fx-background-color: #ffffff;
+    -fx-padding: 10px 12px;
+    -fx-font-size: 14px;
+}
+
+.form-control:focused {
+    -fx-border-color: -fx-primary;
+    -fx-effect: dropshadow(gaussian, rgba(105, 116, 232, 0.25), 8, 0, 0, 0);
+}
+
+.btn-primary {
+    -fx-background-color: -fx-primary;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 12px;
+    -fx-padding: 12px 28px;
+    -fx-cursor: hand;
+}
+
+.btn-primary:hover {
+    -fx-background-color: derive(-fx-primary, -8%);
+}
+
+.btn-secondary {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #475569;
+    -fx-font-weight: 600;
+    -fx-background-radius: 12px;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 12px 24px;
+    -fx-cursor: hand;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #e2e8f0;
+}
+
+.error-label {
+    -fx-text-fill: -fx-error;
+    -fx-font-size: 13px;
+}
+
+/* ── Page inscription (auth) ───────────────────────────────── */
+.signup-page {
+    -fx-background-color: linear-gradient(to bottom, #eef2ff 0%, #f8fafc 50%, #f1f5f9 100%);
+}
+
+.signup-column {
+    -fx-padding: 0;
+}
+
+.signup-hero {
+    -fx-padding: 0 4 0 4;
+}
+
+.signup-hero-kicker {
+    -fx-text-fill: -fx-primary;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 0.08em;
+}
+
+.signup-hero-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0f172a;
+}
+
+.signup-hero-sub {
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748b;
+    -fx-line-spacing: 2px;
+}
+
+.signup-alert {
+    -fx-background-color: #fff1f2;
+    -fx-background-radius: 12px;
+    -fx-border-color: #fecdd3;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 12px 16px;
+    -fx-text-fill: #be123c;
+    -fx-font-size: 13px;
+}
+
+.signup-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.08), 28, 0, 0, 6);
+}
+
+.signup-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-padding: 0;
+}
+
+.signup-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.signup-card-inner {
+    -fx-background-color: transparent;
+}
+
+.signup-section-kicker {
+    -fx-text-fill: -fx-primary;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 0.06em;
+}
+
+.signup-section-title {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+.signup-sep {
+    -fx-opacity: 0.85;
+}
+
+.signup-role-row {
+    -fx-padding: 0;
+}
+
+.signup-role-tile {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 14px;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 14px;
+    -fx-border-width: 1px;
+    -fx-padding: 14px 16px;
+    -fx-cursor: hand;
+}
+
+.signup-role-tile:hover {
+    -fx-border-color: #c7d2fe;
+    -fx-background-color: #f5f7ff;
+}
+
+.signup-role-tile-selected {
+    -fx-background-color: #eef2ff;
+    -fx-border-color: -fx-primary;
+    -fx-border-width: 2px;
+}
+
+.signup-role-radio {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+.signup-role-hint {
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748b;
+}
+
+.signup-grid {
+    -fx-background-color: transparent;
+}
+
+.signup-field {
+    -fx-min-height: 38px;
+}
+
+.signup-textarea {
+    -fx-min-height: 100px;
+}
+
+.signup-field-hint {
+    -fx-font-size: 12px;
+    -fx-text-fill: #94a3b8;
+}
+
+.signup-actions {
+    -fx-background-color: #fafbfc;
+    -fx-border-color: #f1f5f9;
+    -fx-border-width: 1px 0 0 0;
+    -fx-background-radius: 0 0 20 20;
+}
+
+.signup-btn-primary {
+    -fx-padding: 12px 32px;
+    -fx-font-size: 14px;
+}
+
+.signup-btn-secondary {
+    -fx-padding: 12px 24px;
+}
+
+.combo-box-base.signup-field,
+.date-picker.signup-field,
+.spinner.signup-field {
+    -fx-background-radius: 10px;
+}
