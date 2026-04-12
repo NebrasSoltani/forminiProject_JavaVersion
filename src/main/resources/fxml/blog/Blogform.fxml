@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.blog.BlogFormController"
+      spacing="24" styleClass="content-area">
+
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <Button text="⬅" onAction="#goBack" styleClass="icon-btn"/>
+        <Label fx:id="labelFormTitle" text="Ajouter un Blog" styleClass="page-title"/>
+    </HBox>
+
+    <VBox styleClass="form-container" VBox.vgrow="ALWAYS" alignment="TOP_CENTER">
+        <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+            <GridPane hgap="30" vgap="20">
+                <padding><Insets bottom="30" left="30" right="30" top="30"/></padding>
+                <columnConstraints>
+                    <ColumnConstraints hgrow="ALWAYS" minWidth="350" />
+                    <ColumnConstraints hgrow="ALWAYS" minWidth="250" />
+                </columnConstraints>
+
+                <!-- informations de base -->
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="Titre du Blog *" styleClass="form-label"/>
+                    <TextField fx:id="fieldTitre" styleClass="form-control" promptText="Saisissez le titre du blog"/>
+                    <Label fx:id="errTitre" styleClass="error-label" visible="false"/>
+                </VBox>
+
+                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label text="Catégorie *" styleClass="form-label"/>
+                    <ComboBox fx:id="fieldCategorie" styleClass="form-control" maxWidth="Infinity" promptText="Sujet"/>
+                    <Label fx:id="errCategorie" styleClass="error-label" visible="false"/>
+                </VBox>
+
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
+                    <Label text="Résumé" styleClass="form-label"/>
+                    <TextArea fx:id="fieldResume" styleClass="form-control" prefHeight="80" promptText="Court aperçu..." wrapText="true"/>
+                </VBox>
+
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
+                    <Label text="Contenu complet *" styleClass="form-label"/>
+                    <TextArea fx:id="fieldContenu" styleClass="form-control" prefHeight="250" promptText="Écrivez votre article ici..." wrapText="true"/>
+                    <Label fx:id="errContenu" styleClass="error-label" visible="false"/>
+                </VBox>
+
+                <!-- Media & Association -->
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                    <Label text="Image de couverture" styleClass="form-label"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <TextField fx:id="fieldImage" styleClass="form-control" promptText="URL de l'image" HBox.hgrow="ALWAYS"/>
+                        <Button text="📁" onAction="#browseImage" styleClass="icon-btn"/>
+                    </HBox>
+                </VBox>
+
+                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                    <Label text="Événement associé" styleClass="form-label"/>
+                    <ComboBox fx:id="fieldEvenement" styleClass="form-control" maxWidth="Infinity" promptText="Lier à un événement"/>
+                </VBox>
+
+                <!-- Tags & Publication -->
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="4">
+                    <Label text="Mots-clés (Tags)" styleClass="form-label"/>
+                    <TextField fx:id="fieldTags" styleClass="form-control" promptText="java, dev, formation..."/>
+                </VBox>
+
+                <HBox spacing="20" GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="CENTER_LEFT">
+                    <VBox styleClass="form-group" HBox.hgrow="ALWAYS">
+                        <Label text="Date" styleClass="form-label"/>
+                        <DatePicker fx:id="fieldDatePublication" styleClass="form-control" maxWidth="Infinity"/>
+                    </VBox>
+                    <CheckBox fx:id="fieldIsPublie" text="Publier" styleClass="form-label"/>
+                </HBox>
+            </GridPane>
+        </ScrollPane>
+    </VBox>
+
+    <HBox spacing="20" alignment="CENTER_RIGHT">
+        <Button text="Annuler" onAction="#goBack" styleClass="btn-secondary" style="-fx-padding: 12 30;"/>
+        <Button fx:id="btnSave" text="🚀 Enregistrer le Blog" onAction="#saveBlog" styleClass="btn-primary" style="-fx-padding: 12 40;"/>
+    </HBox>
+
+</VBox>

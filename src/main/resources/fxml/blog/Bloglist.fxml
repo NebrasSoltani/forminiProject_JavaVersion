@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.blog.BlogListController"
+      spacing="20" styleClass="content-area">
+
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <Label text="📝 Liste des Blogs" styleClass="page-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="➕ Nouveau Blog" onAction="#goToAdd" styleClass="nav-btn-active"/>
+    </HBox>
+
+    <!-- Filters -->
+    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="topbar" style="-fx-background-radius: 10;">
+        <TextField fx:id="searchField" promptText="Rechercher par titre..." prefWidth="250"/>
+        <ComboBox fx:id="filterCategorie" promptText="Catégorie"/>
+        <ComboBox fx:id="filterStatus" promptText="Statut"/>
+        <Button text="Réinitialiser" onAction="#resetFilters" styleClass="icon-btn"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="labelCount" text="0 blog(s)" styleClass="topbar-date"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll-pane" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-width: 0;">
+        <FlowPane fx:id="blogGrid" hgap="20" vgap="20" prefWrapLength="1000" style="-fx-padding: 10;"/>
+    </ScrollPane>
+
+    <HBox alignment="CENTER_RIGHT" spacing="10">
+        <Pagination fx:id="pagination" pageCount="10" maxPageIndicatorCount="5"/>
+    </HBox>
+
+</VBox>
