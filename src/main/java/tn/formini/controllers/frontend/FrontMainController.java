@@ -5,6 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.layout.StackPane;
+import tn.formini.controllers.auth.SignupController;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -29,6 +31,25 @@ public class FrontMainController implements Initializable {
     }
 
     @FXML public void showHome() { loadPage("/fxml/frontend/Home.fxml"); }
+
+    @FXML
+    public void showSignup() {
+        try {
+            URL resource = getClass().getResource("/fxml/auth/Signup.fxml");
+            if (resource == null) {
+                return;
+            }
+            FXMLLoader loader = new FXMLLoader(resource);
+            Parent root = loader.load();
+            SignupController c = loader.getController();
+            if (c != null) {
+                c.setOnBack(this::showHome);
+            }
+            contentArea.getChildren().setAll(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     @FXML public void showEvents() { loadPage("/fxml/evenement/EvenementlistFront.fxml"); }
 
     @FXML 
