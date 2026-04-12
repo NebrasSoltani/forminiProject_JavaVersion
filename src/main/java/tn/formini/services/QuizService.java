@@ -27,7 +27,8 @@ public class QuizService {
             ps.setInt(4, q.getNote_minimale());
             ps.setBoolean(5, q.isAfficher_correction());
             ps.setBoolean(6, q.isMelanger());
-            ps.setInt(7, q.getFormation().getId());
+            if (q.getFormation() != null) ps.setInt(7, q.getFormation().getId());
+            else ps.setNull(7, java.sql.Types.INTEGER);
             ps.executeUpdate();
             System.out.println("Quiz ajouté !");
         } catch (SQLException e) {
@@ -43,20 +44,41 @@ public class QuizService {
             Statement st = cnx.createStatement();
             ResultSet rs = st.executeQuery(req);
             while (rs.next()) {
-                Quiz q = new Quiz();
-                q.setId(rs.getInt("id"));
-                q.setTitre(rs.getString("titre"));
-                q.setDescription(rs.getString("description"));
-                q.setDuree(rs.getInt("duree"));
-                q.setNote_minimale(rs.getInt("note_minimale"));
-                q.setAfficher_correction(rs.getBoolean("afficher_correction"));
-                q.setMelanger(rs.getBoolean("melanger"));
-                list.add(q);
+                list.add(mapRow(rs));
             }
         } catch (SQLException e) {
             System.out.println("Erreur getAll quiz : " + e.getMessage());
         }
         return list;
+    }
+
+    // ─── READ BY FORMATION ────────────────────────────────────
+    public List<Quiz> findByFormation(int formationId) {
+        List<Quiz> list = new ArrayList<>();
+        String req = "SELECT * FROM quiz WHERE formation_id = ?";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(req);
+            ps.setInt(1, formationId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            System.out.println("Erreur findByFormation quiz : " + e.getMessage());
+        }
+        return list;
+    }
+
+    private Quiz mapRow(ResultSet rs) throws SQLException {
+        Quiz q = new Quiz();
+        q.setId(rs.getInt("id"));
+        q.setTitre(rs.getString("titre"));
+        q.setDescription(rs.getString("description"));
+        q.setDuree(rs.getInt("duree"));
+        q.setNote_minimale(rs.getInt("note_minimale"));
+        q.setAfficher_correction(rs.getBoolean("afficher_correction"));
+        q.setMelanger(rs.getBoolean("melanger"));
+        return q;
     }
 
     // ─── READ ONE ─────────────────────────────────────────────
