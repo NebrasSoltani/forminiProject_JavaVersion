@@ -108,4 +108,27 @@ public class UserService implements service<User> {
         }
         return list;
     }
+
+    /**
+     * Indique si un compte existe déjà pour cet email (comparaison insensible à la casse).
+     */
+    public boolean emailExists(String email) {
+        if (cnx == null || email == null) {
+            return false;
+        }
+        String trimmed = email.trim();
+        if (trimmed.isEmpty()) {
+            return false;
+        }
+        String req = "SELECT id FROM user WHERE LOWER(email) = LOWER(?) LIMIT 1";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(req);
+            ps.setString(1, trimmed);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException ex) {
+            System.out.println("Erreur emailExists : " + ex.getMessage());
+            return false;
+        }
+    }
 }
