@@ -20,7 +20,7 @@
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
-            <version>8.0.33</version> <!-- Changé : version plus stable -->
+            <version>8.4.0</version> <!-- Updated to fix CVE vulnerabilities -->
         </dependency>
 
         <!-- JavaFX Dependencies (sans classifier win) -->
@@ -96,10 +96,10 @@
                 <version>3.3.0</version>
                 <configuration>
                     <mainClass>tn.formini.mains.SignupLauncher</mainClass>
-                    <jvmArgs>
-                        <jvmArg>--enable-native-access=ALL-UNNAMED</jvmArg>
-                        <jvmArg>--sun-misc-unsafe-memory-access=allow</jvmArg>
-                    </jvmArgs>
+                    <arguments>
+                        <argument>--enable-native-access=ALL-UNNAMED</argument>
+                        <argument>--sun-misc-unsafe-memory-access=allow</argument>
+                    </arguments>
                 </configuration>
             </plugin>
 
