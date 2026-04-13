@@ -12,6 +12,7 @@ import tn.formini.controllers.blog.BlogFormController;
 import tn.formini.controllers.blog.BlogListController;
 import tn.formini.controllers.evenement.EvenementFormController;
 import tn.formini.controllers.evenement.EvenementListController;
+import tn.formini.controllers.produits.ProduitFormController;
 
 import java.io.IOException;
 import java.net.URL;
@@ -34,6 +35,8 @@ public class MainController implements Initializable {
     @FXML private Button btnBlogAdd;
     @FXML private Button btnEventList;
     @FXML private Button btnEventAdd;
+    @FXML private Button btnProductList;
+    @FXML private Button btnProductAdd;
 
     private List<Button> navButtons;
 
@@ -42,7 +45,7 @@ public class MainController implements Initializable {
         labelDate.setText(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
         );
-        navButtons = Arrays.asList(btnDashboard, btnBlogList, btnBlogAdd, btnEventList, btnEventAdd);
+        navButtons = Arrays.asList(btnDashboard, btnBlogList, btnBlogAdd, btnEventList, btnEventAdd, btnProductList, btnProductAdd);
         showDashboard();
     }
 
@@ -148,6 +151,32 @@ public class MainController implements Initializable {
             controller.setMainController(this);
             if (blog != null) {
                 controller.setBlog(blog);
+            }
+        }
+    }
+
+    // ── Product Management ─────────────────────────────────────
+
+    @FXML
+    public void showProductList() {
+        labelPageTitle.setText("Liste des Produits");
+        loadPage("/fxml/produits/ProduitList.fxml");
+        updateActiveButton(btnProductList);
+    }
+
+    @FXML
+    public void showProductAdd() {
+        showProductForm(null);
+    }
+
+    public void showProductForm(tn.formini.entities.produits.Produit produit) {
+        updateActiveButton(btnProductAdd);
+        labelPageTitle.setText(produit == null ? "Nouveau Produit" : "Modifier le Produit");
+        ProduitFormController controller = (ProduitFormController) loadPage("/fxml/produits/ProduitForm.fxml");
+        if (controller != null) {
+            controller.setMainController(this);
+            if (produit != null) {
+                controller.setProduit(produit);
             }
         }
     }
