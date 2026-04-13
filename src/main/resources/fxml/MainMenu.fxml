@@ -44,11 +44,13 @@
                 <Button fx:id="btnDashboard" text="🏠  Tableau de bord" onAction="#showDashboard" styleClass="nav-sub" maxWidth="Infinity"/>
                 <Button fx:id="btnBlogList" text="📝  Gestion des Blogs" onAction="#showBlogList" styleClass="nav-sub" maxWidth="Infinity"/>
                 <Button fx:id="btnEventList" text="📅  Gestion des Événements" onAction="#showEventList" styleClass="nav-sub" maxWidth="Infinity"/>
+                <Button fx:id="btnProductList" text="🛍️  Gestion des Produits" onAction="#showProductList" styleClass="nav-sub" maxWidth="Infinity"/>
                 
                 <Region prefHeight="30"/>
                 <Label text="ACTIONS RAPIDES" style="-fx-font-size: 11px; -fx-text-fill: #64748b; -fx-font-weight: bold; -fx-padding: 0 0 10 10;"/>
                 <Button fx:id="btnBlogAdd" text="➕  Nouveau Blog" onAction="#showBlogAdd" styleClass="nav-sub" maxWidth="Infinity"/>
                 <Button fx:id="btnEventAdd" text="➕  Nouvel Événement" onAction="#showEventAdd" styleClass="nav-sub" maxWidth="Infinity"/>
+                <Button fx:id="btnProductAdd" text="➕  Nouveau Produit" onAction="#showProductAdd" styleClass="nav-sub" maxWidth="Infinity"/>
             </VBox>
 
             <!-- Bottom Navigation Actions -->
