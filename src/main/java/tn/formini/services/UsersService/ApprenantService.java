@@ -203,6 +203,40 @@ public class ApprenantService implements service<Apprenant> {
         return list;
     }
 
+    public Apprenant findByUserId(int userId) {
+        if (cnx == null || userId <= 0) {
+            return null;
+        }
+
+        String req = "SELECT * FROM apprenant WHERE user_id = ? LIMIT 1";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(req);
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Apprenant a = new Apprenant();
+                a.setId(rs.getInt("id"));
+                a.setGenre(rs.getString("genre"));
+                a.setEtat_civil(rs.getString("etat_civil"));
+                a.setObjectif(rs.getString("objectif"));
+                a.setDomaines_interet(rs.getString("domaines_interet"));
+
+                User user = getUserById(userId);
+                a.setUser(user);
+
+                int domaineId = rs.getInt("domaine_id");
+                if (!rs.wasNull()) {
+                    Domaine domaine = getDomaineById(domaineId);
+                    a.setDomaine(domaine);
+                }
+                return a;
+            }
+        } catch (SQLException ex) {
+            System.out.println("Erreur findByUserId apprenant : " + ex.getMessage());
+        }
+        return null;
+    }
+
     private User getUserById(int userId) {
 
 
