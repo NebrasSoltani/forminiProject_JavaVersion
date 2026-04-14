@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.produit.ProduitEditFormController"
+      spacing="24" styleClass="content-area">
+
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <Button text="×" onAction="#close" styleClass="icon-btn"/>
+        <Label fx:id="labelFormTitle" text="Modifier un Produit" styleClass="page-title"/>
+    </HBox>
+
+    <VBox styleClass="form-container" VBox.vgrow="ALWAYS" alignment="TOP_CENTER">
+        <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+            <GridPane hgap="30" vgap="20">
+                <padding><Insets bottom="30" left="30" right="30" top="30"/></padding>
+                <columnConstraints>
+                    <ColumnConstraints hgrow="ALWAYS" minWidth="300" />
+                    <ColumnConstraints hgrow="ALWAYS" minWidth="300" />
+                </columnConstraints>
+
+                <!-- Product ID (Read-only) -->
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="ID Produit" styleClass="form-label"/>
+                    <TextField fx:id="fieldId" styleClass="form-control" editable="false" style="-fx-opacity: 0.7;"/>
+                </VBox>
+
+                <!-- Section: Informations de base -->
+                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label text="Nom du produit *" styleClass="form-label"/>
+                    <TextField fx:id="fieldNom" styleClass="form-control" promptText="Saisissez le nom du produit"/>
+                    <Label fx:id="errNom" styleClass="error-label" visible="false"/>
+                </VBox>
+
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <Label text="Catégorie *" styleClass="form-label"/>
+                    <ComboBox fx:id="fieldCategorie" styleClass="form-control" maxWidth="Infinity" promptText="Sélectionnez une catégorie"/>
+                    <Label fx:id="errCategorie" styleClass="error-label" visible="false"/>
+                </VBox>
+
+                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <Label text="Statut *" styleClass="form-label"/>
+                    <ComboBox fx:id="fieldStatut" styleClass="form-control" maxWidth="Infinity" promptText="Sélectionnez le statut"/>
+                    <Label fx:id="errStatut" styleClass="error-label" visible="false"/>
+                </VBox>
+
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
+                    <Label text="Description *" styleClass="form-label"/>
+                    <TextArea fx:id="fieldDescription" styleClass="form-control" prefHeight="120" promptText="Décrivez le produit en détail..." wrapText="true"/>
+                    <Label fx:id="errDescription" styleClass="error-label" visible="false"/>
+                </VBox>
+
+                <!-- Section: Prix et Stock -->
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                    <Label text="Prix (DT) *" styleClass="form-label"/>
+                    <TextField fx:id="fieldPrix" styleClass="form-control" promptText="0.000"/>
+                    <Label fx:id="errPrix" styleClass="error-label" visible="false"/>
+                </VBox>
+
+                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                    <Label text="Quantité en stock *" styleClass="form-label"/>
+                    <TextField fx:id="fieldStock" styleClass="form-control" promptText="0"/>
+                    <Label fx:id="errStock" styleClass="error-label" visible="false"/>
+                </VBox>
+
+                <!-- Section: Date de création (Read-only) -->
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="4">
+                    <Label text="Date de création" styleClass="form-label"/>
+                    <DatePicker fx:id="fieldDateCreation" styleClass="form-control" maxWidth="Infinity" editable="false" style="-fx-opacity: 0.7;"/>
+                </VBox>
+
+                <!-- Section: Image -->
+                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                    <Label text="URL de l'image" styleClass="form-label"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <TextField fx:id="fieldImage" styleClass="form-control" promptText="URL de l'image du produit" HBox.hgrow="ALWAYS"/>
+                        <Button text="Aperçu" onAction="#previewImage" styleClass="btn-secondary"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Section: Validation Summary -->
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.columnSpan="2">
+                    <Label fx:id="validationSummary" styleClass="error-label" visible="false" wrapText="true"/>
+                </VBox>
+
+                <!-- Action Buttons -->
+                <HBox spacing="15" alignment="CENTER_LEFT" GridPane.columnIndex="0" GridPane.rowIndex="6" GridPane.columnSpan="2">
+                    <Button text="Réinitialiser" onAction="#resetForm" styleClass="btn-secondary"/>
+                    <Button text="Dupliquer" onAction="#duplicateProduct" styleClass="btn-info"/>
+                    <Button text="Supprimer" onAction="#deleteProduct" styleClass="btn-danger"/>
+                </HBox>
+            </GridPane>
+        </ScrollPane>
+    </VBox>
+
+    <HBox spacing="20" alignment="CENTER_RIGHT">
+        <Button text="Annuler" onAction="#close" styleClass="btn-secondary" style="-fx-padding: 12 30;"/>
+        <Button fx:id="btnSave" text="Mettre à jour" onAction="#updateProduit" styleClass="btn-primary" style="-fx-padding: 12 40;"/>
+    </HBox>
+
+</VBox>
