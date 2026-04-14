@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="tn.formini.controllers.auth.LoginController"
+           styleClass="login-page"
+           minHeight="400">
+
+    <VBox alignment="TOP_CENTER" spacing="0" StackPane.alignment="TOP_CENTER">
+        <padding><Insets top="28" right="24" bottom="28" left="24"/></padding>
+
+        <VBox maxWidth="720" spacing="20" alignment="TOP_CENTER" styleClass="login-column">
+
+            <!-- En-tête -->
+            <VBox spacing="8" alignment="CENTER_LEFT" styleClass="login-hero">
+                <Label text="Connexion" styleClass="login-hero-kicker"/>
+                <Label text="Bienvenue sur Formini" styleClass="login-hero-title"/>
+                <Label text="Connectez-vous à votre compte pour accéder à vos formations et contenus."
+                       wrapText="true" styleClass="login-hero-sub" maxWidth="680"/>
+            </VBox>
+
+            <Label fx:id="lblMessage" styleClass="login-alert" wrapText="true" maxWidth="680" visible="false" managed="false"/>
+
+            <!-- Carte formulaire -->
+            <VBox styleClass="login-card" spacing="0" VBox.vgrow="ALWAYS">
+                <VBox spacing="28" styleClass="login-card-inner">
+                    <padding><Insets top="28" right="28" bottom="28" left="28"/></padding>
+
+                    <!-- Formulaire de connexion -->
+                    <VBox spacing="20">
+                        <VBox spacing="4">
+                            <Label text="Identifiants" styleClass="login-section-kicker"/>
+                            <Label text="Entrez vos informations de connexion" styleClass="login-section-title"/>
+                        </VBox>
+
+                        <GridPane hgap="18" vgap="18" styleClass="login-grid">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="140" percentWidth="100"/>
+                            </columnConstraints>
+
+                            <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <Label text="Email *" styleClass="form-label"/>
+                                <TextField fx:id="fieldEmail" styleClass="form-control login-field" promptText="vous@exemple.tn"/>
+                                <Label fx:id="errorEmail" styleClass="error-label" text="" visible="false" managed="false"/>
+                            </VBox>
+
+                            <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                <Label text="Mot de passe *" styleClass="form-label"/>
+                                <HBox spacing="8" alignment="CENTER_RIGHT">
+                                    <PasswordField fx:id="fieldPassword" styleClass="form-control login-field" promptText="Votre mot de passe" HBox.hgrow="ALWAYS"/>
+                                    <Button fx:id="btnTogglePassword" styleClass="btn-toggle-password-icon" onAction="#onTogglePassword">
+                                        <graphic>
+                                            <StackPane>
+                                                <Label fx:id="eyeIcon" text="&#x1F441;" styleClass="icon-eye"/>
+                                                <Label fx:id="eyeSlashIcon" text="&#x1F441;&#x200D;&#x1F5E8;" styleClass="icon-eye-slash" visible="false" managed="false"/>
+                                            </StackPane>
+                                        </graphic>
+                                    </Button>
+                                </HBox>
+                                <Label fx:id="errorPassword" styleClass="error-label" text="" visible="false" managed="false"/>
+                            </VBox>
+                        </GridPane>
+
+                        <!-- Options supplémentaires -->
+                        <HBox spacing="14" alignment="CENTER_LEFT">
+                            <CheckBox fx:id="cbRememberMe" text="Se souvenir de moi" styleClass="login-checkbox"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button fx:id="btnForgotPassword" text="Mot de passe oublié ?" styleClass="login-link" onAction="#onForgotPassword"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Séparateur -->
+                    <Separator styleClass="login-sep"/>
+
+                    <!-- Boutons d'action -->
+                    <VBox spacing="14">
+                        <Button fx:id="btnLogin" text="Se connecter" onAction="#onLogin" styleClass="btn-primary login-btn-primary" maxWidth="Infinity"/>
+                        
+                        <HBox spacing="14" alignment="CENTER">
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="Pas encore de compte ?" styleClass="login-text"/>
+                            <Button fx:id="btnSignup" text="S'inscrire" styleClass="login-link" onAction="#onSignup"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+            </VBox>
+        </VBox>
+    </VBox>
+</StackPane>

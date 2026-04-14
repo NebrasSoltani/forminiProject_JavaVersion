@@ -7,6 +7,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import java.util.regex.Pattern;
 import tn.formini.entities.Users.Apprenant;
 import tn.formini.entities.Users.Formateur;
@@ -36,6 +39,15 @@ public class SignupController implements Initializable {
     @FXML private TextField fieldTelephone;
     @FXML private PasswordField fieldPassword;
     @FXML private PasswordField fieldPasswordConfirm;
+    @FXML private Button btnTogglePassword;
+    @FXML private Button btnTogglePasswordConfirm;
+    @FXML private Button btnGoToLogin;
+    @FXML private Button btnUploadCv;
+    @FXML private Label lblCvFileName;
+    @FXML private Label eyeIcon;
+    @FXML private Label eyeSlashIcon;
+    @FXML private Label eyeIconConfirm;
+    @FXML private Label eyeSlashIconConfirm;
     @FXML private TextField fieldNom;
     @FXML private TextField fieldPrenom;
     @FXML private TextField fieldGouvernorat;
@@ -63,6 +75,7 @@ public class SignupController implements Initializable {
 
     private final SignupService signupService = new SignupService();
     private ToggleGroup roleGroup;
+    private java.io.File uploadedCvFile;
 
     public void setOnBack(Runnable onBack) {
         this.onBack = onBack;
@@ -203,6 +216,125 @@ public class SignupController implements Initializable {
         }
         String t = s.trim();
         return t.isEmpty() ? null : t;
+    }
+
+    @FXML
+    private void onTogglePassword() {
+        togglePasswordField(fieldPassword, btnTogglePassword);
+    }
+
+    @FXML
+    private void onTogglePasswordConfirm() {
+        togglePasswordField(fieldPasswordConfirm, btnTogglePasswordConfirm);
+    }
+
+    private void togglePasswordField(javafx.scene.control.PasswordField passwordField, Button toggleButton) {
+        HBox parent = (HBox) toggleButton.getParent();
+        
+        // Find current password field (either PasswordField or TextField)
+        javafx.scene.control.TextInputControl currentField = null;
+        int fieldIndex = -1;
+        
+        for (int i = 0; i < parent.getChildren().size(); i++) {
+            javafx.scene.Node node = parent.getChildren().get(i);
+            if ((node instanceof PasswordField || node instanceof TextField) && !node.equals(toggleButton)) {
+                currentField = (javafx.scene.control.TextInputControl) node;
+                fieldIndex = i;
+                break;
+            }
+        }
+        
+        if (currentField == null) return;
+        
+        if (currentField instanceof PasswordField currentPasswordField) {
+            // Show plain text while keeping bidirectional sync with injected field.
+            TextField visiblePassword = new TextField();
+            visiblePassword.setPromptText(currentPasswordField.getPromptText());
+            visiblePassword.getStyleClass().addAll(currentPasswordField.getStyleClass());
+            visiblePassword.setStyle(currentPasswordField.getStyle());
+            visiblePassword.textProperty().bindBidirectional(currentPasswordField.textProperty());
+
+            parent.getChildren().set(fieldIndex, visiblePassword);
+
+            if (toggleButton == btnTogglePassword) {
+                eyeIcon.setVisible(false);
+                eyeIcon.setManaged(false);
+                eyeSlashIcon.setVisible(true);
+                eyeSlashIcon.setManaged(true);
+            } else if (toggleButton == btnTogglePasswordConfirm) {
+                eyeIconConfirm.setVisible(false);
+                eyeIconConfirm.setManaged(false);
+                eyeSlashIconConfirm.setVisible(true);
+                eyeSlashIconConfirm.setManaged(true);
+            }
+        } else if (currentField instanceof TextField visiblePasswordField) {
+            // Restore the original injected PasswordField to keep listeners/validation stable.
+            PasswordField targetField = toggleButton == btnTogglePassword ? fieldPassword : fieldPasswordConfirm;
+            if (targetField == null) {
+                return;
+            }
+
+            visiblePasswordField.textProperty().unbindBidirectional(targetField.textProperty());
+            targetField.setPromptText(visiblePasswordField.getPromptText());
+            targetField.getStyleClass().setAll(visiblePasswordField.getStyleClass());
+            targetField.setStyle(visiblePasswordField.getStyle());
+            parent.getChildren().set(fieldIndex, targetField);
+
+            if (toggleButton == btnTogglePassword) {
+                eyeIcon.setVisible(true);
+                eyeIcon.setManaged(true);
+                eyeSlashIcon.setVisible(false);
+                eyeSlashIcon.setManaged(false);
+            } else if (toggleButton == btnTogglePasswordConfirm) {
+                eyeIconConfirm.setVisible(true);
+                eyeIconConfirm.setManaged(true);
+                eyeSlashIconConfirm.setVisible(false);
+                eyeSlashIconConfirm.setManaged(false);
+            }
+        }
+    }
+
+    @FXML
+    private void onUploadCv() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choisir un fichier CV");
+        
+        // Set extension filters
+        FileChooser.ExtensionFilter pdfFilter = new FileChooser.ExtensionFilter("Fichiers PDF", "*.pdf");
+        FileChooser.ExtensionFilter docFilter = new FileChooser.ExtensionFilter("Documents Word", "*.doc", "*.docx");
+        FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("Tous les fichiers", "*.*");
+        
+        fileChooser.getExtensionFilters().addAll(pdfFilter, docFilter, allFilter);
+        fileChooser.setSelectedExtensionFilter(pdfFilter);
+        
+        // Show open dialog
+        Stage stage = (Stage) btnUploadCv.getScene().getWindow();
+        java.io.File selectedFile = fileChooser.showOpenDialog(stage);
+        
+        if (selectedFile != null) {
+            uploadedCvFile = selectedFile;
+            lblCvFileName.setText(selectedFile.getName());
+            fieldCv.setText(selectedFile.getAbsolutePath());
+            
+            // Optional: You could copy the file to a specific uploads directory
+            // For now, we'll just store the reference
+        }
+    }
+
+    @FXML
+    private void onGoToLogin() {
+        try {
+            tn.formini.mains.LoginApp loginApp = new tn.formini.mains.LoginApp();
+            Stage loginStage = new Stage();
+            loginApp.start(loginStage);
+            
+            // Close current signup window
+            if (onBack != null) {
+                onBack.run();
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur lors de l'ouverture de la page de connexion: " + e.getMessage());
+        }
     }
 
     @FXML
