@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.QuizController"
+      spacing="25" style="-fx-background-color: #f8fafc; -fx-padding: 30;">
+
+    <!-- Header Area -->
+    <HBox alignment="CENTER_LEFT">
+        <VBox spacing="5">
+            <Label text="Gestion des Quiz" style="-fx-font-size: 26px; -fx-font-weight: 900; -fx-text-fill: #1e293b;"/>
+            <Label text="Administrez les quiz et l'évaluation des apprenants" style="-fx-font-size: 14px; -fx-text-fill: #64748b;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="+ Nouveau Quiz" onAction="#ouvrirFormAjout"
+                styleClass="main-button-onix"/>
+    </HBox>
+
+    <!-- Card UI Container -->
+    <VBox VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 20px; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 15, 0, 0, 5);">
+        
+        <!-- Search bar -->
+        <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 0 0 20 0;">
+            <TextField fx:id="searchField" promptText="🔍 Rechercher un quiz..."
+                       onKeyReleased="#filtrerQuiz"
+                       prefWidth="350"
+                       style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-prompt-text-fill: #94a3b8; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
+        </HBox>
+
+        <!-- Table -->
+        <TableView fx:id="tableQuiz" VBox.vgrow="ALWAYS" styleClass="modern-table">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+                <TableColumn fx:id="colTitre" text="Titre" prefWidth="250"/>
+                <TableColumn fx:id="colDescription" text="Description" prefWidth="280"/>
+                <TableColumn fx:id="colDuree" text="Durée (min)" prefWidth="100"/>
+                <TableColumn fx:id="colNote" text="Note min" prefWidth="80"/>
+                <TableColumn fx:id="colMelanger" text="Mélanger" prefWidth="80"/>
+                <TableColumn fx:id="colActions" text="Actions" prefWidth="150"/>
+            </columns>
+            <placeholder>
+                <Label text="Aucun quiz trouvé." style="-fx-text-fill: #94a3b8; -fx-font-size: 14px;"/>
+            </placeholder>
+        </TableView>
+    </VBox>
+
+</VBox>
