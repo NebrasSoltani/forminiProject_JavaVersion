@@ -131,4 +131,38 @@ public class UserService implements service<User> {
             return false;
         }
     }
+
+    public User findById(int id) {
+        if (cnx == null || id <= 0) {
+            return null;
+        }
+        String req = "SELECT * FROM user WHERE id = ?";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(req);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                User u = new User();
+                u.setId(rs.getInt("id"));
+                u.setEmail(rs.getString("email"));
+                u.setRoles(rs.getString("roles"));
+                u.setPassword(rs.getString("password"));
+                u.setNom(rs.getString("nom"));
+                u.setPrenom(rs.getString("prenom"));
+                u.setTelephone(rs.getString("telephone"));
+                u.setGouvernorat(rs.getString("gouvernorat"));
+                Timestamp naissance = rs.getTimestamp("date_naissance");
+                if (naissance != null) {
+                    u.setDate_naissance(new java.util.Date(naissance.getTime()));
+                }
+                u.setRole_utilisateur(rs.getString("role_utilisateur"));
+                u.setPhoto(rs.getString("photo"));
+                u.setIs_email_verified(rs.getBoolean("is_email_verified"));
+                return u;
+            }
+        } catch (SQLException ex) {
+            System.out.println("Erreur findById user : " + ex.getMessage());
+        }
+        return null;
+    }
 }

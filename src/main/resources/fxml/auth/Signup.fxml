@@ -74,12 +74,32 @@
 
                                 <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="1">
                                     <Label text="Mot de passe *" styleClass="form-label"/>
-                                    <PasswordField fx:id="fieldPassword" styleClass="form-control signup-field" promptText="8+ caractères, maj., min., chiffre"/>
+                                    <HBox spacing="8" alignment="CENTER_RIGHT">
+                                        <PasswordField fx:id="fieldPassword" styleClass="form-control signup-field" promptText="8+ caractères, maj., min., chiffre" HBox.hgrow="ALWAYS"/>
+                                        <Button fx:id="btnTogglePassword" styleClass="btn-toggle-password-icon" onAction="#onTogglePassword">
+                                            <graphic>
+                                                <StackPane>
+                                                    <Label fx:id="eyeIcon" text="&#x1F441;" styleClass="icon-eye"/>
+                                                    <Label fx:id="eyeSlashIcon" text="&#x1F441;&#x200D;&#x1F5E8;" styleClass="icon-eye-slash" visible="false" managed="false"/>
+                                                </StackPane>
+                                            </graphic>
+                                        </Button>
+                                    </HBox>
                                     <Label fx:id="errorPassword" styleClass="error-label" text="" visible="false" managed="false"/>
                                 </VBox>
                                 <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                     <Label text="Confirmer *" styleClass="form-label"/>
-                                    <PasswordField fx:id="fieldPasswordConfirm" styleClass="form-control signup-field" promptText="Même mot de passe"/>
+                                    <HBox spacing="8" alignment="CENTER_RIGHT">
+                                        <PasswordField fx:id="fieldPasswordConfirm" styleClass="form-control signup-field" promptText="Même mot de passe" HBox.hgrow="ALWAYS"/>
+                                        <Button fx:id="btnTogglePasswordConfirm" styleClass="btn-toggle-password-icon" onAction="#onTogglePasswordConfirm">
+                                            <graphic>
+                                                <StackPane>
+                                                    <Label fx:id="eyeIconConfirm" text="&#x1F441;" styleClass="icon-eye"/>
+                                                    <Label fx:id="eyeSlashIconConfirm" text="&#x1F441;&#x200D;&#x1F5E8;" styleClass="icon-eye-off" visible="false" managed="false"/>
+                                                </StackPane>
+                                            </graphic>
+                                        </Button>
+                                    </HBox>
                                     <Label fx:id="errorPasswordConfirm" styleClass="error-label" text="" visible="false" managed="false"/>
                                 </VBox>
 
@@ -173,14 +193,27 @@
                                         <TextField fx:id="fieldPortfolio" styleClass="form-control signup-field" promptText="https://…"/>
                                     </VBox>
                                     <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                                        <Label text="CV (URL)" styleClass="form-label"/>
-                                        <TextField fx:id="fieldCv" styleClass="form-control signup-field" promptText="Lien vers PDF ou page"/>
+                                        <Label text="CV" styleClass="form-label"/>
+                                        <VBox spacing="8">
+                                            <HBox spacing="8" alignment="CENTER_LEFT">
+                                                <Button fx:id="btnUploadCv" text="Choisir un fichier" styleClass="btn-secondary signup-btn-upload" onAction="#onUploadCv"/>
+                                                <Label fx:id="lblCvFileName" text="Aucun fichier sélectionné" styleClass="signup-file-name"/>
+                                            </HBox>
+                                            <TextField fx:id="fieldCv" styleClass="form-control signup-field" promptText="Ou lien vers PDF/page web"/>
+                                        </VBox>
                                     </VBox>
                                 </GridPane>
                             </VBox>
                         </StackPane>
                     </VBox>
                 </ScrollPane>
+
+                <!-- Navigation vers connexion -->
+                <HBox spacing="14" alignment="CENTER" styleClass="signup-nav">
+                    <padding><Insets top="8" right="24" bottom="8" left="24"/></padding>
+                    <Label text="Déjà un compte ?" styleClass="signup-nav-text"/>
+                    <Button fx:id="btnGoToLogin" text="Se connecter" styleClass="signup-nav-link" onAction="#onGoToLogin"/>
+                </HBox>
 
                 <!-- Pied de carte : actions -->
                 <HBox spacing="14" alignment="CENTER_RIGHT" styleClass="signup-actions">

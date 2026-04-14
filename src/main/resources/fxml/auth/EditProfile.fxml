@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.auth.EditProfileController"
+      spacing="18"
+      styleClass="signup-column">
+
+    <padding>
+        <Insets top="24" right="24" bottom="24" left="24"/>
+    </padding>
+
+    <Label text="Modifier Mon Profil" styleClass="signup-section-title"/>
+    <Label fx:id="lblRole" styleClass="signup-field-hint"/>
+    <Label fx:id="lblMessage" styleClass="signup-alert" visible="false" managed="false" wrapText="true"/>
+
+    <VBox spacing="12" styleClass="signup-card">
+        <padding>
+            <Insets top="16" right="16" bottom="16" left="16"/>
+        </padding>
+
+        <Label text="Informations générales" styleClass="signup-section-kicker"/>
+        <GridPane hgap="14" vgap="12">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+            </columnConstraints>
+
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" spacing="4">
+                <Label text="Email" styleClass="form-label"/>
+                <TextField fx:id="fieldEmail" styleClass="form-control signup-field"/>
+            </VBox>
+            <VBox GridPane.columnIndex="1" GridPane.rowIndex="0" spacing="4">
+                <Label text="Téléphone" styleClass="form-label"/>
+                <TextField fx:id="fieldTelephone" styleClass="form-control signup-field"/>
+            </VBox>
+
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="1" spacing="4">
+                <Label text="Nom" styleClass="form-label"/>
+                <TextField fx:id="fieldNom" styleClass="form-control signup-field"/>
+            </VBox>
+            <VBox GridPane.columnIndex="1" GridPane.rowIndex="1" spacing="4">
+                <Label text="Prénom" styleClass="form-label"/>
+                <TextField fx:id="fieldPrenom" styleClass="form-control signup-field"/>
+            </VBox>
+
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="2" spacing="4">
+                <Label text="Gouvernorat" styleClass="form-label"/>
+                <TextField fx:id="fieldGouvernorat" styleClass="form-control signup-field"/>
+            </VBox>
+            <VBox GridPane.columnIndex="1" GridPane.rowIndex="2" spacing="4">
+                <Label text="Date de naissance" styleClass="form-label"/>
+                <DatePicker fx:id="fieldDateNaissance" styleClass="form-control signup-field" maxWidth="Infinity"/>
+            </VBox>
+        </GridPane>
+    </VBox>
+
+    <VBox fx:id="apprenantSection" spacing="12" styleClass="signup-card">
+        <padding>
+            <Insets top="16" right="16" bottom="16" left="16"/>
+        </padding>
+
+        <Label text="Profil apprenant" styleClass="signup-section-kicker"/>
+        <GridPane hgap="14" vgap="12">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+            </columnConstraints>
+
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" spacing="4">
+                <Label text="Genre" styleClass="form-label"/>
+                <ComboBox fx:id="comboGenre" styleClass="form-control signup-field" maxWidth="Infinity"/>
+            </VBox>
+            <VBox GridPane.columnIndex="1" GridPane.rowIndex="0" spacing="4">
+                <Label text="Etat civil" styleClass="form-label"/>
+                <ComboBox fx:id="comboEtatCivil" styleClass="form-control signup-field" maxWidth="Infinity"/>
+            </VBox>
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2" spacing="4">
+                <Label text="Objectif" styleClass="form-label"/>
+                <TextField fx:id="fieldObjectif" styleClass="form-control signup-field"/>
+            </VBox>
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2" spacing="4">
+                <Label text="Domaines d'intérêt (JSON)" styleClass="form-label"/>
+                <TextField fx:id="fieldDomainesInteret" styleClass="form-control signup-field"/>
+            </VBox>
+        </GridPane>
+    </VBox>
+
+    <VBox fx:id="formateurSection" spacing="12" styleClass="signup-card">
+        <padding>
+            <Insets top="16" right="16" bottom="16" left="16"/>
+        </padding>
+
+        <Label text="Profil formateur" styleClass="signup-section-kicker"/>
+        <GridPane hgap="14" vgap="12">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+            </columnConstraints>
+
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2" spacing="4">
+                <Label text="Spécialité" styleClass="form-label"/>
+                <TextField fx:id="fieldSpecialite" styleClass="form-control signup-field"/>
+            </VBox>
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2" spacing="4">
+                <Label text="Bio" styleClass="form-label"/>
+                <TextArea fx:id="fieldBio" styleClass="form-control signup-field" prefRowCount="3"/>
+            </VBox>
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="2" spacing="4">
+                <Label text="Expérience (années)" styleClass="form-label"/>
+                <Spinner fx:id="spinnerExperience" styleClass="form-control signup-field" maxWidth="Infinity"/>
+            </VBox>
+            <VBox GridPane.columnIndex="1" GridPane.rowIndex="2" spacing="4">
+                <Label text="LinkedIn" styleClass="form-label"/>
+                <TextField fx:id="fieldLinkedin" styleClass="form-control signup-field"/>
+            </VBox>
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="3" spacing="4">
+                <Label text="Portfolio" styleClass="form-label"/>
+                <TextField fx:id="fieldPortfolio" styleClass="form-control signup-field"/>
+            </VBox>
+            <VBox GridPane.columnIndex="1" GridPane.rowIndex="3" spacing="4">
+                <Label text="CV" styleClass="form-label"/>
+                <TextField fx:id="fieldCv" styleClass="form-control signup-field"/>
+            </VBox>
+        </GridPane>
+    </VBox>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Retour" onAction="#onBack" styleClass="btn-secondary"/>
+        <Button text="Enregistrer" onAction="#onSave" styleClass="btn-primary"/>
+    </HBox>
+</VBox>

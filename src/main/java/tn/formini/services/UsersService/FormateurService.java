@@ -335,6 +335,46 @@ public class FormateurService implements service<Formateur> {
         return list;
     }
 
+    public Formateur findByUserId(int userId) {
+        if (cnx == null || userId <= 0) {
+            return null;
+        }
+
+        String req = "SELECT * FROM formateur WHERE user_id = ? LIMIT 1";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(req);
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Formateur f = new Formateur();
+                f.setId(rs.getInt("id"));
+                f.setSpecialite(rs.getString("specialite"));
+                f.setBio(rs.getString("bio"));
+
+                int experience = rs.getInt("experience_annees");
+                if (!rs.wasNull()) {
+                    f.setExperience_annees(experience);
+                }
+
+                f.setLinkedin(rs.getString("linkedin"));
+                f.setPortfolio(rs.getString("portfolio"));
+                f.setCv(rs.getString("cv"));
+
+                double note = rs.getDouble("note_moyenne");
+                if (!rs.wasNull()) {
+                    f.setNote_moyenne(note);
+                }
+
+                User user = getUserById(userId);
+                f.setUser(user);
+                return f;
+            }
+        } catch (SQLException ex) {
+            System.out.println("Erreur findByUserId formateur : " + ex.getMessage());
+        }
+        return null;
+    }
+
     private User getUserById(int userId) {
 
 
