@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.produit.ProduitListController"
+      spacing="24" styleClass="content-area">
+
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <Button text="⬅" onAction="#goBack" styleClass="icon-btn"/>
+        <Label fx:id="labelFormTitle" text="Gestion des Produits" styleClass="page-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <HBox spacing="10">
+            <TextField fx:id="fieldSearch" promptText="Rechercher un produit..." styleClass="search-field" HBox.hgrow="ALWAYS"/>
+            <ComboBox fx:id="fieldFilterCategorie" promptText="Toutes les catégories" styleClass="filter-combo"/>
+            <Button text="🔍" onAction="#searchProducts" styleClass="icon-btn"/>
+            <Button text="➕ Ajouter" onAction="#addProduct" styleClass="btn-primary"/>
+        </HBox>
+    </HBox>
+
+    <!-- Category Filter Section -->
+    <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 0 20 10 20;">
+        <Label text="Filtrer par catégorie:" styleClass="filter-label"/>
+        <HBox spacing="10" HBox.hgrow="ALWAYS">
+            <Button text="Tous" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Tous"/>
+            <Button text="Informatique" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Informatique"/>
+            <Button text="Accessoires" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Accessoires"/>
+            <Button text="Scientifique" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Scientifique"/>
+            <Button text="Outils Intelligents" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Outils Intelligents"/>
+        </HBox>
+    </HBox>
+
+    <VBox styleClass="form-container" VBox.vgrow="ALWAYS" alignment="TOP_CENTER">
+        <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+            <VBox spacing="15">
+                <!-- Products will be dynamically added here -->
+                <FlowPane fx:id="productsContainer" hgap="20" vgap="20" alignment="TOP_LEFT">
+                    <padding><Insets top="20" left="20" right="20" bottom="20"/></padding>
+                </FlowPane>
+            </VBox>
+        </ScrollPane>
+    </VBox>
+
+    <!-- Empty State -->
+    <StackPane fx:id="emptyState" alignment="CENTER" visible="false" VBox.vgrow="ALWAYS">
+        <VBox alignment="CENTER" spacing="20">
+            <Label text="📦" style="-fx-font-size: 48px; -fx-text-fill: #94a3b8;"/>
+            <Label text="Aucun produit trouvé" styleClass="empty-state-title"/>
+            <Label text="Commencez par ajouter votre premier produit" styleClass="empty-state-subtitle"/>
+            <Button text="➕ Ajouter un produit" onAction="#addProduct" styleClass="btn-primary"/>
+        </VBox>
+    </StackPane>
+
+</VBox>
