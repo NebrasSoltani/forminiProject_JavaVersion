@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import tn.formini.utils.AdminInitializer;
 import java.io.File;
 import java.net.URL;
 
@@ -12,6 +13,7 @@ public class MainMenuApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        AdminInitializer.initializeAdmin();
         initializeSession();
 
         // Essaie plusieurs chemins
@@ -65,24 +67,17 @@ public class MainMenuApp extends Application {
     }
 
     private void initializeSession() {
-        // Initialiser une session avec un utilisateur réel de la DB
+        // Session initialization - admin is already created by AdminInitializer
         try {
             tn.formini.services.UsersService.UserService us = new tn.formini.services.UsersService.UserService();
-            java.util.List<tn.formini.entities.Users.User> users = us.afficher();
-            tn.formini.entities.Users.User sessionUser;
-            if (users.isEmpty()) {
-                sessionUser = new tn.formini.entities.Users.User();
-                sessionUser.setNom("Admin");
-                sessionUser.setPrenom("Système");
-                sessionUser.setEmail("admin@formini.tn");
-                sessionUser.setPassword("Admin123!");
-                sessionUser.setRole_utilisateur("admin");
-                us.ajouter(sessionUser);
+            tn.formini.entities.Users.User adminUser = AdminInitializer.getAdminUser();
+            
+            if (adminUser != null) {
+                tn.formini.tools.SessionManager.setCurrentUser(adminUser);
+                System.out.println("Session active pour : " + adminUser.getNom() + " " + adminUser.getPrenom());
             } else {
-                sessionUser = users.get(0);
+                System.err.println("Admin user not found for session initialization");
             }
-            tn.formini.tools.SessionManager.setCurrentUser(sessionUser);
-            System.out.println("Session active pour : " + sessionUser.getNom());
         } catch (Exception e) {
             System.err.println("Erreur session : " + e.getMessage());
         }

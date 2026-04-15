@@ -3,6 +3,7 @@ package tn.formini.services.UsersService;
 import tn.formini.entities.Users.User;
 import tn.formini.services.service;
 import tn.formini.tools.MyDataBase;
+import tn.formini.utils.PasswordUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -21,10 +22,13 @@ public class UserService implements service<User> {
 
         String req = "INSERT INTO user (email, roles, password, nom, prenom, telephone, gouvernorat, date_naissance, role_utilisateur) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
+            // Hash the password before storing
+            String hashedPassword = PasswordUtil.hashPassword(u.getPassword());
+            
             PreparedStatement ps = cnx.prepareStatement(req, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, u.getEmail());
             ps.setString(2, u.getRoles());
-            ps.setString(3, u.getPassword());
+            ps.setString(3, hashedPassword);
             ps.setString(4, u.getNom());
             ps.setString(5, u.getPrenom());
             ps.setString(6, u.getTelephone());
@@ -53,10 +57,13 @@ public class UserService implements service<User> {
 
         String req = "UPDATE user SET email=?, roles=?, password=?, nom=?, prenom=?, telephone=?, gouvernorat=?, date_naissance=?, role_utilisateur=? WHERE id=?";
         try {
+            // Hash the password before storing
+            String hashedPassword = PasswordUtil.hashPassword(u.getPassword());
+            
             PreparedStatement ps = cnx.prepareStatement(req);
             ps.setString(1, u.getEmail());
             ps.setString(2, u.getRoles());
-            ps.setString(3, u.getPassword());
+            ps.setString(3, hashedPassword);
             ps.setString(4, u.getNom());
             ps.setString(5, u.getPrenom());
             ps.setString(6, u.getTelephone());
