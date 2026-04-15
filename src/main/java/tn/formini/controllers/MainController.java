@@ -36,6 +36,7 @@ public class MainController implements Initializable {
     @FXML private Button btnEventList;
     @FXML private Button btnEventAdd;
     @FXML private Button btnProductList;
+    @FXML private Button btnStageList;
     @FXML private Button btnProductAdd;
 
     private List<Button> navButtons;
@@ -45,7 +46,7 @@ public class MainController implements Initializable {
         labelDate.setText(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
         );
-        navButtons = Arrays.asList(btnDashboard, btnBlogList, btnBlogAdd, btnEventList, btnEventAdd, btnProductList, btnProductAdd);
+        navButtons = Arrays.asList(btnDashboard, btnBlogList, btnBlogAdd, btnEventList, btnEventAdd, btnProductList, btnProductAdd, btnStageList);
         showDashboard();
     }
 
@@ -81,7 +82,7 @@ public class MainController implements Initializable {
     public void showEventForm(tn.formini.entities.evenements.Evenement evt) {
         updateActiveButton(btnEventAdd);
         labelPageTitle.setText(evt == null ? "Nouvel Événement" : "Modifier l'Événement");
-        EvenementFormController controller = (EvenementFormController) loadPage("/fxml/evenement/Evenementform.fxml");
+        EvenementFormController controller = (EvenementFormController) loadPage("/fxml/evenement/EvenementForm.fxml");
         if (controller != null) {
             controller.setMainController(this);
             if (evt != null) {
@@ -146,7 +147,7 @@ public class MainController implements Initializable {
     public void showBlogForm(tn.formini.entities.evenements.Blog blog) {
         updateActiveButton(btnBlogAdd);
         labelPageTitle.setText(blog == null ? "Nouveau Blog" : "Modifier le Blog");
-        tn.formini.controllers.blog.BlogFormController controller = (tn.formini.controllers.blog.BlogFormController) loadPage("/fxml/blog/Blogform.fxml");
+        tn.formini.controllers.blog.BlogFormController controller = (tn.formini.controllers.blog.BlogFormController) loadPage("/fxml/blog/BlogForm.fxml");
         if (controller != null) {
             controller.setMainController(this);
             if (blog != null) {
@@ -179,5 +180,32 @@ public class MainController implements Initializable {
                 controller.setProduit(produit);
             }
         }
+    }
+
+    @FXML
+    public void showStageManagement() {
+        labelPageTitle.setText("Gestion des Stages");
+        loadPage("/fxml/stages/stage-management.fxml");
+        updateActiveButton(btnStageList);
+    }
+
+    @FXML
+    public void showSocieteOffres() {
+        labelPageTitle.setText("Mes Offres de Stage");
+        tn.formini.controllers.stages.StageManagementController controller = (tn.formini.controllers.stages.StageManagementController) loadPage("/fxml/stages/stage-management.fxml");
+        if (controller != null) {
+            controller.setSelectedTab(0);
+        }
+        updateActiveButton(btnStageList);
+    }
+
+    @FXML
+    public void showSocieteCandidatures() {
+        labelPageTitle.setText("Candidatures Reçues");
+        tn.formini.controllers.stages.StageManagementController controller = (tn.formini.controllers.stages.StageManagementController) loadPage("/fxml/stages/stage-management.fxml");
+        if (controller != null) {
+            controller.setSelectedTab(1);
+        }
+        updateActiveButton(btnStageList);
     }
 }
