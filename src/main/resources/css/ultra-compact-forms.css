@@ -1,0 +1,281 @@
+/* Ultra-Compact Product Forms Styles - Maximum Reduction & Beauty */
+
+/* Main Container */
+.content-area {
+    -fx-background-color: #f1f5f9;
+    -fx-padding: 0;
+}
+
+.form-header {
+    -fx-background-color: linear-gradient(to right, #3b82f6, #2563eb);
+    -fx-padding: 8px 12px;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(59, 130, 246, 0.2), 0, 4);
+}
+
+.form-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-text-fill: white;
+}
+
+/* Ultra-Compact Form Container */
+.compact-form-container {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12px;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 0, 8);
+}
+
+.compact-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-fit-to-width: true;
+    -fx-hbar-policy: never;
+}
+
+.form-content {
+    -fx-spacing: 8px;
+}
+
+/* Ultra-Compact Form Sections */
+.form-section {
+    -fx-background-color: #fafbfc;
+    -fx-background-radius: 8px;
+    -fx-border-color: #e5e7eb;
+    -fx-border-width: 1px;
+    -fx-border-style: solid;
+    -fx-padding: 6px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.02), 0, 2);
+}
+
+.form-section .title {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #374151;
+    -fx-padding: 4px 0;
+}
+
+.form-section .arrow-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 2px;
+}
+
+.form-section .arrow-button:hover {
+    -fx-background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Ultra-Compact Form Groups */
+.compact-form-group {
+    -fx-spacing: 4px;
+}
+
+.compact-label {
+    -fx-font-size: 11px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #6b7280;
+    -fx-label-padding: 0 0 2px 0;
+}
+
+.compact-control {
+    -fx-font-size: 12px;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d1d5db;
+    -fx-border-width: 1px;
+    -fx-border-style: solid;
+    -fx-border-radius: 6px;
+    -fx-padding: 6px 10px;
+    -fx-background-insets: 0;
+    -fx-focus-color: #3b82f6;
+    -fx-faint-focus-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 0, 1);
+}
+
+.compact-control:focused {
+    -fx-border-color: #3b82f6;
+    -fx-background-color: #f0f9ff;
+    -fx-border-width: 1.5px;
+    -fx-effect: dropshadow(gaussian, rgba(59, 130, 246, 0.2), 0, 2);
+}
+
+.compact-control:hover {
+    -fx-border-color: #9ca3af;
+    -fx-background-color: #fafafa;
+}
+
+/* Ultra-Compact Buttons */
+.icon-btn-small {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-radius: 6px;
+    -fx-padding: 4px;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-text-fill: white;
+}
+
+.icon-btn-small:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.3);
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 0, 2);
+}
+
+/* Ultra-Compact Action Buttons */
+.form-actions {
+    -fx-background-color: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+    -fx-padding: 12px;
+    -fx-border-color: #e5e7eb;
+    -fx-border-width: 1px 0 0 0;
+    -fx-border-style: solid;
+}
+
+.btn-primary-small {
+    -fx-background-color: linear-gradient(to bottom, #3b82f6, #2563eb);
+    -fx-text-fill: white;
+    -fx-font-weight: 600;
+    -fx-font-size: 11px;
+    -fx-border-radius: 6px;
+    -fx-padding: 6px 12px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(59, 130, 246, 0.3), 0, 2);
+}
+
+.btn-primary-small:hover {
+    -fx-background-color: linear-gradient(to bottom, #2563eb, #1d4ed8);
+    -fx-effect: dropshadow(gaussian, rgba(37, 130, 246, 0.4), 0, 3);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.btn-secondary-small {
+    -fx-background-color: linear-gradient(to bottom, #6b7280, #4b5563);
+    -fx-text-fill: white;
+    -fx-font-weight: 600;
+    -fx-font-size: 11px;
+    -fx-border-radius: 6px;
+    -fx-padding: 6px 12px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(107, 114, 128, 0.3), 0, 2);
+}
+
+.btn-secondary-small:hover {
+    -fx-background-color: linear-gradient(to bottom, #4b5563, #374151);
+    -fx-effect: dropshadow(gaussian, rgba(75, 85, 99, 0.4), 0, 3);
+}
+
+.btn-info-small {
+    -fx-background-color: linear-gradient(to bottom, #0ea5e9, #0284c7);
+    -fx-text-fill: white;
+    -fx-font-weight: 600;
+    -fx-font-size: 11px;
+    -fx-border-radius: 6px;
+    -fx-padding: 6px 12px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(14, 165, 233, 0.3), 0, 2);
+}
+
+.btn-info-small:hover {
+    -fx-background-color: linear-gradient(to bottom, #0284c7, #0369a1);
+    -fx-effect: dropshadow(gaussian, rgba(2, 132, 199, 0.4), 0, 3);
+}
+
+.btn-danger-small {
+    -fx-background-color: linear-gradient(to bottom, #ef4444, #dc2626);
+    -fx-text-fill: white;
+    -fx-font-weight: 600;
+    -fx-font-size: 11px;
+    -fx-border-radius: 6px;
+    -fx-padding: 6px 12px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(239, 68, 68, 0.3), 0, 2);
+}
+
+.btn-danger-small:hover {
+    -fx-background-color: linear-gradient(to bottom, #dc2626, #b91c1c);
+    -fx-effect: dropshadow(gaussian, rgba(220, 38, 38, 0.4), 0, 3);
+}
+
+/* Ultra-Compact Error Labels */
+.error-label-small {
+    -fx-font-size: 10px;
+    -fx-text-fill: #ef4444;
+    -fx-label-padding: 1px 0 0 0;
+    -fx-font-weight: 500;
+}
+
+/* Ultra-Compact Validation Container */
+.validation-container {
+    -fx-background-color: #fef2f2;
+    -fx-border-color: #fecaca;
+    -fx-border-width: 1px;
+    -fx-border-style: solid;
+    -fx-border-radius: 6px;
+    -fx-padding: 6px;
+    -fx-background-insets: 0;
+    -fx-effect: dropshadow(gaussian, rgba(239, 68, 68, 0.1), 0, 2);
+}
+
+/* Special Effects for Ultra-Compact */
+.form-section .content {
+    -fx-background-color: transparent;
+    -fx-padding: 4px 0 0 0;
+}
+
+/* Responsive Ultra-Compact Design */
+@media (max-width: 900px) {
+    .form-section .columnConstraints {
+        -fx-min-width: 150px;
+    }
+    
+    .compact-control {
+        -fx-padding: 5px 8px;
+        -fx-font-size: 11px;
+    }
+    
+    .compact-label {
+        -fx-font-size: 10px;
+    }
+    
+    .btn-primary-small,
+    .btn-secondary-small,
+    .btn-info-small,
+    .btn-danger-small {
+        -fx-padding: 5px 10px;
+        -fx-font-size: 10px;
+    }
+}
+
+@media (max-width: 700px) {
+    .form-section .columnConstraints {
+        -fx-min-width: 120px;
+    }
+    
+    .compact-form-container {
+        -fx-padding: 8px;
+    }
+    
+    .form-section {
+        -fx-padding: 4px;
+    }
+    
+    .compact-control {
+        -fx-padding: 4px 6px;
+        -fx-font-size: 11px;
+    }
+    
+    .form-title {
+        -fx-font-size: 14px;
+    }
+}
+
+/* Animation Effects */
+.compact-control {
+    -fx-transition: all 0.2s ease;
+}
+
+.btn-primary-small,
+.btn-secondary-small,
+.btn-info-small,
+.btn-danger-small {
+    -fx-transition: all 0.2s ease;
+}
