@@ -42,6 +42,9 @@ public class ApprenantDashboardController implements DashboardRoleController {
     
     @FXML
     private Button profileButton;
+    
+    @FXML
+    private Button viewOffersButton;
 
     private User currentUser;
     private Apprenant currentApprenant;
@@ -73,6 +76,9 @@ public class ApprenantDashboardController implements DashboardRoleController {
         takeQuizButton.setOnAction(e -> takeQuiz());
         myCertificatesButton.setOnAction(e -> viewMyCertificates());
         profileButton.setOnAction(e -> viewProfile());
+        if (viewOffersButton != null) {
+            viewOffersButton.setOnAction(e -> viewOffers());
+        }
     }
 
     private void loadStudentInfo() {
@@ -197,6 +203,27 @@ public class ApprenantDashboardController implements DashboardRoleController {
             stage.show();
         } catch (Exception e) {
             System.err.println("Error opening profile: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void viewOffers() {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                getClass().getResource("/fxml/stages/offre-stage-view.fxml")
+            );
+            javafx.scene.Parent root = loader.load();
+            
+            tn.formini.controllers.stages.OffreStageViewController controller = loader.getController();
+            controller.setCurrentUser(currentUser);
+            
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.setTitle("Offres de Stage");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error opening offers: " + e.getMessage());
         }
     }
 
