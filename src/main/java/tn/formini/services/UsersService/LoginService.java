@@ -2,8 +2,11 @@ package tn.formini.services.UsersService;
 
 import tn.formini.entities.Users.User;
 import tn.formini.tools.MyDataBase;
+import tn.formini.utils.PasswordUtil;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoginService {
     
@@ -34,8 +37,8 @@ public class LoginService {
             if (rs.next()) {
                 User user = mapResultSetToUser(rs);
                 
-                // Verify password (assuming plain text for now, consider hashing in production)
-                if (password.equals(user.getPassword())) {
+                // Verify password using secure hash verification
+                if (PasswordUtil.verifyPassword(password, user.getPassword())) {
                     System.out.println("Authentification réussie pour: " + email);
                     return user;
                 } else {
