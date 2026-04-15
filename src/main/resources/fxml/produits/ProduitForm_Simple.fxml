@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.produits.ProduitFormController"
+      spacing="20" 
+      style="-fx-background-color: #667eea; -fx-padding: 20;">
+    
+    <Label text="TEST - Product Form Loading" 
+           style="-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+    
+    <VBox spacing="15" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10;">
+        <Label text="Nom du produit:" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+        <TextField fx:id="fieldNom" promptText="Entrez le nom du produit" prefHeight="40"/>
+        
+        <Label text="Catégorie:" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+        <ComboBox fx:id="fieldCategorie" promptText="Sélectionnez une catégorie" prefHeight="40"/>
+        
+        <Label text="Prix:" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+        <TextField fx:id="fieldPrix" promptText="0.000" prefHeight="40"/>
+        
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <Button text="Annuler" onAction="#goBack" style="-fx-background-color: #ccc; -fx-text-fill: black;"/>
+            <Button fx:id="btnSave" text="Enregistrer" onAction="#saveProduit" style="-fx-background-color: #667eea; -fx-text-fill: white;"/>
+        </HBox>
+    </VBox>
+    
+    <Label fx:id="errNom" style="-fx-text-fill: red; -fx-font-size: 12px;" visible="false"/>
+    <Label fx:id="errCategorie" style="-fx-text-fill: red; -fx-font-size: 12px;" visible="false"/>
+    <Label fx:id="errPrix" style="-fx-text-fill: red; -fx-font-size: 12px;" visible="false"/>
+    
+</VBox>
