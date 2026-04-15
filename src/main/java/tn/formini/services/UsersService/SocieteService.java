@@ -269,6 +269,35 @@ public class SocieteService implements service<Societe> {
         return false;
     }
 
+    public Societe findByUserId(int userId) {
+        if (cnx == null || userId <= 0) {
+            return null;
+        }
+
+        String req = "SELECT * FROM societe WHERE user_id = ? LIMIT 1";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(req);
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Societe s = new Societe();
+                s.setId(rs.getInt("id"));
+                s.setNom_societe(rs.getString("nom_societe"));
+                s.setSecteur(rs.getString("secteur"));
+                s.setDescription(rs.getString("description"));
+                s.setAdresse(rs.getString("adresse"));
+                s.setSite_web(rs.getString("site_web"));
+
+                User user = getUserById(userId);
+                s.setUser(user);
+                return s;
+            }
+        } catch (SQLException ex) {
+            System.out.println("Erreur findByUserId société : " + ex.getMessage());
+        }
+        return null;
+    }
+
     public boolean existsByNom(String nom) {
 
 

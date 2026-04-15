@@ -107,8 +107,8 @@ public class LoginController {
             // Create session
             sessionManager.login(user);
             
-            // Update last login
-            loginService.updateLastLogin(user.getId());
+            // TODO: Update last login when database column is available
+            // loginService.updateLastLogin(user.getId());
             
             showSuccess("Connexion réussie ! Redirection...");
             navigateToEditProfile();
@@ -272,9 +272,8 @@ public class LoginController {
 
     private void navigateToEditProfile() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/frontend/FrontMain.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/dashboard/main-dashboard.fxml"));
             Parent root = loader.load();
-            FrontMainController controller = loader.getController();
 
             Stage stage = (Stage) btnLogin.getScene().getWindow();
             if (stage.getScene() != null) {
@@ -282,13 +281,9 @@ public class LoginController {
             } else {
                 stage.setScene(new javafx.scene.Scene(root));
             }
-            stage.setTitle("Formini - Profil");
-
-            if (controller != null) {
-                controller.showEditProfile();
-            }
+            stage.setTitle("Formini - Tableau de Bord");
         } catch (Exception e) {
-            showError("Connexion OK, mais ouverture du profil impossible.");
+            showError("Connexion OK, mais ouverture du tableau de bord impossible.");
             e.printStackTrace();
         }
     }

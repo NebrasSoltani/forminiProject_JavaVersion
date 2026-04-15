@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.formini.controllers.crud.FormateurFormController" spacing="15" style="-fx-padding: 20;">
+    <children>
+        <Label text="Formulaire Formateur" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+        
+        <GridPane hgap="10" vgap="10">
+            <children>
+                <Label text="Spécialité*:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <TextField fx:id="specialiteTextField" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="300"/>
+                
+                <Label text="Utilisateur*:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <ComboBox fx:id="userComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="300"/>
+                
+                <Label text="Expérience (années):" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <TextField fx:id="experienceTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="300" promptText="0-70"/>
+                
+                <Label text="Note moyenne:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <TextField fx:id="noteTextField" GridPane.columnIndex="1" GridPane.rowIndex="3" prefWidth="300" promptText="0-5"/>
+                
+                <Label text="LinkedIn:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                <TextField fx:id="linkedinTextField" GridPane.columnIndex="1" GridPane.rowIndex="4" prefWidth="300" promptText="https://linkedin.com/..."/>
+                
+                <Label text="Portfolio:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                <TextField fx:id="portfolioTextField" GridPane.columnIndex="1" GridPane.rowIndex="5" prefWidth="300" promptText="https://portfolio.com/..."/>
+                
+                <Label text="CV:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                <TextField fx:id="cvTextField" GridPane.columnIndex="1" GridPane.rowIndex="6" prefWidth="300" promptText="URL du CV"/>
+                
+                <Label text="Bio:" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                <TextArea fx:id="bioTextArea" GridPane.columnIndex="1" GridPane.rowIndex="7" prefWidth="300" prefHeight="100" promptText="Biographie du formateur..."/>
+            </children>
+        </GridPane>
+        
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <children>
+                <Button fx:id="saveButton" text="Enregistrer" onAction="#handleSaveButton"/>
+                <Button fx:id="cancelButton" text="Annuler" onAction="#handleCancelButton"/>
+            </children>
+        </HBox>
+    </children>
+</VBox>

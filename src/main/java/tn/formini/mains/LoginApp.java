@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import tn.formini.controllers.auth.LoginController;
+import tn.formini.utils.AdminInitializer;
 
 import java.net.URL;
 
@@ -16,6 +17,9 @@ public class LoginApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        // Initialize admin user if it doesn't exist
+        AdminInitializer.initializeAdmin();
+        
         URL resource = getClass().getResource("/fxml/auth/Login.fxml");
         if (resource == null) {
             System.err.println("FXML introuvable : /fxml/auth/Login.fxml");
