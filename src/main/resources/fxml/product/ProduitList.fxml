@@ -18,6 +18,7 @@
             <TextField fx:id="fieldSearch" promptText="Rechercher un produit..." styleClass="search-field" HBox.hgrow="ALWAYS"/>
             <ComboBox fx:id="fieldFilterCategorie" promptText="Toutes les catégories" styleClass="filter-combo"/>
             <Button text="🔍" onAction="#searchProducts" styleClass="icon-btn"/>
+            <Button text="❌ Supprimer sans image" onAction="#deleteProductsWithoutImages" styleClass="btn-danger"/>
             <Button text="➕ Ajouter" onAction="#addProduct" styleClass="btn-primary"/>
         </HBox>
     </HBox>
@@ -28,9 +29,9 @@
         <HBox spacing="10" HBox.hgrow="ALWAYS">
             <Button text="Tous" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Tous"/>
             <Button text="Informatique" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Informatique"/>
-            <Button text="Accessoires" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Accessoires"/>
             <Button text="Scientifique" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Scientifique"/>
-            <Button text="Outils Intelligents" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Outils Intelligents"/>
+            <Button text="Outils intelligents" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Outils intelligents"/>
+            <Button text="Accessoires" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Accessoires"/>
         </HBox>
     </HBox>
 

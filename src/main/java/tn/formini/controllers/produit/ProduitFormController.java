@@ -49,7 +49,7 @@ public class ProduitFormController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // Initialize categories
         fieldCategorie.setItems(FXCollections.observableArrayList(
-                "Informatique", "Accessoires", "Scientifique", "Outils Intelligents"
+                "Informatique", "Scientifique", "Outils intelligents", "Accessoires"
         ));
 
         // Initialize statuts

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.produits.ProduitFormController"
+      spacing="10" style="-fx-padding: 20;">
+    
+    <Label text="PRODUCT FORM" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    
+    <TextField fx:id="fieldNom" promptText="Product Name"/>
+    <ComboBox fx:id="fieldCategorie" promptText="Category"/>
+    <TextField fx:id="fieldPrix" promptText="Price"/>
+    <TextField fx:id="fieldStock" promptText="Stock"/>
+    <DatePicker fx:id="fieldDateCreation"/>
+    <ComboBox fx:id="fieldStatut" promptText="Status"/>
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <TextField fx:id="fieldImage" promptText="Image URL" HBox.hgrow="ALWAYS"/>
+        <Button text="📁 Browse" onAction="#browseImage" style="-fx-background-color: #667eea; -fx-text-fill: white;"/>
+    </HBox>
+    <TextArea fx:id="fieldDescription" promptText="Description" prefHeight="60"/>
+    
+    <Button fx:id="btnSave" text="Save" onAction="#saveProduit"/>
+    <Button text="Cancel" onAction="#goBack"/>
+    
+    <!-- Hidden error labels with red styling -->
+    <Label fx:id="errNom" visible="false" style="-fx-text-fill: #e53e3e; -fx-font-size: 12px; -fx-font-weight: 500;"/>
+    <Label fx:id="errCategorie" visible="false" style="-fx-text-fill: #e53e3e; -fx-font-size: 12px; -fx-font-weight: 500;"/>
+    <Label fx:id="errDescription" visible="false" style="-fx-text-fill: #e53e3e; -fx-font-size: 12px; -fx-font-weight: 500;"/>
+    <Label fx:id="errPrix" visible="false" style="-fx-text-fill: #e53e3e; -fx-font-size: 12px; -fx-font-weight: 500;"/>
+    <Label fx:id="errStock" visible="false" style="-fx-text-fill: #e53e3e; -fx-font-size: 12px; -fx-font-weight: 500;"/>
+    <Label fx:id="errDateCreation" visible="false" style="-fx-text-fill: #e53e3e; -fx-font-size: 12px; -fx-font-weight: 500;"/>
+    <Label fx:id="errStatut" visible="false" style="-fx-text-fill: #e53e3e; -fx-font-size: 12px; -fx-font-weight: 500;"/>
+    <Label fx:id="validationSummary" visible="false" style="-fx-text-fill: #e53e3e; -fx-font-size: 13px; -fx-font-weight: 600;"/>
+    <VBox fx:id="validationCard" visible="false" style="-fx-background-color: #fed7d7; -fx-background-radius: 5; -fx-padding: 10; -fx-border-color: #fc8181; -fx-border-width: 1;"/>
+    
+</VBox>

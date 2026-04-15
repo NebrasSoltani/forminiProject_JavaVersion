@@ -51,6 +51,10 @@
                 <Button fx:id="btnBlogAdd" text="➕  Nouveau Blog" onAction="#showBlogAdd" styleClass="nav-sub" maxWidth="Infinity"/>
                 <Button fx:id="btnEventAdd" text="➕  Nouvel Événement" onAction="#showEventAdd" styleClass="nav-sub" maxWidth="Infinity"/>
                 <Button fx:id="btnProductAdd" text="➕  Nouveau Produit" onAction="#showProductAdd" styleClass="nav-sub" maxWidth="Infinity"/>
+                
+                <Region prefHeight="20"/>
+                <Label text="GESTION DES PRODUITS" style="-fx-font-size: 11px; -fx-text-fill: #64748b; -fx-font-weight: bold; -fx-padding: 0 0 10 10;"/>
+                <Button fx:id="btnProductManage" text="  Gérer les Produits" onAction="#showProductManage" styleClass="nav-sub" maxWidth="Infinity"/>
             </VBox>
 
             <!-- Bottom Navigation Actions -->
