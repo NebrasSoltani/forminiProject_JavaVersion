@@ -16,8 +16,8 @@ import tn.formini.utils.ListStyleManager;
 import javafx.geometry.Pos;
 import javafx.animation.FadeTransition;
 import javafx.util.Duration;
-import tn.formini.entities.evenements.Evenement;
-import tn.formini.services.evenementsService.EvenementService;
+import tn.formini.entities.Evenement;
+import tn.formini.services.EvenementService;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -141,6 +141,27 @@ public class EvenementListFrontController implements Initializable {
             dateLieu.setStyle("-fx-text-fill: #64748b; -fx-font-size: 13px;");
             details.getChildren().add(dateLieu);
 
+            // Live and 360 Buttons
+            HBox features = new HBox(10);
+            if (evt.isLive()) {
+                Button btnLive = new Button("🔴 LIVE");
+                btnLive.setStyle("-fx-background-color: #fee2e2; -fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+                btnLive.setOnAction(e -> {
+                    try { java.awt.Desktop.getDesktop().browse(new java.net.URI(evt.getStream_url())); }
+                    catch (Exception ex) { System.err.println(ex.getMessage()); }
+                });
+                features.getChildren().add(btnLive);
+            }
+            if (evt.getImage360() != null && !evt.getImage360().isEmpty()) {
+                Button btn360 = new Button("📸 360°");
+                btn360.setStyle("-fx-background-color: #eff6ff; -fx-text-fill: #3b82f6; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
+                btn360.setOnAction(e -> {
+                    try { java.awt.Desktop.getDesktop().browse(new java.net.URI(evt.getImage360())); }
+                    catch (Exception ex) { System.err.println(ex.getMessage()); }
+                });
+                features.getChildren().add(btn360);
+            }
+            
             // Action
             Button btnParticiper = new Button("Participer maintenant");
             btnParticiper.getStyleClass().add("main-button-onix");
@@ -153,7 +174,8 @@ public class EvenementListFrontController implements Initializable {
                 alert.show();
             });
 
-            body.getChildren().addAll(badge, title, details, btnParticiper);
+            body.getChildren().addAll(badge, title, details, features, btnParticiper);
+
             card.getChildren().addAll(imgHeader, body);
             eventGrid.getChildren().add(card);
         }
