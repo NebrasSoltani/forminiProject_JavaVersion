@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.frontend.CartController"
+      spacing="14" styleClass="content-area">
+
+    <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 22 30 0 30;">
+        <Label text="Votre panier" styleClass="page-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnPrintInvoice" text="&#128196; Imprimer facture" onAction="#printInvoice" styleClass="btn-info btn-small"/>
+        <Button fx:id="btnClear" text="Vider" onAction="#clearCart" styleClass="btn-secondary btn-small"/>
+        <Button fx:id="btnValidate" text="Valider la commande" onAction="#validateOrder" styleClass="btn-primary"/>
+    </HBox>
+
+    <Label fx:id="labelEmpty"
+           text="Votre panier est vide."
+           style="-fx-padding: 40 30 0 30; -fx-text-fill: #64748b; -fx-font-size: 14px;"/>
+
+    <TableView fx:id="table" VBox.vgrow="ALWAYS" styleClass="modern-table cart-table" style="-fx-padding: 12 30 0 30;">
+        <columns>
+            <TableColumn fx:id="colName" text="Produit" prefWidth="420"/>
+            <TableColumn fx:id="colQty" text="Qté" prefWidth="110"/>
+            <TableColumn fx:id="colUnitPrice" text="Prix" prefWidth="110"/>
+            <TableColumn fx:id="colLineTotal" text="Total ligne" prefWidth="130"/>
+            <TableColumn fx:id="colActions" text="" prefWidth="160"/>
+        </columns>
+    </TableView>
+
+    <HBox alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 12 30 30 30;">
+        <VBox styleClass="cart-summary-card" alignment="CENTER_RIGHT" spacing="6">
+            <Label text="Total à payer" styleClass="cart-summary-title"/>
+            <Label fx:id="labelItemsCount" text="0 produits / 0 articles" styleClass="cart-summary-meta"/>
+            <Label fx:id="labelGrandTotal" text="0.000 DT" styleClass="cart-summary-value"/>
+        </VBox>
+    </HBox>
+
+</VBox>
+

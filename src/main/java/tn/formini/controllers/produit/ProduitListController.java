@@ -7,6 +7,8 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -37,7 +39,7 @@ public class ProduitListController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // Initialize category filter
         fieldFilterCategorie.setItems(FXCollections.observableArrayList(
-                "Toutes les catégories", "Informatique", "Accessoires", "Scientifique", "Outils Intelligents"
+                "Toutes les catégories", "Informatique", "Scientifique", "Outils intelligents", "Accessoires"
         ));
         fieldFilterCategorie.setValue("Toutes les catégories");
 
@@ -54,6 +56,54 @@ public class ProduitListController implements Initializable {
         displayProducts(allProducts);
     }
 
+    @FXML
+    public void deleteProductsWithoutImages() {
+        // Define the products to keep
+        java.util.Set<String> productsToKeep = java.util.Set.of(
+            "school bag", "pen", "cle", "keyboard", "headset", "calculator"
+        );
+        
+        // Find ALL products to delete (except the protected ones)
+        List<Produit> productsToDelete = allProducts.stream()
+                .filter(p -> !productsToKeep.contains(p.getNom().toLowerCase()))
+                .collect(java.util.stream.Collectors.toList());
+        
+        if (productsToDelete.isEmpty()) {
+            showInfo("Aucun produit à supprimer (seuls les produits spécifiés existent).");
+            return;
+        }
+        
+        // Show confirmation dialog
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Nettoyer la base de données");
+        alert.setHeaderText("Supprimer " + productsToDelete.size() + " produit(s) ?");
+        alert.setContentText("Cette action est irréversible. Les produits suivants seront supprimés :\n" + 
+                productsToDelete.stream()
+                        .map(p -> "- " + p.getNom() + " (ID: " + p.getId() + ")")
+                        .collect(java.util.stream.Collectors.joining("\n")) + 
+                "\n\nLes produits suivants seront préservés :\n" +
+                productsToKeep.stream()
+                        .map(name -> "- " + name)
+                        .collect(java.util.stream.Collectors.joining("\n")));
+        
+        if (alert.showAndWait().get() == ButtonType.OK) {
+            try {
+                int deletedCount = 0;
+                for (Produit produit : productsToDelete) {
+                    service.supprimer(produit.getId());
+                    deletedCount++;
+                }
+                
+                showSuccess(deletedCount + " produit(s) ont été supprimés. " +
+                          "Seuls les produits spécifiés sont conservés.");
+                loadProducts(); // Reload the product list
+                
+            } catch (Exception e) {
+                showError("Erreur lors de la suppression: " + e.getMessage());
+            }
+        }
+    }
+
     private void displayProducts(List<Produit> products) {
         productsContainer.getChildren().clear();
         
@@ -64,6 +114,9 @@ public class ProduitListController implements Initializable {
         
         emptyState.setVisible(false);
         
+        System.out.println("Total products: " + products.size());
+        
+        // Show all products (no filtering)
         for (Produit produit : products) {
             productsContainer.getChildren().add(createProductCard(produit));
         }
@@ -75,6 +128,57 @@ public class ProduitListController implements Initializable {
         card.setSpacing(10);
         card.setPadding(new Insets(15));
         card.setPrefWidth(280);
+
+        // Product Image
+        ImageView imageView = new ImageView();
+        imageView.setFitWidth(250);
+        imageView.setFitHeight(150);
+        imageView.setPreserveRatio(true);
+        imageView.setSmooth(true);
+        imageView.setStyle("-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-background-radius: 8;");
+        
+        // Load image if available
+        if (produit.getImage() != null && !produit.getImage().trim().isEmpty()) {
+            String imageUrl = produit.getImage().trim();
+            
+            // Debug: Print the image URL to console
+            System.out.println("Loading image: " + imageUrl);
+            
+            try {
+                javafx.scene.image.Image image = new javafx.scene.image.Image(imageUrl, true);
+                
+                // Wait for image to load and check if it's valid
+                image.progressProperty().addListener((obs, oldVal, newVal) -> {
+                    if (newVal.doubleValue() == 1.0) {
+                        if (image.getException() == null && image.getWidth() > 0 && image.getHeight() > 0) {
+                            imageView.setImage(image);
+                            System.out.println("Image loaded successfully: " + image.getWidth() + "x" + image.getHeight());
+                        } else {
+                            System.out.println("Image failed to load: " + (image.getException() != null ? image.getException().getMessage() : "Invalid dimensions"));
+                            showPlaceholderImage(imageView);
+                        }
+                    }
+                });
+                
+                // Set a timeout in case image doesn't load
+                javafx.util.Duration timeout = javafx.util.Duration.seconds(5);
+                javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(timeout);
+                pause.setOnFinished(e -> {
+                    if (imageView.getImage() == null) {
+                        System.out.println("Image loading timeout, showing placeholder");
+                        showPlaceholderImage(imageView);
+                    }
+                });
+                pause.play();
+                
+            } catch (Exception e) {
+                System.out.println("Exception loading image: " + e.getMessage());
+                showPlaceholderImage(imageView);
+            }
+        } else {
+            System.out.println("No image URL provided, showing placeholder");
+            showPlaceholderImage(imageView);
+        }
 
         // Product Header
         HBox header = new HBox();
@@ -137,7 +241,7 @@ public class ProduitListController implements Initializable {
         actionsBox.getChildren().addAll(editBtn, deleteBtn);
 
         // Add all elements to card
-        card.getChildren().addAll(header, nameLabel, descLabel, priceStockBox, actionsBox);
+        card.getChildren().addAll(imageView, header, nameLabel, descLabel, priceStockBox, actionsBox);
 
         return card;
     }
@@ -167,6 +271,30 @@ public class ProduitListController implements Initializable {
             return "-fx-text-fill: #f59e0b; -fx-font-weight: bold;";
         } else {
             return "-fx-text-fill: #10b981; -fx-font-weight: normal;";
+        }
+    }
+
+    private void showPlaceholderImage(ImageView imageView) {
+        // Create a simple placeholder with a pattern
+        String placeholderSvg = "data:image/svg+xml;base64," + 
+            java.util.Base64.getEncoder().encodeToString(
+                ("<svg width='250' height='150' xmlns='http://www.w3.org/2000/svg'>" +
+                "<rect width='250' height='150' fill='#f1f5f9' stroke='#d1d5db' stroke-width='2' rx='8'/>" +
+                "<text x='125' y='75' text-anchor='middle' font-family='Arial' font-size='16' fill='#6b7280'>No Image</text>" +
+                "<circle cx='125' cy='50' r='20' fill='none' stroke='#9ca3af' stroke-width='2'/>" +
+                "<line x1='125' y1='60' x2='125' y2='80' stroke='#9ca3af' stroke-width='2'/>" +
+                "<line x1='115' y1='70' x2='135' y2='70' stroke='#9ca3af' stroke-width='2'/>" +
+                "</svg>").getBytes()
+            );
+        
+        try {
+            javafx.scene.image.Image placeholderImage = new javafx.scene.image.Image(placeholderSvg);
+            imageView.setImage(placeholderImage);
+            imageView.setStyle("-fx-background-color: transparent; -fx-border-color: #e2e8f0; -fx-border-radius: 8;");
+        } catch (Exception e) {
+            // Fallback: create a simple colored rectangle
+            imageView.setImage(null);
+            imageView.setStyle("-fx-background-color: #f1f5f9; -fx-border-color: #d1d5db; -fx-border-radius: 8;");
         }
     }
 
@@ -261,57 +389,34 @@ public class ProduitListController implements Initializable {
 
     @FXML
     public void deleteProduct(Produit produit) {
-        // Create custom confirmation dialog
-        Dialog<ButtonType> deleteDialog = new Dialog<>();
-        deleteDialog.setTitle("Confirmation de Suppression");
-        deleteDialog.setHeaderText(null);
-        
-        // Create dialog content
-        VBox dialogContent = new VBox(15);
-        dialogContent.setStyle("-fx-padding: 20;");
-        
-        // Product info
-        Label productInfo = new Label("Produit à supprimer:");
-        productInfo.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #ef4444;");
-        
-        Label productName = new Label("\"" + produit.getNom() + "\"");
-        productName.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1f2937; -fx-padding: 5 0;");
-        
-        Label productDetails = new Label(
-            "Catégorie: " + produit.getCategorie() + "\n" +
-            "Prix: " + String.format("%.3f DT", produit.getPrix()) + "\n" +
-            "Stock: " + produit.getStock() + " unités"
-        );
-        productDetails.setStyle("-fx-text-fill: #6b7280; -fx-font-size: 12px;");
-        
-        // Warning message
-        Label warningMessage = new Label("⚠️ Cette action est irréversible !");
-        warningMessage.setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold; -fx-padding: 10 0 5 0;");
-        
-        dialogContent.getChildren().addAll(productInfo, productName, productDetails, warningMessage);
-        
-        deleteDialog.getDialogPane().setContent(dialogContent);
-        
-        // Add buttons
-        ButtonType deleteButton = new ButtonType("Supprimer", ButtonBar.ButtonData.OK_DONE);
-        ButtonType cancelButton = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
-        deleteDialog.getDialogPane().getButtonTypes().addAll(deleteButton, cancelButton);
-        
-        // Style buttons
-        deleteDialog.showAndWait().ifPresent(response -> {
-            if (response == deleteButton) {
-                // Perform deletion
-                try {
-                    service.supprimer(produit.getId());
-                    // Show success feedback
-                    showDeleteSuccess(produit);
-                    loadProducts(); // Reload the list
-                } catch (Exception e) {
-                    // Show error feedback
-                    showDeleteError(produit);
-                }
+        if (produit == null) return;
+        openDeleteConfirmModal(produit);
+    }
+
+    private void openDeleteConfirmModal(Produit produit) {
+        try {
+            URL resource = getClass().getResource("/fxml/product/ProduitDeleteConfirm.fxml");
+            if (resource == null) {
+                showError("FXML suppression introuvable.");
+                return;
             }
-        });
+            FXMLLoader loader = new FXMLLoader(resource);
+            VBox root = loader.load();
+            ProduitDeleteConfirmController c = loader.getController();
+            if (c != null) {
+                c.setProduit(produit);
+                c.setOnDeleted(this::loadProducts);
+            }
+
+            Stage stage = new Stage();
+            stage.setTitle("Supprimer produit");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setResizable(false);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+        } catch (Exception e) {
+            showError("Erreur ouverture suppression: " + e.getMessage());
+        }
     }
     
     private void showDeleteSuccess(Produit produit) {
@@ -388,6 +493,30 @@ public class ProduitListController implements Initializable {
             errorAlert.showAndWait();
             e.printStackTrace();
         }
+    }
+
+    private void showInfo(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showSuccess(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Succès");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erreur");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     public void setOnClose(Consumer<Void> onClose) {

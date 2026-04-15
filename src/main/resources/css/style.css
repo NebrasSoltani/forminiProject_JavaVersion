@@ -788,3 +788,381 @@
 .form-control.error {
     -fx-border-color: #dc2626;
 }
+
+/* ── Boutique (Shop) UI ────────────────────────────────────── */
+.btn-danger {
+    -fx-background-color: -fx-error;
+    -fx-text-fill: white;
+    -fx-background-radius: 10px;
+    -fx-border-color: transparent;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+}
+
+.btn-danger:hover {
+    -fx-background-color: derive(-fx-error, -8%);
+}
+
+.shop-product-card {
+    -fx-background-color: white;
+    -fx-background-radius: 18px;
+    -fx-border-color: #eef2f7;
+    -fx-border-radius: 18px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.06), 18, 0, 0, 6);
+}
+
+.shop-product-card:hover {
+    -fx-border-color: rgba(105,116,232,0.35);
+    -fx-effect: dropshadow(three-pass-box, rgba(105,116,232,0.18), 26, 0, 0, 10);
+    -fx-translate-y: -2px;
+}
+
+.shop-badge {
+    -fx-background-color: #eef2ff;
+    -fx-text-fill: #4338ca;
+    -fx-padding: 3px 10px;
+    -fx-background-radius: 999px;
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+}
+
+.shop-badge-success {
+    -fx-background-color: #ecfdf5;
+    -fx-text-fill: #047857;
+}
+
+.shop-badge-danger {
+    -fx-background-color: #fff1f2;
+    -fx-text-fill: #be123c;
+}
+
+.shop-product-name {
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #0f172a;
+}
+
+.shop-product-desc {
+    -fx-font-size: 12.5px;
+    -fx-text-fill: #64748b;
+    -fx-line-spacing: 2px;
+}
+
+.shop-product-price {
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #10b981;
+}
+
+.shop-product-stock {
+    -fx-font-size: 12px;
+    -fx-text-fill: #0f172a;
+}
+
+.shop-text-danger {
+    -fx-text-fill: #ef4444;
+    -fx-font-weight: 800;
+}
+
+.shop-in-cart {
+    -fx-text-fill: #334155;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+.shop-card-actions {
+    -fx-alignment: center-left;
+}
+
+.shop-icon-btn {
+    -fx-min-width: 42px;
+    -fx-min-height: 36px;
+    -fx-padding: 6px 10px;
+}
+
+.shop-add-btn {
+    -fx-padding: 10px 14px;
+}
+
+.shop-danger-btn {
+    -fx-padding: 10px 14px;
+}
+
+.shop-detail-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #0f172a;
+}
+
+.shop-detail-image {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+/* ── Cart UI ──────────────────────────────────────────────── */
+.btn-small {
+    -fx-padding: 8px 12px;
+    -fx-font-size: 12.5px;
+}
+
+.cart-table {
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+}
+
+.cart-table .table-row-cell {
+    -fx-cell-size: 72px;
+}
+
+.cart-product-cell {
+    -fx-alignment: center-left;
+}
+
+.cart-product-thumb {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.cart-product-name {
+    -fx-font-size: 14px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #0f172a;
+}
+
+.cart-badge {
+    -fx-font-size: 10.5px;
+}
+
+.cart-actions {
+    -fx-alignment: center-left;
+}
+
+.cart-icon-btn {
+    -fx-min-width: 42px;
+    -fx-min-height: 34px;
+}
+
+.cart-remove-btn {
+    -fx-padding: 8px 14px;
+}
+
+.qty-spinner {
+    -fx-background-color: transparent;
+}
+
+.qty-spinner .text-field {
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-border-color: #e2e8f0;
+    -fx-background-color: #ffffff;
+    -fx-padding: 6px 8px;
+}
+
+.qty-spinner .increment-arrow-button,
+.qty-spinner .decrement-arrow-button {
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 10px;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 10px;
+}
+
+.cart-summary-card {
+    -fx-background-color: linear-gradient(to right, rgba(105,116,232,0.12), rgba(143,148,246,0.12));
+    -fx-border-color: rgba(105,116,232,0.25);
+    -fx-border-radius: 16px;
+    -fx-background-radius: 16px;
+    -fx-padding: 12px 16px;
+}
+
+.cart-summary-title {
+    -fx-text-fill: #475569;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+.cart-summary-meta {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+
+.cart-summary-value {
+    -fx-text-fill: #0f172a;
+    -fx-font-size: 18px;
+    -fx-font-weight: 900;
+}
+
+/* Modern Form Styles */
+.modern-input {
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 12 16px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #2d3748;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.modern-input:focused {
+    -fx-border-color: #667eea;
+    -fx-background-color: #f7fafc;
+    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.2), 8, 0, 0, 0);
+}
+
+.modern-input:hover {
+    -fx-border-color: #cbd5e0;
+}
+
+.modern-combo {
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 12 16px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #2d3748;
+}
+
+.modern-combo:focused {
+    -fx-border-color: #667eea;
+    -fx-background-color: #f7fafc;
+    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.2), 8, 0, 0, 0);
+}
+
+.modern-combo:hover {
+    -fx-border-color: #cbd5e0;
+}
+
+.modern-combo .list-cell {
+    -fx-background-color: white;
+    -fx-text-fill: #2d3748;
+    -fx-font-size: 14px;
+    -fx-padding: 8 12px;
+}
+
+.modern-combo .list-cell:hover {
+    -fx-background-color: #edf2f7;
+}
+
+.modern-combo .list-cell:selected {
+    -fx-background-color: #667eea;
+    -fx-text-fill: white;
+}
+
+.modern-textarea {
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 12 16px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #2d3748;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-wrap-text: true;
+}
+
+.modern-textarea:focused {
+    -fx-border-color: #667eea;
+    -fx-background-color: #f7fafc;
+    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.2), 8, 0, 0, 0);
+}
+
+.modern-textarea:hover {
+    -fx-border-color: #cbd5e0;
+}
+
+.modern-date-picker {
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #2d3748;
+}
+
+.modern-date-picker:focused {
+    -fx-border-color: #667eea;
+    -fx-background-color: #f7fafc;
+    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.2), 8, 0, 0, 0);
+}
+
+.modern-date-picker:hover {
+    -fx-border-color: #cbd5e0;
+}
+
+.modern-date-picker .arrow-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.modern-date-picker .arrow-button:hover {
+    -fx-background-color: #edf2f7;
+}
+
+.btn-back:hover {
+    -fx-background-color: #f7fafc !important;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 0);
+}
+
+.btn-browse:hover {
+    -fx-background-color: #805ad5 !important;
+    -fx-effect: dropshadow(gaussian, rgba(159,122,234,0.3), 8, 0, 0, 0);
+}
+
+.btn-cancel:hover {
+    -fx-background-color: #f7fafc !important;
+    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.2), 8, 0, 0, 0);
+}
+
+.btn-save:hover {
+    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.4), 12, 0, 0, 0) !important;
+    -fx-background-color: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
+}
+
+.btn-save:pressed {
+    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.2), 6, 0, 0, 0) !important;
+}
+
+/* Modern ScrollPane */
+.modern-scroll-pane .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-pref-width: 8px;
+}
+
+.modern-scroll-pane .scroll-bar:vertical .track {
+    -fx-background-color: rgba(255,255,255,0.2);
+    -fx-background-radius: 4px;
+    -fx-border-color: transparent;
+}
+
+.modern-scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(255,255,255,0.4);
+    -fx-background-radius: 4px;
+    -fx-border-color: transparent;
+}
+
+.modern-scroll-pane .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: rgba(255,255,255,0.6);
+}
+
+/* Form Card Animations */
+.modern-form-card {
+    -fx-transition: all 0.3s ease;
+}
+
+.modern-form-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 25, 0, 0, 12);
+}

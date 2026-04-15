@@ -27,6 +27,8 @@
             <HBox spacing="30" alignment="CENTER">
                 <Hyperlink text="Accueil" onAction="#showHome" styleClass="front-nav-link" style="-fx-text-fill: -fx-primary; -fx-font-weight: bold;"/>
                 <Hyperlink text="Formations" onAction="#showFormations" styleClass="front-nav-link"/>
+                <Hyperlink text="Boutique" onAction="#showShop" styleClass="front-nav-link"/>
+                <Hyperlink text="Panier" onAction="#showCart" styleClass="front-nav-link"/>
                 <Hyperlink text="Événements" onAction="#showEvents" styleClass="front-nav-link"/>
                 <Hyperlink text="À Propos" onAction="#showAbout" styleClass="front-nav-link"/>
             </HBox>
@@ -34,7 +36,7 @@
             <Region HBox.hgrow="ALWAYS"/>
             
             <HBox spacing="15" alignment="CENTER">
-                <Button text="Se Connecter" style="-fx-background-color: transparent; -fx-text-fill: -fx-primary; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                <Button text="Se Connecter" onAction="#showLogin" style="-fx-background-color: transparent; -fx-text-fill: -fx-primary; -fx-font-weight: bold; -fx-cursor: hand;"/>
                 <Hyperlink text="S'inscrire" onAction="#showSignup" styleClass="front-nav-link" style="-fx-text-fill: -fx-primary;"/>
                 <Hyperlink text="Modifier Profil" onAction="#showEditProfile" styleClass="front-nav-link" style="-fx-text-fill: -fx-primary;"/>
                 <Button text="Dashboard Admin" onAction="#switchToAdmin" styleClass="main-button-onix" style="-fx-background-color: -fx-primary; -fx-padding: 8 20;"/>

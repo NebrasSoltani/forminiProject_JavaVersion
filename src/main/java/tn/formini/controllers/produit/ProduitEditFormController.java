@@ -1,12 +1,18 @@
 package tn.formini.controllers.produit;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tn.formini.entities.produits.Produit;
 import tn.formini.services.produitsService.ProduitService;
 
 import java.math.BigDecimal;
+import java.net.URL;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.function.Consumer;
@@ -45,8 +51,7 @@ public class ProduitEditFormController {
         
         // Initialize categories
         fieldCategorie.getItems().addAll(
-            "Électronique", "Vêtements", "Alimentation", "Mobilier", 
-            "Livres", "Sports", "Jouets", "Beauté", "Automobile", "Autre"
+            "Informatique", "Scientifique", "Accessoires", "Outils intelligents"
         );
         
         // Initialize statuses
@@ -169,34 +174,64 @@ public class ProduitEditFormController {
     @FXML
     private void deleteProduct() {
         if (produit == null) return;
-
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirmation de suppression");
-        confirm.setHeaderText("Voulez-vous vraiment supprimer ce produit?");
-        confirm.setContentText("Cette action est irréversible.");
-        
-        if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
-            try {
-                produitService.supprimer(produit.getId());
-                showAlert(Alert.AlertType.INFORMATION, "Succès", "Produit supprimé avec succès!");
-                
-                if (onProductUpdated != null) {
-                    onProductUpdated.run();
-                }
-                
-                close();
-            } catch (Exception e) {
-                showError("Erreur lors de la suppression: " + e.getMessage());
-            }
-        }
+        openDeleteConfirmModal();
     }
 
     @FXML
     private void previewImage() {
         String imageUrl = fieldImage.getText().trim();
-        if (imageUrl != null && !imageUrl.isEmpty()) {
-            // You could implement an image preview dialog here
-            showAlert(Alert.AlertType.INFORMATION, "Aperçu", "URL de l'image: " + imageUrl);
+        if (imageUrl == null || imageUrl.isEmpty()) return;
+
+        ImageView iv = new ImageView();
+        iv.setFitWidth(720);
+        iv.setFitHeight(420);
+        iv.setPreserveRatio(true);
+        iv.setSmooth(true);
+
+        try {
+            iv.setImage(new Image(imageUrl, true));
+        } catch (Exception ignored) {}
+
+        VBox content = new VBox(10, new Label("Aperçu image"), iv, new Label(imageUrl));
+        content.setStyle("-fx-padding: 12;");
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Aperçu image");
+        alert.setHeaderText(null);
+        alert.getDialogPane().setContent(content);
+        alert.setResizable(true);
+        alert.showAndWait();
+    }
+
+    private void openDeleteConfirmModal() {
+        try {
+            URL resource = getClass().getResource("/fxml/product/ProduitDeleteConfirm.fxml");
+            if (resource == null) {
+                showError("FXML suppression introuvable.");
+                return;
+            }
+            FXMLLoader loader = new FXMLLoader(resource);
+            VBox root = loader.load();
+            ProduitDeleteConfirmController c = loader.getController();
+            if (c != null) {
+                c.setProduit(produit);
+                c.setOnDeleted(() -> {
+                    if (onProductUpdated != null) onProductUpdated.run();
+                });
+            }
+
+            Stage stage = new Stage();
+            stage.setTitle("Supprimer produit");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setResizable(false);
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.showAndWait();
+
+            // If deleted, close edit window too (product no longer exists)
+            // We detect it by checking if it still has an id and the callback ran; simplest: always refresh list, keep form open.
+            // User can close manually; or we can close if delete button was used. We'll keep current window open for safety.
+        } catch (Exception e) {
+            showError("Erreur ouverture suppression: " + e.getMessage());
         }
     }
 
