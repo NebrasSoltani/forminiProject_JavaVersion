@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.produits.ProduitFormController"
+      spacing="15" 
+      style="-fx-background-color: #f0f0f0; -fx-padding: 20;">
+    
+    <Label text="AJOUTER UN PRODUIT" 
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #333;"/>
+    
+    <VBox spacing="10" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8; -fx-border-color: #ddd; -fx-border-width: 1;">
+        
+        <VBox spacing="5">
+            <Label text="Nom du produit:" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+            <TextField fx:id="fieldNom" promptText="Entrez le nom" prefHeight="35"/>
+            <Label fx:id="errNom" style="-fx-text-fill: red; -fx-font-size: 11px;" visible="false"/>
+        </VBox>
+        
+        <VBox spacing="5">
+            <Label text="Catégorie:" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+            <ComboBox fx:id="fieldCategorie" promptText="Sélectionnez" prefHeight="35"/>
+            <Label fx:id="errCategorie" style="-fx-text-fill: red; -fx-font-size: 11px;" visible="false"/>
+        </VBox>
+        
+        <VBox spacing="5">
+            <Label text="Prix (DT):" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+            <TextField fx:id="fieldPrix" promptText="0.000" prefHeight="35"/>
+            <Label fx:id="errPrix" style="-fx-text-fill: red; -fx-font-size: 11px;" visible="false"/>
+        </VBox>
+        
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <Button text="Annuler" onAction="#goBack" style="-fx-background-color: #ccc; -fx-text-fill: black; -fx-pref-width: 100; -fx-pref-height: 35;"/>
+            <Button fx:id="btnSave" text="Enregistrer" onAction="#saveProduit" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-pref-width: 100; -fx-pref-height: 35;"/>
+        </HBox>
+        
+    </VBox>
+    
+    <!-- Other required fields (hidden) -->
+    <TextField fx:id="fieldDescription" visible="false"/>
+    <TextField fx:id="fieldStock" visible="false"/>
+    <TextField fx:id="fieldImage" visible="false"/>
+    <DatePicker fx:id="fieldDateCreation" visible="false"/>
+    <ComboBox fx:id="fieldStatut" visible="false"/>
+    <Label fx:id="errDescription" visible="false"/>
+    <Label fx:id="errStock" visible="false"/>
+    <Label fx:id="errDateCreation" visible="false"/>
+    <Label fx:id="errStatut" visible="false"/>
+    <Label fx:id="validationSummary" visible="false"/>
+    <VBox fx:id="validationCard" visible="false"/>
+    
+</VBox>

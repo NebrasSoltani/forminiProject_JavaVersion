@@ -5,9 +5,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import tn.formini.controllers.blog.BlogFormController;
 import tn.formini.controllers.blog.BlogListController;
 import tn.formini.controllers.evenement.EvenementFormController;
@@ -60,19 +63,28 @@ public class MainController implements Initializable {
 
     private Object loadPage(String fxmlPath) {
         try {
+            System.out.println("DEBUG: Loading FXML: " + fxmlPath);
             URL resource = getClass().getResource(fxmlPath);
             if (resource == null) {
                 System.err.println("FXML introuvable : " + fxmlPath);
                 return null;
             }
+            System.out.println("DEBUG: FXML found at: " + resource);
 
             FXMLLoader loader = new FXMLLoader(resource);
             Node page = loader.load();
+            System.out.println("DEBUG: FXML loaded successfully");
             Object controller = loader.getController();
+            System.out.println("DEBUG: Controller: " + (controller != null ? controller.getClass().getSimpleName() : "null"));
 
+            System.out.println("DEBUG: ContentArea before: " + contentArea.getChildren().size() + " children");
             contentArea.getChildren().setAll(page);
+            System.out.println("DEBUG: ContentArea after: " + contentArea.getChildren().size() + " children");
+            System.out.println("DEBUG: Page loaded: " + (page != null ? page.getClass().getSimpleName() : "null"));
+            
             return controller;
-        } catch (IOException e) {
+        } catch (Exception e) {
+            System.err.println("DEBUG: Error loading FXML: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
@@ -166,13 +178,14 @@ public class MainController implements Initializable {
 
     @FXML
     public void showProductAdd() {
+        System.out.println("DEBUG: showProductAdd() method called!");
         showProductForm(null);
     }
 
     public void showProductForm(tn.formini.entities.produits.Produit produit) {
         updateActiveButton(btnProductAdd);
         labelPageTitle.setText(produit == null ? "Nouveau Produit" : "Modifier le Produit");
-        ProduitFormController controller = (ProduitFormController) loadPage("/fxml/produits/ProduitForm.fxml");
+        ProduitFormController controller = (ProduitFormController) loadPage("/fxml/produits/ProduitForm_Minimal.fxml");
         if (controller != null) {
             controller.setMainController(this);
             if (produit != null) {

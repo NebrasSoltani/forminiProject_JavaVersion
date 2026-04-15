@@ -4,6 +4,9 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import tn.formini.controllers.MainController;
 import tn.formini.entities.produits.Produit;
@@ -39,6 +42,7 @@ public class ProduitFormController implements Initializable {
     @FXML private Label errDateCreation;
     @FXML private Label errStatut;
     @FXML private Label validationSummary;
+    @FXML private VBox validationCard;
 
     private MainController mainController;
     private Produit produitToEdit;
@@ -49,8 +53,7 @@ public class ProduitFormController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // Initialize categories
         fieldCategorie.setItems(FXCollections.observableArrayList(
-                "Informatique", "Électronique", "Électroménager", "Vêtements", 
-                "Alimentation", "Livres", "Sports", "Maison", "Jouets", "Autre"
+                "Informatique", "Scientifique", "Outils intelligents", "Accessoires"
         ));
 
         // Initialize statuts
@@ -61,6 +64,9 @@ public class ProduitFormController implements Initializable {
         // Set default values
         fieldDateCreation.setValue(LocalDate.now());
         fieldStatut.setValue("disponible");
+
+        // Hide validation card initially
+        validationCard.setVisible(false);
 
         // Add real-time validation listeners
         setupValidationListeners();
@@ -187,6 +193,34 @@ public class ProduitFormController implements Initializable {
         if (file != null) {
             fieldImage.setText(file.toURI().toString());
         }
+    }
+
+    @FXML
+    public void previewImage() {
+        String url = fieldImage.getText();
+        if (url == null || url.trim().isEmpty()) {
+            showError("Veuillez saisir une URL d'image (ou choisir un fichier).");
+            return;
+        }
+
+        ImageView iv = new ImageView();
+        iv.setFitWidth(720);
+        iv.setFitHeight(420);
+        iv.setPreserveRatio(true);
+        iv.setSmooth(true);
+        try {
+            iv.setImage(new Image(url.trim(), true));
+        } catch (Exception ignored) {}
+
+        VBox content = new VBox(10, new Label("Aperçu image"), iv, new Label(url.trim()));
+        content.setStyle("-fx-padding: 12;");
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Aperçu image");
+        alert.setHeaderText(null);
+        alert.getDialogPane().setContent(content);
+        alert.setResizable(true);
+        alert.showAndWait();
     }
 
     @FXML
@@ -359,7 +393,7 @@ public class ProduitFormController implements Initializable {
         if (errStatut.isVisible()) errors.append("• ").append(errStatut.getText()).append("\n");
         
         validationSummary.setText(errors.toString());
-        validationSummary.setVisible(true);
+        validationCard.setVisible(true);
     }
 
     private Date toDate(LocalDate localDate) {
