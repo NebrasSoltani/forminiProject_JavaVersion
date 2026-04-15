@@ -185,7 +185,7 @@ public class SignupController implements Initializable {
             }
 
             new Alert(Alert.AlertType.INFORMATION, "Inscription réussie. Vous pouvez vous connecter.", ButtonType.OK).showAndWait();
-            goBack();
+            redirectToLogin();
         } catch (IllegalArgumentException ex) {
             showMessage(ex.getMessage() != null ? ex.getMessage() : "Données invalides.");
         } catch (IllegalStateException ex) {
@@ -321,20 +321,28 @@ public class SignupController implements Initializable {
         }
     }
 
+    
+    /**
+     * Redirect to login interface after successful signup
+     */
+    private void redirectToLogin() {
+        if (lblMessage.getScene() == null) {
+            return;
+        }
+        try {
+            URL resource = getClass().getResource("/fxml/auth/Login.fxml");
+            if (resource != null) {
+                Parent root = FXMLLoader.load(resource);
+                lblMessage.getScene().setRoot(root);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     private void onGoToLogin() {
-        try {
-            tn.formini.mains.LoginApp loginApp = new tn.formini.mains.LoginApp();
-            Stage loginStage = new Stage();
-            loginApp.start(loginStage);
-            
-            // Close current signup window
-            if (onBack != null) {
-                onBack.run();
-            }
-        } catch (Exception e) {
-            System.err.println("Erreur lors de l'ouverture de la page de connexion: " + e.getMessage());
-        }
+        redirectToLogin();
     }
 
     @FXML

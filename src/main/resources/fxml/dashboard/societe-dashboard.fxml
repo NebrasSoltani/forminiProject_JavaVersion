@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.formini.controllers.dashboard.SocieteDashboardController" spacing="20" style="-fx-padding: 20;">
+    <children>
+        <!-- Title -->
+        <Label fx:id="titleLabel" text="Tableau de Bord Société" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        
+        <!-- Welcome Message -->
+        <Label fx:id="welcomeLabel" text="Bienvenue!" style="-fx-font-size: 18px; -fx-text-fill: #34495e;"/>
+        
+        <!-- Statistics Section -->
+        <VBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 15; -fx-border-radius: 5;">
+            <children>
+                <Label text="Nos Statistiques" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                <Label fx:id="statsLabel" text="Chargement..." style="-fx-font-size: 14px;"/>
+            </children>
+        </VBox>
+        
+        <!-- Internship Management Menu -->
+        <VBox spacing="15">
+            <children>
+                <Label text="Gestion des Stages" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                
+                <GridPane hgap="15" vgap="15">
+                    <children>
+                        <Button fx:id="myOffersButton" text="Mes Offres de Stage" 
+                                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;" 
+                                GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                        
+                        <Button fx:id="createOfferButton" text="Créer une Offre" 
+                                style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;" 
+                                GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                        
+                        <Button fx:id="viewCandidatesButton" text="Voir les Candidats" 
+                                style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;" 
+                                GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                        
+                        <Button fx:id="searchStudentsButton" text="Rechercher des Étudiants" 
+                                style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;" 
+                                GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        
+                        <Button fx:id="myProfileButton" text="Profil de la Société" 
+                                style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;" 
+                                GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                        
+                        <Button fx:id="messagesButton" text="Messages" 
+                                style="-fx-background-color: #1abc9c; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;" 
+                                GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                    </children>
+                </GridPane>
+            </children>
+        </VBox>
+        
+        <!-- Recent Activity -->
+        <VBox spacing="10" style="-fx-background-color: #f8f9fa; -fx-padding: 15; -fx-border-radius: 5;">
+            <children>
+                <Label text="Activité Récente" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                <Label text="Aucune activité récente" style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d;"/>
+            </children>
+        </VBox>
+        
+        <!-- Quick Actions -->
+        <HBox spacing="10">
+            <children>
+                <Button text="Actualiser" onAction="#refreshDashboard" style="-fx-background-color: #95a5a6; -fx-text-fill: white;"/>
+                <Button text="Aide" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+                <Button text="Paramètres" style="-fx-background-color: #7f8c8d; -fx-text-fill: white;"/>
+            </children>
+        </HBox>
+    </children>
+</VBox>
