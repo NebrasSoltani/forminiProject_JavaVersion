@@ -166,6 +166,7 @@ public class EvenementListFrontController implements Initializable {
         labelCount.setText(filteredEvenements.size() + " trouvé(s)");
     }
 
+
     @FXML
     public void resetFilters() {
         searchField.clear();
