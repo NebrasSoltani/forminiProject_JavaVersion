@@ -28,12 +28,7 @@ import java.util.stream.Collectors;
 
 public class BlogListController implements Initializable {
 
-    @FXML private TableView<Blog> tableBlogs;
-    @FXML private TableColumn<Blog, String> colCategorie;
-    @FXML private TableColumn<Blog, String> colTitre;
-    @FXML private TableColumn<Blog, String> colAuteur;
-    @FXML private TableColumn<Blog, Boolean> colStatus;
-    @FXML private TableColumn<Blog, Void> colActions;
+    @FXML private FlowPane blogGrid;
 
     @FXML private TextField            searchField;
     @FXML private ComboBox<String>     filterCategorie;
@@ -49,59 +44,11 @@ public class BlogListController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        setupTable();
         setupFilters();
         loadBlogs();
         setupPagination();
     }
 
-    private void setupTable() {
-        ListStyleManager.applyStandardStyle(tableBlogs);
-        colCategorie.setCellValueFactory(new PropertyValueFactory<>("categorie"));
-        colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
-        colAuteur.setCellValueFactory(new PropertyValueFactory<>("auteur_id")); // Showing ID for now, could be name
-
-        // Install tooltips for truncated columns
-        ListStyleManager.installTooltip(colTitre);
-
-        // Set default sort visually
-        tableBlogs.getSortOrder().add(colTitre);
-
-        colStatus.setCellValueFactory(new PropertyValueFactory<>("is_publie"));
-        colStatus.setCellFactory(tc -> new TableCell<>() {
-            private final Label label = new Label();
-            @Override
-            protected void updateItem(Boolean published, boolean empty) {
-                super.updateItem(published, empty);
-                if (empty || published == null) {
-                    setGraphic(null);
-                } else {
-                    label.setText(published ? "● Publié" : "○ Brouillon");
-                    label.getStyleClass().setAll("status-badge-" + (published ? "active" : "inactive"));
-                    setGraphic(label);
-                }
-            }
-        });
-
-        colActions.setCellFactory(tc -> new TableCell<>() {
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) setGraphic(null);
-                else {
-                    Blog b = getTableView().getItems().get(getIndex());
-                    HBox box = new HBox(10);
-                    box.setAlignment(Pos.CENTER_RIGHT);
-                    Button btnE = new Button("✏️"); btnE.getStyleClass().add("btn-edit");
-                    btnE.setOnAction(event -> editBlog(b));
-                    Button btnD = new Button("🗑️"); btnD.getStyleClass().add("btn-delete");
-                    btnD.setOnAction(event -> deleteBlog(b));
-                    box.getChildren().addAll(btnE, btnD);
-                    setGraphic(box);
-                }
-            }
-        });
-    }
 
     private void setupPagination() {
         pagination.setPageFactory(this::createPage);
@@ -112,11 +59,13 @@ public class BlogListController implements Initializable {
         int toIndex = Math.min(fromIndex + ITEMS_PER_PAGE, filteredBlogs.size());
         
         if (fromIndex >= filteredBlogs.size()) {
-            tableBlogs.setItems(FXCollections.emptyObservableList());
+            renderCards(new ArrayList<>());
         } else {
-            tableBlogs.setItems(FXCollections.observableArrayList(filteredBlogs.subList(fromIndex, toIndex)));
+            renderCards(filteredBlogs.subList(fromIndex, toIndex));
         }
-        return tableBlogs;
+        Region dummy = new Region();
+        dummy.setPrefHeight(0);
+        return dummy;
     }
 
     public void setMainController(MainController mc) {
@@ -152,7 +101,57 @@ public class BlogListController implements Initializable {
     }
 
     private void renderCards(List<Blog> list) {
-        tableBlogs.setItems(FXCollections.observableArrayList(list));
+        if (blogGrid == null) return;
+        blogGrid.getChildren().clear();
+        for (Blog b : list) {
+            VBox card = new VBox(15);
+            card.getStyleClass().add("blog-card");
+            card.setPrefWidth(350);
+            card.setPadding(new javafx.geometry.Insets(25));
+
+            // Header: Category & Status
+            HBox header = new HBox(10);
+            header.setAlignment(Pos.CENTER_LEFT);
+            Label cat = new Label(b.getCategorie().toUpperCase());
+            cat.getStyleClass().add("card-tag");
+            
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+            
+            Label status = new Label(b.isIs_publie() ? "PUBLIÉ" : "BROUILLON");
+            status.setStyle(b.isIs_publie() ? "-fx-text-fill: #10b981; -fx-font-weight: bold; -fx-font-size: 11px;" : "-fx-text-fill: #64748b; -fx-font-weight: bold; -fx-font-size: 11px;");
+
+            header.getChildren().addAll(cat, spacer, status);
+
+            // Title
+            Label title = new Label(b.getTitre());
+            title.getStyleClass().add("card-title-lg");
+            title.setWrapText(true);
+            title.setPrefHeight(60);
+            title.setAlignment(Pos.TOP_LEFT);
+
+            // Author & Date info (simplified)
+            Label author = new Label("👤 Auteur #" + b.getAuteur_id());
+            author.getStyleClass().add("card-body");
+
+            // Actions
+            HBox actions = new HBox(10);
+            actions.setAlignment(Pos.CENTER_RIGHT);
+            Button btnEdit = new Button("✏️ Modifier");
+            btnEdit.setStyle("-fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;");
+            btnEdit.setOnAction(e -> editBlog(b));
+            
+            Button btnDelete = new Button("🗑️");
+            btnDelete.setStyle("-fx-background-color: #fee2e2; -fx-text-fill: #ef4444; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;");
+            btnDelete.setOnAction(e -> deleteBlog(b));
+            
+            actions.getChildren().addAll(btnEdit, btnDelete);
+
+            card.getChildren().addAll(header, title, author, actions);
+            
+            // Hover effect animation if desired, or just use CSS
+            blogGrid.getChildren().add(card);
+        }
     }
 
 

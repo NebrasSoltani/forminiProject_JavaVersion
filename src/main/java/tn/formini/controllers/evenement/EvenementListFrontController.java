@@ -1,23 +1,13 @@
 package tn.formini.controllers.evenement;
-import tn.formini.controllers.MainController;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.StackPane;
-import tn.formini.utils.ListStyleManager;
-import javafx.geometry.Pos;
-import javafx.animation.FadeTransition;
-import javafx.util.Duration;
+import javafx.scene.layout.*;
 import tn.formini.entities.Evenement;
 import tn.formini.services.EvenementService;
+import tn.formini.utils.EventUiUtils;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -26,6 +16,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unused")
 public class EvenementListFrontController implements Initializable {
 
     @FXML private FlowPane eventGrid;
@@ -68,12 +59,10 @@ public class EvenementListFrontController implements Initializable {
     }
 
     private void setupFilters() {
-        filterType.setItems(FXCollections.observableArrayList(
-                "Tous", "Conférence", "Atelier", "Webinaire", "Formation", "Autre"
-        ));
-        searchField.textProperty().addListener((obs, o, n) -> applyFilters());
-        filterType.valueProperty().addListener((obs, o, n) -> applyFilters());
-        filterLive.selectedProperty().addListener((obs, o, n) -> applyFilters());
+        filterType.setItems(FXCollections.observableArrayList(Evenement.DISPLAY_TYPES));
+        searchField.textProperty().addListener((_, _, _) -> applyFilters());
+        filterType.valueProperty().addListener((_, _, _) -> applyFilters());
+        filterLive.selectedProperty().addListener((_, _, _) -> applyFilters());
     }
 
     private void loadEvenements() {
@@ -100,27 +89,7 @@ public class EvenementListFrontController implements Initializable {
             card.setPrefWidth(320);
 
             // Header image/icon
-            StackPane imgHeader = new StackPane();
-            imgHeader.getStyleClass().add("card-image-cover");
-            if (evt.getImage() != null && !evt.getImage().trim().isEmpty()) {
-                try {
-                    javafx.scene.image.Image image = new javafx.scene.image.Image(evt.getImage());
-                    javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(image);
-                    imageView.setFitWidth(320);
-                    imageView.setFitHeight(150);
-                    // Set preserveRatio to false to cover the box, or true. Usually cover is good.
-                    imageView.setPreserveRatio(false);
-                    imgHeader.getChildren().add(imageView);
-                } catch (Exception ex) {
-                    Label icon = new Label("📅");
-                    icon.setStyle("-fx-font-size: 40px;");
-                    imgHeader.getChildren().add(icon);
-                }
-            } else {
-                Label icon = new Label("📅");
-                icon.setStyle("-fx-font-size: 40px;");
-                imgHeader.getChildren().add(icon);
-            }
+            StackPane imgHeader = EventUiUtils.createEventImageHeader(evt);
 
             VBox body = new VBox(15);
             body.setPadding(new javafx.geometry.Insets(25));
@@ -136,17 +105,14 @@ public class EvenementListFrontController implements Initializable {
             title.setPrefHeight(45);
 
             // Details
-            VBox details = new VBox(5);
-            Label dateLieu = new Label("📍 " + evt.getLieu() + " | 👥 " + evt.getNombre_places() + " places");
-            dateLieu.setStyle("-fx-text-fill: #64748b; -fx-font-size: 13px;");
-            details.getChildren().add(dateLieu);
+            VBox details = EventUiUtils.createEventDetails(evt);
 
             // Live and 360 Buttons
             HBox features = new HBox(10);
             if (evt.isLive()) {
                 Button btnLive = new Button("🔴 LIVE");
                 btnLive.setStyle("-fx-background-color: #fee2e2; -fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-                btnLive.setOnAction(e -> {
+                btnLive.setOnAction(_ -> {
                     try { java.awt.Desktop.getDesktop().browse(new java.net.URI(evt.getStream_url())); }
                     catch (Exception ex) { System.err.println(ex.getMessage()); }
                 });
@@ -155,7 +121,7 @@ public class EvenementListFrontController implements Initializable {
             if (evt.getImage360() != null && !evt.getImage360().isEmpty()) {
                 Button btn360 = new Button("📸 360°");
                 btn360.setStyle("-fx-background-color: #eff6ff; -fx-text-fill: #3b82f6; -fx-font-weight: bold; -fx-font-size: 11px; -fx-cursor: hand;");
-                btn360.setOnAction(e -> {
+                btn360.setOnAction(_ -> {
                     try { java.awt.Desktop.getDesktop().browse(new java.net.URI(evt.getImage360())); }
                     catch (Exception ex) { System.err.println(ex.getMessage()); }
                 });
@@ -166,7 +132,7 @@ public class EvenementListFrontController implements Initializable {
             Button btnParticiper = new Button("Participer maintenant");
             btnParticiper.getStyleClass().add("main-button-onix");
             btnParticiper.setMaxWidth(Double.MAX_VALUE);
-            btnParticiper.setOnAction(e -> {
+            btnParticiper.setOnAction(_ -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Inscription");
                 alert.setHeaderText("Confirmation d'inscription");

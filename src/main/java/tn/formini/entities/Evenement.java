@@ -43,10 +43,14 @@ public class Evenement {
     /** 1-N : blogs liés à cet événement */
     private List<Blog> blogs = new ArrayList<>();
 
-    private static final String[] TYPES_VALIDES = {
+    public static final String[] TYPES_VALIDES = {
             "conference", "atelier", "webinaire", "musique",
             "technologie", "exposition", "formation", "innovation"
     };
+
+    public static final List<String> DISPLAY_TYPES = List.of(
+            "Tous", "Conférence", "Atelier", "Webinaire", "Formation", "Autre"
+    );
 
     public Evenement() {}
 

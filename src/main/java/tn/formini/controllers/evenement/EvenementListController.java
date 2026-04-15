@@ -18,6 +18,7 @@ import javafx.animation.FadeTransition;
 import javafx.util.Duration;
 import tn.formini.entities.Evenement;
 import tn.formini.services.EvenementService;
+import tn.formini.utils.EventUiUtils;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -26,16 +27,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unused")
 public class EvenementListController implements Initializable {
 
     @FXML private FlowPane eventGrid;
-    @FXML private TableView<Evenement> tableEvenements;
-    @FXML private TableColumn<Evenement, String> colType;
-    @FXML private TableColumn<Evenement, String> colTitre;
-    @FXML private TableColumn<Evenement, String> colLieu;
-    @FXML private TableColumn<Evenement, Integer> colPlaces;
-    @FXML private TableColumn<Evenement, Boolean> colStatus;
-    @FXML private TableColumn<Evenement, Void> colActions;
 
     @FXML private TextField        searchField;
     @FXML private ComboBox<String> filterType;
@@ -52,60 +47,9 @@ public class EvenementListController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        setupTable();
         setupFilters();
         loadEvenements();
         setupPagination();
-    }
-
-    private void setupTable() {
-        ListStyleManager.applyStandardStyle(tableEvenements);
-        colType.setCellValueFactory(new PropertyValueFactory<>("type"));
-        colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
-        colLieu.setCellValueFactory(new PropertyValueFactory<>("lieu"));
-        colPlaces.setCellValueFactory(new PropertyValueFactory<>("nombre_places"));
-
-        // Install tooltips for truncated columns
-        ListStyleManager.installTooltip(colTitre);
-        ListStyleManager.installTooltip(colLieu);
-
-        // Set default sort visually
-        tableEvenements.getSortOrder().add(colTitre);
-
-        colStatus.setCellValueFactory(new PropertyValueFactory<>("is_actif"));
-        colStatus.setCellFactory(tc -> new TableCell<>() {
-            private final Label label = new Label();
-            @Override
-            protected void updateItem(Boolean active, boolean empty) {
-                super.updateItem(active, empty);
-                if (empty || active == null) {
-                    setGraphic(null);
-                } else {
-                    label.setText(active ? "● Actif" : "○ Inactif");
-                    label.getStyleClass().setAll("status-badge-" + (active ? "active" : "inactive"));
-                    setGraphic(label);
-                }
-            }
-        });
-
-        colActions.setCellFactory(tc -> new TableCell<>() {
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) setGraphic(null);
-                else {
-                    Evenement e = getTableView().getItems().get(getIndex());
-                    HBox box = new HBox(10);
-                    box.setAlignment(Pos.CENTER_RIGHT);
-                    Button btnE = new Button("✏️"); btnE.getStyleClass().add("btn-edit");
-                    btnE.setOnAction(event -> editEvenement(e));
-                    Button btnD = new Button("🗑️"); btnD.getStyleClass().add("btn-delete");
-                    btnD.setOnAction(event -> deleteEvenement(e));
-                    box.getChildren().addAll(btnE, btnD);
-                    setGraphic(box);
-                }
-            }
-        });
     }
 
     private void setupPagination() {
@@ -117,11 +61,13 @@ public class EvenementListController implements Initializable {
         int toIndex = Math.min(fromIndex + ITEMS_PER_PAGE, filteredEvenements.size());
 
         if (fromIndex >= filteredEvenements.size()) {
-            tableEvenements.setItems(FXCollections.emptyObservableList());
+            renderCards(new ArrayList<>());
         } else {
-            tableEvenements.setItems(FXCollections.observableArrayList(filteredEvenements.subList(fromIndex, toIndex)));
+            renderCards(filteredEvenements.subList(fromIndex, toIndex));
         }
-        return tableEvenements;
+        Region dummy = new Region();
+        dummy.setPrefHeight(0);
+        return dummy;
     }
 
     public void setMainController(MainController mc) {
@@ -129,13 +75,11 @@ public class EvenementListController implements Initializable {
     }
 
     private void setupFilters() {
-        filterType.setItems(FXCollections.observableArrayList(
-                "Tous", "Conférence", "Atelier", "Webinaire", "Formation", "Autre"
-        ));
-        searchField.textProperty().addListener((obs, o, n) -> applyFilters());
-        filterType.valueProperty().addListener((obs, o, n) -> applyFilters());
-        filterLive.selectedProperty().addListener((obs, o, n) -> applyFilters());
-        filterActif.selectedProperty().addListener((obs, o, n) -> applyFilters());
+        filterType.setItems(FXCollections.observableArrayList(Evenement.DISPLAY_TYPES));
+        searchField.textProperty().addListener((_, _, _) -> applyFilters());
+        filterType.valueProperty().addListener((_, _, _) -> applyFilters());
+        filterLive.selectedProperty().addListener((_, _, _) -> applyFilters());
+        filterActif.selectedProperty().addListener((_, _, _) -> applyFilters());
     }
 
     private void loadEvenements() {
@@ -162,26 +106,7 @@ public class EvenementListController implements Initializable {
             card.getStyleClass().add("event-card");
             card.setPrefWidth(320);
 
-            javafx.scene.layout.StackPane imgHeader = new javafx.scene.layout.StackPane();
-            imgHeader.getStyleClass().add("card-image-cover");
-            if (evt.getImage() != null && !evt.getImage().trim().isEmpty()) {
-                try {
-                    javafx.scene.image.Image image = new javafx.scene.image.Image(evt.getImage());
-                    javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(image);
-                    imageView.setFitWidth(320);
-                    imageView.setFitHeight(150);
-                    imageView.setPreserveRatio(false);
-                    imgHeader.getChildren().add(imageView);
-                } catch (Exception ex) {
-                    Label icon = new Label("📅");
-                    icon.setStyle("-fx-font-size: 40px;");
-                    imgHeader.getChildren().add(icon);
-                }
-            } else {
-                Label icon = new Label("📅");
-                icon.setStyle("-fx-font-size: 40px;");
-                imgHeader.getChildren().add(icon);
-            }
+            javafx.scene.layout.StackPane imgHeader = EventUiUtils.createEventImageHeader(evt);
 
             VBox body = new VBox(15);
             body.setPadding(new javafx.geometry.Insets(25));
@@ -199,20 +124,17 @@ public class EvenementListController implements Initializable {
             title.setWrapText(true);
             title.setPrefHeight(45);
 
-            VBox details = new VBox(5);
-            Label dateLieu = new Label("📍 " + evt.getLieu() + " | 👥 " + evt.getNombre_places() + " places");
-            dateLieu.setStyle("-fx-text-fill: #64748b; -fx-font-size: 13px;");
-            details.getChildren().add(dateLieu);
+            VBox details = EventUiUtils.createEventDetails(evt);
 
             HBox actions = new HBox(10);
 
             Button btnEdit = new Button("Modifier");
             btnEdit.setStyle("-fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;");
-            btnEdit.setOnAction(e -> editEvenement(evt));
+            btnEdit.setOnAction(_ -> editEvenement(evt));
 
             Button btnDelete = new Button("Supprimer");
             btnDelete.setStyle("-fx-background-color: #fee2e2; -fx-text-fill: #ef4444; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;");
-            btnDelete.setOnAction(e -> deleteEvenement(evt));
+            btnDelete.setOnAction(_ -> deleteEvenement(evt));
 
             actions.getChildren().addAll(btnEdit, btnDelete);
 

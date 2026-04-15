@@ -46,6 +46,27 @@ public class BlogFormController implements Initializable {
         ));
         fieldDatePublication.setValue(LocalDate.now());
         loadEvenements();
+        
+        setupValidationListeners();
+    }
+
+    private void setupValidationListeners() {
+        fieldTitre.textProperty().addListener((obs, old, val) -> clearError(fieldTitre, errTitre));
+        fieldContenu.textProperty().addListener((obs, old, val) -> clearError(fieldContenu, errContenu));
+        fieldCategorie.valueProperty().addListener((obs, old, val) -> clearError(fieldCategorie, errCategorie));
+    }
+
+    private void clearError(Control field, Label errorLabel) {
+        field.getStyleClass().remove("form-control-error");
+        errorLabel.setVisible(false);
+    }
+
+    private void applyError(Control field, Label errorLabel, String message) {
+        if (!field.getStyleClass().contains("form-control-error")) {
+            field.getStyleClass().add("form-control-error");
+        }
+        errorLabel.setText(message);
+        errorLabel.setVisible(true);
     }
 
     public void setMainController(MainController mc) {
@@ -141,23 +162,17 @@ public class BlogFormController implements Initializable {
 
     private boolean validate() {
         boolean ok = true;
-        errTitre.setVisible(false);
-        errContenu.setVisible(false);
-        errCategorie.setVisible(false);
 
         if (fieldTitre.getText().trim().isEmpty()) {
-            errTitre.setText("Le titre est obligatoire.");
-            errTitre.setVisible(true);
+            applyError(fieldTitre, errTitre, "Le titre est obligatoire.");
             ok = false;
         }
         if (fieldContenu.getText().trim().isEmpty()) {
-            errContenu.setText("Le contenu est obligatoire.");
-            errContenu.setVisible(true);
+            applyError(fieldContenu, errContenu, "Le contenu est obligatoire.");
             ok = false;
         }
         if (fieldCategorie.getValue() == null) {
-            errCategorie.setText("Veuillez choisir une catégorie.");
-            errCategorie.setVisible(true);
+            applyError(fieldCategorie, errCategorie, "Veuillez choisir une catégorie.");
             ok = false;
         }
         return ok;

@@ -25,15 +25,11 @@
         <Label fx:id="labelCount" text="0 blog(s)" styleClass="topbar-date"/>
     </HBox>
 
-    <TableView fx:id="tableBlogs" VBox.vgrow="ALWAYS" styleClass="modern-table">
-        <columns>
-            <TableColumn fx:id="colCategorie" text="Catégorie" prefWidth="100" styleClass="cell-title"/>
-            <TableColumn fx:id="colTitre" text="Titre" prefWidth="450"/>
-            <TableColumn fx:id="colAuteur" text="Auteur" prefWidth="130"/>
-            <TableColumn fx:id="colStatus" text="Statut" prefWidth="100"/>
-            <TableColumn fx:id="colActions" text="Actions" prefWidth="120" styleClass="cell-actions"/>
-        </columns>
-    </TableView>
+    <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" style="-fx-background-color: transparent; -fx-padding: 10;">
+        <FlowPane fx:id="blogGrid" hgap="25" vgap="25" style="-fx-padding: 10;">
+            <!-- Cards will be injected here -->
+        </FlowPane>
+    </ScrollPane>
 
     <HBox alignment="CENTER_RIGHT" spacing="10">
         <Pagination fx:id="pagination" pageCount="10" maxPageIndicatorCount="5"/>

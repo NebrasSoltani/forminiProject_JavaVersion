@@ -51,6 +51,41 @@ public class EvenementFormController implements Initializable {
         fieldDateDebut.setValue(LocalDate.now());
         fieldDateFin.setValue(LocalDate.now().plusDays(1));
         fieldStreamUrl.disableProperty().bind(fieldLive.selectedProperty().not());
+
+        setupValidationListeners();
+    }
+
+    private void setupValidationListeners() {
+        fieldTitre.textProperty().addListener((obs, old, val) -> clearError(fieldTitre, errTitre));
+        fieldDescription.textProperty().addListener((obs, old, val) -> clearError(fieldDescription, errDescription));
+        fieldDateDebut.valueProperty().addListener((obs, old, val) -> clearError(fieldDateDebut, errDateDebut));
+        fieldDateFin.valueProperty().addListener((obs, old, val) -> {
+            clearError(fieldDateFin, errDateFin);
+            validateDates();
+        });
+    }
+
+    private void clearError(Control field, Label errorLabel) {
+        field.getStyleClass().remove("form-control-error");
+        errorLabel.setVisible(false);
+    }
+
+    private void applyError(Control field, Label errorLabel, String message) {
+        if (!field.getStyleClass().contains("form-control-error")) {
+            field.getStyleClass().add("form-control-error");
+        }
+        errorLabel.setText(message);
+        errorLabel.setVisible(true);
+    }
+
+    private boolean validateDates() {
+        if (fieldDateDebut.getValue() != null && fieldDateFin.getValue() != null) {
+            if (fieldDateFin.getValue().isBefore(fieldDateDebut.getValue())) {
+                applyError(fieldDateFin, errDateFin, "La date de fin doit être après le début.");
+                return false;
+            }
+        }
+        return true;
     }
 
     public void setMainController(MainController mc) {
@@ -139,36 +174,28 @@ public class EvenementFormController implements Initializable {
 
     private boolean validate() {
         boolean ok = true;
-        errTitre.setVisible(false);
-        errDescription.setVisible(false);
-        errDateDebut.setVisible(false);
-        errDateFin.setVisible(false);
-
+        
         if (fieldTitre.getText().trim().isEmpty()) {
-            errTitre.setText("Le titre est obligatoire.");
-            errTitre.setVisible(true);
+            applyError(fieldTitre, errTitre, "Le titre est obligatoire.");
             ok = false;
         }
         if (fieldDescription.getText().trim().isEmpty()) {
-            errDescription.setText("La description est obligatoire.");
-            errDescription.setVisible(true);
+            applyError(fieldDescription, errDescription, "La description est obligatoire.");
             ok = false;
         }
         if (fieldDateDebut.getValue() == null) {
-            errDateDebut.setText("Date de début obligatoire.");
-            errDateDebut.setVisible(true);
+            applyError(fieldDateDebut, errDateDebut, "Date de début obligatoire.");
             ok = false;
         }
         if (fieldDateFin.getValue() == null) {
-            errDateFin.setText("Date de fin obligatoire.");
-            errDateFin.setVisible(true);
+            applyError(fieldDateFin, errDateFin, "Date de fin obligatoire.");
             ok = false;
         }
-        if (ok && fieldDateFin.getValue().isBefore(fieldDateDebut.getValue())) {
-            errDateFin.setText("La date de fin doit être après la date de début.");
-            errDateFin.setVisible(true);
-            ok = false;
+        
+        if (ok) {
+            ok = validateDates();
         }
+        
         return ok;
     }
 

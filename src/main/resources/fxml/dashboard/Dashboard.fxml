@@ -1,37 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.dashboard.DashboardController"
       spacing="30" alignment="TOP_LEFT"
       style="-fx-padding: 40;"
       stylesheets="@/css/style.css">
 
-    <Label text="🏠 Tableau de bord" styleClass="page-title" style="-fx-font-size: 32px;"/>
+    <Label text="🚀 Tableau de bord" styleClass="page-title" style="-fx-font-size: 32px;"/>
     
-    <FlowPane hgap="20" vgap="20">
-        <!-- Card 1 -->
-        <VBox styleClass="modern-card" prefWidth="250" style="-fx-padding: 24;">
-            <Label text="📝 Blogs" styleClass="card-tag"/>
-            <Label text="24" style="-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: #4f46e5;"/>
-            <Label text="+3 cette semaine" styleClass="card-body"/>
+    <FlowPane hgap="30" vgap="30">
+        <!-- Card 1: Blogs -->
+        <VBox styleClass="stat-card-1" prefWidth="280" prefHeight="160" spacing="10" style="-fx-padding: 25;">
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Label text="📝" style="-fx-font-size: 24px;"/>
+                <Label text="BLOGS" styleClass="stat-card-title"/>
+            </HBox>
+            <Label fx:id="labelTotalBlogs" text="0" styleClass="stat-card-value"/>
+            <Label text="↑ +3 cette semaine" styleClass="stat-card-desc"/>
         </VBox>
 
-        <!-- Card 2 -->
-        <VBox styleClass="modern-card" prefWidth="250" style="-fx-padding: 24;">
-            <Label text="📅 Événements" styleClass="card-tag" style="-fx-background-color: #f7fafc; -fx-text-fill: #2d3748;"/>
-            <Label text="12" style="-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: #ed64a6;"/>
-            <Label text="5 en cours" styleClass="card-body"/>
+        <!-- Card 2: Events -->
+        <VBox styleClass="stat-card-2" prefWidth="280" prefHeight="160" spacing="10" style="-fx-padding: 25;">
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Label text="📅" style="-fx-font-size: 24px;"/>
+                <Label text="ÉVÉNEMENTS" styleClass="stat-card-title"/>
+            </HBox>
+            <Label fx:id="labelTotalEvents" text="0" styleClass="stat-card-value"/>
+            <Label text="5 événements en cours" styleClass="stat-card-desc"/>
         </VBox>
 
-        <!-- Card 3 -->
-        <VBox styleClass="modern-card" prefWidth="250" style="-fx-padding: 24;">
-            <Label text="👥 Participants" styleClass="card-tag" style="-fx-background-color: #ebf8ff; -fx-text-fill: #2b6cb0;"/>
-            <Label text="156" style="-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: #4299e1;"/>
-            <Label text="Activité élevée" styleClass="card-body"/>
+        <!-- Card 3: Participants -->
+        <VBox styleClass="stat-card-3" prefWidth="280" prefHeight="160" spacing="10" style="-fx-padding: 25;">
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Label text="👥" style="-fx-font-size: 24px;"/>
+                <Label text="PARTICIPANTS" styleClass="stat-card-title"/>
+            </HBox>
+            <Label fx:id="labelTotalParticipants" text="0" styleClass="stat-card-value"/>
+            <Label text="Interaction élevée" styleClass="stat-card-desc"/>
         </VBox>
     </FlowPane>
+
+    <Label text="⚡ Activités Récentes" styleClass="section-heading-onix" style="-fx-font-size: 24px; -fx-padding: 20 0 10 0;"/>
+    
+    <HBox spacing="20">
+        <VBox styleClass="modern-card" HBox.hgrow="ALWAYS" prefHeight="250" style="-fx-padding: 25;" spacing="15">
+            <Label text="Nouveaux Blogs" styleClass="card-title-lg" style="-fx-font-size: 16px;"/>
+            <VBox spacing="10">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Circle radius="4" fill="#6366f1"/>
+                    <Label text="Top 10 des frameworks Java en 2024" styleClass="card-body"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Circle radius="4" fill="#6366f1"/>
+                    <Label text="Comment organiser un événement réussi" styleClass="card-body"/>
+                </HBox>
+            </VBox>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button text="Voir tous les blogs" styleClass="view-all-link" style="-fx-background-color: transparent;"/>
+        </VBox>
+        
+        <VBox styleClass="modern-card" HBox.hgrow="ALWAYS" prefHeight="250" style="-fx-padding: 25;" spacing="15">
+            <Label text="Événements à venir" styleClass="card-title-lg" style="-fx-font-size: 16px;"/>
+            <VBox spacing="10">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Circle radius="4" fill="#f43f5e"/>
+                    <Label text="Conférence JavaFX - Tunis" styleClass="card-body"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Circle radius="4" fill="#f43f5e"/>
+                    <Label text="Atelier Formini Coding" styleClass="card-body"/>
+                </HBox>
+            </VBox>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button text="Voir le calendrier" styleClass="view-all-link" style="-fx-background-color: transparent;"/>
+        </VBox>
+    </HBox>
 
 
 

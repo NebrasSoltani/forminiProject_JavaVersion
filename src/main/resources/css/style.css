@@ -241,3 +241,159 @@
     -fx-background-color: #cbd5e1;
     -fx-background-radius: 10;
 }
+
+/* ── Dashboard & Card System ──────────────────────────────── */
+.modern-card {
+    -fx-background-color: white;
+    -fx-background-radius: 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 15, 0, 0, 5);
+    -fx-border-color: #f1f5f9;
+    -fx-border-width: 1px;
+    -fx-border-radius: 20px;
+}
+
+.stat-card-1 {
+    -fx-background-color: linear-gradient(to bottom right, #6366f1, #818cf8);
+    -fx-background-radius: 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(99, 102, 241, 0.3), 15, 0, 0, 8);
+}
+
+.stat-card-2 {
+    -fx-background-color: linear-gradient(to bottom right, #f43f5e, #fb7185);
+    -fx-background-radius: 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(244, 63, 94, 0.3), 15, 0, 0, 8);
+}
+
+.stat-card-3 {
+    -fx-background-color: linear-gradient(to bottom right, #0ea5e9, #38bdf8);
+    -fx-background-radius: 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(14, 165, 233, 0.3), 15, 0, 0, 8);
+}
+
+.stat-card-title {
+    -fx-text-fill: rgba(255, 255, 255, 0.8);
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.stat-card-value {
+    -fx-text-fill: white;
+    -fx-font-size: 32px;
+    -fx-font-weight: 900;
+}
+
+.stat-card-desc {
+    -fx-text-fill: rgba(255, 255, 255, 0.7);
+    -fx-font-size: 12px;
+}
+
+.blog-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 10, 0, 0, 3);
+    -fx-border-color: #f1f5f9;
+    -fx-border-radius: 15px;
+    -fx-cursor: hand;
+}
+
+.blog-card:hover {
+    -fx-border-color: -fx-primary;
+    -fx-effect: dropshadow(three-pass-box, rgba(105, 116, 232, 0.15), 20, 0, 0, 10);
+}
+
+.card-tag {
+    -fx-background-color: #f3f4f6;
+    -fx-text-fill: #4b5563;
+    -fx-padding: 4 10;
+    -fx-background-radius: 20;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.card-title-lg {
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #1e293b;
+}
+
+.card-body {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 13px;
+    -fx-line-spacing: 1.4;
+}
+
+/* ── Form Design System ─────────────────────────────────── */
+.form-container {
+    -fx-background-color: white;
+    -fx-background-radius: 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.04), 20, 0, 0, 10);
+    -fx-border-color: #f1f5f9;
+    -fx-border-width: 1px;
+    -fx-border-radius: 20px;
+    -fx-padding: 10px;
+}
+
+.form-group {
+    -fx-spacing: 8px;
+}
+
+.form-label {
+    -fx-text-fill: #334155;
+    -fx-font-weight: 700;
+    -fx-font-size: 13px;
+}
+
+.form-control {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 10px;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 10px;
+    -fx-padding: 12 16;
+    -fx-font-size: 14px;
+    -fx-text-fill: #1e293b;
+    -fx-transition: all 0.2s ease-in-out;
+}
+
+.form-control:focused {
+    -fx-background-color: white;
+    -fx-border-color: -fx-primary;
+    -fx-effect: dropshadow(three-pass-box, rgba(105, 116, 232, 0.1), 10, 0, 0, 0);
+}
+
+.error-label {
+    -fx-text-fill: #ef4444;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+}
+
+.form-control-error {
+    -fx-border-color: #ef4444;
+    -fx-background-color: #fff1f2;
+}
+
+/* ── Buttons ────────────────────────────────────────────── */
+.btn-primary {
+    -fx-background-color: -fx-primary-gradient;
+    -fx-text-fill: white;
+    -fx-font-weight: 800;
+    -fx-background-radius: 12px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(105, 116, 232, 0.3), 15, 0, 0, 5);
+}
+
+.btn-primary:hover {
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.btn-secondary {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #475569;
+    -fx-font-weight: 700;
+    -fx-background-radius: 12px;
+    -fx-cursor: hand;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #e2e8f0;
+}
