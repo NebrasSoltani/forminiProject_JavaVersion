@@ -9,8 +9,8 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>24</maven.compiler.source>
+        <maven.compiler.target>24</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx.version>17.0.6</javafx.version> <!-- Changé : version 17 au lieu de 20 -->
     </properties>
@@ -44,6 +44,11 @@
             <artifactId>javafx-graphics</artifactId>
             <version>${javafx.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -54,8 +59,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version> <!-- Changé : version 3.11.0 -->
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>24</source>
+                    <target>24</target>
                 </configuration>
             </plugin>
 
@@ -67,8 +72,13 @@
                 <configuration>
                     <mainClass>tn.formini.mains.AppLauncher</mainClass>
                     <options>
+<<<<<<< Updated upstream
                         <option>--add-modules</option>
                         <option>javafx.controls,javafx.fxml</option>
+=======
+                        <option>--enable-native-access=javafx.web,javafx.media,ALL-UNNAMED</option>
+                        <option>--sun-misc-unsafe-memory-access=allow</option>
+>>>>>>> Stashed changes
                     </options>
                 </configuration>
                 <executions>
@@ -81,6 +91,22 @@
                 </executions>
             </plugin>
 
+<<<<<<< Updated upstream
+=======
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <mainClass>tn.formini.mains.SignupLauncher</mainClass>
+                    <arguments>
+                        <argument>--enable-native-access=javafx.web,javafx.media,ALL-UNNAMED</argument>
+                        <argument>--sun-misc-unsafe-memory-access=allow</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+
+>>>>>>> Stashed changes
             <!-- Plugin pour créer un JAR exécutable -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
