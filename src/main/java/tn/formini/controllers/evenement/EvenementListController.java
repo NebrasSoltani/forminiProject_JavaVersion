@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 public class EvenementListController implements Initializable {
 
+    @FXML private FlowPane eventGrid;
     @FXML private TableView<Evenement> tableEvenements;
     @FXML private TableColumn<Evenement, String> colType;
     @FXML private TableColumn<Evenement, String> colTitre;
@@ -114,7 +115,7 @@ public class EvenementListController implements Initializable {
     private javafx.scene.Node createPage(int pageIndex) {
         int fromIndex = pageIndex * ITEMS_PER_PAGE;
         int toIndex = Math.min(fromIndex + ITEMS_PER_PAGE, filteredEvenements.size());
-        
+
         if (fromIndex >= filteredEvenements.size()) {
             tableEvenements.setItems(FXCollections.emptyObservableList());
         } else {
@@ -154,24 +155,22 @@ public class EvenementListController implements Initializable {
     }
 
     private void renderCards(List<Evenement> list) {
-<<<<<<< Updated upstream
-        tableEvenements.setItems(FXCollections.observableArrayList(list));
-=======
+        if (eventGrid == null) return;
         eventGrid.getChildren().clear();
         for (Evenement evt : list) {
             VBox card = new VBox();
             card.getStyleClass().add("event-card");
             card.setPrefWidth(320);
 
-            StackPane imgHeader = new StackPane();
+            javafx.scene.layout.StackPane imgHeader = new javafx.scene.layout.StackPane();
             imgHeader.getStyleClass().add("card-image-cover");
             if (evt.getImage() != null && !evt.getImage().trim().isEmpty()) {
                 try {
                     javafx.scene.image.Image image = new javafx.scene.image.Image(evt.getImage());
                     javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(image);
                     imageView.setFitWidth(320);
-                    imageView.setFitHeight(150); 
-                    imageView.setPreserveRatio(false); 
+                    imageView.setFitHeight(150);
+                    imageView.setPreserveRatio(false);
                     imgHeader.getChildren().add(imageView);
                 } catch (Exception ex) {
                     Label icon = new Label("📅");
@@ -190,7 +189,7 @@ public class EvenementListController implements Initializable {
             HBox badges = new HBox(10);
             Label badgeType = new Label(evt.getType().toUpperCase());
             badgeType.getStyleClass().add("card-badge");
-            
+
             Label statusBadge = new Label(evt.isIs_actif() ? "ACTIF" : "INACTIF");
             statusBadge.setStyle(evt.isIs_actif() ? "-fx-background-color: #ecfdf5; -fx-text-fill: #10b981; -fx-padding: 5 15; -fx-background-radius: 5px; -fx-font-size: 11px; -fx-font-weight: bold;" : "-fx-background-color: #fef2f2; -fx-text-fill: #ef4444; -fx-padding: 5 15; -fx-background-radius: 5px; -fx-font-size: 11px; -fx-font-weight: bold;");
             badges.getChildren().addAll(badgeType, statusBadge);
@@ -204,9 +203,9 @@ public class EvenementListController implements Initializable {
             Label dateLieu = new Label("📍 " + evt.getLieu() + " | 👥 " + evt.getNombre_places() + " places");
             dateLieu.setStyle("-fx-text-fill: #64748b; -fx-font-size: 13px;");
             details.getChildren().add(dateLieu);
-            
+
             HBox actions = new HBox(10);
-            
+
             Button btnEdit = new Button("Modifier");
             btnEdit.setStyle("-fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;");
             btnEdit.setOnAction(e -> editEvenement(evt));
@@ -221,8 +220,8 @@ public class EvenementListController implements Initializable {
             card.getChildren().addAll(imgHeader, body);
             eventGrid.getChildren().add(card);
         }
->>>>>>> Stashed changes
     }
+
 
 
     private void applyFilters() {
@@ -231,13 +230,13 @@ public class EvenementListController implements Initializable {
         String type   = filterType.getValue();
 
         filteredEvenements = allEvenements.stream().filter(e -> {
-            boolean matchSearch = search.isEmpty() || e.getTitre().toLowerCase().contains(search);
-            boolean matchType  = type == null || type.equals("Tous") || e.getType().equalsIgnoreCase(type);
-            boolean matchLive  = !filterLive.isSelected()  || e.isLive();
-            boolean matchActif = !filterActif.isSelected() || e.isIs_actif();
-            return matchSearch && matchType && matchLive && matchActif;
-        }).sorted(Comparator.comparing(Evenement::getId).reversed())
-          .collect(Collectors.toList());
+                    boolean matchSearch = search.isEmpty() || e.getTitre().toLowerCase().contains(search);
+                    boolean matchType  = type == null || type.equals("Tous") || e.getType().equalsIgnoreCase(type);
+                    boolean matchLive  = !filterLive.isSelected()  || e.isLive();
+                    boolean matchActif = !filterActif.isSelected() || e.isIs_actif();
+                    return matchSearch && matchType && matchLive && matchActif;
+                }).sorted(Comparator.comparing(Evenement::getId).reversed())
+                .collect(Collectors.toList());
 
         updatePagination();
         labelCount.setText(filteredEvenements.size() + " trouvé(s)");

@@ -10,7 +10,6 @@ import java.io.File;
 public class MainMenuApp extends Application {
 
     @Override
-<<<<<<< Updated upstream
     public void start(Stage primaryStage) throws Exception {
         // Initialiser une session avec un utilisateur réel de la DB
         try {
@@ -33,12 +32,6 @@ public class MainMenuApp extends Application {
         } catch (Exception e) {
             System.err.println("Erreur session : " + e.getMessage());
         }
-=======
-    public void start(Stage primaryStage) {
-        initializeSession();
-
-        // Essaie plusieurs chemins
->>>>>>> Stashed changes
 
         // Essaie plusieurs chemins
         String[] chemins = {

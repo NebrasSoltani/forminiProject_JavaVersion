@@ -72,13 +72,10 @@
                 <configuration>
                     <mainClass>tn.formini.mains.AppLauncher</mainClass>
                     <options>
-<<<<<<< Updated upstream
                         <option>--add-modules</option>
-                        <option>javafx.controls,javafx.fxml</option>
-=======
+                        <option>javafx.controls,javafx.fxml,javafx.web</option>
                         <option>--enable-native-access=javafx.web,javafx.media,ALL-UNNAMED</option>
                         <option>--sun-misc-unsafe-memory-access=allow</option>
->>>>>>> Stashed changes
                     </options>
                 </configuration>
                 <executions>
@@ -91,8 +88,6 @@
                 </executions>
             </plugin>
 
-<<<<<<< Updated upstream
-=======
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -106,7 +101,6 @@
                 </configuration>
             </plugin>
 
->>>>>>> Stashed changes
             <!-- Plugin pour créer un JAR exécutable -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

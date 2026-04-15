@@ -55,13 +55,13 @@ public class EvenementListFrontController implements Initializable {
     private javafx.scene.Node createPage(int pageIndex) {
         int fromIndex = pageIndex * ITEMS_PER_PAGE;
         int toIndex = Math.min(fromIndex + ITEMS_PER_PAGE, filteredEvenements.size());
-        
+
         if (fromIndex >= filteredEvenements.size()) {
             renderCards(new ArrayList<>());
         } else {
             renderCards(filteredEvenements.subList(fromIndex, toIndex));
         }
-        
+
         Region dummy = new Region();
         dummy.setPrefHeight(0);
         return dummy;
@@ -107,9 +107,9 @@ public class EvenementListFrontController implements Initializable {
                     javafx.scene.image.Image image = new javafx.scene.image.Image(evt.getImage());
                     javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(image);
                     imageView.setFitWidth(320);
-                    imageView.setFitHeight(150); 
+                    imageView.setFitHeight(150);
                     // Set preserveRatio to false to cover the box, or true. Usually cover is good.
-                    imageView.setPreserveRatio(false); 
+                    imageView.setPreserveRatio(false);
                     imgHeader.getChildren().add(imageView);
                 } catch (Exception ex) {
                     Label icon = new Label("📅");
@@ -140,7 +140,7 @@ public class EvenementListFrontController implements Initializable {
             Label dateLieu = new Label("📍 " + evt.getLieu() + " | 👥 " + evt.getNombre_places() + " places");
             dateLieu.setStyle("-fx-text-fill: #64748b; -fx-font-size: 13px;");
             details.getChildren().add(dateLieu);
-            
+
             // Action
             Button btnParticiper = new Button("Participer maintenant");
             btnParticiper.getStyleClass().add("main-button-onix");
@@ -166,13 +166,13 @@ public class EvenementListFrontController implements Initializable {
         String type   = filterType.getValue();
 
         filteredEvenements = allEvenements.stream().filter(e -> {
-            boolean matchSearch = search.isEmpty() || e.getTitre().toLowerCase().contains(search);
-            boolean matchType  = type == null || type.equals("Tous") || e.getType().equalsIgnoreCase(type);
-            boolean matchLive  = !filterLive.isSelected()  || e.isLive();
-            boolean matchActif = e.isIs_actif(); // Only show active events publicly
-            return matchSearch && matchType && matchLive && matchActif;
-        }).sorted(Comparator.comparing(Evenement::getId).reversed())
-          .collect(Collectors.toList());
+                    boolean matchSearch = search.isEmpty() || e.getTitre().toLowerCase().contains(search);
+                    boolean matchType  = type == null || type.equals("Tous") || e.getType().equalsIgnoreCase(type);
+                    boolean matchLive  = !filterLive.isSelected()  || e.isLive();
+                    boolean matchActif = e.isIs_actif(); // Only show active events publicly
+                    return matchSearch && matchType && matchLive && matchActif;
+                }).sorted(Comparator.comparing(Evenement::getId).reversed())
+                .collect(Collectors.toList());
 
         updatePagination();
         labelCount.setText(filteredEvenements.size() + " trouvé(s)");
