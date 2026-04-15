@@ -50,6 +50,10 @@
                         <Button fx:id="profileButton" text="Mon Profil" 
                                 style="-fx-background-color: #1abc9c; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;" 
                                 GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+                        <Button fx:id="viewOffersButton" text="Offres de Stage"
+                                style="-fx-background-color: #8e44ad; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;"
+                                GridPane.columnIndex="0" GridPane.rowIndex="3"/>
                     </children>
                 </GridPane>
             </children>
