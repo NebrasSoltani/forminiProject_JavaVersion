@@ -25,15 +25,15 @@
     <Button fx:id="btnSave" text="Save" onAction="#saveProduit"/>
     <Button text="Cancel" onAction="#goBack"/>
     
-    <!-- Hidden error labels -->
-    <Label fx:id="errNom" visible="false"/>
-    <Label fx:id="errCategorie" visible="false"/>
-    <Label fx:id="errDescription" visible="false"/>
-    <Label fx:id="errPrix" visible="false"/>
-    <Label fx:id="errStock" visible="false"/>
-    <Label fx:id="errDateCreation" visible="false"/>
-    <Label fx:id="errStatut" visible="false"/>
-    <Label fx:id="validationSummary" visible="false"/>
-    <VBox fx:id="validationCard" visible="false"/>
+    <!-- Hidden error labels with red styling -->
+    <Label fx:id="errNom" visible="false" style="-fx-text-fill: #e53e3e; -fx-font-size: 12px; -fx-font-weight: 500;"/>
+    <Label fx:id="errCategorie" visible="false" style="-fx-text-fill: #e53e3e; -fx-font-size: 12px; -fx-font-weight: 500;"/>
+    <Label fx:id="errDescription" visible="false" style="-fx-text-fill: #e53e3e; -fx-font-size: 12px; -fx-font-weight: 500;"/>
+    <Label fx:id="errPrix" visible="false" style="-fx-text-fill: #e53e3e; -fx-font-size: 12px; -fx-font-weight: 500;"/>
+    <Label fx:id="errStock" visible="false" style="-fx-text-fill: #e53e3e; -fx-font-size: 12px; -fx-font-weight: 500;"/>
+    <Label fx:id="errDateCreation" visible="false" style="-fx-text-fill: #e53e3e; -fx-font-size: 12px; -fx-font-weight: 500;"/>
+    <Label fx:id="errStatut" visible="false" style="-fx-text-fill: #e53e3e; -fx-font-size: 12px; -fx-font-weight: 500;"/>
+    <Label fx:id="validationSummary" visible="false" style="-fx-text-fill: #e53e3e; -fx-font-size: 13px; -fx-font-weight: 600;"/>
+    <VBox fx:id="validationCard" visible="false" style="-fx-background-color: #fed7d7; -fx-background-radius: 5; -fx-padding: 10; -fx-border-color: #fc8181; -fx-border-width: 1;"/>
     
 </VBox>

@@ -37,10 +37,15 @@ public class ProduitListController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        System.out.println("=== PRODUIT LIST CONTROLLER: INITIALIZE() CALLED! ===");
+        
         // Initialize category filter
         fieldFilterCategorie.setItems(FXCollections.observableArrayList(
                 "Toutes les catégories", "Informatique", "Scientifique", "Outils intelligents", "Accessoires"
         ));
+        
+        System.out.println("=== PRODUIT LIST CONTROLLER: ABOUT TO CALL REFRESHPRODUCTS() ===");
+        refreshProducts();
         fieldFilterCategorie.setValue("Toutes les catégories");
 
         // Load products
@@ -55,36 +60,51 @@ public class ProduitListController implements Initializable {
         allProducts = service.afficher();
         displayProducts(allProducts);
     }
+    
+    private void refreshProducts() {
+        System.out.println("=== PRODUIT LIST CONTROLLER: REFRESHPRODUCTS() CALLED! ===");
+        allProducts = service.afficher();
+        displayProducts(allProducts);
+    }
 
     @FXML
     public void deleteProductsWithoutImages() {
-        // Define the products to keep
-        java.util.Set<String> productsToKeep = java.util.Set.of(
-            "school bag", "pen", "cle", "keyboard", "headset", "calculator"
-        );
-        
-        // Find ALL products to delete (except the protected ones)
+        // Find products without real images
         List<Produit> productsToDelete = allProducts.stream()
-                .filter(p -> !productsToKeep.contains(p.getNom().toLowerCase()))
+                .filter(p -> !hasRealImage(p))
+                .collect(java.util.stream.Collectors.toList());
+        
+        List<Produit> productsToKeep = allProducts.stream()
+                .filter(p -> hasRealImage(p))
                 .collect(java.util.stream.Collectors.toList());
         
         if (productsToDelete.isEmpty()) {
-            showInfo("Aucun produit à supprimer (seuls les produits spécifiés existent).");
+            showInfo("Tous les produits ont des images. Aucun produit à supprimer.");
+            return;
+        }
+        
+        if (productsToKeep.isEmpty()) {
+            showWarning("Aucun produit n'a d'image valide. Voulez-vous supprimer tous les produits ?");
             return;
         }
         
         // Show confirmation dialog
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Nettoyer la base de données");
-        alert.setHeaderText("Supprimer " + productsToDelete.size() + " produit(s) ?");
-        alert.setContentText("Cette action est irréversible. Les produits suivants seront supprimés :\n" + 
+        alert.setTitle("Nettoyer les produits sans image");
+        alert.setHeaderText("Supprimer " + productsToDelete.size() + " produit(s) sans image ?");
+        alert.setContentText("Cette action est irréversible.\n\n" +
+                "Produits à supprimer (sans image) :\n" + 
                 productsToDelete.stream()
+                        .limit(10) // Limit display to first 10
                         .map(p -> "- " + p.getNom() + " (ID: " + p.getId() + ")")
                         .collect(java.util.stream.Collectors.joining("\n")) + 
-                "\n\nLes produits suivants seront préservés :\n" +
+                (productsToDelete.size() > 10 ? "\n... et " + (productsToDelete.size() - 10) + " autres" : "") +
+                "\n\nProduits qui seront conservés (avec image) :\n" +
                 productsToKeep.stream()
-                        .map(name -> "- " + name)
-                        .collect(java.util.stream.Collectors.joining("\n")));
+                        .limit(10) // Limit display to first 10
+                        .map(p -> "- " + p.getNom() + " (ID: " + p.getId() + ")")
+                        .collect(java.util.stream.Collectors.joining("\n")) +
+                (productsToKeep.size() > 10 ? "\n... et " + (productsToKeep.size() - 10) + " autres" : ""));
         
         if (alert.showAndWait().get() == ButtonType.OK) {
             try {
@@ -94,8 +114,8 @@ public class ProduitListController implements Initializable {
                     deletedCount++;
                 }
                 
-                showSuccess(deletedCount + " produit(s) ont été supprimés. " +
-                          "Seuls les produits spécifiés sont conservés.");
+                showSuccess(deletedCount + " produit(s) sans image ont été supprimés. " +
+                          productsToKeep.size() + " produit(s) avec image ont été conservés.");
                 loadProducts(); // Reload the product list
                 
             } catch (Exception e) {
@@ -103,11 +123,57 @@ public class ProduitListController implements Initializable {
             }
         }
     }
+    
+    private boolean hasRealImage(Produit produit) {
+        if (produit.getImage() == null || produit.getImage().trim().isEmpty()) {
+            return false;
+        }
+        
+        String imageUrl = produit.getImage().trim();
+        
+        // Check if it's a placeholder/default image
+        if (imageUrl.contains("placeholder") || 
+            imageUrl.contains("default") || 
+            imageUrl.contains("no-image") ||
+            imageUrl.contains("empty") ||
+            imageUrl.contains("null")) {
+            return false;
+        }
+        
+        // Check if it's a valid URL or file path
+        if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+            return true; // Assume valid HTTP URLs have real images
+        }
+        
+        if (imageUrl.startsWith("file://") || imageUrl.contains(":/")) {
+            return true; // Assume file paths have real images
+        }
+        
+        // Check for common image extensions
+        String lowerUrl = imageUrl.toLowerCase();
+        return lowerUrl.endsWith(".jpg") || 
+               lowerUrl.endsWith(".jpeg") || 
+               lowerUrl.endsWith(".png") || 
+               lowerUrl.endsWith(".gif") || 
+               lowerUrl.endsWith(".bmp") ||
+               lowerUrl.endsWith(".webp");
+    }
 
     private void displayProducts(List<Produit> products) {
+        System.out.println("=== DISPLAYPRODUCTS() CALLED ===");
+        System.out.println("Products container: " + (productsContainer != null ? "NOT NULL" : "NULL"));
+        System.out.println("Products container children count: " + (productsContainer != null ? productsContainer.getChildren().size() : "N/A"));
+        
+        if (productsContainer == null) {
+            System.err.println("ERROR: productsContainer is null!");
+            return;
+        }
+        
         productsContainer.getChildren().clear();
+        System.out.println("Cleared products container");
         
         if (products.isEmpty()) {
+            System.out.println("No products to display, showing empty state");
             emptyState.setVisible(true);
             return;
         }
@@ -118,8 +184,11 @@ public class ProduitListController implements Initializable {
         
         // Show all products (no filtering)
         for (Produit produit : products) {
+            System.out.println("Adding product card for: " + produit.getNom());
             productsContainer.getChildren().add(createProductCard(produit));
         }
+        
+        System.out.println("Final products container children count: " + productsContainer.getChildren().size());
     }
 
     private VBox createProductCard(Produit produit) {
@@ -514,6 +583,14 @@ public class ProduitListController implements Initializable {
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Erreur");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showWarning(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Avertissement");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
