@@ -45,7 +45,9 @@
                 <Button fx:id="btnBlogList" text="📝  Gestion des Blogs" onAction="#showBlogList" styleClass="nav-sub" maxWidth="Infinity"/>
                 <Button fx:id="btnEventList" text="📅  Gestion des Événements" onAction="#showEventList" styleClass="nav-sub" maxWidth="Infinity"/>
                 <Button fx:id="btnProductList" text="🛍️  Gestion des Produits" onAction="#showProductList" styleClass="nav-sub" maxWidth="Infinity"/>
-                
+                <Button fx:id="btnStageList" text="💼  Mes Offres de Stage" onAction="#showSocieteOffres" styleClass="nav-sub" maxWidth="Infinity"/>
+                <Button fx:id="btnCandidatures" text="👥  Candidatures Reçues" onAction="#showSocieteCandidatures" styleClass="nav-sub" maxWidth="Infinity"/>
+
                 <Region prefHeight="30"/>
                 <Label text="ACTIONS RAPIDES" style="-fx-font-size: 11px; -fx-text-fill: #64748b; -fx-font-weight: bold; -fx-padding: 0 0 10 10;"/>
                 <Button fx:id="btnBlogAdd" text="➕  Nouveau Blog" onAction="#showBlogAdd" styleClass="nav-sub" maxWidth="Infinity"/>

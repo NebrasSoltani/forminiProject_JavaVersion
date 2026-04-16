@@ -1,14 +1,23 @@
 package tn.formini.controllers.dashboard;
 
 import javafx.fxml.FXML;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.VBox;
 import tn.formini.entities.Users.Societe;
 import tn.formini.entities.Users.User;
+import tn.formini.entities.stages.Candidature;
+import tn.formini.entities.stages.OffreStage;
 import tn.formini.services.UsersService.SocieteService;
+import tn.formini.services.stageService.CandidatureService;
+import tn.formini.services.stageService.OffreStageService;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class SocieteDashboardController implements DashboardRoleController {
 
@@ -20,6 +29,24 @@ public class SocieteDashboardController implements DashboardRoleController {
     
     @FXML
     private Label statsLabel;
+    
+    @FXML
+    private Label lblTotalOffres;
+    
+    @FXML
+    private Label lblOffresActives;
+    
+    @FXML
+    private Label lblTotalCandidatures;
+    
+    @FXML
+    private Label lblCandidaturesEnAttente;
+    
+    @FXML
+    private PieChart offersPieChart;
+    
+    @FXML
+    private PieChart candidatesPieChart;
     
     @FXML
     private VBox menuContainer;
@@ -45,6 +72,8 @@ public class SocieteDashboardController implements DashboardRoleController {
     private User currentUser;
     private Societe currentSociete;
     private SocieteService societeService;
+    private OffreStageService offreService = new OffreStageService();
+    private CandidatureService candService = new CandidatureService();
 
     @Override
     public void initializeDashboard(User user) {
@@ -61,7 +90,8 @@ public class SocieteDashboardController implements DashboardRoleController {
 
     private void setupDashboard() {
         titleLabel.setText("Tableau de Bord Société");
-        welcomeLabel.setText("Bienvenue, " + currentSociete.getNom_societe() + "!");
+        String displayedName = (currentSociete != null) ? currentSociete.getNom_societe() : currentUser.getNom();
+        welcomeLabel.setText("Bienvenue, " + displayedName + "!");
         
         // Setup button actions
         myOffersButton.setOnAction(e -> viewMyOffers());
@@ -91,66 +121,77 @@ public class SocieteDashboardController implements DashboardRoleController {
 
     private void loadStatistics() {
         try {
-            // Load societe statistics
-            int totalOffers = 0;
-            int activeOffers = 0;
-            int totalCandidates = 0;
-            int acceptedCandidates = 0;
+            List<OffreStage> allOffres = offreService.afficher();
+            List<Candidature> allCands = candService.afficher();
             
-            if (currentSociete != null) {
-                // TODO: Load actual statistics from services
-                // totalOffers = offreStageService.getSocieteOffersCount(currentSociete.getId());
-                // activeOffers = offreStageService.getActiveOffersCount(currentSociete.getId());
-                // totalCandidates = candidatureService.getSocieteCandidatesCount(currentSociete.getId());
-                // acceptedCandidates = candidatureService.getAcceptedCandidatesCount(currentSociete.getId());
+            int totalOffres = allOffres.size();
+            long offresActives = allOffres.stream().filter(o -> "ouvert".equals(o.getStatut())).count();
+            int totalCands = allCands.size();
+            long candsEnAttente = allCands.stream().filter(c -> "en_attente".equals(c.getStatut())).count();
+            
+            if (lblTotalOffres != null) lblTotalOffres.setText(String.valueOf(totalOffres));
+            if (lblOffresActives != null) lblOffresActives.setText(String.valueOf(offresActives));
+            if (lblTotalCandidatures != null) lblTotalCandidatures.setText(String.valueOf(totalCands));
+            if (lblCandidaturesEnAttente != null) lblCandidaturesEnAttente.setText(String.valueOf(candsEnAttente));
+            
+            offersPieChart.getData().clear();
+            if (allOffres.isEmpty()) {
+                offersPieChart.getData().add(new PieChart.Data("Aucune offre", 1));
+            } else {
+                Map<String, Long> offerStats = allOffres.stream()
+                    .collect(Collectors.groupingBy(o -> o.getStatut() != null ? o.getStatut() : "inconnu", Collectors.counting()));
+                offerStats.forEach((statut, count) -> 
+                    offersPieChart.getData().add(new PieChart.Data(statut + " (" + count + ")", count)));
             }
-            
-            String statsText = String.format(
-                "Mes Statistiques:\n" +
-                "Total offres: %d\n" +
-                "Offres actives: %d\n" +
-                "Total candidats: %d\n" +
-                "Candidats acceptés: %d",
-                totalOffers,
-                activeOffers,
-                totalCandidates,
-                acceptedCandidates
-            );
-            
-            statsLabel.setText(statsText);
+
+            candidatesPieChart.getData().clear();
+            if (allCands.isEmpty()) {
+                candidatesPieChart.getData().add(new PieChart.Data("Aucune candidature", 1));
+            } else {
+                Map<String, Long> candStats = allCands.stream()
+                    .collect(Collectors.groupingBy(c -> c.getStatut() != null ? c.getStatut() : "en_attente", Collectors.counting()));
+                candStats.forEach((statut, count) -> 
+                    candidatesPieChart.getData().add(new PieChart.Data(statut + " (" + count + ")", count)));
+            }
+
+            statsLabel.setText(String.format("Total: %d offres et %d candidatures", totalOffres, totalCands));
+                
         } catch (Exception e) {
-            statsLabel.setText("Erreur lors du chargement des statistiques");
-            System.err.println("Error loading statistics: " + e.getMessage());
+            e.printStackTrace();
+            statsLabel.setText("Erreur: " + e.getMessage());
         }
     }
 
     @FXML
+    private TabPane mainTabPane;
+    
+    @FXML
+    private Tab stageManagementTab;
+    
+    @FXML
+    private tn.formini.controllers.stages.StageManagementController stageManagementController;
+
+    @FXML
     private void viewMyOffers() {
-        try {
-            // TODO: Create societe offers view
-            showFallbackMessage("Mes offres de stage - En cours de développement");
-        } catch (Exception e) {
-            System.err.println("Error opening offers: " + e.getMessage());
+        mainTabPane.getSelectionModel().select(stageManagementTab);
+        if (stageManagementController != null) {
+            stageManagementController.setSelectedTab(0);
         }
     }
 
     @FXML
     private void createOffer() {
-        try {
-            // TODO: Create offer creation form
-            showFallbackMessage("Créer une offre de stage - En cours de développement");
-        } catch (Exception e) {
-            System.err.println("Error opening offer creation: " + e.getMessage());
+        mainTabPane.getSelectionModel().select(stageManagementTab);
+        if (stageManagementController != null) {
+            stageManagementController.setSelectedTab(0);
         }
     }
 
     @FXML
     private void viewCandidates() {
-        try {
-            // TODO: Create candidates view
-            showFallbackMessage("Voir les candidats - En cours de développement");
-        } catch (Exception e) {
-            System.err.println("Error opening candidates view: " + e.getMessage());
+        mainTabPane.getSelectionModel().select(stageManagementTab);
+        if (stageManagementController != null) {
+            stageManagementController.setSelectedTab(1);
         }
     }
 
