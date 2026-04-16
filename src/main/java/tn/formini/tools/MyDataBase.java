@@ -5,12 +5,17 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class MyDataBase {
-    String url ="jdbc:mysql://localhost:3306/formation_db";
-    String user="root";
-    String pwd="";
+    String url = "jdbc:mysql://localhost:3306/formation_db";
+    String user = "root";
+    String pwd = "";
     private Connection cnx;
-    static MyDataBase  MyDB;
+    static MyDataBase MyDB;
+
     private MyDataBase() {
+        connect();
+    }
+
+    private void connect() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             cnx = DriverManager.getConnection(url, user, pwd);
@@ -25,15 +30,24 @@ public class MyDataBase {
             System.out.println("Erreur SQL lors de la connexion : " + e.getMessage());
         }
     }
-    public static MyDataBase getInstance(){
 
-        if(MyDB==null){
-            MyDB=new MyDataBase();
+    public static MyDataBase getInstance() {
+        if (MyDB == null) {
+            MyDB = new MyDataBase();
         }
         return MyDB;
     }
 
     public Connection getCnx() {
+        try {
+            // Reconnexion automatique si la connexion est nulle ou fermée
+            if (cnx == null || cnx.isClosed()) {
+                System.out.println("Connexion perdue, tentative de reconnexion...");
+                connect();
+            }
+        } catch (SQLException e) {
+            System.out.println("Vérification connexion échouée : " + e.getMessage());
+        }
         return cnx;
     }
 

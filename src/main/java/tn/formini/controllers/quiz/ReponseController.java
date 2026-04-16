@@ -89,7 +89,7 @@ public class ReponseController implements Initializable {
 
     private void ouvrirFormulaire(Reponse reponse) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/formini/views/ReponseForm.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/ReponseForm.fxml"));
             Parent root = loader.load();
             ReponseFormController ctrl = loader.getController();
             if (reponse != null) ctrl.setReponse(reponse);

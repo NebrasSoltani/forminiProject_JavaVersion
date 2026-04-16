@@ -96,7 +96,7 @@ public class QuestionController implements Initializable {
 
     private void ouvrirFormulaire(Question question) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/formini/views/QuestionForm.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/QuestionForm.fxml"));
             Parent root = loader.load();
             QuestionFormController ctrl = loader.getController();
             if (question != null) ctrl.setQuestion(question);

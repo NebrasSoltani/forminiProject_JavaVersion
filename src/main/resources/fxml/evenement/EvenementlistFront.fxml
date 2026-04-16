@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.evenement.EvenementListFrontController"
+      spacing="20" styleClass="content-area">
+
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <Label text="📅 Nos Prochains Événements" styleClass="page-title" style="-fx-font-size: 28px;"/>
+    </HBox>
+
+    <!-- Filters -->
+    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="topbar" style="-fx-background-radius: 10;">
+        <TextField fx:id="searchField" promptText="Rechercher par nom..." prefWidth="250"/>
+        <ComboBox fx:id="filterType" promptText="Type" prefWidth="180"/>
+        <CheckBox fx:id="filterLive" text="Uniquement Live 🔴"/>
+        <Button text="Réinitialiser" onAction="#resetFilters" styleClass="icon-btn"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="labelCount" text="0 événement(s)" styleClass="topbar-date"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll-pane" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-width: 0;">
+        <FlowPane fx:id="eventGrid" hgap="20" vgap="20" prefWrapLength="1000" style="-fx-padding: 10;"/>
+    </ScrollPane>
+
+    <HBox alignment="CENTER_RIGHT" spacing="10">
+        <Pagination fx:id="pagination" pageCount="10" maxPageIndicatorCount="5"/>
+    </HBox>
+
+</VBox>

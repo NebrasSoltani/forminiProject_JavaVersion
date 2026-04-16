@@ -10,7 +10,7 @@ public class MainFX extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/tn/formini/views/Dashboard.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/quiz/Dashboard.fxml"));
         Scene scene = new Scene(root, 900, 600);
         primaryStage.setTitle("Formini - Gestion des Formations");
         primaryStage.setScene(scene);

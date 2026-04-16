@@ -6,7 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import tn.formini.entities.ResultatQuiz;
-import tn.formini.services.ResultatQuizService;
+import tn.formini.services.quizService.ResultatQuizService;
 
 import java.net.URL;
 import java.util.List;

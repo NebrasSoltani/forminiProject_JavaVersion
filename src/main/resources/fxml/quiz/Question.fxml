@@ -6,7 +6,7 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="tn.formini.controllers.QuestionController"
-      spacing="25" style="-fx-background-color: #f8fafc; -fx-padding: 30;">
+      spacing="25" VBox.vgrow="ALWAYS" style="-fx-background-color: #f8fafc; -fx-padding: 30;">
 
     <HBox alignment="CENTER_LEFT">
         <VBox spacing="5">
@@ -18,17 +18,17 @@
                 styleClass="main-button-onix"/>
     </HBox>
 
-    <VBox VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 20px; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 15, 0, 0, 5);">
+    <VBox VBox.vgrow="ALWAYS" maxHeight="Infinity" style="-fx-background-color: white; -fx-background-radius: 20px; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 15, 0, 0, 5);">
         
         <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 0 0 20 0;">
             <TextField fx:id="searchField" promptText="🔍 Rechercher dans les questions..."
-                       onKeyReleased="#filtrerQuestions" prefWidth="350"
-                       style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-prompt-text-fill: #94a3b8; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
-            <ComboBox fx:id="filtreQuiz" promptText="Tous les Quiz" onAction="#filtrerQuestions"
-                      style="-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-padding: 5;"/>
+                       onKeyReleased="#filtrerQuestions" prefWidth="450"
+                       style="-fx-background-color: #ffffff; -fx-text-fill: #1e293b; -fx-prompt-text-fill: #94a3b8; -fx-padding: 14 16; -fx-background-radius: 16; -fx-border-color: #dbe4f0; -fx-border-radius: 16;"/>
+            <ComboBox fx:id="filtreQuiz" promptText="Tous les Quiz" onAction="#filtrerQuestions" prefWidth="240"
+                      style="-fx-background-color: #ffffff; -fx-border-color: #dbe4f0; -fx-border-radius: 16; -fx-padding: 10;"/>
         </HBox>
 
-        <TableView fx:id="tableQuestion" VBox.vgrow="ALWAYS" styleClass="modern-table">
+        <TableView fx:id="tableQuestion" VBox.vgrow="ALWAYS" maxHeight="Infinity" styleClass="modern-table">
             <columns>
                 <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
                 <TableColumn fx:id="colEnonce" text="Énoncé de la question" prefWidth="350"/>

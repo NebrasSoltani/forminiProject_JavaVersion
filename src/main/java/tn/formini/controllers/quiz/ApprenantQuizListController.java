@@ -84,19 +84,21 @@ public class ApprenantQuizListController implements Initializable {
     }
 
     private VBox createQuizCard(Quiz quiz, int formationId, boolean peutPasser) {
-        VBox card = new VBox(12);
-        card.setPadding(new Insets(20));
+        VBox card = new VBox(16);
+        card.setPadding(new Insets(24));
+        card.setMaxWidth(340);
+        card.setPrefWidth(340);
         
         // Effet de base (carte blanche)
-        String styleNormale = "-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 2, 4); -fx-pref-width: 250; -fx-pref-height: 180;";
-        String styleHover = "-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(105, 116, 232, 0.4), 25, 0, 4, 8); -fx-pref-width: 250; -fx-pref-height: 180;";
+        String styleNormale = "-fx-background-color: white; -fx-background-radius: 22; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 18, 0, 0, 10);";
+        String styleHover = "-fx-background-color: white; -fx-background-radius: 22; -fx-effect: dropshadow(gaussian, rgba(105, 116, 232, 0.22), 28, 0, 0, 16);";
         
         card.setStyle(styleNormale);
 
         // Animation de soulèvement au survol
         card.setOnMouseEntered(e -> {
             card.setStyle(styleHover);
-            card.setTranslateY(-4);
+            card.setTranslateY(-3);
         });
         card.setOnMouseExited(e -> {
             card.setStyle(styleNormale);
@@ -104,14 +106,15 @@ public class ApprenantQuizListController implements Initializable {
         });
 
         Label lblTitre = new Label("📋 " + quiz.getTitre());
-        lblTitre.setStyle("-fx-text-fill: #1e293b; -fx-font-weight: 900; -fx-font-size: 16px;");
+        lblTitre.setStyle("-fx-text-fill: #0f172a; -fx-font-weight: 900; -fx-font-size: 18px;");
         lblTitre.setWrapText(true);
+        lblTitre.setMaxWidth(292);
 
         Label lblDuree = new Label("⏳ Durée : " + quiz.getDuree() + " min");
-        lblDuree.setStyle("-fx-text-fill: #64748b; -fx-font-size: 13px;");
+        lblDuree.setStyle("-fx-text-fill: #475569; -fx-font-size: 14px;");
 
         Label lblNote = new Label("🎯 Score requis : " + quiz.getNote_minimale() + "%");
-        lblNote.setStyle("-fx-text-fill: #64748b; -fx-font-size: 13px;");
+        lblNote.setStyle("-fx-text-fill: #475569; -fx-font-size: 14px;");
 
         // Pousser le bouton tout en bas
         javafx.scene.layout.Region spacer = new javafx.scene.layout.Region();

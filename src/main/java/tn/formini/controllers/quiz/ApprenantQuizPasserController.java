@@ -109,7 +109,7 @@ public class ApprenantQuizPasserController implements Initializable {
 
         for (Reponse r : reponses) {
             RadioButton rb = new RadioButton(r.getTexte());
-            rb.setStyle("-fx-text-fill: white; -fx-font-size: 14px;");
+            rb.setStyle("-fx-text-fill: black; -fx-font-size: 14px;");
             rb.setUserData(r.getId());
             rb.setToggleGroup(toggleGroup);
 

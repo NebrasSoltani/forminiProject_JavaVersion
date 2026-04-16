@@ -32,7 +32,7 @@
     </HBox>
 
     <ScrollPane fitToWidth="true" styleClass="scroll-pane" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
-        <FlowPane fx:id="quizContainer" hgap="25" vgap="25" style="-fx-background-color: transparent; -fx-padding: 5;">
+        <FlowPane fx:id="quizContainer" hgap="30" vgap="30" prefWrapLength="1080" style="-fx-background-color: transparent; -fx-padding: 5;">
             <!-- Quiz cards dynamiques injectées par le contrôleur -->
         </FlowPane>
     </ScrollPane>

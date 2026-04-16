@@ -22,6 +22,7 @@ public class DashboardController {
     @FXML
     public void initialize() {
         instance = this;
+        ouvrirQuiz();
     }
 
     private void chargerVue(String fxmlPath) {
@@ -35,7 +36,7 @@ public class DashboardController {
     }
 
     private void resetBoutons() {
-        String inactif = "-fx-background-color: transparent; -fx-text-fill: #64748b; -fx-font-size: 13px; -fx-padding: 10 24 10 48; -fx-alignment: center-left; -fx-cursor: hand;";
+        String inactif = "-fx-background-color: transparent; -fx-text-fill: #334155; -fx-font-size: 13px; -fx-padding: 10 24 10 48; -fx-alignment: center-left; -fx-cursor: hand; -fx-border-color: transparent;";
         btnQuiz.setStyle(inactif);
         btnQuestion.setStyle(inactif);
         btnReponse.setStyle(inactif);
@@ -44,7 +45,7 @@ public class DashboardController {
     }
 
     private void activerBouton(Button btn) {
-        btn.setStyle("-fx-background-color: rgba(255, 255, 255, 0.05); -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 10 24 10 44; -fx-alignment: center-left; -fx-border-color: #6974e8; -fx-border-width: 0 0 0 4; -fx-cursor: hand;");
+        btn.setStyle("-fx-background-color: #4f46e5; -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 10 24 10 44; -fx-alignment: center-left; -fx-background-radius: 14; -fx-cursor: hand;");
     }
 
     @FXML

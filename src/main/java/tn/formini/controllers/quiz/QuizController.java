@@ -1,4 +1,4 @@
-package tn.formini.controllers;
+package tn.formini.controllers.quiz;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,8 +10,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Region;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import tn.formini.controllers.QuizFormController;
 import tn.formini.entities.Quiz;
 import tn.formini.services.QuizService;
 
@@ -23,14 +31,7 @@ import java.util.stream.Collectors;
 
 public class QuizController implements Initializable {
 
-    @FXML private TableView<Quiz> tableQuiz;
-    @FXML private TableColumn<Quiz, Integer> colId;
-    @FXML private TableColumn<Quiz, String> colTitre;
-    @FXML private TableColumn<Quiz, String> colDescription;
-    @FXML private TableColumn<Quiz, Integer> colDuree;
-    @FXML private TableColumn<Quiz, Integer> colNote;
-    @FXML private TableColumn<Quiz, Boolean> colMelanger;
-    @FXML private TableColumn<Quiz, Void> colActions;
+    @FXML private FlowPane quizContainer;
     @FXML private TextField searchField;
 
     private final QuizService service = new QuizService();
@@ -38,29 +39,28 @@ public class QuizController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
-        colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-        colDuree.setCellValueFactory(new PropertyValueFactory<>("duree"));
-        colNote.setCellValueFactory(new PropertyValueFactory<>("note_minimale"));
-        colMelanger.setCellValueFactory(new PropertyValueFactory<>("melanger"));
-        ajouterColonneActions();
         chargerDonnees();
-        styleTable();
     }
 
     private void chargerDonnees() {
         quizList.setAll(service.getAll());
-        tableQuiz.setItems(quizList);
+        afficherCartes(quizList);
+    }
+
+    private void afficherCartes(List<Quiz> quizzes) {
+        quizContainer.getChildren().clear();
+        for (Quiz quiz : quizzes) {
+            quizContainer.getChildren().add(creerCarteQuiz(quiz));
+        }
     }
 
     @FXML
     public void filtrerQuiz() {
         String filtre = searchField.getText().toLowerCase();
         List<Quiz> filtres = service.getAll().stream()
-                .filter(q -> q.getTitre().toLowerCase().contains(filtre))
+                .filter(q -> q.getTitre().toLowerCase().contains(filtre) || q.getDescription().toLowerCase().contains(filtre))
                 .collect(Collectors.toList());
-        tableQuiz.setItems(FXCollections.observableArrayList(filtres));
+        afficherCartes(filtres);
     }
 
     @FXML
@@ -70,7 +70,7 @@ public class QuizController implements Initializable {
 
     private void ouvrirFormulaire(Quiz quiz) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/formini/views/QuizForm.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/QuizForm.fxml"));
             Parent root = loader.load();
             QuizFormController ctrl = loader.getController();
             if (quiz != null) ctrl.setQuiz(quiz);
@@ -86,34 +86,58 @@ public class QuizController implements Initializable {
         }
     }
 
-    private void ajouterColonneActions() {
-        colActions.setCellFactory(col -> new TableCell<>() {
-            final Button btnQs = new Button("👁");
-            final Button btnEdit = new Button("✏");
-            final Button btnDel = new Button("🗑");
-            final HBox box = new HBox(8, btnQs, btnEdit, btnDel);
+    private VBox creerCarteQuiz(Quiz quiz) {
+        VBox card = new VBox(15);
+        card.setPadding(new Insets(20));
+        card.setStyle("-fx-background-color: white; -fx-background-radius: 12;");
+        card.setPrefWidth(320);
+        
+        DropShadow shadow = new DropShadow();
+        shadow.setColor(Color.rgb(0, 0, 0, 0.05));
+        shadow.setRadius(15);
+        card.setEffect(shadow);
 
-            {
-                btnQs.setStyle("-fx-background-color: #6974e8; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;");
-                btnEdit.setStyle("-fx-background-color: #0f3460; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;");
-                btnDel.setStyle("-fx-background-color: #e94560; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;");
-                
-                btnQs.setOnAction(e -> {
-                    Quiz q = getTableView().getItems().get(getIndex());
-                    if (tn.formini.controllers.DashboardController.instance != null) {
-                        tn.formini.controllers.DashboardController.instance.ouvrirQuestionPourQuiz(q);
-                    }
-                });
-                btnEdit.setOnAction(e -> ouvrirFormulaire(getTableView().getItems().get(getIndex())));
-                btnDel.setOnAction(e -> supprimer(getTableView().getItems().get(getIndex())));
-            }
+        Label lblTitre = new Label(quiz.getTitre());
+        lblTitre.setStyle("-fx-font-size: 18px; -fx-font-weight: 900; -fx-text-fill: #1e293b;");
+        
+        Label lblDesc = new Label(quiz.getDescription());
+        lblDesc.setWrapText(true);
+        lblDesc.setStyle("-fx-font-size: 13px; -fx-text-fill: #64748b;");
 
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : box);
+        HBox stats = new HBox(15);
+        Label lblDuree = new Label("⏱ " + quiz.getDuree() + " min");
+        lblDuree.setStyle("-fx-background-color: #f1f5f9; -fx-padding: 4 8; -fx-background-radius: 6; -fx-text-fill: #475569; -fx-font-size: 12px;");
+        Label lblNote = new Label("⭐ Note: " + quiz.getNote_minimale());
+        lblNote.setStyle("-fx-background-color: #fef3c7; -fx-padding: 4 8; -fx-background-radius: 6; -fx-text-fill: #d97706; -fx-font-size: 12px;");
+        stats.getChildren().addAll(lblDuree, lblNote);
+
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+
+        // Actions
+        HBox actions = new HBox(10);
+        actions.setAlignment(Pos.CENTER_RIGHT);
+
+        Button btnQs = new Button("👁 Questions");
+        btnQs.setStyle("-fx-background-color: #6974e8; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-cursor: hand; -fx-padding: 8 12;");
+        btnQs.setOnAction(e -> {
+            if (tn.formini.controllers.DashboardController.instance != null) {
+                tn.formini.controllers.DashboardController.instance.ouvrirQuestionPourQuiz(quiz);
             }
         });
+
+        Button btnEdit = new Button("✏");
+        btnEdit.setStyle("-fx-background-color: #0f3460; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-cursor: hand; -fx-padding: 8;");
+        btnEdit.setOnAction(e -> ouvrirFormulaire(quiz));
+
+        Button btnDel = new Button("🗑");
+        btnDel.setStyle("-fx-background-color: #e94560; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-cursor: hand; -fx-padding: 8;");
+        btnDel.setOnAction(e -> supprimer(quiz));
+
+        actions.getChildren().addAll(btnQs, btnEdit, btnDel);
+
+        card.getChildren().addAll(lblTitre, lblDesc, stats, spacer, actions);
+        return card;
     }
 
     private void supprimer(Quiz quiz) {
@@ -125,10 +149,6 @@ public class QuizController implements Initializable {
                 chargerDonnees();
             }
         });
-    }
-
-    private void styleTable() {
-        tableQuiz.setStyle("-fx-background-color: #16213e; -fx-text-fill: white;");
     }
 
     private void showAlert(String titre, String msg) {
