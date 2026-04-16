@@ -1,0 +1,277 @@
+/*
+ * ════════════════════════════════════════════════════════
+ *  FormIni — Stage Management · Dark Theme v2.0
+ *  Compatible : JavaFX 21
+ *  Polices    : Sora (display), JetBrains Mono (mono)
+ * ════════════════════════════════════════════════════════
+ */
+
+/* ── Variables globales ─────────────────────────────── */
+.root {
+    /* Fonds */
+    -bg:        #0f0f13;
+    -bg2:       #16161e;
+    -bg3:       #1e1e2a;
+    -bg4:       #252535;
+
+    /* Palette principale */
+    -purple:    #7c6fcd;
+    -purple-l:  #a399e8;
+    -purple-d:  #5548a0;
+    -accent:    #e8b86d;
+    -green:     #4ecb8d;
+    -red:       #e06b7a;
+    -amber:     #e8924a;
+
+    /* Texte */
+    -text:      #f0eeff;
+    -text-m:    #a9a5c9;
+    -text-s:    #6b6888;
+
+    /* Bordures */
+    -border:    rgba(124,111,205,0.18);
+    -border2:   rgba(124,111,205,0.32);
+
+    -fx-font-family: 'Sora', sans-serif;
+    -fx-font-size: 13px;
+    -fx-background-color: -bg;
+}
+
+/* ── TableView ──────────────────────────────────────── */
+.table-view {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-table-cell-border-color: rgba(124,111,205,0.1);
+}
+
+.table-view .column-header-background {
+    -fx-background-color: -bg4;
+}
+
+.table-view .column-header,
+.table-view .filler {
+    -fx-background-color: transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: -border;
+    -fx-size: 36px;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: -text-s;
+    -fx-font-size: 10px;
+    -fx-font-weight: 700;
+    -fx-alignment: center-left;
+    -fx-padding: 0 0 0 4px;
+    -fx-font-family: 'Sora';
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(124,111,205,0.08);
+    -fx-border-width: 0 0 1 0;
+    -fx-cell-size: 42px;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: rgba(124,111,205,0.06);
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: rgba(124,111,205,0.14);
+}
+
+.table-view .table-row-cell:last-child {
+    -fx-border-width: 0;
+}
+
+.table-view .table-cell {
+    -fx-text-fill: -text-m;
+    -fx-font-size: 12px;
+    -fx-padding: 0 8px 0 12px;
+    -fx-alignment: center-left;
+    -fx-font-family: 'Sora';
+}
+
+.table-view .table-row-cell:selected .table-cell {
+    -fx-text-fill: -text;
+}
+
+.table-view .placeholder .label {
+    -fx-text-fill: -text-s;
+    -fx-font-size: 13px;
+}
+
+/* Scroll bar (table) */
+.table-view .scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.table-view .scroll-bar .thumb {
+    -fx-background-color: rgba(124,111,205,0.25);
+    -fx-background-radius: 4;
+}
+
+.table-view .scroll-bar .thumb:hover {
+    -fx-background-color: rgba(124,111,205,0.4);
+}
+
+.table-view .scroll-bar .track,
+.table-view .scroll-bar .track-background,
+.table-view .scroll-bar .increment-button,
+.table-view .scroll-bar .decrement-button,
+.table-view .scroll-bar .increment-arrow,
+.table-view .scroll-bar .decrement-arrow {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+
+/* ── TextField / TextArea ───────────────────────────── */
+.text-field, .text-area {
+    -fx-background-color: -bg4;
+    -fx-text-fill: -text;
+    -fx-border-color: -border;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8 10;
+    -fx-font-family: 'Sora';
+    -fx-font-size: 12px;
+    -fx-prompt-text-fill: -text-s;
+    -fx-highlight-fill: rgba(124,111,205,0.35);
+    -fx-highlight-text-fill: -text;
+}
+
+.text-field:focused, .text-area:focused {
+    -fx-border-color: -purple;
+    -fx-background-color: rgba(124,111,205,0.06);
+}
+
+.text-area .content {
+    -fx-background-color: transparent;
+}
+
+/* ── ComboBox ───────────────────────────────────────── */
+.combo-box {
+    -fx-background-color: -bg4;
+    -fx-border-color: -border;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 2 4;
+    -fx-font-family: 'Sora';
+    -fx-font-size: 12px;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: -text;
+    -fx-background-color: transparent;
+}
+
+.combo-box:focused {
+    -fx-border-color: -purple;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: -bg3;
+    -fx-border-color: -border2;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 16, 0, 0, 4);
+}
+
+.combo-box-popup .list-cell {
+    -fx-text-fill: -text-m;
+    -fx-background-color: transparent;
+    -fx-padding: 8 14;
+    -fx-font-family: 'Sora';
+    -fx-font-size: 12px;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: rgba(124,111,205,0.12);
+    -fx-text-fill: -text;
+}
+
+.combo-box-popup .list-cell:selected {
+    -fx-background-color: rgba(124,111,205,0.2);
+    -fx-text-fill: -purple-l;
+}
+
+.combo-box .arrow {
+    -fx-background-color: -text-s;
+}
+
+/* ── TabPane (hidden tabs) ──────────────────────────── */
+.tab-pane > .tab-header-area {
+    -fx-padding: 0;
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+    -fx-background-color: transparent;
+    visibility: hidden;
+}
+
+.tab-pane > .tab-header-area > .headers-region {
+    -fx-padding: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+}
+
+.tab-pane .tab-content-area {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+/* ── Separator ──────────────────────────────────────── */
+.separator .line {
+    -fx-border-color: rgba(124,111,205,0.15);
+    -fx-border-width: 1 0 0 0;
+}
+
+/* ── ScrollBar global ───────────────────────────────── */
+.scroll-bar {
+    -fx-background-color: transparent;
+    -fx-pref-width: 6px;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: rgba(124,111,205,0.2);
+    -fx-background-radius: 3;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: rgba(124,111,205,0.35);
+}
+
+.scroll-bar .track,
+.scroll-bar .track-background,
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button,
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+
+/* ── Focus ring ─────────────────────────────────────── */
+.text-field:focused,
+.text-area:focused,
+.combo-box:focused,
+.button:focused {
+    -fx-effect: dropshadow(gaussian, rgba(124,111,205,0.4), 0, 0, 0, 0);
+}
+
+/* ── Tooltips ───────────────────────────────────────── */
+.tooltip {
+    -fx-background-color: -bg3;
+    -fx-text-fill: -text;
+    -fx-border-color: -border2;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-font-family: 'Sora';
+    -fx-font-size: 11px;
+    -fx-padding: 6 10;
+}

@@ -23,6 +23,18 @@ public class ApprenantDashboardController implements DashboardRoleController {
     private Label statsLabel;
     
     @FXML
+    private Label lblTotalFormations;
+    
+    @FXML
+    private Label lblQuizCompletes;
+    
+    @FXML
+    private Label lblOffresStage;
+    
+    @FXML
+    private Label lblCertificats;
+    
+    @FXML
     private VBox menuContainer;
     
     @FXML
@@ -98,36 +110,19 @@ public class ApprenantDashboardController implements DashboardRoleController {
 
     private void loadStatistics() {
         try {
-            // Load student statistics
             int totalFormations = 0;
-            int completedFormations = 0;
-            int inProgressFormations = 0;
-            int quizAttempts = 0;
+            int completedQuiz = 0;
+            int offresStage = 0;
+            int certificats = 0;
             
-            if (currentApprenant != null) {
-                // TODO: Load actual statistics from services
-                // totalFormations = formationService.getAvailableFormationsCount();
-                // completedFormations = inscriptionService.getCompletedFormationsCount(currentApprenant.getId());
-                // inProgressFormations = inscriptionService.getInProgressFormationsCount(currentApprenant.getId());
-                // quizAttempts = quizService.getQuizAttemptsCount(currentApprenant.getId());
-            }
+            if (lblTotalFormations != null) lblTotalFormations.setText(String.valueOf(totalFormations));
+            if (lblQuizCompletes != null) lblQuizCompletes.setText(String.valueOf(completedQuiz));
+            if (lblOffresStage != null) lblOffresStage.setText(String.valueOf(offresStage));
+            if (lblCertificats != null) lblCertificats.setText(String.valueOf(certificats));
             
-            String statsText = String.format(
-                "Mes Statistiques:\n" +
-                "Formations disponibles: %d\n" +
-                "Formations terminées: %d\n" +
-                "Formations en cours: %d\n" +
-                "Quiz tentés: %d",
-                totalFormations,
-                completedFormations,
-                inProgressFormations,
-                quizAttempts
-            );
-            
-            statsLabel.setText(statsText);
+            statsLabel.setText("Derniere mise a jour: " + java.time.LocalDateTime.now().toLocalTime());
         } catch (Exception e) {
-            statsLabel.setText("Erreur lors du chargement des statistiques");
-            System.err.println("Error loading statistics: " + e.getMessage());
+            statsLabel.setText("Erreur: " + e.getMessage());
         }
     }
 
