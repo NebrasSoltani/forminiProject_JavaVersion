@@ -5,94 +5,112 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.formini.controllers.dashboard.SocieteDashboardController" spacing="20" style="-fx-padding: 20;">
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.formini.controllers.dashboard.SocieteDashboardController" spacing="20" style="-fx-padding: 20; -fx-background-color: #f5f6fa;">
     <children>
-        <TabPane fx:id="mainTabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+        <TabPane fx:id="mainTabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" style="-fx-background-color: white;">
             <tabs>
-                <Tab text="Tableau de bord">
+                <Tab text="   Tableau de bord   ">
                     <content>
                         <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
                             <VBox spacing="20" style="-fx-padding: 20;">
                                 <children>
                                     <!-- Title -->
-                                    <Label fx:id="titleLabel" text="Tableau de Bord Société" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                    <Label fx:id="titleLabel" text="Tableau de Bord Société" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
 
                                     <!-- Welcome Message -->
                                     <Label fx:id="welcomeLabel" text="Bienvenue!" style="-fx-font-size: 18px; -fx-text-fill: #34495e;"/>
 
-                                    <!-- Statistics Section -->
-                                    <VBox spacing="15" style="-fx-background-color: #ecf0f1; -fx-padding: 15; -fx-border-radius: 5;">
+                                    <!-- Statistics Cards -->
+                                    <HBox spacing="20" alignment="CENTER">
                                         <children>
-                                            <Label text="Nos Statistiques Visuelles" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-                                            <HBox spacing="20" alignment="CENTER">
+                                            <VBox prefWidth="280" prefHeight="120" style="-fx-background-color: #3498db; -fx-background-radius: 12; -fx-border-radius: 12; -fx-padding: 20;" alignment="CENTER">
                                                 <children>
-                                                    <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
-                                                        <children>
-                                                            <Label text="Statut des Offres" style="-fx-font-weight: bold;"/>
-                                                            <PieChart fx:id="offersPieChart" prefHeight="250" prefWidth="300" />
-                                                        </children>
-                                                    </VBox>
-                                                    <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
-                                                        <children>
-                                                            <Label text="Statut des Candidatures" style="-fx-font-weight: bold;"/>
-                                                            <PieChart fx:id="candidatesPieChart" prefHeight="250" prefWidth="300" />
-                                                        </children>
-                                                    </VBox>
+                                                    <Label text="Total Offres" style="-fx-font-size: 14px; -fx-text-fill: white;"/>
+                                                    <Label fx:id="lblTotalOffres" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;"/>
                                                 </children>
-                                            </HBox>
-                                            <Label fx:id="statsLabel" text="Chargement des données détaillées..." style="-fx-font-size: 14px;"/>
+                                            </VBox>
+                                            <VBox prefWidth="280" prefHeight="120" style="-fx-background-color: #2ecc71; -fx-background-radius: 12; -fx-border-radius: 12; -fx-padding: 20;" alignment="CENTER">
+                                                <children>
+                                                    <Label text="Offres Actives" style="-fx-font-size: 14px; -fx-text-fill: white;"/>
+                                                    <Label fx:id="lblOffresActives" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                                                </children>
+                                            </VBox>
+                                            <VBox prefWidth="280" prefHeight="120" style="-fx-background-color: #f39c12; -fx-background-radius: 12; -fx-border-radius: 12; -fx-padding: 20;" alignment="CENTER">
+                                                <children>
+                                                    <Label text="Total Candidatures" style="-fx-font-size: 14px; -fx-text-fill: white;"/>
+                                                    <Label fx:id="lblTotalCandidatures" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                                                </children>
+                                            </VBox>
+                                            <VBox prefWidth="280" prefHeight="120" style="-fx-background-color: #9b59b6; -fx-background-radius: 12; -fx-border-radius: 12; -fx-padding: 20;" alignment="CENTER">
+                                                <children>
+                                                    <Label text="Candidatures En Attente" style="-fx-font-size: 14px; -fx-text-fill: white;"/>
+                                                    <Label fx:id="lblCandidaturesEnAttente" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                                                </children>
+                                            </VBox>
                                         </children>
-                                    </VBox>
+                                    </HBox>
 
-                                    <!-- Internship Management Menu -->
+                                    <!-- Charts -->
+                                    <HBox spacing="20" alignment="CENTER">
+                                        <children>
+                                            <VBox prefWidth="400" prefHeight="320" style="-fx-background-color: white; -fx-border-color: #dee2e6; -fx-border-width: 1; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 15;">
+                                                <children>
+                                                    <Label text="Statut des Offres" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                                    <PieChart fx:id="offersPieChart" prefHeight="250" prefWidth="350" style="-fx-background-color: transparent;" />
+                                                </children>
+                                            </VBox>
+                                            <VBox prefWidth="400" prefHeight="320" style="-fx-background-color: white; -fx-border-color: #dee2e6; -fx-border-width: 1; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 15;">
+                                                <children>
+                                                    <Label text="Statut des Candidatures" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                                    <PieChart fx:id="candidatesPieChart" prefHeight="250" prefWidth="350" style="-fx-background-color: transparent;" />
+                                                </children>
+                                            </VBox>
+                                        </children>
+                                    </HBox>
+
+                                    <Label fx:id="statsLabel" text="Chargement des donnees..." style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d;"/>
+
+                                    <!-- Menu Buttons -->
                                     <VBox spacing="15">
                                         <children>
-                                            <Label text="Gestion des Stages" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                                            <Label text="Gestion des Stages" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
 
                                             <GridPane hgap="15" vgap="15">
                                                 <children>
                                                     <Button fx:id="myOffersButton" text="Mes Offres de Stage"
-                                                            style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;"
+                                                            style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-pref-width: 200; -fx-pref-height: 50; -fx-cursor: hand; -fx-border-radius: 8; -fx-background-radius: 8;"
                                                             GridPane.columnIndex="0" GridPane.rowIndex="0"/>
 
-                                                    <Button fx:id="createOfferButton" text="Créer une Offre"
-                                                            style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;"
+                                                    <Button fx:id="createOfferButton" text="Creer une Offre"
+                                                            style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-pref-width: 200; -fx-pref-height: 50; -fx-cursor: hand; -fx-border-radius: 8; -fx-background-radius: 8;"
                                                             GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
                                                     <Button fx:id="viewCandidatesButton" text="Voir les Candidats"
-                                                            style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;"
+                                                            style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-pref-width: 200; -fx-pref-height: 50; -fx-cursor: hand; -fx-border-radius: 8; -fx-background-radius: 8;"
                                                             GridPane.columnIndex="0" GridPane.rowIndex="1"/>
 
-                                                    <Button fx:id="searchStudentsButton" text="Rechercher des Étudiants"
-                                                            style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;"
+                                                    <Button fx:id="searchStudentsButton" text="Rechercher des Etudiants"
+                                                            style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-pref-width: 200; -fx-pref-height: 50; -fx-cursor: hand; -fx-border-radius: 8; -fx-background-radius: 8;"
                                                             GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-                                                    <Button fx:id="myProfileButton" text="Profil de la Société"
-                                                            style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;"
+                                                    <Button fx:id="myProfileButton" text="Profil de la Societe"
+                                                            style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-pref-width: 200; -fx-pref-height: 50; -fx-cursor: hand; -fx-border-radius: 8; -fx-background-radius: 8;"
                                                             GridPane.columnIndex="0" GridPane.rowIndex="2"/>
 
                                                     <Button fx:id="messagesButton" text="Messages"
-                                                            style="-fx-background-color: #1abc9c; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;"
+                                                            style="-fx-background-color: #1abc9c; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-pref-width: 200; -fx-pref-height: 50; -fx-cursor: hand; -fx-border-radius: 8; -fx-background-radius: 8;"
                                                             GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                                                 </children>
                                             </GridPane>
                                         </children>
                                     </VBox>
 
-                                    <!-- Recent Activity -->
-                                    <VBox spacing="10" style="-fx-background-color: #f8f9fa; -fx-padding: 15; -fx-border-radius: 5;">
-                                        <children>
-                                            <Label text="Activité Récente" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-                                            <Label text="Aucune activité récente" style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d;"/>
-                                        </children>
-                                    </VBox>
-
                                     <!-- Quick Actions -->
                                     <HBox spacing="10">
                                         <children>
-                                            <Button text="Actualiser" onAction="#refreshDashboard" style="-fx-background-color: #95a5a6; -fx-text-fill: white;"/>
-                                            <Button text="Aide" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
-                                            <Button text="Paramètres" style="-fx-background-color: #7f8c8d; -fx-text-fill: white;"/>
+                                            <Button text="Actualiser" onAction="#refreshDashboard" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 13px; -fx-cursor: hand; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 8 15 8 15;"/>
+                                            <Button text="Aide" style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-size: 13px; -fx-cursor: hand; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 8 15 8 15;"/>
+                                            <Button text="Parametres" style="-fx-background-color: #7f8c8d; -fx-text-fill: white; -fx-font-size: 13px; -fx-cursor: hand; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 8 15 8 15;"/>
                                         </children>
                                     </HBox>
                                 </children>
@@ -100,7 +118,7 @@
                         </ScrollPane>
                     </content>
                 </Tab>
-                <Tab fx:id="stageManagementTab" text="Gestion des Stages">
+                <Tab fx:id="stageManagementTab" text="   Gestion des Stages   ">
                     <content>
                         <fx:include fx:id="stageManagement" source="../stages/stage-management.fxml" />
                     </content>
