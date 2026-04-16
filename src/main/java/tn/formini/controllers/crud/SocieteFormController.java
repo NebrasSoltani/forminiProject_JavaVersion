@@ -101,7 +101,8 @@ public class SocieteFormController {
         }
 
         try {
-            if (mode == Mode.ADD) {
+            boolean isNew = (mode == Mode.ADD);
+            if (isNew) {
                 societe = new Societe();
             }
 
@@ -111,20 +112,25 @@ public class SocieteFormController {
             societe.setAdresse(adresseTextField.getText().trim().isEmpty() ? null : adresseTextField.getText().trim());
             
             String siteWebText = siteWebTextField.getText().trim();
+            if (!siteWebText.isEmpty() && !siteWebText.startsWith("http")) {
+                siteWebText = "https://" + siteWebText;
+            }
             societe.setSite_web(siteWebText.isEmpty() ? null : siteWebText);
             
             societe.setUser(userComboBox.getValue());
 
-            if (mode == Mode.ADD) {
+            if (isNew) {
                 societeService.ajouter(societe);
-                showAlert("Succès", "Société ajoutée avec succès", Alert.AlertType.INFORMATION);
+                System.out.println("Société ajoutée en base avec ID: " + societe.getId());
             } else {
                 societeService.modifier(societe);
-                showAlert("Succès", "Société modifiée avec succès", Alert.AlertType.INFORMATION);
             }
 
-            closeForm();
+            // Important: On ferme la fenêtre SEULEMENT après avoir réussi l'ajout
+            ((javafx.stage.Stage)saveButton.getScene().getWindow()).close();
+            
         } catch (Exception e) {
+            e.printStackTrace();
             showAlert("Erreur", "Erreur lors de l'enregistrement: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
