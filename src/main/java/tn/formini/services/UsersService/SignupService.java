@@ -13,17 +13,24 @@ public class SignupService {
     private final UserService userService;
     private final ApprenantService apprenantService;
     private final FormateurService formateurService;
+    private final EmailVerificationService emailVerificationService;
+    private final EmailService emailService;
 
     public SignupService() {
         this.userService = new UserService();
         this.apprenantService = new ApprenantService();
         this.formateurService = new FormateurService();
+        this.emailVerificationService = new EmailVerificationService();
+        this.emailService = new EmailService();
     }
 
-    public SignupService(UserService userService, ApprenantService apprenantService, FormateurService formateurService) {
+    public SignupService(UserService userService, ApprenantService apprenantService, FormateurService formateurService,
+                         EmailVerificationService emailVerificationService, EmailService emailService) {
         this.userService = userService;
         this.apprenantService = apprenantService;
         this.formateurService = formateurService;
+        this.emailVerificationService = emailVerificationService;
+        this.emailService = emailService;
     }
 
     /**
@@ -48,6 +55,7 @@ public class SignupService {
 
         user.setRole_utilisateur("apprenant");
         user.setRoles("[\"ROLE_APPRENANT\"]");
+        user.setIs_email_verified(false); // Email not verified initially
 
         apprenant.valider();
 
@@ -57,6 +65,10 @@ public class SignupService {
         }
 
         apprenantService.ajouter(apprenant);
+
+        // Generate and send verification email
+        sendVerificationEmail(user);
+
         return apprenant;
     }
 
@@ -82,6 +94,7 @@ public class SignupService {
 
         user.setRole_utilisateur("formateur");
         user.setRoles("[\"ROLE_FORMATEUR\"]");
+        user.setIs_email_verified(false); // Email not verified initially
 
         formateur.valider();
 
@@ -96,7 +109,30 @@ public class SignupService {
             throw new IllegalStateException("Impossible de créer le profil formateur.");
         }
 
+        // Generate and send verification email
+        sendVerificationEmail(user);
+
         return formateur;
+    }
+
+    /**
+     * Generate and send verification email to user
+     * @param user User object
+     */
+    private void sendVerificationEmail(User user) {
+        try {
+            String token = emailVerificationService.generateAndSaveToken(user.getId());
+            if (token != null) {
+                String fullName = user.getNom() + " " + user.getPrenom();
+                emailService.sendVerificationEmail(user.getEmail(), fullName, token);
+                System.out.println("Verification email sent to: " + user.getEmail());
+            } else {
+                System.err.println("Failed to generate verification token for user: " + user.getEmail());
+            }
+        } catch (Exception e) {
+            System.err.println("Error sending verification email: " + e.getMessage());
+            // Don't fail signup if email fails - user can request resend later
+        }
     }
 
     private static void normalizeUserEmail(User user) {

@@ -40,6 +40,8 @@ public class MainMenuApp extends Application {
                 }
             } catch (Exception e) {
                 System.out.println("Échec pour: " + chemin);
+                System.out.println("Exception: " + e.getMessage());
+                e.printStackTrace();
             }
         }
 
