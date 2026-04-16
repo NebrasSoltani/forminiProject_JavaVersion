@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="tn.formini.controllers.auth.EmailVerificationController"
+           styleClass="login-page"
+           minHeight="400">
+
+    <VBox alignment="TOP_CENTER" spacing="0" StackPane.alignment="TOP_CENTER">
+        <padding><Insets top="28" right="24" bottom="28" left="24"/></padding>
+
+        <VBox maxWidth="720" spacing="20" alignment="TOP_CENTER" styleClass="login-column">
+
+            <!-- En-tête -->
+            <VBox spacing="8" alignment="CENTER_LEFT" styleClass="login-hero">
+                <Label text="Vérification Email" styleClass="login-hero-kicker"/>
+                <Label text="Vérifiez votre adresse email" styleClass="login-hero-title"/>
+                <Label text="Entrez le code de vérification qui vous a été envoyé par email."
+                       wrapText="true" styleClass="login-hero-sub" maxWidth="680"/>
+            </VBox>
+
+            <Label fx:id="lblMessage" styleClass="login-alert" wrapText="true" maxWidth="680" visible="false" managed="false"/>
+
+            <!-- Carte formulaire -->
+            <VBox styleClass="login-card" spacing="0" VBox.vgrow="ALWAYS">
+                <VBox spacing="28" styleClass="login-card-inner">
+                    <padding><Insets top="28" right="28" bottom="28" left="28"/></padding>
+
+                    <!-- Formulaire de vérification -->
+                    <VBox spacing="20">
+                        <VBox spacing="4">
+                            <Label text="Code de vérification" styleClass="login-section-kicker"/>
+                            <Label text="Entrez le code reçu par email" styleClass="login-section-title"/>
+                        </VBox>
+
+                        <GridPane hgap="18" vgap="18" styleClass="login-grid">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="140" percentWidth="100"/>
+                            </columnConstraints>
+
+                            <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <Label text="Code de vérification *" styleClass="form-label"/>
+                                <TextField fx:id="fieldToken" styleClass="form-control login-field" promptText="Entrez le code ici"/>
+                                <Label fx:id="errorToken" styleClass="error-label" text="" visible="false" managed="false"/>
+                            </VBox>
+                        </GridPane>
+
+                        <HBox spacing="14" alignment="CENTER_LEFT">
+                            <Button fx:id="btnResend" text="Renvoyer le code" styleClass="login-link" onAction="#onResend"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button fx:id="btnBack" text="Retour" styleClass="login-link" onAction="#onBack"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Séparateur -->
+                    <Separator styleClass="login-sep"/>
+
+                    <!-- Boutons d'action -->
+                    <VBox spacing="14">
+                        <Button fx:id="btnVerify" text="Vérifier" onAction="#onVerify" styleClass="btn-primary login-btn-primary" maxWidth="Infinity"/>
+                    </VBox>
+                </VBox>
+            </VBox>
+        </VBox>
+    </VBox>
+</StackPane>
