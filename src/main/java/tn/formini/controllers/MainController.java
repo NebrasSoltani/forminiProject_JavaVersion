@@ -16,7 +16,6 @@ import tn.formini.controllers.blog.BlogListController;
 import tn.formini.controllers.evenement.EvenementFormController;
 import tn.formini.controllers.evenement.EvenementListController;
 import tn.formini.controllers.produits.ProduitFormController;
-import tn.formini.controllers.produit.ProduitListController;
 
 import java.io.IOException;
 import java.net.URL;
@@ -41,7 +40,6 @@ public class MainController implements Initializable {
     @FXML private Button btnEventAdd;
     @FXML private Button btnProductList;
     @FXML private Button btnProductAdd;
-    @FXML private Button btnProductManage;
 
     private List<Button> navButtons;
 
@@ -50,7 +48,7 @@ public class MainController implements Initializable {
         labelDate.setText(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
         );
-        navButtons = Arrays.asList(btnDashboard, btnBlogList, btnBlogAdd, btnEventList, btnEventAdd, btnProductList, btnProductAdd, btnProductManage);
+        navButtons = Arrays.asList(btnDashboard, btnBlogList, btnBlogAdd, btnEventList, btnEventAdd, btnProductList, btnProductAdd);
         showDashboard();
     }
 
@@ -69,17 +67,9 @@ public class MainController implements Initializable {
             URL resource = getClass().getResource(fxmlPath);
             if (resource == null) {
                 System.err.println("FXML introuvable : " + fxmlPath);
-                // Try alternative path
-                String altPath = fxmlPath.startsWith("/") ? fxmlPath.substring(1) : "/" + fxmlPath;
-                System.out.println("DEBUG: Trying alternative path: " + altPath);
-                resource = getClass().getResource(altPath);
-                if (resource == null) {
-                    System.err.println("FXML introuvable with alternative path : " + altPath);
-                    return null;
-                }
+                return null;
             }
             System.out.println("DEBUG: FXML found at: " + resource);
-            System.out.println("DEBUG: Exact resource path: " + resource.toExternalForm());
 
             FXMLLoader loader = new FXMLLoader(resource);
             Node page = loader.load();
@@ -182,7 +172,7 @@ public class MainController implements Initializable {
     @FXML
     public void showProductList() {
         labelPageTitle.setText("Liste des Produits");
-        loadPage("/fxml/product/ProduitList.fxml");
+        loadPage("/fxml/produits/ProduitList.fxml");
         updateActiveButton(btnProductList);
     }
 
@@ -196,98 +186,6 @@ public class MainController implements Initializable {
         updateActiveButton(btnProductAdd);
         labelPageTitle.setText(produit == null ? "Nouveau Produit" : "Modifier le Produit");
         ProduitFormController controller = (ProduitFormController) loadPage("/fxml/produits/ProduitForm_Minimal.fxml");
-        if (controller != null) {
-            controller.setMainController(this);
-            if (produit != null) {
-                controller.setProduit(produit);
-            }
-        }
-    }
-
-    @FXML
-    public void showProductManage() {
-        System.out.println("=== DEBUG: showProductManage() method STARTED! ===");
-        labelPageTitle.setText("Gérer les Produits");
-        
-        // First, create a simple visible test to verify contentArea works
-        VBox testBox = new VBox();
-        testBox.setStyle("-fx-background-color: #2196F3; -fx-padding: 20; -fx-alignment: center;");
-        testBox.setPrefSize(400, 200);
-        
-        Label testLabel = new Label("LOADING PRODUCT LIST...");
-        testLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;");
-        
-        testBox.getChildren().add(testLabel);
-        contentArea.getChildren().setAll(testBox);
-        
-        System.out.println("SUCCESS: Loading test content displayed");
-        
-        // Now try to load actual FXML
-        try {
-            System.out.println("DEBUG: Loading product list FXML...");
-            
-            // Check if resource exists first
-            String fxmlPath = "/fxml/product/ProduitList.fxml";
-            URL resource = getClass().getResource(fxmlPath);
-            System.out.println("STEP 1 - Resource check: " + (resource != null ? "FOUND" : "NOT FOUND"));
-            System.out.println("STEP 2 - Resource path: " + fxmlPath);
-            
-            if (resource == null) {
-                System.err.println("ERROR: FXML resource not found at: " + fxmlPath);
-                System.out.println("INFO: Keeping loading test content visible");
-                return;
-            }
-            
-            System.out.println("STEP 3 - Resource URL: " + resource.toExternalForm());
-            
-            // Try to load FXML
-            try {
-                FXMLLoader loader = new FXMLLoader(resource);
-                System.out.println("STEP 4 - FXMLLoader created");
-                
-                Node page = loader.load();
-                System.out.println("STEP 5 - FXML loaded successfully");
-                
-                Object controller = loader.getController();
-                System.out.println("STEP 6 - Controller: " + (controller != null ? controller.getClass().getSimpleName() : "NULL"));
-                
-                if (controller != null) {
-                    // Replace content
-                    contentArea.getChildren().setAll(page);
-                    System.out.println("STEP 7 - Content replaced successfully");
-                    
-                    try {
-                        ProduitListController plc = (ProduitListController) controller;
-                        plc.setMainController(this);
-                        System.out.println("SUCCESS: MainController set for ProduitListController");
-                        System.out.println("SUCCESS: Product management interface loaded!");
-                    } catch (ClassCastException e) {
-                        System.err.println("ERROR: Failed to cast controller: " + e.getMessage());
-                    }
-                } else {
-                    System.err.println("ERROR: Controller was null - FXML loading failed");
-                    System.out.println("INFO: Keeping loading test content visible");
-                }
-                
-            } catch (Exception loadException) {
-                System.err.println("ERROR: Exception during FXML loading: " + loadException.getMessage());
-                loadException.printStackTrace();
-                System.out.println("INFO: Keeping loading test content visible due to loading error");
-            }
-            
-        } catch (Exception e) {
-            System.err.println("ERROR: General exception: " + e.getMessage());
-            e.printStackTrace();
-            System.out.println("INFO: Keeping loading test content visible due to general error");
-        }
-        
-        updateActiveButton(btnProductManage);
-    }
-
-    public void showProductDeleteForm(tn.formini.entities.produits.Produit produit) {
-        updateActiveButton(btnProductManage);
-        labelPageTitle.setText("Supprimer le Produit");
-        ProduitFormController controller = (ProduitFormController) loadPage("/fxml/produits/ProduitForm_Delete.fxml");
         if (controller != null) {
             controller.setMainController(this);
             if (produit != null) {
