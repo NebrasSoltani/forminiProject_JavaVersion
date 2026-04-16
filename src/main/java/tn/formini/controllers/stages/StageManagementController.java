@@ -2,24 +2,29 @@ package tn.formini.controllers.stages;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.*;
 import tn.formini.entities.stages.Candidature;
 import tn.formini.entities.stages.OffreStage;
-import tn.formini.entities.Users.User;
 import tn.formini.services.stageService.CandidatureService;
 import tn.formini.services.stageService.OffreStageService;
+import tn.formini.services.formations.InscriptionService;
+import tn.formini.entities.formations.Formation;
+import tn.formini.utils.OffreCardBuilder;
+import tn.formini.utils.CandidatureCardBuilder;
 
 import java.net.URL;
 import java.util.Date;
 import java.util.ResourceBundle;
+import java.util.List;
 
 public class StageManagementController implements Initializable {
 
-    // Offres
     @FXML private TextField txtTitreOffre;
     @FXML private TextField txtEntrepriseOffre;
     @FXML private TextField txtLieuOffre;
@@ -27,371 +32,406 @@ public class StageManagementController implements Initializable {
     @FXML private ComboBox<String> comboStatutOffre;
     @FXML private TextArea txtDescriptionOffre;
     @FXML private TextField txtRechercheOffre;
-    @FXML private TableView<OffreStage> tableOffres;
-    @FXML private TableColumn<OffreStage, Integer> colIdOffre;
-    @FXML private TableColumn<OffreStage, String> colTitreOffre;
-    @FXML private TableColumn<OffreStage, String> colEntrepriseOffre;
-    @FXML private TableColumn<OffreStage, String> colDomaineOffre;
-    @FXML private TableColumn<OffreStage, String> colStatutOffre;
+    @FXML private Pagination paginationOffres;
+    @FXML private TabPane tabPane;
 
-    // Candidatures
-    @FXML private TextField txtOffreIdCand;
-    @FXML private TextField txtApprenantIdCand;
     @FXML private ComboBox<String> comboStatutCand;
     @FXML private TextArea txtLettreCand;
-    @FXML private TextArea txtCommentaireCand;
-    @FXML private TableView<Candidature> tableCandidatures;
-    @FXML private TableColumn<Candidature, Integer> colIdCand;
-    @FXML private TableColumn<Candidature, String> colOffreCand;
-    @FXML private TableColumn<Candidature, String> colApprenantCand;
-    @FXML private TableColumn<Candidature, String> colStatutCand;
-    @FXML private TabPane tabPane;
+    @FXML private VBox containerCandidatures;
 
     private OffreStageService offreService = new OffreStageService();
     private CandidatureService candService = new CandidatureService();
+    private InscriptionService inscriptionService = new InscriptionService();
     private tn.formini.services.ai.CvGenerationService aiService = new tn.formini.services.ai.CvGenerationService();
+    
     private ObservableList<OffreStage> masterOffres = FXCollections.observableArrayList();
     private ObservableList<Candidature> masterCands = FXCollections.observableArrayList();
+    private FilteredList<OffreStage> filteredOffres;
+    private final int ITEMS_PER_PAGE = 3;
+
+    // Track selections
+    private OffreStage selectedOffre;
+    private Candidature selectedCand;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Init Offres
-        colIdOffre.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colTitreOffre.setCellValueFactory(new PropertyValueFactory<>("titre"));
-        colEntrepriseOffre.setCellValueFactory(new PropertyValueFactory<>("entreprise"));
-        colDomaineOffre.setCellValueFactory(new PropertyValueFactory<>("domaine"));
-        colStatutOffre.setCellValueFactory(new PropertyValueFactory<>("statut"));
-        comboStatutOffre.setItems(FXCollections.observableArrayList("ouvert", "ferme", "en_attente"));
+        setupComboBoxes();
+        filteredOffres = new FilteredList<>(masterOffres, p -> true);
+        
+        // Setup Pagination Page Factory
+        if (paginationOffres != null) {
+            paginationOffres.setPageFactory(this::createPage);
+        }
+        
         loadOffres();
-        setupRechercheOffre();
-
-        // Init Candidatures
-        colIdCand.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colOffreCand.setCellValueFactory(new PropertyValueFactory<>("offreStage"));
-        colApprenantCand.setCellValueFactory(new PropertyValueFactory<>("apprenant"));
-        colStatutCand.setCellValueFactory(new PropertyValueFactory<>("statut"));
-        comboStatutCand.setItems(FXCollections.observableArrayList("en_attente", "acceptee", "refusee", "en_cours"));
         loadCands();
+        setupRechercheOffre();
+    }
 
-        // Selection listeners
-        tableOffres.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) fillOffreFields(newVal);
-        });
-
-        tableCandidatures.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) fillCandFields(newVal);
-        });
+    private void setupComboBoxes() {
+        if (comboStatutOffre != null) {
+            comboStatutOffre.setItems(FXCollections.observableArrayList("ouvert", "ferme", "en_attente"));
+        }
+        if (comboStatutCand != null) {
+            comboStatutCand.setItems(FXCollections.observableArrayList("en_attente", "acceptee", "refusee", "en_cours"));
+        }
     }
 
     private void setupRechercheOffre() {
         txtRechercheOffre.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == null || newValue.isEmpty()) {
-                tableOffres.setItems(masterOffres);
-                return;
-            }
-
-            String lowerCaseFilter = newValue.toLowerCase();
-            ObservableList<OffreStage> filteredList = FXCollections.observableArrayList();
-
-            for (OffreStage o : masterOffres) {
-                if (o.getTitre().toLowerCase().contains(lowerCaseFilter) ||
-                    o.getEntreprise().toLowerCase().contains(lowerCaseFilter) ||
-                    o.getDomaine().toLowerCase().contains(lowerCaseFilter)) {
-                    filteredList.add(o);
-                }
-            }
-            tableOffres.setItems(filteredList);
+            filteredOffres.setPredicate(offre -> {
+                if (newValue == null || newValue.isEmpty()) return true;
+                String lower = newValue.toLowerCase();
+                return (offre.getTitre() != null && offre.getTitre().toLowerCase().contains(lower)) || 
+                       (offre.getEntreprise() != null && offre.getEntreprise().toLowerCase().contains(lower)) ||
+                       (offre.getDomaine() != null && offre.getDomaine().toLowerCase().contains(lower));
+            });
+            updatePagination();
         });
     }
 
     private void loadOffres() {
         masterOffres.clear();
         masterOffres.addAll(offreService.afficher());
-        tableOffres.setItems(masterOffres);
+        updatePagination();
+    }
+
+    private void updatePagination() {
+        if (paginationOffres == null) return;
+        int count = filteredOffres.size();
+        int pageCount = (count / ITEMS_PER_PAGE) + (count % ITEMS_PER_PAGE > 0 ? 1 : 0);
+        paginationOffres.setPageCount(pageCount > 0 ? pageCount : 1);
+        // Force refresh of current page
+        paginationOffres.setPageFactory(this::createPage);
+    }
+
+    private Node createPage(int pageIndex) {
+        VBox box = new VBox(12);
+        box.setStyle("-fx-padding: 5 0;");
+        int start = pageIndex * ITEMS_PER_PAGE;
+        int end = Math.min(start + ITEMS_PER_PAGE, filteredOffres.size());
+
+        for (int i = start; i < end; i++) {
+            OffreStage o = filteredOffres.get(i);
+            Pane card = OffreCardBuilder.createCard(o, 
+                selected -> fillOffreFields(selected), 
+                selected -> { 
+                    offreService.supprimer(selected.getId()); 
+                    loadOffres(); 
+                    if(selectedOffre != null && selectedOffre.getId() == selected.getId()) handleViderOffre(null);
+                },
+                selected -> handleVoirDetails(selected));
+            box.getChildren().add(card);
+        }
+        return box;
     }
 
     private void loadCands() {
         masterCands.clear();
         masterCands.addAll(candService.afficher());
-        tableCandidatures.setItems(masterCands);
+        displayCands(masterCands);
+    }
+
+    private void displayCands(List<Candidature> cands) {
+        containerCandidatures.getChildren().clear();
+        for (Candidature c : cands) {
+            containerCandidatures.getChildren().add(CandidatureCardBuilder.createCard(c, 
+                selected -> { selected.setStatut("acceptee"); candService.modifier(selected); loadCands(); },
+                selected -> { selected.setStatut("refusee"); candService.modifier(selected); loadCands(); },
+                selected -> handleAnalyseIAExplicit(selected),
+                selected -> handleVoirFormations(selected),
+                selected -> fillCandidatureFields(selected),
+                selected -> handleVoirCV(selected)));
+        }
+    }
+
+    private void handleVoirCV(Candidature c) {
+        if (c.getCv() == null || c.getCv().isEmpty()) {
+            showAlert("CV", "Aucun CV n'a été déposé par cet apprenant.");
+            return;
+        }
+        // Affichage du contenu du CV (si c'est du texte) ou du lien
+        showAlert("Curriculum Vitae", "Contenu/Lien du CV :\n\n" + c.getCv());
+    }
+
+    private void fillCandidatureFields(Candidature c) {
+        this.selectedCand = c;
+        txtLettreCand.setText(c.getLettre_motivation());
+        if (comboStatutCand != null) comboStatutCand.setValue(c.getStatut());
+        
+        // Basculer vers l'onglet Candidat
+        tabPane.getSelectionModel().select(1);
+        
+        // Optionnel : Afficher le CV dans une alerte ou log si pas de champ dédié
+        if (c.getCv() != null && !c.getCv().isEmpty()) {
+            System.out.println("CV du candidat: " + c.getCv());
+        }
+    }
+
+    private void handleVoirFormations(Candidature c) {
+        if (c.getApprenant() == null) {
+            showAlert("Erreur", "Apprenant non trouvé.");
+            return;
+        }
+        
+        // 1. Inscriptions sur la plateforme
+        List<Formation> formations = inscriptionService.findFormationsByApprenant(c.getApprenant().getId());
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("👤 PROFIL DE L'APPRENANT : ").append(c.getApprenant().getNom().toUpperCase()).append("\n");
+        sb.append("────────────────────────────\n\n");
+
+        // 2. Récupérer les données du profil Apprenant (Objectifs, etc.)
+        tn.formini.entities.Users.Apprenant profile = new tn.formini.services.UsersService.ApprenantService().findByUserId(c.getApprenant().getId());
+        if (profile != null && profile.getObjectif() != null) {
+            sb.append("🎯 OBJECTIF PROFESSIONNEL :\n");
+            sb.append(profile.getObjectif()).append("\n\n");
+        }
+
+        // 3. Inscriptions Formini
+        sb.append("📚 FORMATIONS SUR FORMINI :\n");
+        if (formations.isEmpty()) {
+            sb.append("• Aucune formation suivie sur la plateforme.\n");
+        } else {
+            for (Formation f : formations) {
+                sb.append("• ").append(f.getTitre()).append(" (").append(f.getNiveau()).append(")\n");
+            }
+        }
+        sb.append("\n");
+
+        // 4. Détails du CV (Simulé ou extrait si disponible)
+        if (c.getCv() != null && !c.getCv().isEmpty()) {
+            sb.append("📄 DÉTAILS DU CURRICULUM VITAE :\n");
+            sb.append(c.getCv().length() > 200 ? c.getCv().substring(0, 200) + "..." : c.getCv());
+        }
+        
+        showAlert("Dossier Candidat Complet", sb.toString());
     }
 
     private void fillOffreFields(OffreStage o) {
+        this.selectedOffre = o;
         txtTitreOffre.setText(o.getTitre());
         txtEntrepriseOffre.setText(o.getEntreprise());
         txtLieuOffre.setText(o.getLieu());
         txtDomaineOffre.setText(o.getDomaine());
         comboStatutOffre.setValue(o.getStatut());
         txtDescriptionOffre.setText(o.getDescription());
-        
-        // Remplir automatiquement l'ID pour la candidature si on change d'onglet
-        txtOffreIdCand.setText(String.valueOf(o.getId()));
     }
 
-    private void fillCandFields(Candidature c) {
-        txtOffreIdCand.setText(c.getOffreStage() != null ? String.valueOf(c.getOffreStage().getId()) : "");
-        txtApprenantIdCand.setText(c.getApprenant() != null ? String.valueOf(c.getApprenant().getId()) : "");
-        comboStatutCand.setValue(c.getStatut());
-        txtLettreCand.setText(c.getLettre_motivation());
-        txtCommentaireCand.setText(c.getCommentaire());
+    private boolean validerSaisieOffre() {
+        StringBuilder sb = new StringBuilder();
+        if (txtTitreOffre.getText().trim().isEmpty()) sb.append("- Titre requis\n");
+        if (txtEntrepriseOffre.getText().trim().isEmpty()) sb.append("- Entreprise requise\n");
+        if (txtLieuOffre.getText().trim().isEmpty()) sb.append("- Lieu requis\n");
+        if (txtDomaineOffre.getText().trim().isEmpty()) sb.append("- Domaine requis\n");
+        if (comboStatutOffre.getValue() == null) sb.append("- Statut requis\n");
+        if (txtDescriptionOffre.getText().trim().length() < 10) sb.append("- Description trop courte (min 10 car.)\n");
+
+        if (sb.length() > 0) {
+            showAlert("Erreur de saisie", "Veuillez corriger les points suivants :\n" + sb.toString());
+            return false;
+        }
+        return true;
     }
 
-    @FXML
-    void handleGenererDescriptionIA(ActionEvent event) {
+    private boolean validerSaisieCand() {
+        if (selectedCand == null) {
+            showAlert("Attention", "Veuillez d'abord sélectionner une candidature dans la liste.");
+            return false;
+        }
+        if (txtLettreCand.getText().trim().isEmpty()) {
+            showAlert("Erreur", "La lettre de motivation ne peut pas être vide.");
+            return false;
+        }
+        if (comboStatutCand.getValue() == null) {
+            showAlert("Erreur", "Veuillez sélectionner un statut.");
+            return false;
+        }
+        return true;
+    }
+
+    @FXML void handleGenererDescriptionIA(ActionEvent event) {
         String titre = txtTitreOffre.getText().trim();
         String domaine = txtDomaineOffre.getText().trim();
-
         if (titre.isEmpty() || domaine.isEmpty()) {
-            showAlert("Attention", "Veuillez saisir un Titre et un Domaine pour que l'IA puisse générer une description.");
+            showAlert("Attention", "Titre et Domaine requis pour l'IA.");
             return;
         }
-
         try {
-            // Afficher un indicateur de chargement ou changer le texte
-            txtDescriptionOffre.setText("Génération en cours par l'IA...");
-            
-            // Appel asynchrone pour ne pas bloquer l'UI (optionnel mais recommandé)
-            // Ici on fait un appel simple pour la démo
-            String generation = aiService.generateOffreDescription(titre, domaine);
-            
-            if (generation != null && !generation.startsWith("Erreur")) {
-                txtDescriptionOffre.setText(generation);
-            } else {
-                showAlert("Erreur IA", generation);
-                txtDescriptionOffre.clear();
-            }
+            String gen = aiService.generateOffreDescription(titre, domaine);
+            txtDescriptionOffre.setText(gen);
         } catch (Exception e) {
-            showAlert("Erreur", "Impossible de générer la description: " + e.getMessage());
+            showAlert("Erreur IA", e.getMessage());
         }
     }
 
-    @FXML
-    void handleAjouterOffre(ActionEvent event) {
-        String titre = txtTitreOffre.getText().trim();
-        String entreprise = txtEntrepriseOffre.getText().trim();
-        String description = txtDescriptionOffre.getText().trim();
-        String statut = comboStatutOffre.getValue();
-
-        if (titre.isEmpty()) {
-            showAlert("Erreur de saisie", "Le titre de l'offre est obligatoire.");
-            return;
-        }
-        if (entreprise.isEmpty()) {
-            showAlert("Erreur de saisie", "Le nom de l'entreprise est obligatoire.");
-            return;
-        }
-        if (description.isEmpty()) {
-            showAlert("Erreur de saisie", "La description est obligatoire.");
-            return;
-        }
-        if (statut == null) {
-            showAlert("Erreur de saisie", "Veuillez sélectionner un statut pour l'offre.");
-            return;
-        }
-
+    @FXML void handleAjouterOffre(ActionEvent event) {
+        if (!validerSaisieOffre()) return;
         try {
             OffreStage o = new OffreStage();
-            o.setTitre(titre);
-            o.setEntreprise(entreprise);
-            o.setLieu(txtLieuOffre.getText().trim().isEmpty() ? "Tunis" : txtLieuOffre.getText().trim());
-            o.setDomaine(txtDomaineOffre.getText().trim().isEmpty() ? "Général" : txtDomaineOffre.getText().trim());
-            o.setStatut(statut);
-            o.setDescription(description);
+            o.setTitre(txtTitreOffre.getText());
+            o.setEntreprise(txtEntrepriseOffre.getText());
+            o.setLieu(txtLieuOffre.getText());
+            o.setDomaine(txtDomaineOffre.getText());
+            o.setStatut(comboStatutOffre.getValue());
+            o.setDescription(txtDescriptionOffre.getText());
             o.setDate_publication(new Date());
-            o.setDuree("3 mois");
-            o.setType_stage("Stage");
-            
-            User s = new User(); s.setId(1); o.setSociete(s); 
-            
             offreService.ajouter(o);
             loadOffres();
-            showAlert("Succès", "Offre de stage ajoutée avec succès !");
+            showAlert("Succès", "Offre publiée !");
             handleViderOffre(null);
         } catch (Exception e) {
-            showAlert("Erreur", "Erreur lors de l'ajout : " + e.getMessage());
+            showAlert("Erreur", e.getMessage());
         }
     }
 
-    @FXML
-    void handleModifierOffre(ActionEvent event) {
-        OffreStage selected = tableOffres.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
+    @FXML void handleModifierOffre(ActionEvent event) {
+        if (selectedOffre == null) {
+            showAlert("Selection requise", "Veuillez cliquer sur une offre dans la liste pour la modifier.");
+            return;
+        }
+        if (!validerSaisieOffre()) return;
         try {
-            selected.setTitre(txtTitreOffre.getText());
-            selected.setEntreprise(txtEntrepriseOffre.getText());
-            selected.setStatut(comboStatutOffre.getValue());
-            offreService.modifier(selected);
+            selectedOffre.setTitre(txtTitreOffre.getText());
+            selectedOffre.setEntreprise(txtEntrepriseOffre.getText());
+            selectedOffre.setLieu(txtLieuOffre.getText());
+            selectedOffre.setDomaine(txtDomaineOffre.getText());
+            selectedOffre.setStatut(comboStatutOffre.getValue());
+            selectedOffre.setDescription(txtDescriptionOffre.getText());
+            
+            offreService.modifier(selectedOffre);
             loadOffres();
-        } catch (Exception e) { showAlert("Erreur", e.getMessage()); }
-    }
-
-    @FXML
-    void handleSupprimerOffre(ActionEvent event) {
-        OffreStage selected = tableOffres.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            offreService.supprimer(selected.getId());
-            loadOffres();
+            showAlert("Succès", "Offre mise à jour !");
+        } catch (Exception e) {
+            showAlert("Erreur", e.getMessage());
         }
     }
 
-    @FXML
-    void handleViderOffre(ActionEvent event) {
+    @FXML void handleSupprimerOffre(ActionEvent event) {
+        if (selectedOffre == null) {
+            showAlert("Selection requise", "Veuillez cliquer sur une offre pour la supprimer.");
+            return;
+        }
+        
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Supprimer l'offre : " + selectedOffre.getTitre() + " ?", ButtonType.YES, ButtonType.NO);
+        alert.showAndWait().ifPresent(type -> {
+            if (type == ButtonType.YES) {
+                offreService.supprimer(selectedOffre.getId());
+                loadOffres();
+                handleViderOffre(null);
+            }
+        });
+    }
+
+    @FXML void handleViderOffre(ActionEvent event) {
+        selectedOffre = null;
         txtTitreOffre.clear();
         txtEntrepriseOffre.clear();
         txtLieuOffre.clear();
         txtDomaineOffre.clear();
         txtDescriptionOffre.clear();
+        if (comboStatutOffre != null) comboStatutOffre.setValue(null);
     }
 
-    // Candidature Handlers
-    @FXML
-    void handleAjouterCand(ActionEvent event) {
-        if (txtOffreIdCand.getText().isEmpty() || txtApprenantIdCand.getText().isEmpty()) {
-            showAlert("Erreur", "Veuillez sélectionner une offre et saisir un ID Apprenant.");
+    @FXML void handleModifierCand(ActionEvent event) {
+        if (!validerSaisieCand()) return;
+        try {
+            selectedCand.setStatut(comboStatutCand.getValue());
+            selectedCand.setLettre_motivation(txtLettreCand.getText());
+            candService.modifier(selectedCand);
+            loadCands();
+            showAlert("Succès", "Candidature mise à jour !");
+        } catch (Exception e) {
+            showAlert("Erreur", e.getMessage());
+        }
+    }
+
+    @FXML void handleSupprimerCand(ActionEvent event) {
+        if (selectedCand == null) {
+            showAlert("Sélection requise", "Veuillez sélectionner une candidature à supprimer.");
             return;
         }
-        
-        try {
-            int offreId = Integer.parseInt(txtOffreIdCand.getText());
-            int apprenantId = Integer.parseInt(txtApprenantIdCand.getText());
-
-            Candidature c = new Candidature();
-            
-            // On s'assure que l'offre existe vraiment
-            OffreStage o = offreService.findById(offreId);
-            if (o == null) {
-                showAlert("Erreur", "L'offre de stage avec l'ID " + offreId + " n'existe pas.");
-                return;
-            }
-            
-            // On s'assure que l'apprenant existe (on mock l'utilisateur s'il n'est pas trouvé pour le test, mais idéalement on check)
-            User a = new User(); 
-            a.setId(apprenantId);
-            
-            c.setOffreStage(o);
-            c.setApprenant(a);
-            c.setStatut(comboStatutCand.getValue() != null ? comboStatutCand.getValue() : "en_attente");
-            c.setLettre_motivation(txtLettreCand.getText());
-            c.setCommentaire(txtCommentaireCand.getText());
-            c.setDate_candidature(new Date());
-            
-            candService.ajouter(c);
-            
-            if (c.getId() > 0) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Supprimer la candidature de " + (selectedCand.getApprenant() != null ? selectedCand.getApprenant().getNom() : "ce candidat") + " ?", ButtonType.YES, ButtonType.NO);
+        alert.showAndWait().ifPresent(type -> {
+            if (type == ButtonType.YES) {
+                candService.supprimer(selectedCand.getId());
                 loadCands();
-                showAlert("Succès", "Candidature enregistrée avec succès !");
-            } else {
-                showAlert("Erreur", "L'ajout a échoué (vérifiez vos IDs).");
+                handleViderCand(null);
             }
-        } catch (NumberFormatException e) {
-            showAlert("Erreur", "Les IDs doivent être des nombres.");
-        } catch (Exception e) {
-            showAlert("Erreur", "Détail : " + e.getMessage());
-        }
+        });
     }
 
-    @FXML
-    void handleAnalyseIA(ActionEvent event) {
-        Candidature selected = tableCandidatures.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showAlert("Attention", "Veuillez sélectionner une candidature pour l'analyse IA.");
-            return;
-        }
-
-        try {
-            // Récupérer les détails complets de l'offre si nécessaire
-            OffreStage offre = selected.getOffreStage();
-            String descriptionOffre = (offre != null) ? "Titre: " + offre.getTitre() + "\nDescription: " + offre.getDescription() : "Non spécifiée";
-            
-            // Simuler le contenu du CV à partir de la lettre de motivation si le fichier n'est pas lisible directement
-            String cvContent = "Lettre de motivation: " + selected.getLettre_motivation();
-            if (selected.getCv() != null && !selected.getCv().isEmpty()) {
-                cvContent += "\nChemin du CV: " + selected.getCv();
-            }
-
-            // Afficher un message de chargement (optionnel car Gemini est rapide)
-            String resultat = aiService.analyzeMatching(descriptionOffre, cvContent);
-            
-            // Afficher le résultat dans une grande zone de texte
-            TextArea textArea = new TextArea(resultat);
-            textArea.setEditable(false);
-            textArea.setWrapText(true);
-            textArea.setPrefHeight(400);
-            textArea.setPrefWidth(500);
-
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Analyse Matching IA");
-            alert.setHeaderText("Analyse de compatibilité pour : " + (selected.getApprenant() != null ? selected.getApprenant().getNom() : "Candidat"));
-            alert.getDialogPane().setContent(textArea);
-            alert.showAndWait();
-
-        } catch (Exception e) {
-            showAlert("Erreur IA", "Impossible de contacter le service IA: " + e.getMessage());
-        }
-    }
-
-    @FXML
-    void handleAccepterCand(ActionEvent event) {
-        Candidature selected = tableCandidatures.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showAlert("Attention", "Veuillez sélectionner une candidature.");
-            return;
-        }
-        selected.setStatut("acceptee");
-        candService.modifier(selected);
-        loadCands();
-        showAlert("Succès", "Candidature acceptée !");
-    }
-
-    @FXML
-    void handleRefuserCand(ActionEvent event) {
-        Candidature selected = tableCandidatures.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showAlert("Attention", "Veuillez sélectionner une candidature.");
-            return;
-        }
-        selected.setStatut("refusee");
-        candService.modifier(selected);
-        loadCands();
-        showAlert("Succès", "Candidature refusée.");
-    }
-
-    @FXML
-    void handleModifierCand(ActionEvent event) {
-        Candidature s = tableCandidatures.getSelectionModel().getSelectedItem();
-        if (s == null) return;
-        s.setStatut(comboStatutCand.getValue());
-        s.setCommentaire(txtCommentaireCand.getText());
-        s.setLettre_motivation(txtLettreCand.getText());
-        candService.modifier(s);
-        loadCands();
-        showAlert("Succès", "Candidature mise à jour !");
-    }
-
-    @FXML
-    void handleSupprimerCand(ActionEvent event) {
-        Candidature s = tableCandidatures.getSelectionModel().getSelectedItem();
-        if (s != null) { candService.supprimer(s.getId()); loadCands(); }
-    }
-
-    @FXML
-    void handleViderCand(ActionEvent event) {
-        txtOffreIdCand.clear();
-        txtApprenantIdCand.clear();
+    @FXML void handleViderCand(ActionEvent event) {
+        selectedCand = null;
         txtLettreCand.clear();
+        if (comboStatutCand != null) comboStatutCand.setValue(null);
     }
 
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
+    @FXML void handleAccepterCand(ActionEvent event) {
+        if (selectedCand == null) {
+            showAlert("Info", "Veuillez sélectionner une candidature.");
+            return;
+        }
+        selectedCand.setStatut("acceptee");
+        candService.modifier(selectedCand);
+        loadCands();
+        showAlert("Succès", "La candidature a été acceptée.");
+    }
+
+    @FXML void handleRefuserCand(ActionEvent event) {
+        if (selectedCand == null) {
+            showAlert("Info", "Veuillez sélectionner une candidature.");
+            return;
+        }
+        selectedCand.setStatut("refusee");
+        candService.modifier(selectedCand);
+        loadCands();
+        showAlert("Succès", "La candidature a été refusée.");
+    }
+
+    @FXML public void handleAnalyseIA(ActionEvent event) {
+        if (selectedCand != null) {
+            handleAnalyseIAExplicit(selectedCand);
+        } else {
+            showAlert("Info", "Veuillez sélectionner une candidature pour l'analyse.");
+        }
+    }
+    
+    private void handleAnalyseIAExplicit(Candidature c) {
+        try {
+            String res = aiService.analyzeMatching("Offre: " + (c.getOffreStage() != null ? c.getOffreStage().getTitre() : "Inconnue"), 
+                                                 "Lettre: " + c.getLettre_motivation());
+            showAlert("Analyse IA", res);
+        } catch (Exception e) {
+            showAlert("Erreur IA", e.getMessage());
+        }
+    }
+
+    private void handleVoirDetails(OffreStage o) {
+        showAlert("Détails Offre", o.getDescription());
+    }
+
+    private void showAlert(String t, String c) {
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setTitle(t);
+        a.setHeaderText(null);
+        a.setContentText(c);
+        a.showAndWait();
+    }
+
+    @FXML 
+    private void handleButtonHover(javafx.scene.input.MouseEvent event) {
+        javafx.scene.control.Button btn = (javafx.scene.control.Button) event.getSource();
+        btn.setScaleX(1.05); btn.setScaleY(1.05);
+    }
+
+    @FXML 
+    private void handleButtonNormal(javafx.scene.input.MouseEvent event) {
+        javafx.scene.control.Button btn = (javafx.scene.control.Button) event.getSource();
+        btn.setScaleX(1.0); btn.setScaleY(1.0);
     }
 
     public void setSelectedTab(int index) {
-        if (tabPane != null && index >= 0 && index < tabPane.getTabs().size()) {
-            tabPane.getSelectionModel().select(index);
-        }
+        if (tabPane != null) tabPane.getSelectionModel().select(index);
     }
 }
