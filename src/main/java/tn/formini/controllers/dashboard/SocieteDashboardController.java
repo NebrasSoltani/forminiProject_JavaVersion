@@ -31,6 +31,18 @@ public class SocieteDashboardController implements DashboardRoleController {
     private Label statsLabel;
     
     @FXML
+    private Label lblTotalOffres;
+    
+    @FXML
+    private Label lblOffresActives;
+    
+    @FXML
+    private Label lblTotalCandidatures;
+    
+    @FXML
+    private Label lblCandidaturesEnAttente;
+    
+    @FXML
     private PieChart offersPieChart;
     
     @FXML
@@ -109,9 +121,18 @@ public class SocieteDashboardController implements DashboardRoleController {
 
     private void loadStatistics() {
         try {
-            // 1. Statistiques Offres
             List<OffreStage> allOffres = offreService.afficher();
-            System.out.println("DEBUG: Nombre d'offres récupérées: " + allOffres.size());
+            List<Candidature> allCands = candService.afficher();
+            
+            int totalOffres = allOffres.size();
+            long offresActives = allOffres.stream().filter(o -> "ouvert".equals(o.getStatut())).count();
+            int totalCands = allCands.size();
+            long candsEnAttente = allCands.stream().filter(c -> "en_attente".equals(c.getStatut())).count();
+            
+            if (lblTotalOffres != null) lblTotalOffres.setText(String.valueOf(totalOffres));
+            if (lblOffresActives != null) lblOffresActives.setText(String.valueOf(offresActives));
+            if (lblTotalCandidatures != null) lblTotalCandidatures.setText(String.valueOf(totalCands));
+            if (lblCandidaturesEnAttente != null) lblCandidaturesEnAttente.setText(String.valueOf(candsEnAttente));
             
             offersPieChart.getData().clear();
             if (allOffres.isEmpty()) {
@@ -119,32 +140,25 @@ public class SocieteDashboardController implements DashboardRoleController {
             } else {
                 Map<String, Long> offerStats = allOffres.stream()
                     .collect(Collectors.groupingBy(o -> o.getStatut() != null ? o.getStatut() : "inconnu", Collectors.counting()));
-                
                 offerStats.forEach((statut, count) -> 
                     offersPieChart.getData().add(new PieChart.Data(statut + " (" + count + ")", count)));
             }
 
-            // 2. Statistiques Candidatures
-            List<Candidature> allCands = candService.afficher();
-            System.out.println("DEBUG: Nombre de candidatures récupérées: " + allCands.size());
-            
             candidatesPieChart.getData().clear();
             if (allCands.isEmpty()) {
                 candidatesPieChart.getData().add(new PieChart.Data("Aucune candidature", 1));
             } else {
                 Map<String, Long> candStats = allCands.stream()
                     .collect(Collectors.groupingBy(c -> c.getStatut() != null ? c.getStatut() : "en_attente", Collectors.counting()));
-                
                 candStats.forEach((statut, count) -> 
                     candidatesPieChart.getData().add(new PieChart.Data(statut + " (" + count + ")", count)));
             }
 
-            statsLabel.setText(String.format("Récapitulatif : %d offres et %d candidatures au total dans le système.", 
-                allOffres.size(), allCands.size()));
+            statsLabel.setText(String.format("Total: %d offres et %d candidatures", totalOffres, totalCands));
                 
         } catch (Exception e) {
             e.printStackTrace();
-            statsLabel.setText("Erreur lors du chargement des graphiques : " + e.getMessage());
+            statsLabel.setText("Erreur: " + e.getMessage());
         }
     }
 

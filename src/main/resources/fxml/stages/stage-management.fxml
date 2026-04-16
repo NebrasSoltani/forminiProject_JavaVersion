@@ -1,189 +1,194 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.effect.*?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.formini.controllers.stages.StageManagementController">
+<AnchorPane minHeight="600.0" minWidth="1050.0" style="-fx-background-color: #f5f6fa; -fx-font-family: 'Segoe UI', sans-serif;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.formini.controllers.stages.StageManagementController">
    <children>
-      <TabPane fx:id="tabPane" layoutX="14.0" layoutY="14.0" prefHeight="672.0" prefWidth="972.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
-        <tabs>
-          <Tab text="Offres de Stage">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+      <VBox spacing="0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <!-- TOP HEADER (SaaS Style) -->
+            <HBox alignment="CENTER_LEFT" prefHeight="65.0" spacing="20.0" style="-fx-background-color: white; -fx-border-color: #eee; -fx-border-width: 0 0 1 0;">
+               <padding><Insets left="30.0" right="30.0" /></padding>
+               <children>
+                  <Label style="-fx-text-fill: #667eea; -fx-font-size: 18px; -fx-font-weight: bold;" text="🎓 Stage Management Pro" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <HBox spacing="10" alignment="CENTER" style="-fx-background-color: #f8f9fa; -fx-background-radius: 20; -fx-padding: 6 15; -fx-border-color: #ddd; -fx-border-radius: 20;">
                      <children>
-                        <VBox spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                        <Label text="🔔 Notifications" style="-fx-text-fill: #555; -fx-font-size: 12px; -fx-font-weight: bold;" />
+                     </children>
+                  </HBox>
+               </children>
+            </HBox>
+
+            <SplitPane dividerPositions="0.36" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
+               <items>
+                  <!-- LEFT PANEL: FORMULAIRE -->
+                  <ScrollPane fitToWidth="true" maxWidth="450.0" minWidth="360.0" style="-fx-background: white; -fx-border-color: #eee; -fx-border-width: 0 1 0 0;">
+                     <content>
+                        <VBox spacing="15.0" style="-fx-padding: 20;">
                            <children>
-                              <HBox spacing="10.0" alignment="CENTER_LEFT">
-                                 <children>
-                                    <Label text="Gestion des Offres de Stage">
-                                       <font>
-                                          <Font name="System Bold" size="24.0" />
-                                       </font>
-                                    </Label>
-                                    <Region HBox.hgrow="ALWAYS" />
-                                    <TextField fx:id="txtRechercheOffre" prefWidth="250.0" promptText="Rechercher par titre, entreprise..." />
-                                 </children>
-                              </HBox>
-                              <HBox prefHeight="350.0" prefWidth="952.0" spacing="15.0">
-                                 <children>
-                                    <VBox prefHeight="350.0" prefWidth="400.0" spacing="10.0" style="-fx-border-color: #cccccc; -fx-padding: 10;">
-                                       <children>
-                                          <GridPane vgap="5.0">
-                                            <columnConstraints>
-                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
-                                            </columnConstraints>
-                                            <rowConstraints>
-                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                <RowConstraints minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
-                                            </rowConstraints>
+                              <Label text="📝 Gestionnaire" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+                              <TabPane fx:id="tabPane" style="-fx-background-color: white;" tabClosingPolicy="UNAVAILABLE">
+                                 <tabs>
+                                    <Tab text="🎯 OFFRE">
+                                       <content>
+                                          <VBox spacing="12.0" style="-fx-padding: 15 0 0 0;">
                                              <children>
-                                                <Label text="Titre:" />
-                                                <TextField fx:id="txtTitreOffre" GridPane.columnIndex="1" />
-                                                <Label text="Entreprise:" GridPane.rowIndex="1" />
-                                                <TextField fx:id="txtEntrepriseOffre" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <Label text="Lieu:" GridPane.rowIndex="2" />
-                                                <TextField fx:id="txtLieuOffre" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                <Label text="Domaine:" GridPane.rowIndex="3" />
-                                                <TextField fx:id="txtDomaineOffre" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                                <Label text="Statut:" GridPane.rowIndex="4" />
-                                                <ComboBox fx:id="comboStatutOffre" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                                <Label text="Description:" GridPane.rowIndex="5" />
-                                                <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                                <VBox spacing="4.0">
                                                    <children>
-                                                      <TextArea fx:id="txtDescriptionOffre" prefHeight="100.0" prefWidth="200.0" wrapText="true" />
-                                                      <Button mnemonicParsing="false" onAction="#handleGenererDescriptionIA" text="✨ GÉNÉRER AVEC L'IA" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-size: 10px;" maxWidth="Infinity" />
+                                                      <Label text="Titre de l'offre *" style="-fx-font-weight: 500; -fx-text-fill: #555; -fx-font-size: 12px;" />
+                                                      <TextField fx:id="txtTitreOffre" promptText="Ex: Développeur Fullstack" style="-fx-background-radius: 8; -fx-border-color: #ddd; -fx-border-radius: 8; -fx-padding: 8;" />
+                                                   </children>
+                                                </VBox>
+
+                                                <VBox spacing="4.0">
+                                                   <children>
+                                                      <Label text="Entreprise" style="-fx-font-weight: 500; -fx-text-fill: #555; -fx-font-size: 12px;" />
+                                                      <TextField fx:id="txtEntrepriseOffre" style="-fx-background-radius: 8; -fx-border-color: #ddd; -fx-border-radius: 8; -fx-padding: 8;" />
+                                                   </children>
+                                                </VBox>
+
+                                                <HBox spacing="10.0">
+                                                   <children>
+                                                      <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                                         <children>
+                                                            <Label text="Lieu" style="-fx-font-weight: 500; -fx-text-fill: #555; -fx-font-size: 12px;" />
+                                                            <TextField fx:id="txtLieuOffre" style="-fx-background-radius: 8; -fx-border-color: #ddd; -fx-border-radius: 8; -fx-padding: 8;" />
+                                                         </children>
+                                                      </VBox>
+                                                      <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                                         <children>
+                                                            <Label text="Domaine" style="-fx-font-weight: 500; -fx-text-fill: #555; -fx-font-size: 12px;" />
+                                                            <TextField fx:id="txtDomaineOffre" style="-fx-background-radius: 8; -fx-border-color: #ddd; -fx-border-radius: 8; -fx-padding: 8;" />
+                                                         </children>
+                                                      </VBox>
+                                                   </children>
+                                                </HBox>
+
+                                                <VBox spacing="4.0">
+                                                   <children>
+                                                      <Label text="Statut de l'offre" style="-fx-font-weight: 500; -fx-text-fill: #555; -fx-font-size: 12px;" />
+                                                      <ComboBox fx:id="comboStatutOffre" maxWidth="Infinity" style="-fx-background-radius: 8; -fx-border-color: #ddd; -fx-border-radius: 8; -fx-padding: 2;" />
+                                                   </children>
+                                                </VBox>
+
+                                                <VBox spacing="4.0">
+                                                   <children>
+                                                      <Label text="Description" style="-fx-font-weight: 500; -fx-text-fill: #555; -fx-font-size: 12px;" />
+                                                      <TextArea fx:id="txtDescriptionOffre" prefHeight="80.0" style="-fx-background-radius: 8; -fx-border-color: #ddd; -fx-border-radius: 8;" wrapText="true" />
+                                                      <Button maxWidth="Infinity" onAction="#handleGenererDescriptionIA" style="-fx-background-color: linear-gradient(to right, #9b59b6, #8e44ad); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8;" text="✨ Améliorer avec l'IA" />
+                                                   </children>
+                                                </VBox>
+
+                                                <GridPane hgap="10" vgap="10" style="-fx-padding: 5 0 0 0;">
+                                                   <columnConstraints>
+                                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                   </columnConstraints>
+                                                   <children>
+                                                      <Button onAction="#handleAjouterOffre" maxWidth="Infinity" prefHeight="40.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10;" text="➕ Ajouter" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                                      <Button onAction="#handleModifierOffre" maxWidth="Infinity" prefHeight="40.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10;" text="✏️ Modifier" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                                      <Button onAction="#handleSupprimerOffre" maxWidth="Infinity" prefHeight="40.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10;" text="🗑️ Suppr" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                                      <Button onAction="#handleViderOffre" maxWidth="Infinity" prefHeight="40.0" style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10;" text="🔄 Vider" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                   </children>
+                                                </GridPane>
+                                             </children>
+                                          </VBox>
+                                       </content>
+                                    </Tab>
+                                    <Tab text="📬 CANDIDAT">
+                                       <content>
+                                          <VBox spacing="15.0" style="-fx-padding: 15 0 0 0;">
+                                             <children>
+                                                <VBox spacing="5.0">
+                                                   <children>
+                                                      <Label text="Statut de la Candidature" style="-fx-font-weight: bold; -fx-font-size: 12px;" />
+                                                      <ComboBox fx:id="comboStatutCand" maxWidth="Infinity" style="-fx-background-radius: 8; -fx-border-color: #ddd; -fx-border-radius: 8;" />
+                                                   </children>
+                                                </VBox>
+                                                <VBox spacing="5.0">
+                                                   <children>
+                                                      <Label text="Lettre de Motivation" style="-fx-font-weight: bold; -fx-font-size: 12px;" />
+                                                      <TextArea fx:id="txtLettreCand" prefHeight="160.0" style="-fx-background-radius: 8; -fx-border-color: #ddd; -fx-border-radius: 8;" wrapText="true" />
+                                                   </children>
+                                                </VBox>
+                                                <VBox spacing="10">
+                                                   <children>
+                                                      <Button maxWidth="Infinity" onAction="#handleAnalyseIA" prefHeight="40.0" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10;" text="🧠 Analyse IA" />
+                                                      <HBox spacing="10">
+                                                         <children>
+                                                            <Button onAction="#handleAccepterCand" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefHeight="40.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10;" text="✅ OK" />
+                                                            <Button onAction="#handleRefuserCand" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefHeight="40.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10;" text="❌ NON" />
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox spacing="10">
+                                                         <children>
+                                                            <Button onAction="#handleModifierCand" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefHeight="40.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10;" text="💾 Save" />
+                                                            <Button onAction="#handleSupprimerCand" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefHeight="40.0" style="-fx-background-color: #7f8c8d; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10;" text="🗑️ Del" />
+                                                            <Button onAction="#handleViderCand" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefHeight="40.0" style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10;" text="🔄 Reset" />
+                                                         </children>
+                                                      </HBox>
                                                    </children>
                                                 </VBox>
                                              </children>
-                                          </GridPane>
-                                          <HBox alignment="CENTER" spacing="10.0">
-                                             <children>
-                                                <Button mnemonicParsing="false" onAction="#handleAjouterOffre" text="Ajouter" />
-                                                <Button mnemonicParsing="false" onAction="#handleModifierOffre" text="Modifier" />
-                                                <Button mnemonicParsing="false" onAction="#handleSupprimerOffre" text="Supprimer" />
-                                                <Button mnemonicParsing="false" onAction="#handleViderOffre" text="Vider" />
-                                             </children>
-                                             <padding>
-                                                <Insets top="10.0" />
-                                             </padding>
-                                          </HBox>
-                                       </children>
-                                    </VBox>
-                                    <TableView fx:id="tableOffres" prefHeight="350.0" prefWidth="550.0">
-                                      <columns>
-                                        <TableColumn fx:id="colIdOffre" prefWidth="40.0" text="ID" />
-                                        <TableColumn fx:id="colTitreOffre" prefWidth="120.0" text="Titre" />
-                                          <TableColumn fx:id="colEntrepriseOffre" prefWidth="100.0" text="Entreprise" />
-                                          <TableColumn fx:id="colDomaineOffre" prefWidth="100.0" text="Domaine" />
-                                          <TableColumn fx:id="colStatutOffre" prefWidth="80.0" text="Statut" />
-                                      </columns>
-                                    </TableView>
-                                 </children>
-                              </HBox>
+                                          </VBox>
+                                       </content>
+                                    </Tab>
+                                 </tabs>
+                              </TabPane>
                            </children>
                         </VBox>
-                     </children>
-                  </AnchorPane>
-            </content>
-          </Tab>
-          <Tab text="Candidatures">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     </content>
+                  </ScrollPane>
+
+                  <!-- RIGHT PANEL: CATALOGUE -->
+                  <VBox style="-fx-background-color: #f8f9fa;">
                      <children>
-                        <VBox spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                        <!-- SEARCH BAR -->
+                        <VBox spacing="15.0" style="-fx-padding: 20; -fx-background-color: white; -fx-border-color: #eee; -fx-border-width: 0 0 1 0;">
                            <children>
-                              <Label text="Gestion des Candidatures">
-                                 <font>
-                                    <Font name="System Bold" size="24.0" />
-                                 </font>
-                              </Label>
-                              <HBox prefHeight="350.0" prefWidth="952.0" spacing="15.0">
+                              <HBox alignment="CENTER_LEFT" prefHeight="45.0" style="-fx-background-color: #f5f6fa; -fx-background-radius: 25; -fx-border-color: #ddd; -fx-border-radius: 25;">
+                                 <padding><Insets left="15.0" right="15.0" /></padding>
                                  <children>
-                                    <VBox prefHeight="350.0" prefWidth="400.0" spacing="10.0" style="-fx-border-color: #cccccc; -fx-padding: 10;">
-                                       <children>
-                                          <GridPane vgap="5.0">
-                                             <columnConstraints>
-                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
-                                             </columnConstraints>
-                                             <rowConstraints>
-                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                <RowConstraints minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
-                                             </rowConstraints>
-                                             <children>
-                                                <Label text="Offre ID:" />
-                                                <TextField fx:id="txtOffreIdCand" GridPane.columnIndex="1" />
-                                                <Label text="Apprenant ID:" GridPane.rowIndex="1" />
-                                                <TextField fx:id="txtApprenantIdCand" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <Label text="Statut:" GridPane.rowIndex="2" />
-                                                <ComboBox fx:id="comboStatutCand" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                <Label text="Lettre Motivation:" GridPane.rowIndex="3" />
-                                                <TextArea fx:id="txtLettreCand" prefHeight="60.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                                <Label text="Commentaire:" GridPane.rowIndex="4" />
-                                                <TextArea fx:id="txtCommentaireCand" prefHeight="60.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                             </children>
-                                             <rowConstraints>
-                                                <RowConstraints />
-                                                <RowConstraints />
-                                                <RowConstraints />
-                                                <RowConstraints minHeight="10.0" prefHeight="60.0" />
-                                                <RowConstraints minHeight="10.0" prefHeight="60.0" />
-                                             </rowConstraints>
-                                          </GridPane>
-                                          <HBox alignment="CENTER" spacing="10.0">
-                                             <children>
-                                                <Button mnemonicParsing="false" onAction="#handleModifierCand" text="Enregistrer" style="-fx-background-color: #3498db; -fx-text-fill: white;" />
-                                                <Button mnemonicParsing="false" onAction="#handleAnalyseIA" text="✨ ANALYSE IA" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold;" />
-                                                <Button mnemonicParsing="false" onAction="#handleAccepterCand" text="ACCEPTER" style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;" />
-                                                <Button mnemonicParsing="false" onAction="#handleRefuserCand" text="REFUSER" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;" />
-                                                <Button mnemonicParsing="false" onAction="#handleSupprimerCand" text="Supprimer" />
-                                             </children>
-                                             <padding>
-                                                <Insets top="10.0" />
-                                             </padding>
-                                          </HBox>
-                                       </children>
-                                    </VBox>
-                                    <TableView fx:id="tableCandidatures" prefHeight="350.0" prefWidth="550.0">
-                                       <columns>
-                                          <TableColumn fx:id="colIdCand" prefWidth="40.0" text="ID" />
-                                          <TableColumn fx:id="colOffreCand" prefWidth="120.0" text="Offre" />
-                                          <TableColumn fx:id="colApprenantCand" prefWidth="120.0" text="Apprenant" />
-                                          <TableColumn fx:id="colStatutCand" prefWidth="100.0" text="Statut" />
-                                       </columns>
-                                    </TableView>
+                                    <Label style="-fx-font-size: 16px; -fx-text-fill: #94a3b8;" text="🔍" />
+                                    <TextField fx:id="txtRechercheOffre" promptText="Rechercher une offre, entreprise..." style="-fx-background-color: transparent; -fx-padding: 0 10; -fx-font-size: 14;" HBox.hgrow="ALWAYS" />
                                  </children>
                               </HBox>
                            </children>
                         </VBox>
+
+                        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background: transparent; -fx-background-color: transparent;">
+                           <content>
+                              <VBox spacing="20" style="-fx-padding: 20;">
+                                 <children>
+                                    <VBox spacing="10" VBox.vgrow="ALWAYS">
+                                       <children>
+                                          <Label text="🎯 Offres Disponibles" style="-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                                          <Pagination fx:id="paginationOffres" maxPageIndicatorCount="5" VBox.vgrow="ALWAYS" />
+                                       </children>
+                                    </VBox>
+                                    <Separator />
+                                    <VBox spacing="10">
+                                       <children>
+                                          <Label text="📬 Candidatures Récentes" style="-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                                          <VBox fx:id="containerCandidatures" spacing="12" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </VBox>
+                           </content>
+                        </ScrollPane>
                      </children>
-                  </AnchorPane>
-            </content>
-          </Tab>
-        </tabs>
-      </TabPane>
+                  </VBox>
+               </items>
+            </SplitPane>
+         </children>
+      </VBox>
    </children>
 </AnchorPane>
