@@ -9,6 +9,7 @@ import javafx.stage.Window;
 public final class StageWindowMode {
 
     private static final String AUTO_MAXIMIZE_KEY = "formini.autoMaximizeInstalled";
+    private static final String SKIP_AUTO_MAXIMIZE_KEY = "formini.skipAutoMaximize";
     private static boolean globalPolicyInstalled = false;
 
     private StageWindowMode() {
@@ -40,10 +41,17 @@ public final class StageWindowMode {
         if (stage == null) {
             return;
         }
-        if (isDialogStage(stage)) {
+        if (shouldSkipAutoMaximize(stage)) {
             return;
         }
         stage.setMaximized(true);
+    }
+
+    public static void skipAutoMaximize(Stage stage) {
+        if (stage == null) {
+            return;
+        }
+        stage.getProperties().put(SKIP_AUTO_MAXIMIZE_KEY, true);
     }
 
     private static void applyMaximizedPolicy(Window window) {
@@ -59,7 +67,7 @@ public final class StageWindowMode {
         stage.showingProperty().addListener((obs, oldVal, isShowing) -> {
             if (Boolean.TRUE.equals(isShowing)) {
                 Platform.runLater(() -> {
-                    if (!isDialogStage(stage)) {
+                    if (!shouldSkipAutoMaximize(stage)) {
                         stage.setMaximized(true);
                     }
                 });
@@ -68,11 +76,16 @@ public final class StageWindowMode {
 
         if (stage.isShowing()) {
             Platform.runLater(() -> {
-                if (!isDialogStage(stage)) {
+                if (!shouldSkipAutoMaximize(stage)) {
                     stage.setMaximized(true);
                 }
             });
         }
+    }
+
+    private static boolean shouldSkipAutoMaximize(Stage stage) {
+        return isDialogStage(stage)
+                || Boolean.TRUE.equals(stage.getProperties().get(SKIP_AUTO_MAXIMIZE_KEY));
     }
 
     private static boolean isDialogStage(Stage stage) {

@@ -16,8 +16,10 @@ import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import tn.formini.entities.formations.Formation;
 import tn.formini.services.formations.FormationService;
+import tn.formini.utils.StageWindowMode;
 
 import java.io.File;
 import java.io.IOException;
@@ -93,8 +95,13 @@ public class FormationCrudController {
 
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            formationService.supprimer(selected.getId());
-            refreshGrid();
+            boolean deleted = formationService.deleteById(selected.getId());
+            if (deleted) {
+                refreshGrid();
+            } else {
+                String details = safe(formationService.getLastDeleteError(), "Cause inconnue.");
+                showError("Suppression impossible: " + details);
+            }
         }
     }
 
@@ -148,6 +155,14 @@ public class FormationCrudController {
             sortCombo.setValue("Plus recentes");
         }
         applyFiltersAndSorting();
+    }
+
+    @FXML
+    private void handleBack() {
+        Window window = headerLabel != null && headerLabel.getScene() != null ? headerLabel.getScene().getWindow() : null;
+        if (window instanceof Stage stage) {
+            stage.close();
+        }
     }
 
     private void refreshGrid() {
@@ -283,6 +298,7 @@ public class FormationCrudController {
             stage.setTitle(formation == null ? "Nouvelle formation" : "Modifier formation");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
+            StageWindowMode.skipAutoMaximize(stage);
             stage.showAndWait();
         } catch (IOException ex) {
             showError("Impossible d'ouvrir le formulaire formation: " + ex.getMessage());
