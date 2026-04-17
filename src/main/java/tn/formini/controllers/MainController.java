@@ -15,6 +15,7 @@ import tn.formini.controllers.blog.BlogFormController;
 import tn.formini.controllers.blog.BlogListController;
 import tn.formini.controllers.evenement.EvenementFormController;
 import tn.formini.controllers.evenement.EvenementListController;
+import tn.formini.controllers.order.OrderListController;
 import tn.formini.controllers.produits.ProduitFormController;
 import tn.formini.controllers.produit.ProduitListController;
 
@@ -42,6 +43,7 @@ public class MainController implements Initializable {
     @FXML private Button btnProductList;
     @FXML private Button btnProductAdd;
     @FXML private Button btnProductManage;
+    @FXML private Button btnOrderManage;
 
     private List<Button> navButtons;
 
@@ -50,7 +52,7 @@ public class MainController implements Initializable {
         labelDate.setText(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
         );
-        navButtons = Arrays.asList(btnDashboard, btnBlogList, btnBlogAdd, btnEventList, btnEventAdd, btnProductList, btnProductAdd, btnProductManage);
+        navButtons = Arrays.asList(btnDashboard, btnBlogList, btnBlogAdd, btnEventList, btnEventAdd, btnProductList, btnProductAdd, btnProductManage, btnOrderManage);
         showDashboard();
     }
 
@@ -248,11 +250,10 @@ public class MainController implements Initializable {
                 loadException.printStackTrace();
                 System.out.println("INFO: Keeping loading test content visible due to loading error");
             }
-            
         } catch (Exception e) {
-            System.err.println("ERROR: General exception: " + e.getMessage());
+            System.err.println("ERROR: Exception during FXML loading: " + e.getMessage());
             e.printStackTrace();
-            System.out.println("INFO: Keeping loading test content visible due to general error");
+            System.out.println("INFO: Keeping loading test content visible due to loading error");
         }
         
         updateActiveButton(btnProductManage);
@@ -260,19 +261,30 @@ public class MainController implements Initializable {
 
     @FXML
     public void showProductAdd() {
-        System.out.println("DEBUG: showProductAdd() method called!");
         showProductForm(null);
     }
 
+    @FXML
     public void showProductForm(tn.formini.entities.produits.Produit produit) {
         updateActiveButton(btnProductAdd);
         labelPageTitle.setText(produit == null ? "Nouveau Produit" : "Modifier le Produit");
-        ProduitFormController controller = (ProduitFormController) loadPage("/fxml/produits/ProduitForm_Minimal.fxml");
+        ProduitFormController controller = (ProduitFormController) loadPage("/fxml/produits/ProduitForm_Simple.fxml");
         if (controller != null) {
             controller.setMainController(this);
             if (produit != null) {
                 controller.setProduit(produit);
             }
         }
+    }
+
+    // Order Management
+    @FXML
+    public void showOrderManage() {
+        labelPageTitle.setText("Gérer les Commandes");
+        OrderListController controller = (OrderListController) loadPage("/fxml/order/OrderList.fxml");
+        if (controller != null) {
+            controller.setMainController(this);
+        }
+        updateActiveButton(btnOrderManage);
     }
 }
