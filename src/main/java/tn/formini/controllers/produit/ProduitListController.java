@@ -29,11 +29,24 @@ public class ProduitListController implements Initializable {
     @FXML private ComboBox<String> fieldFilterCategorie;
     @FXML private FlowPane productsContainer;
     @FXML private StackPane emptyState;
+    @FXML private HBox paginationContainer;
+    @FXML private Button firstPageBtn;
+    @FXML private Button prevPageBtn;
+    @FXML private Label currentPageLabel;
+    @FXML private Button nextPageBtn;
+    @FXML private Button lastPageBtn;
+    @FXML private Label totalItemsLabel;
 
     private MainController mainController;
     private final ProduitService service = new ProduitService();
     private List<Produit> allProducts;
+    private List<Produit> filteredProducts;
     private Consumer<Void> onClose;
+    
+    // Pagination settings
+    private static final int ITEMS_PER_PAGE = 12;
+    private int currentPage = 1;
+    private int totalPages = 1;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -43,6 +56,9 @@ public class ProduitListController implements Initializable {
         fieldFilterCategorie.setItems(FXCollections.observableArrayList(
                 "Toutes les catégories", "Informatique", "Scientifique", "Outils intelligents", "Accessoires"
         ));
+        
+        // Initialize pagination
+        initializePagination();
         
         System.out.println("=== PRODUIT LIST CONTROLLER: ABOUT TO CALL REFRESHPRODUCTS() ===");
         refreshProducts();
@@ -58,13 +74,102 @@ public class ProduitListController implements Initializable {
 
     private void loadProducts() {
         allProducts = service.afficher();
-        displayProducts(allProducts);
+        filteredProducts = allProducts;
+        updatePagination();
+        displayPaginatedProducts();
     }
     
     private void refreshProducts() {
         System.out.println("=== PRODUIT LIST CONTROLLER: REFRESHPRODUCTS() CALLED! ===");
         allProducts = service.afficher();
-        displayProducts(allProducts);
+        filteredProducts = allProducts;
+        currentPage = 1;
+        updatePagination();
+        displayPaginatedProducts();
+    }
+    
+    private void initializePagination() {
+        // Set pagination button symbols
+        firstPageBtn.setText("«");
+        prevPageBtn.setText("«");
+        nextPageBtn.setText("»");
+        lastPageBtn.setText("»");
+        
+        // Set button actions
+        firstPageBtn.setOnAction(e -> goToFirstPage());
+        prevPageBtn.setOnAction(e -> goToPreviousPage());
+        nextPageBtn.setOnAction(e -> goToNextPage());
+        lastPageBtn.setOnAction(e -> goToLastPage());
+    }
+    
+    private void updatePagination() {
+        if (filteredProducts == null) {
+            totalPages = 0;
+        } else {
+            totalPages = (int) Math.ceil((double) filteredProducts.size() / ITEMS_PER_PAGE);
+        }
+        
+        // Update pagination controls
+        currentPageLabel.setText("Page " + currentPage + " sur " + totalPages);
+        totalItemsLabel.setText(filteredProducts != null ? filteredProducts.size() + " produits" : "0 produits");
+        
+        // Enable/disable buttons
+        firstPageBtn.setDisable(currentPage <= 1);
+        prevPageBtn.setDisable(currentPage <= 1);
+        nextPageBtn.setDisable(currentPage >= totalPages);
+        lastPageBtn.setDisable(currentPage >= totalPages);
+        
+        // Show/hide pagination container
+        paginationContainer.setVisible(totalPages > 1);
+    }
+    
+    private void displayPaginatedProducts() {
+        if (filteredProducts == null || filteredProducts.isEmpty()) {
+            productsContainer.getChildren().clear();
+            emptyState.setVisible(true);
+            return;
+        }
+        
+        emptyState.setVisible(false);
+        
+        // Get items for current page
+        int startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        int endIndex = Math.min(startIndex + ITEMS_PER_PAGE, filteredProducts.size());
+        
+        List<Produit> currentPageProducts = filteredProducts.subList(startIndex, endIndex);
+        displayProducts(currentPageProducts);
+    }
+    
+    @FXML
+    private void goToFirstPage() {
+        currentPage = 1;
+        updatePagination();
+        displayPaginatedProducts();
+    }
+    
+    @FXML
+    private void goToPreviousPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            updatePagination();
+            displayPaginatedProducts();
+        }
+    }
+    
+    @FXML
+    private void goToNextPage() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            updatePagination();
+            displayPaginatedProducts();
+        }
+    }
+    
+    @FXML
+    private void goToLastPage() {
+        currentPage = totalPages;
+        updatePagination();
+        displayPaginatedProducts();
     }
 
     @FXML
@@ -379,7 +484,7 @@ public class ProduitListController implements Initializable {
         String searchTerm = fieldSearch.getText().trim().toLowerCase();
         String selectedCategory = fieldFilterCategorie.getValue();
 
-        List<Produit> filteredProducts = allProducts.stream()
+        filteredProducts = allProducts.stream()
                 .filter(p -> searchTerm.isEmpty() || 
                          p.getNom().toLowerCase().startsWith(searchTerm) || 
                          p.getDescription().toLowerCase().contains(searchTerm))
@@ -387,7 +492,9 @@ public class ProduitListController implements Initializable {
                          p.getCategorie().equals(selectedCategory))
                 .toList();
 
-        displayProducts(filteredProducts);
+        currentPage = 1;
+        updatePagination();
+        displayPaginatedProducts();
         
         // Show search feedback
         showSearchFeedback(searchTerm, filteredProducts.size());
@@ -403,15 +510,18 @@ public class ProduitListController implements Initializable {
         
         // Filter products by category
         if (category.equals("Tous")) {
-            displayProducts(allProducts);
+            filteredProducts = allProducts;
             showSearchFeedback("", allProducts.size());
         } else {
-            List<Produit> filteredProducts = allProducts.stream()
+            filteredProducts = allProducts.stream()
                     .filter(p -> p.getCategorie().equals(category))
                     .toList();
-            displayProducts(filteredProducts);
             showSearchFeedback("", filteredProducts.size());
         }
+        
+        currentPage = 1;
+        updatePagination();
+        displayPaginatedProducts();
         
         // Update search field
         fieldSearch.clear();
@@ -464,7 +574,25 @@ public class ProduitListController implements Initializable {
 
     private void openDeleteConfirmModal(Produit produit) {
         try {
-            // Show confirmation dialog directly instead of loading separate FXML
+            // Load the delete confirmation modal
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/produit/ProduitDeleteConfirm.fxml"));
+            javafx.scene.Parent root = loader.load();
+            
+            ProduitDeleteConfirmController controller = loader.getController();
+            controller.setProduit(produit);
+            controller.setOnDeleted(() -> {
+                refreshProducts(); // Use refreshProducts() to work with pagination
+            });
+            
+            Stage stage = new Stage();
+            stage.setTitle("Supprimer le produit");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(productsContainer.getScene().getWindow());
+            stage.showAndWait();
+            
+        } catch (Exception e) {
+            // Fallback to simple alert if modal fails
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Supprimer produit");
             alert.setHeaderText("Supprimer \"" + produit.getNom() + "\" ?");
@@ -481,13 +609,11 @@ public class ProduitListController implements Initializable {
                 try {
                     service.supprimer(produit.getId());
                     showSuccess("Produit supprimé avec succès !");
-                    loadProducts(); // Reload the product list
-                } catch (Exception e) {
-                    showError("Erreur lors de la suppression: " + e.getMessage());
+                    refreshProducts(); // Use refreshProducts() to work with pagination
+                } catch (Exception ex) {
+                    showError("Erreur lors de la suppression: " + ex.getMessage());
                 }
             }
-        } catch (Exception e) {
-            showError("Erreur ouverture suppression: " + e.getMessage());
         }
     }
     
