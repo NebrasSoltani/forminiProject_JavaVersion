@@ -102,8 +102,17 @@
                 <TextField fx:id="fieldObjectif" styleClass="form-control signup-field"/>
             </VBox>
             <VBox GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2" spacing="4">
-                <Label text="Domaines d'intérêt (JSON)" styleClass="form-label"/>
-                <TextField fx:id="fieldDomainesInteret" styleClass="form-control signup-field"/>
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="Domaines d'intérêt" styleClass="form-label"/>
+                    <Label text="ℹ" styleClass="info-icon"/>
+                </HBox>
+                <VBox spacing="8" styleClass="domaines-input-container">
+                    <TextField fx:id="fieldDomainesInteret" styleClass="form-control signup-field domaines-field" promptText='Ex: ["Java", "Web", "Data Science"]'/>
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="💡" styleClass="hint-icon"/>
+                        <Label text="Format JSON: utilisez des crochets [] et des guillemets pour chaque domaine" styleClass="domaines-hint" wrapText="true"/>
+                    </HBox>
+                </VBox>
             </VBox>
         </GridPane>
     </VBox>

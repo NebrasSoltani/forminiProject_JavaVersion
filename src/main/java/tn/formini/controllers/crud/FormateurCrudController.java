@@ -65,16 +65,22 @@ public class FormateurCrudController {
         
     @FXML
     private Button addButton;
-    
+
+    @FXML
+    private Button viewDetailsButton;
+
     @FXML
     private Button editButton;
-    
+
     @FXML
     private Button deleteButton;
     
     @FXML
     private Button refreshButton;
-    
+
+    @FXML
+    private Button backButton;
+
     @FXML
     private Button searchButton;
     
@@ -98,6 +104,12 @@ public class FormateurCrudController {
 
     @FXML
     private Button resetFiltersButton;
+
+    @FXML
+    private Button filterButton;
+
+    @FXML
+    private Button sortButton;
     
     @FXML
     private Label countLabel;
@@ -415,6 +427,38 @@ public class FormateurCrudController {
     }
 
     @FXML
+    private void handleViewDetailsButton(ActionEvent event) {
+        Formateur selectedFormateur = tableView.getSelectionModel().getSelectedItem();
+        if (selectedFormateur == null) {
+            showAlert("Avertissement", "Veuillez sélectionner un formateur pour voir les détails", Alert.AlertType.WARNING);
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/crud/formateur-details.fxml"));
+            Parent root = loader.load();
+
+            FormateurDetailsController controller = loader.getController();
+            controller.setFormateur(selectedFormateur);
+
+            Stage stage = new Stage();
+            stage.setTitle("Détails du Formateur");
+            Scene scene = new Scene(root, 760, 720);
+            URL css = getClass().getResource("/css/style.css");
+            if (css != null) {
+                scene.getStylesheets().add(css.toExternalForm());
+            }
+            stage.setScene(scene);
+            stage.setMinWidth(640);
+            stage.setMinHeight(560);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+        } catch (IOException e) {
+            showAlert("Erreur", "Impossible d'ouvrir les détails: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
     private void handleEditButton(ActionEvent event) {
         Formateur selectedFormateur = tableView.getSelectionModel().getSelectedItem();
         if (selectedFormateur == null) {
@@ -425,11 +469,11 @@ public class FormateurCrudController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/crud/formateur-form.fxml"));
             Parent root = loader.load();
-            
+
             FormateurFormController controller = loader.getController();
             controller.setMode(FormateurFormController.Mode.EDIT);
             controller.setFormateur(selectedFormateur);
-            
+
             Stage stage = new Stage();
             stage.setTitle("Modifier un Formateur");
             Scene scene = new Scene(root, 760, 720);
@@ -442,7 +486,7 @@ public class FormateurCrudController {
             stage.setMinHeight(560);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
-            
+
             loadFormateurs();
         } catch (IOException e) {
             showAlert("Erreur", "Impossible d'ouvrir le formulaire: " + e.getMessage(), Alert.AlertType.ERROR);
@@ -495,8 +539,21 @@ public class FormateurCrudController {
         applyFiltersAndSorting();
     }
 
+    @FXML
+    private void handleFilter(ActionEvent event) {
+        applyFiltersAndSorting();
+        statusLabel.setText("Filtres appliqués");
+    }
+
+    @FXML
+    private void handleSort(ActionEvent event) {
+        applyFiltersAndSorting();
+        statusLabel.setText("Tri appliqué");
+    }
+
     private void updateButtonStates() {
         boolean isSelected = tableView.getSelectionModel().getSelectedItem() != null;
+        viewDetailsButton.setDisable(!isSelected);
         editButton.setDisable(!isSelected);
         deleteButton.setDisable(!isSelected);
     }
@@ -507,5 +564,11 @@ public class FormateurCrudController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    @FXML
+    private void handleBackButton(ActionEvent event) {
+        Stage stage = (Stage) backButton.getScene().getWindow();
+        stage.close();
     }
 }
