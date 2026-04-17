@@ -23,6 +23,7 @@ import tn.formini.utils.TunisiaGovernorates;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ApprenantFormController {
@@ -118,7 +119,13 @@ public class ApprenantFormController {
     private TextField objectifField;
 
     @FXML
-    private TextField domainesInteretField;
+    private TextField fieldDomaineInput;
+
+    @FXML
+    private Button btnAddDomaine;
+
+    @FXML
+    private HBox flowPaneDomaines;
 
     @FXML
     private ComboBox<User> userComboBox;
@@ -140,6 +147,7 @@ public class ApprenantFormController {
     private Apprenant apprenant;
     private Mode mode;
     private File uploadedPhotoFile;
+    private final List<String> domainesList = new ArrayList<>();
 
     public enum Mode {
         ADD, EDIT
@@ -351,7 +359,7 @@ public class ApprenantFormController {
             genreComboBox.setValue(apprenant.getGenre());
             etatCivilComboBox.setValue(apprenant.getEtat_civil());
             objectifField.setText(apprenant.getObjectif() != null ? apprenant.getObjectif() : "");
-            domainesInteretField.setText(apprenant.getDomaines_interet() != null ? apprenant.getDomaines_interet() : "");
+            setDomainesFromRaw(apprenant.getDomaines_interet());
 
             if (apprenant.getUser() != null) {
                 if (userComboBox != null) {
@@ -412,7 +420,11 @@ public class ApprenantFormController {
         genreComboBox.setValue(null);
         etatCivilComboBox.setValue(null);
         objectifField.clear();
-        domainesInteretField.clear();
+        if (fieldDomaineInput != null) {
+            fieldDomaineInput.clear();
+        }
+        domainesList.clear();
+        displayDomainesTags();
         if (userComboBox != null) {
             userComboBox.setValue(null);
         }
@@ -513,8 +525,8 @@ public class ApprenantFormController {
             apprenant.setEtat_civil(etatCivilComboBox.getValue());
             apprenant.setObjectif(objectifField.getText().trim().isEmpty() ? null : objectifField.getText().trim());
 
-            String domainesInteret = domainesInteretField.getText().trim();
-            if (domainesInteret.isEmpty()) {
+            String domainesInteret = convertDomainesToJson(domainesList);
+            if ("[]".equals(domainesInteret)) {
                 if (mode == Mode.EDIT && apprenant.getDomaines_interet() != null && !apprenant.getDomaines_interet().trim().isEmpty()) {
                     apprenant.setDomaines_interet(apprenant.getDomaines_interet());
                 } else {
@@ -686,6 +698,90 @@ public class ApprenantFormController {
         label.setText("");
         label.setVisible(false);
         label.setManaged(false);
+    }
+
+    @FXML
+    private void onAddDomaine() {
+        if (fieldDomaineInput == null) {
+            return;
+        }
+        String domaine = fieldDomaineInput.getText() != null ? fieldDomaineInput.getText().trim() : "";
+        if (domaine.isEmpty()) {
+            return;
+        }
+
+        boolean alreadyExists = domainesList.stream().anyMatch(existing -> existing.equalsIgnoreCase(domaine));
+        if (!alreadyExists) {
+            domainesList.add(domaine);
+            displayDomainesTags();
+        }
+        fieldDomaineInput.clear();
+    }
+
+    private void displayDomainesTags() {
+        if (flowPaneDomaines == null) {
+            return;
+        }
+        flowPaneDomaines.getChildren().clear();
+        for (String domaine : domainesList) {
+            flowPaneDomaines.getChildren().add(createDomaineTag(domaine));
+        }
+    }
+
+    private HBox createDomaineTag(String domaine) {
+        HBox tag = new HBox();
+        tag.getStyleClass().add("domaine-tag");
+        tag.setSpacing(4);
+
+        Label label = new Label(domaine);
+        label.getStyleClass().add("domaine-tag-label");
+
+        Button removeBtn = new Button("x");
+        removeBtn.getStyleClass().add("domaine-tag-remove");
+        removeBtn.setOnAction(e -> {
+            domainesList.remove(domaine);
+            displayDomainesTags();
+        });
+
+        tag.getChildren().addAll(label, removeBtn);
+        return tag;
+    }
+
+    private void setDomainesFromRaw(String rawDomaines) {
+        domainesList.clear();
+        if (rawDomaines == null || rawDomaines.trim().isEmpty() || "[]".equals(rawDomaines.trim())) {
+            displayDomainesTags();
+            return;
+        }
+
+        String cleaned = rawDomaines.trim()
+                .replace("[", "")
+                .replace("]", "")
+                .replace("\"", "");
+        if (!cleaned.isBlank()) {
+            for (String part : cleaned.split(",")) {
+                String domaine = part.trim();
+                if (!domaine.isEmpty()) {
+                    domainesList.add(domaine);
+                }
+            }
+        }
+        displayDomainesTags();
+    }
+
+    private String convertDomainesToJson(List<String> domaines) {
+        if (domaines == null || domaines.isEmpty()) {
+            return "[]";
+        }
+        StringBuilder json = new StringBuilder("[");
+        for (int i = 0; i < domaines.size(); i++) {
+            json.append("\"").append(domaines.get(i).replace("\"", "\\\"")).append("\"");
+            if (i < domaines.size() - 1) {
+                json.append(", ");
+            }
+        }
+        json.append("]");
+        return json.toString();
     }
 
     private void showAlert(String title, String message, Alert.AlertType alertType) {

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="tn.formini.controllers.crud.ApprenantDetailsController"
+           styleClass="signup-page"
+           minHeight="400">
+
+    <VBox alignment="TOP_CENTER" spacing="0">
+        <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
+        <VBox maxWidth="720" spacing="18" alignment="TOP_CENTER" styleClass="signup-column">
+
+            <VBox spacing="8" alignment="CENTER_LEFT" styleClass="signup-hero crud-form-hero">
+                <Label text="Détails Apprenant" styleClass="signup-hero-title"/>
+                <Label fx:id="heroSubLabel" text="Informations complètes sur l'apprenant"
+                       wrapText="true" styleClass="signup-hero-sub" maxWidth="680"/>
+            </VBox>
+
+            <VBox styleClass="signup-card crud-form-card" spacing="0" VBox.vgrow="ALWAYS">
+                <ScrollPane fitToWidth="true" styleClass="signup-scroll" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+                    <VBox spacing="24" styleClass="signup-card-inner crud-form-body">
+                        <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
+                        <VBox spacing="16" styleClass="crud-form-section">
+                            <VBox spacing="4">
+                                <Label text="Informations personnelles" styleClass="signup-section-title"/>
+                            </VBox>
+                            <GridPane hgap="18" vgap="18" styleClass="signup-grid">
+                                <columnConstraints>
+                                    <ColumnConstraints hgrow="ALWAYS" minWidth="140" percentWidth="50"/>
+                                    <ColumnConstraints hgrow="ALWAYS" minWidth="140" percentWidth="50"/>
+                                </columnConstraints>
+
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                    <Label text="Nom complet" styleClass="form-label"/>
+                                    <Label fx:id="nomCompletLabel" styleClass="detail-value"/>
+                                </VBox>
+                                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                    <Label text="Email" styleClass="form-label"/>
+                                    <Label fx:id="emailLabel" styleClass="detail-value"/>
+                                </VBox>
+
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                    <Label text="Téléphone" styleClass="form-label"/>
+                                    <Label fx:id="telephoneLabel" styleClass="detail-value"/>
+                                </VBox>
+                                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                    <Label text="Date de naissance" styleClass="form-label"/>
+                                    <Label fx:id="dateNaissanceLabel" styleClass="detail-value"/>
+                                </VBox>
+
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                                    <Label text="Gouvernorat" styleClass="form-label"/>
+                                    <Label fx:id="gouvernoratLabel" styleClass="detail-value"/>
+                                </VBox>
+                                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                    <Label text="Genre" styleClass="form-label"/>
+                                    <Label fx:id="genreLabel" styleClass="detail-value"/>
+                                </VBox>
+
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                                    <Label text="État civil" styleClass="form-label"/>
+                                    <Label fx:id="etatCivilLabel" styleClass="detail-value"/>
+                                </VBox>
+                                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                    <Label text="Rôle" styleClass="form-label"/>
+                                    <Label fx:id="roleLabel" styleClass="detail-value"/>
+                                </VBox>
+
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.columnSpan="2">
+                                    <Label text="Photo de profil" styleClass="form-label"/>
+                                    <HBox spacing="12" alignment="CENTER_LEFT" styleClass="crud-upload-box">
+                                        <VBox spacing="8" alignment="CENTER">
+                                            <ImageView fx:id="imageViewPhoto" fitWidth="100" fitHeight="100" preserveRatio="true"/>
+                                        </VBox>
+                                    </HBox>
+                                </VBox>
+                            </GridPane>
+                        </VBox>
+
+                        <Separator styleClass="signup-sep"/>
+
+                        <VBox spacing="16" styleClass="crud-form-section">
+                            <VBox spacing="4">
+                                <Label text="Profil apprenant" styleClass="signup-section-title"/>
+                            </VBox>
+                            <GridPane hgap="18" vgap="18" styleClass="signup-grid">
+                                <columnConstraints>
+                                    <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                                    <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                                </columnConstraints>
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2">
+                                    <Label text="Objectif" styleClass="form-label"/>
+                                    <Label fx:id="objectifLabel" styleClass="detail-value" wrapText="true"/>
+                                </VBox>
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
+                                    <Label text="Domaines d'intérêt" styleClass="form-label"/>
+                                    <Label fx:id="domainesInteretLabel" styleClass="detail-value" wrapText="true"/>
+                                </VBox>
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                                    <Label text="Domaine" styleClass="form-label"/>
+                                    <Label fx:id="domaineLabel" styleClass="detail-value"/>
+                                </VBox>
+                                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                    <Label text="ID Apprenant" styleClass="form-label"/>
+                                    <Label fx:id="idLabel" styleClass="detail-value"/>
+                                </VBox>
+                            </GridPane>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+
+                <HBox spacing="14" alignment="CENTER_RIGHT" styleClass="signup-actions crud-form-actions">
+                    <padding><Insets top="12" right="20" bottom="18" left="20"/></padding>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="closeButton" text="Fermer" onAction="#handleCloseButton" styleClass="btn-primary signup-btn-primary"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </VBox>
+</StackPane>
