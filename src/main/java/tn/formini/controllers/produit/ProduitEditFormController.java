@@ -6,11 +6,13 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tn.formini.entities.produits.Produit;
 import tn.formini.services.produitsService.ProduitService;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.ZoneId;
@@ -29,6 +31,7 @@ public class ProduitEditFormController {
     @FXML private TextField fieldStock;
     @FXML private DatePicker fieldDateCreation;
     @FXML private TextField fieldImage;
+    @FXML private ImageView imagePreview;
     @FXML private Button btnSave;
     @FXML private Label validationSummary;
 
@@ -83,6 +86,9 @@ public class ProduitEditFormController {
         fieldStock.setText(String.valueOf(produit.getStock()));
         fieldImage.setText(produit.getImage());
         
+        // Initialize image preview
+        updateImagePreview(produit.getImage());
+        
         // Convert Date to LocalDate for DatePicker
         if (produit.getDate_creation() != null) {
             fieldDateCreation.setValue(produit.getDate_creation().toInstant()
@@ -94,7 +100,7 @@ public class ProduitEditFormController {
     }
 
     @FXML
-    private void updateProduit() {
+    public void updateProduit() {
         if (!validateForm()) {
             return;
         }
@@ -141,7 +147,7 @@ public class ProduitEditFormController {
     }
 
     @FXML
-    private void duplicateProduct() {
+    public void duplicateProduct() {
         if (!validateForm()) {
             return;
         }
@@ -172,7 +178,7 @@ public class ProduitEditFormController {
     }
 
     @FXML
-    private void deleteProduct() {
+    public void deleteProduct() {
         if (produit == null) return;
         openDeleteConfirmModal();
     }
@@ -357,5 +363,81 @@ public class ProduitEditFormController {
 
     public void setOnProductUpdated(Runnable onProductUpdated) {
         this.onProductUpdated = onProductUpdated;
+    }
+
+    // Image Management Methods
+    @FXML
+    public void browseImage() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choisir une image");
+        fileChooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp"),
+            new FileChooser.ExtensionFilter("PNG", "*.png"),
+            new FileChooser.ExtensionFilter("JPEG", "*.jpg", "*.jpeg"),
+            new FileChooser.ExtensionFilter("GIF", "*.gif")
+        );
+        
+        File selectedFile = fileChooser.showOpenDialog(fieldImage.getScene().getWindow());
+        if (selectedFile != null) {
+            String imageUrl = selectedFile.toURI().toString();
+            fieldImage.setText(imageUrl);
+            updateImagePreview(imageUrl);
+        }
+    }
+
+    @FXML
+    public void updateInlinePreview() {
+        String imageUrl = fieldImage.getText().trim();
+        if (imageUrl.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Avertissement", "Veuillez entrer une URL d'image ou choisir un fichier.");
+            return;
+        }
+        
+        updateImagePreview(imageUrl);
+    }
+
+    @FXML
+    public void clearImage() {
+        fieldImage.setText("");
+        imagePreview.setImage(null);
+        // Set placeholder image
+        try {
+            Image placeholder = new Image("/images/no-image-placeholder.png", true);
+            imagePreview.setImage(placeholder);
+        } catch (Exception e) {
+            // If placeholder fails, just clear the image
+            imagePreview.setImage(null);
+        }
+    }
+
+    @FXML
+    public void setDefaultImage() {
+        String defaultImageUrl = "/images/default-product.png";
+        fieldImage.setText(defaultImageUrl);
+        updateImagePreview(defaultImageUrl);
+    }
+
+    private void updateImagePreview(String imageUrl) {
+        if (imageUrl == null || imageUrl.trim().isEmpty()) {
+            clearImage();
+            return;
+        }
+        
+        try {
+            Image image = new Image(imageUrl, true);
+            imagePreview.setImage(image);
+            
+            // Handle loading errors
+            image.errorProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal) {
+                    showAlert(Alert.AlertType.ERROR, "Erreur de chargement", "Impossible de charger l'image: " + imageUrl);
+                    clearImage();
+                }
+            });
+            
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur de chargement", "Impossible de charger l'image: " + imageUrl);
+            clearImage();
+        }
     }
 }
