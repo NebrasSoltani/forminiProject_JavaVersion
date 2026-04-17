@@ -1166,3 +1166,132 @@
 .modern-form-card:hover {
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 25, 0, 0, 12);
 }
+
+/* ── Mes formations (formateur) ────────────────────────────── */
+.formation-card {
+    -fx-background-color: white;
+    -fx-background-radius: 14px;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 14px;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(15,23,42,0.06), 16, 0, 0, 5);
+}
+
+.formation-card:hover {
+    -fx-border-color: rgba(105, 116, 232, 0.35);
+    -fx-effect: dropshadow(three-pass-box, rgba(105,116,232,0.18), 22, 0, 0, 8);
+}
+
+.formation-card-selected {
+    -fx-border-color: #6974e8;
+    -fx-border-width: 2px;
+}
+
+.formation-card-image {
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+}
+
+.formation-card-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0f172a;
+}
+
+.formation-card-desc {
+    -fx-font-size: 12.5px;
+    -fx-text-fill: #64748b;
+    -fx-line-spacing: 1.5px;
+}
+
+.formation-card-edit {
+    -fx-background-color: #f59e0b;
+    -fx-text-fill: white;
+    -fx-font-weight: 700;
+    -fx-background-radius: 10px;
+    -fx-padding: 8px 12px;
+}
+
+.formation-card-edit:hover {
+    -fx-background-color: #d97706;
+}
+
+.formation-card-delete {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+    -fx-font-weight: 700;
+    -fx-background-radius: 10px;
+    -fx-padding: 8px 12px;
+}
+
+.formation-card-delete:hover {
+    -fx-background-color: #dc2626;
+}
+
+/* ── Lecons (formateur) ───────────────────────────────────── */
+.lecon-card {
+    -fx-background-color: white;
+    -fx-background-radius: 14px;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 14px;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(15,23,42,0.06), 16, 0, 0, 5);
+}
+
+.lecon-card:hover {
+    -fx-border-color: rgba(105, 116, 232, 0.35);
+    -fx-effect: dropshadow(three-pass-box, rgba(105,116,232,0.18), 22, 0, 0, 8);
+}
+
+.lecon-card-selected {
+    -fx-border-color: #6974e8;
+    -fx-border-width: 2px;
+}
+
+.lecon-card-video {
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+}
+
+.lecon-card-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0f172a;
+}
+
+.lecon-card-edit {
+    -fx-background-color: #f59e0b;
+    -fx-text-fill: white;
+    -fx-font-weight: 700;
+    -fx-background-radius: 10px;
+    -fx-padding: 8px 12px;
+}
+
+.lecon-card-edit:hover {
+    -fx-background-color: #d97706;
+}
+
+.lecon-card-delete {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+    -fx-font-weight: 700;
+    -fx-background-radius: 10px;
+    -fx-padding: 8px 12px;
+}
+
+.lecon-card-delete:hover {
+    -fx-background-color: #dc2626;
+}
+
+.lecon-card-open {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+    -fx-font-weight: 700;
+    -fx-background-radius: 10px;
+    -fx-padding: 8px 12px;
+}
+
+.lecon-card-open:hover {
+    -fx-background-color: #2563eb;
+}
+
