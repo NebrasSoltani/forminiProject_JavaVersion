@@ -77,7 +77,7 @@ public class SocieteCrudController {
     
     private SocieteService societeService;
     private UserService userService;
-    private ObservableList<Societe> societeList;
+    private ObservableList<Societe> societeList = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
@@ -86,7 +86,6 @@ public class SocieteCrudController {
         
         setupTableColumns();
         loadSocietes();
-        updateUI();
         
         tableView.getSelectionModel().selectedItemProperty().addListener(
             (obs, oldSelection, newSelection) -> {
@@ -129,6 +128,9 @@ public class SocieteCrudController {
     }
     
     private void updateUI() {
+        if (societeList == null) {
+            societeList = FXCollections.observableArrayList();
+        }
         // Update count label
         int count = societeList.size();
         countLabel.setText("Total: " + count + " societe" + (count > 1 ? "s" : ""));

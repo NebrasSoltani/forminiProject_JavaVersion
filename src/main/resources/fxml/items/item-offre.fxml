@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.effect.*?>
+<?import java.net.URL?>
+
+<AnchorPane fx:id="cardRoot" prefWidth="480" style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.formini.controllers.stages.CardOffreController">
+
+   <children>
+      <!-- Header gradient -->
+      <Rectangle width="480" height="70" arcWidth="20" arcHeight="20"
+                 style="-fx-fill: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"
+                 AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"/>
+
+      <!-- Badge statut -->
+      <Label fx:id="badgeStatut" text="Active"
+             style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-padding: 4 10; -fx-background-radius: 10; -fx-font-weight: bold; -fx-font-size: 11;"
+             layoutX="380" layoutY="18"/>
+
+      <!-- Titre + Entreprise -->
+      <VBox spacing="3" layoutX="22" layoutY="18">
+         <Label fx:id="lblTitre" text="Titre de l'offre"
+                style="-fx-text-fill: white; -fx-font-size: 15; -fx-font-weight: bold;"
+                prefWidth="280" wrapText="true"/>
+         <Label fx:id="lblEntreprise" text="Nom Entreprise"
+                style="-fx-text-fill: rgba(255,255,255,0.92); -fx-font-size: 12;"/>
+      </VBox>
+
+      <!-- Corps carte -->
+      <VBox spacing="11" layoutX="22" layoutY="82" prefWidth="436">
+
+         <!-- Meta info -->
+         <HBox spacing="15" alignment="CENTER_LEFT">
+            <HBox spacing="4" alignment="CENTER_LEFT">
+               <Label text="📍" style="-fx-font-size: 13;"/>
+               <Label fx:id="lblLieu" text="Lieu" style="-fx-text-fill: #7f8c8d;"/>
+            </HBox>
+            <HBox spacing="4" alignment="CENTER_LEFT">
+               <Label text="💼" style="-fx-font-size: 13;"/>
+               <Label fx:id="lblDomaine" text="Domaine" style="-fx-background-color: #f0f2f5; -fx-padding: 2 8; -fx-background-radius: 5; -fx-text-fill: #667eea; -fx-font-size: 11;"/>
+            </HBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblDate" text="Il y a 2j" style="-fx-text-fill: #bdc3c7; -fx-font-size: 11;"/>
+         </HBox>
+
+         <!-- Description -->
+         <Label fx:id="lblDescription" text="Description courte de l'offre de stage..."
+                style="-fx-text-fill: #34495e; -fx-font-size: 13;" prefWidth="420" wrapText="true" maxWidth="420"/>
+
+         <!-- Separator -->
+         <Line endX="410" style="-fx-stroke: #eee;"/>
+
+         <!-- Actions -->
+         <HBox spacing="8" alignment="CENTER_LEFT">
+            <Button text="👁️ Détails" onAction="#handleVoirDetails"
+                    style="-fx-background-color: #f1f2f6; -fx-background-radius: 15; -fx-padding: 5 15; -fx-cursor: hand;"/>
+            <Button text="✏️" onAction="#handleModifier"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 50; -fx-min-width: 32; -fx-min-height: 32; -fx-cursor: hand;"/>
+            <Button text="📬 Postuler" onAction="#handlePostuler"
+                    style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-background-radius: 15; -fx-padding: 5 15; -fx-font-weight: bold; -fx-cursor: hand;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="🗑️" onAction="#handleSupprimer"
+                    style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 50; -fx-min-width: 32; -fx-min-height: 32; -fx-cursor: hand;"/>
+         </HBox>
+
+      </VBox>
+
+   </children>
+</AnchorPane>

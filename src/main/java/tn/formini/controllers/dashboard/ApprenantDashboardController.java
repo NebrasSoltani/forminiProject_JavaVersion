@@ -23,6 +23,18 @@ public class ApprenantDashboardController implements DashboardRoleController {
     private Label statsLabel;
     
     @FXML
+    private Label lblTotalFormations;
+    
+    @FXML
+    private Label lblQuizCompletes;
+    
+    @FXML
+    private Label lblOffresStage;
+    
+    @FXML
+    private Label lblCertificats;
+    
+    @FXML
     private VBox menuContainer;
     
     @FXML
@@ -42,6 +54,9 @@ public class ApprenantDashboardController implements DashboardRoleController {
     
     @FXML
     private Button profileButton;
+    
+    @FXML
+    private Button viewOffersButton;
 
     private User currentUser;
     private Apprenant currentApprenant;
@@ -73,6 +88,9 @@ public class ApprenantDashboardController implements DashboardRoleController {
         takeQuizButton.setOnAction(e -> takeQuiz());
         myCertificatesButton.setOnAction(e -> viewMyCertificates());
         profileButton.setOnAction(e -> viewProfile());
+        if (viewOffersButton != null) {
+            viewOffersButton.setOnAction(e -> viewOffers());
+        }
     }
 
     private void loadStudentInfo() {
@@ -92,36 +110,19 @@ public class ApprenantDashboardController implements DashboardRoleController {
 
     private void loadStatistics() {
         try {
-            // Load student statistics
             int totalFormations = 0;
-            int completedFormations = 0;
-            int inProgressFormations = 0;
-            int quizAttempts = 0;
+            int completedQuiz = 0;
+            int offresStage = 0;
+            int certificats = 0;
             
-            if (currentApprenant != null) {
-                // TODO: Load actual statistics from services
-                // totalFormations = formationService.getAvailableFormationsCount();
-                // completedFormations = inscriptionService.getCompletedFormationsCount(currentApprenant.getId());
-                // inProgressFormations = inscriptionService.getInProgressFormationsCount(currentApprenant.getId());
-                // quizAttempts = quizService.getQuizAttemptsCount(currentApprenant.getId());
-            }
+            if (lblTotalFormations != null) lblTotalFormations.setText(String.valueOf(totalFormations));
+            if (lblQuizCompletes != null) lblQuizCompletes.setText(String.valueOf(completedQuiz));
+            if (lblOffresStage != null) lblOffresStage.setText(String.valueOf(offresStage));
+            if (lblCertificats != null) lblCertificats.setText(String.valueOf(certificats));
             
-            String statsText = String.format(
-                "Mes Statistiques:\n" +
-                "Formations disponibles: %d\n" +
-                "Formations terminées: %d\n" +
-                "Formations en cours: %d\n" +
-                "Quiz tentés: %d",
-                totalFormations,
-                completedFormations,
-                inProgressFormations,
-                quizAttempts
-            );
-            
-            statsLabel.setText(statsText);
+            statsLabel.setText("Derniere mise a jour: " + java.time.LocalDateTime.now().toLocalTime());
         } catch (Exception e) {
-            statsLabel.setText("Erreur lors du chargement des statistiques");
-            System.err.println("Error loading statistics: " + e.getMessage());
+            statsLabel.setText("Erreur: " + e.getMessage());
         }
     }
 
@@ -197,6 +198,27 @@ public class ApprenantDashboardController implements DashboardRoleController {
             stage.show();
         } catch (Exception e) {
             System.err.println("Error opening profile: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void viewOffers() {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                getClass().getResource("/fxml/stages/offre-stage-view.fxml")
+            );
+            javafx.scene.Parent root = loader.load();
+            
+            tn.formini.controllers.stages.OffreStageViewController controller = loader.getController();
+            controller.setCurrentUser(currentUser);
+            
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.setTitle("Offres de Stage");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error opening offers: " + e.getMessage());
         }
     }
 

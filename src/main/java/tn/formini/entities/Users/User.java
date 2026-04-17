@@ -80,8 +80,9 @@ public class User {
         // Validation du téléphone (obligatoire)
         if (telephone == null || telephone.trim().isEmpty())
             throw new IllegalArgumentException("Le téléphone est obligatoire.");
-        if (!telephone.matches("^\\+?[0-9]{8,12}$"))
-            throw new IllegalArgumentException("Format de téléphone invalide (8 à 12 chiffres).");
+        // Expression régulière plus flexible pour accepter différents formats de numéros tunisiens et internationaux
+        if (!telephone.matches("^\\+?[0-9\\s.\\-]{8,20}$"))
+            throw new IllegalArgumentException("Format de téléphone invalide.");
 
         // Validation de la date de naissance (obligatoire)
         if (date_naissance == null)

@@ -24,22 +24,22 @@ public class OffreStageService implements service<OffreStage> {
         try {
             PreparedStatement ps = cnx.prepareStatement(req, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, offre.getTitre());
-            ps.setString(2, offre.getDescription());
-            ps.setString(3, offre.getEntreprise());
-            ps.setString(4, offre.getDomaine());
-            ps.setString(5, offre.getCompetences_requises());
-            ps.setString(6, offre.getProfil_demande());
-            ps.setString(7, offre.getDuree());
-            ps.setTimestamp(8, offre.getDate_debut() != null ? new Timestamp(offre.getDate_debut().getTime()) : null);
-            ps.setTimestamp(9, offre.getDate_fin() != null ? new Timestamp(offre.getDate_fin().getTime()) : null);
-            ps.setString(10, offre.getType_stage());
-            ps.setString(11, offre.getLieu());
-            ps.setString(12, offre.getRemuneration());
-            ps.setString(13, offre.getContact_email());
-            ps.setString(14, offre.getContact_tel());
-            ps.setString(15, offre.getStatut());
-            ps.setTimestamp(16, offre.getDate_publication() != null ? new Timestamp(offre.getDate_publication().getTime()) : null);
-            ps.setInt(17, offre.getSociete() != null ? offre.getSociete().getId() : 0);
+            ps.setString(2, offre.getDescription() != null ? offre.getDescription() : "Pas de description");
+            ps.setString(3, offre.getEntreprise() != null ? offre.getEntreprise() : "Société");
+            ps.setString(4, offre.getDomaine() != null ? offre.getDomaine() : "Général");
+            ps.setString(5, offre.getCompetences_requises() != null ? offre.getCompetences_requises() : "");
+            ps.setString(6, offre.getProfil_demande() != null ? offre.getProfil_demande() : "");
+            ps.setString(7, offre.getDuree() != null ? offre.getDuree() : "3 mois");
+            ps.setTimestamp(8, offre.getDate_debut() != null ? new Timestamp(offre.getDate_debut().getTime()) : new Timestamp(System.currentTimeMillis()));
+            ps.setTimestamp(9, offre.getDate_fin() != null ? new Timestamp(offre.getDate_fin().getTime()) : new Timestamp(System.currentTimeMillis() + 7776000000L));
+            ps.setString(10, offre.getType_stage() != null ? offre.getType_stage() : "Stage");
+            ps.setString(11, offre.getLieu() != null ? offre.getLieu() : "Tunis");
+            ps.setString(12, offre.getRemuneration() != null ? offre.getRemuneration() : "Non spécifié");
+            ps.setString(13, offre.getContact_email() != null ? offre.getContact_email() : "contact@formini.tn");
+            ps.setString(14, offre.getContact_tel() != null ? offre.getContact_tel() : "00000000");
+            ps.setString(15, offre.getStatut() != null ? offre.getStatut() : "ouvert");
+            ps.setTimestamp(16, new Timestamp(System.currentTimeMillis()));
+            ps.setInt(17, offre.getSociete() != null ? offre.getSociete().getId() : 1);
             
             ps.executeUpdate();
             
