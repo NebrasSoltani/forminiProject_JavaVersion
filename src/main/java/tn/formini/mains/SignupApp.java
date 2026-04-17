@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import tn.formini.controllers.auth.SignupController;
+import tn.formini.utils.StageWindowMode;
 
 import java.net.URL;
 
@@ -16,6 +17,8 @@ public class SignupApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        StageWindowMode.installGlobalMaximizedPolicy();
+
         URL resource = getClass().getResource("/fxml/auth/Signup.fxml");
         if (resource == null) {
             System.err.println("FXML introuvable : /fxml/auth/Signup.fxml");
@@ -39,6 +42,7 @@ public class SignupApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(640);
         primaryStage.setMinHeight(520);
+        StageWindowMode.maximize(primaryStage);
         primaryStage.show();
     }
 }

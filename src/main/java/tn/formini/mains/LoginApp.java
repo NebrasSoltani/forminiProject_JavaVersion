@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import tn.formini.controllers.auth.LoginController;
 import tn.formini.utils.AdminInitializer;
+import tn.formini.utils.StageWindowMode;
 
 import java.net.URL;
 
@@ -17,6 +18,8 @@ public class LoginApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        StageWindowMode.installGlobalMaximizedPolicy();
+
         // Initialize admin user if it doesn't exist
         AdminInitializer.initializeAdmin();
         
@@ -43,6 +46,7 @@ public class LoginApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(640);
         primaryStage.setMinHeight(520);
+        StageWindowMode.maximize(primaryStage);
         primaryStage.show();
     }
 }

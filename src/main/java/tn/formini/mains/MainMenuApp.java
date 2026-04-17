@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import tn.formini.utils.AdminInitializer;
+import tn.formini.utils.StageWindowMode;
 import java.io.File;
 import java.net.URL;
 
@@ -13,6 +14,8 @@ public class MainMenuApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        StageWindowMode.installGlobalMaximizedPolicy();
+
         AdminInitializer.initializeAdmin();
         initializeSession();
 
@@ -39,7 +42,7 @@ public class MainMenuApp extends Application {
                     System.out.println("Resource null pour: " + chemin);
                 }
             } catch (Exception e) {
-                System.out.println("Échec pour: " + chemin);
+                System.out.println("Échec pour: " + chemin + " -> " + e.getClass().getSimpleName() + ": " + e.getMessage());
             }
         }
 
@@ -63,6 +66,7 @@ public class MainMenuApp extends Application {
         Scene scene = new Scene(root);
         primaryStage.setTitle("Formini - Menu Principal");
         primaryStage.setScene(scene);
+        StageWindowMode.maximize(primaryStage);
         primaryStage.show();
     }
 

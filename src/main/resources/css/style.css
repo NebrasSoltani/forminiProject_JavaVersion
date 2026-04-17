@@ -1127,7 +1127,7 @@
 
 .btn-save:hover {
     -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.4), 12, 0, 0, 0) !important;
-    -fx-background-color: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
+    -fx-background-color: linear-gradient(to bottom right, #5a67d8 0%, #6b46c1 100%) !important;
 }
 
 .btn-save:pressed {

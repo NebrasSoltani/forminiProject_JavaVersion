@@ -13,6 +13,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx.version>21.0.2</javafx.version>
+        <javafx.platform>win</javafx.platform>
     </properties>
 
     <dependencies>
@@ -28,21 +29,31 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
+            <classifier>${javafx.platform}</classifier>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
+            <classifier>${javafx.platform}</classifier>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
             <version>${javafx.version}</version>
+            <classifier>${javafx.platform}</classifier>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
             <version>${javafx.version}</version>
+            <classifier>${javafx.platform}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <version>${javafx.version}</version>
+            <classifier>${javafx.platform}</classifier>
         </dependency>
     </dependencies>
 
@@ -68,7 +79,6 @@
                     <mainClass>tn.formini.mains.AppLauncher</mainClass>
                     <options>
                         <option>--enable-native-access=ALL-UNNAMED</option>
-                        <option>--sun-misc-unsafe-memory-access=allow</option>
                     </options>
                 </configuration>
                 <executions>
@@ -98,7 +108,6 @@
                     <mainClass>tn.formini.mains.SignupLauncher</mainClass>
                     <arguments>
                         <argument>--enable-native-access=ALL-UNNAMED</argument>
-                        <argument>--sun-misc-unsafe-memory-access=allow</argument>
                     </arguments>
                 </configuration>
             </plugin>

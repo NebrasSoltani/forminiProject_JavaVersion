@@ -41,6 +41,7 @@ public class MainController implements Initializable {
     @FXML private Button btnProductList;
     @FXML private Button btnStageList;
     @FXML private Button btnProductAdd;
+    @FXML private Button btnProductManage;
 
     private List<Button> navButtons;
 
@@ -49,7 +50,17 @@ public class MainController implements Initializable {
         labelDate.setText(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
         );
-        navButtons = Arrays.asList(btnDashboard, btnBlogList, btnBlogAdd, btnEventList, btnEventAdd, btnProductList, btnProductAdd, btnStageList);
+        navButtons = Arrays.asList(
+                btnDashboard,
+                btnBlogList,
+                btnBlogAdd,
+                btnEventList,
+                btnEventAdd,
+                btnProductList,
+                btnProductAdd,
+                btnProductManage,
+                btnStageList
+        );
         showDashboard();
     }
 
@@ -175,6 +186,14 @@ public class MainController implements Initializable {
         labelPageTitle.setText("Liste des Produits");
         loadPage("/fxml/produits/ProduitList.fxml");
         updateActiveButton(btnProductList);
+    }
+
+    @FXML
+    public void showProductManage() {
+        // Handler dédié attendu par MainMenu.fxml
+        labelPageTitle.setText("Gestion des Produits");
+        loadPage("/fxml/produits/ProduitList.fxml");
+        updateActiveButton(btnProductManage);
     }
 
     @FXML
