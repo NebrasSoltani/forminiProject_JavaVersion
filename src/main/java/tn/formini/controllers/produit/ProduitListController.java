@@ -464,25 +464,28 @@ public class ProduitListController implements Initializable {
 
     private void openDeleteConfirmModal(Produit produit) {
         try {
-            URL resource = getClass().getResource("/fxml/product/ProduitDeleteConfirm.fxml");
-            if (resource == null) {
-                showError("FXML suppression introuvable.");
-                return;
+            // Show confirmation dialog directly instead of loading separate FXML
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Supprimer produit");
+            alert.setHeaderText("Supprimer \"" + produit.getNom() + "\" ?");
+            alert.setContentText(
+                "Êtes-vous sûr de vouloir supprimer ce produit ?\n\n" +
+                "Nom: " + produit.getNom() + "\n" +
+                "Catégorie: " + produit.getCategorie() + "\n" +
+                "Prix: " + String.format("%.3f DT", produit.getPrix()) + "\n" +
+                "Stock: " + produit.getStock() + "\n\n" +
+                "Cette action est irréversible."
+            );
+            
+            if (alert.showAndWait().get() == ButtonType.OK) {
+                try {
+                    service.supprimer(produit.getId());
+                    showSuccess("Produit supprimé avec succès !");
+                    loadProducts(); // Reload the product list
+                } catch (Exception e) {
+                    showError("Erreur lors de la suppression: " + e.getMessage());
+                }
             }
-            FXMLLoader loader = new FXMLLoader(resource);
-            VBox root = loader.load();
-            ProduitDeleteConfirmController c = loader.getController();
-            if (c != null) {
-                c.setProduit(produit);
-                c.setOnDeleted(this::loadProducts);
-            }
-
-            Stage stage = new Stage();
-            stage.setTitle("Supprimer produit");
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setResizable(false);
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
         } catch (Exception e) {
             showError("Erreur ouverture suppression: " + e.getMessage());
         }
@@ -524,43 +527,80 @@ public class ProduitListController implements Initializable {
     }
 
     private void openEditForm(Produit produit) {
+        System.out.println("=== DEBUG: openEditForm() STARTED ===");
+        System.out.println("Product to edit: " + produit.getNom());
+        
         try {
+            // Check FXML resource
+            String fxmlPath = "/fxml/product/ProduitEditForm_Compact.fxml";
+            URL resource = getClass().getResource(fxmlPath);
+            System.out.println("FXML resource check: " + (resource != null ? "FOUND" : "NOT FOUND"));
+            System.out.println("FXML path: " + fxmlPath);
+            
+            if (resource == null) {
+                throw new RuntimeException("FXML file not found: " + fxmlPath);
+            }
+            
+            System.out.println("FXML URL: " + resource.toExternalForm());
+            
             // Load the edit form FXML
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/product/ProduitEditForm.fxml"));
+            FXMLLoader loader = new FXMLLoader(resource);
+            System.out.println("FXMLLoader created successfully");
+            
             VBox editFormRoot = loader.load();
+            System.out.println("FXML loaded successfully");
             
             // Get the controller
             ProduitEditFormController editController = loader.getController();
+            System.out.println("Controller: " + (editController != null ? "FOUND" : "NULL"));
+            
+            if (editController == null) {
+                throw new RuntimeException("Controller not found in FXML");
+            }
+            
             editController.setProduit(produit);
             editController.setOnProductUpdated(this::loadProducts);
+            System.out.println("Controller initialized successfully");
             
             // Create and configure the dialog stage
             Stage editStage = new Stage();
             editStage.setTitle("Modifier: " + produit.getNom());
             editStage.initModality(Modality.APPLICATION_MODAL);
             editStage.setResizable(true);
-            editStage.setMinWidth(1000);
-            editStage.setMinHeight(700);
+            editStage.setWidth(950);
+            editStage.setHeight(700);
+            editStage.setMinWidth(800);
+            editStage.setMinHeight(600);
+            System.out.println("Stage configured successfully");
             
             // Create scene
             Scene scene = new Scene(editFormRoot);
+            System.out.println("Scene created successfully");
             
             // Add CSS if available
             URL css = getClass().getResource("/css/style.css");
             if (css != null) {
                 scene.getStylesheets().add(css.toExternalForm());
+                System.out.println("CSS loaded successfully");
+            } else {
+                System.out.println("CSS not found, continuing without styles");
             }
             
             editStage.setScene(scene);
+            System.out.println("Scene set on stage");
+            
             editStage.showAndWait();
+            System.out.println("Form displayed successfully");
             
         } catch (Exception e) {
+            System.err.println("ERROR in openEditForm: " + e.getMessage());
+            e.printStackTrace();
+            
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setTitle("Erreur");
             errorAlert.setHeaderText("Impossible d'ouvrir le formulaire de modification");
-            errorAlert.setContentText("Une erreur est survenue: " + e.getMessage());
+            errorAlert.setContentText("Une erreur est survenue: " + e.getMessage() + "\n\nDétails: " + e.getClass().getSimpleName());
             errorAlert.showAndWait();
-            e.printStackTrace();
         }
     }
 

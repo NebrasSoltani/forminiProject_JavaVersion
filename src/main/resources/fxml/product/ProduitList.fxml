@@ -18,7 +18,7 @@
             <TextField fx:id="fieldSearch" promptText="Rechercher un produit..." styleClass="search-field" HBox.hgrow="ALWAYS"/>
             <ComboBox fx:id="fieldFilterCategorie" promptText="Toutes les catégories" styleClass="filter-combo"/>
             <Button text="🔍" onAction="#searchProducts" styleClass="icon-btn"/>
-            <Button text="❌ Supprimer sans image" onAction="#deleteProductsWithoutImages" styleClass="btn-danger"/>
+
             <Button text="➕ Ajouter" onAction="#addProduct" styleClass="btn-primary"/>
         </HBox>
     </HBox>
