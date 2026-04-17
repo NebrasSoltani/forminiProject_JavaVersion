@@ -55,22 +55,45 @@ public class UserService implements service<User> {
     @Override
     public void modifier(User u) {
 
-        String req = "UPDATE user SET email=?, roles=?, password=?, nom=?, prenom=?, telephone=?, gouvernorat=?, date_naissance=?, role_utilisateur=? WHERE id=?";
+        String password = u.getPassword();
+        boolean isPasswordHashed = password != null && password.startsWith("$2a$");
+
+        // Build SQL based on whether password needs to be updated
+        String req;
+        if (isPasswordHashed) {
+            // Password already hashed, don't update it
+            req = "UPDATE user SET email=?, roles=?, nom=?, prenom=?, telephone=?, gouvernorat=?, date_naissance=?, role_utilisateur=?, photo=?, is_email_verified=?, email_verification_token=?, email_verification_token_expires_at=?, email_verified_at=?, password_reset_token=?, password_reset_token_expires_at=? WHERE id=?";
+        } else {
+            // New password, hash and update it
+            req = "UPDATE user SET email=?, roles=?, password=?, nom=?, prenom=?, telephone=?, gouvernorat=?, date_naissance=?, role_utilisateur=?, photo=?, is_email_verified=?, email_verification_token=?, email_verification_token_expires_at=?, email_verified_at=?, password_reset_token=?, password_reset_token_expires_at=? WHERE id=?";
+        }
+
         try {
-            // Hash the password before storing
-            String hashedPassword = PasswordUtil.hashPassword(u.getPassword());
-            
             PreparedStatement ps = cnx.prepareStatement(req);
             ps.setString(1, u.getEmail());
             ps.setString(2, u.getRoles());
-            ps.setString(3, hashedPassword);
-            ps.setString(4, u.getNom());
-            ps.setString(5, u.getPrenom());
-            ps.setString(6, u.getTelephone());
-            ps.setString(7, u.getGouvernorat());
-            ps.setTimestamp(8, u.getDate_naissance() != null ? new Timestamp(u.getDate_naissance().getTime()) : null);
-            ps.setString(9, u.getRole_utilisateur());
-            ps.setInt(10, u.getId());
+
+            if (!isPasswordHashed) {
+                String hashedPassword = PasswordUtil.hashPassword(password);
+                ps.setString(3, hashedPassword);
+            }
+
+            int offset = isPasswordHashed ? 2 : 3;
+            ps.setString(offset + 1, u.getNom());
+            ps.setString(offset + 2, u.getPrenom());
+            ps.setString(offset + 3, u.getTelephone());
+            ps.setString(offset + 4, u.getGouvernorat());
+            ps.setTimestamp(offset + 5, u.getDate_naissance() != null ? new Timestamp(u.getDate_naissance().getTime()) : null);
+            ps.setString(offset + 6, u.getRole_utilisateur());
+            ps.setString(offset + 7, u.getPhoto());
+            ps.setBoolean(offset + 8, u.isIs_email_verified());
+            ps.setString(offset + 9, u.getEmail_verification_token());
+            ps.setTimestamp(offset + 10, u.getEmail_verification_token_expires_at() != null ? new Timestamp(u.getEmail_verification_token_expires_at().getTime()) : null);
+            ps.setTimestamp(offset + 11, u.getEmail_verified_at() != null ? new Timestamp(u.getEmail_verified_at().getTime()) : null);
+            ps.setString(offset + 12, u.getPassword_reset_token());
+            ps.setTimestamp(offset + 13, u.getPassword_reset_token_expires_at() != null ? new Timestamp(u.getPassword_reset_token_expires_at().getTime()) : null);
+            ps.setInt(offset + 14, u.getId());
+
             ps.executeUpdate();
             System.out.println("Utilisateur modifié avec succès !");
         } catch (SQLException ex) {
@@ -169,6 +192,93 @@ public class UserService implements service<User> {
             }
         } catch (SQLException ex) {
             System.out.println("Erreur findById user : " + ex.getMessage());
+        }
+        return null;
+    }
+
+    public User getUserByEmail(String email) {
+        if (cnx == null || email == null || email.trim().isEmpty()) {
+            return null;
+        }
+        String req = "SELECT * FROM user WHERE LOWER(email) = LOWER(?)";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(req);
+            ps.setString(1, email.trim());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                User u = new User();
+                u.setId(rs.getInt("id"));
+                u.setEmail(rs.getString("email"));
+                u.setRoles(rs.getString("roles"));
+                u.setPassword(rs.getString("password"));
+                u.setNom(rs.getString("nom"));
+                u.setPrenom(rs.getString("prenom"));
+                u.setTelephone(rs.getString("telephone"));
+                u.setGouvernorat(rs.getString("gouvernorat"));
+                Timestamp naissance = rs.getTimestamp("date_naissance");
+                if (naissance != null) {
+                    u.setDate_naissance(new java.util.Date(naissance.getTime()));
+                }
+                u.setRole_utilisateur(rs.getString("role_utilisateur"));
+                u.setPhoto(rs.getString("photo"));
+                u.setIs_email_verified(rs.getBoolean("is_email_verified"));
+                u.setEmail_verification_token(rs.getString("email_verification_token"));
+                Timestamp emailTokenExpiry = rs.getTimestamp("email_verification_token_expires_at");
+                if (emailTokenExpiry != null) {
+                    u.setEmail_verification_token_expires_at(new java.util.Date(emailTokenExpiry.getTime()));
+                }
+                Timestamp emailVerifiedAt = rs.getTimestamp("email_verified_at");
+                if (emailVerifiedAt != null) {
+                    u.setEmail_verified_at(new java.util.Date(emailVerifiedAt.getTime()));
+                }
+                u.setPassword_reset_token(rs.getString("password_reset_token"));
+                Timestamp passwordTokenExpiry = rs.getTimestamp("password_reset_token_expires_at");
+                if (passwordTokenExpiry != null) {
+                    u.setPassword_reset_token_expires_at(new java.util.Date(passwordTokenExpiry.getTime()));
+                }
+                return u;
+            }
+        } catch (SQLException ex) {
+            System.out.println("Erreur getUserByEmail : " + ex.getMessage());
+        }
+        return null;
+    }
+
+    public User getUserByResetToken(String token) {
+        if (cnx == null || token == null || token.trim().isEmpty()) {
+            return null;
+        }
+        String req = "SELECT * FROM user WHERE password_reset_token = ?";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(req);
+            ps.setString(1, token);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                User u = new User();
+                u.setId(rs.getInt("id"));
+                u.setEmail(rs.getString("email"));
+                u.setRoles(rs.getString("roles"));
+                u.setPassword(rs.getString("password"));
+                u.setNom(rs.getString("nom"));
+                u.setPrenom(rs.getString("prenom"));
+                u.setTelephone(rs.getString("telephone"));
+                u.setGouvernorat(rs.getString("gouvernorat"));
+                Timestamp naissance = rs.getTimestamp("date_naissance");
+                if (naissance != null) {
+                    u.setDate_naissance(new java.util.Date(naissance.getTime()));
+                }
+                u.setRole_utilisateur(rs.getString("role_utilisateur"));
+                u.setPhoto(rs.getString("photo"));
+                u.setIs_email_verified(rs.getBoolean("is_email_verified"));
+                u.setPassword_reset_token(rs.getString("password_reset_token"));
+                Timestamp passwordTokenExpiry = rs.getTimestamp("password_reset_token_expires_at");
+                if (passwordTokenExpiry != null) {
+                    u.setPassword_reset_token_expires_at(new java.util.Date(passwordTokenExpiry.getTime()));
+                }
+                return u;
+            }
+        } catch (SQLException ex) {
+            System.out.println("Erreur getUserByResetToken : " + ex.getMessage());
         }
         return null;
     }

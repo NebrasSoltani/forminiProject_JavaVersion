@@ -23,6 +23,8 @@ public class User {
     private String email_verification_token;
     private Date email_verification_token_expires_at;
     private Date email_verified_at;
+    private String password_reset_token;
+    private Date password_reset_token_expires_at;
     private String google_id;
     private String github_id;
     private String oauth_provider;
@@ -236,6 +238,12 @@ public class User {
 
     public Date getEmail_verified_at() { return email_verified_at; }
     public void setEmail_verified_at(Date email_verified_at) { this.email_verified_at = email_verified_at; }
+
+    public String getPassword_reset_token() { return password_reset_token; }
+    public void setPassword_reset_token(String password_reset_token) { this.password_reset_token = password_reset_token; }
+
+    public Date getPassword_reset_token_expires_at() { return password_reset_token_expires_at; }
+    public void setPassword_reset_token_expires_at(Date password_reset_token_expires_at) { this.password_reset_token_expires_at = password_reset_token_expires_at; }
 
     public String getGoogle_id() { return google_id; }
     public void setGoogle_id(String google_id) { this.google_id = google_id; }

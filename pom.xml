@@ -23,6 +23,13 @@
             <version>8.4.0</version> <!-- Updated to fix CVE vulnerabilities -->
         </dependency>
 
+        <!-- JavaMail API for email sending -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+
         <!-- JavaFX Dependencies (sans classifier win) -->
         <dependency>
             <groupId>org.openjfx</groupId>
