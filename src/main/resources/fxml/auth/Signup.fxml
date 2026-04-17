@@ -171,9 +171,17 @@
                                         <TextField fx:id="fieldObjectif" styleClass="form-control signup-field" promptText="Ex. Devenir développeur Java"/>
                                     </VBox>
                                     <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
-                                        <Label text="Domaines d'intérêt" styleClass="form-label"/>
-                                        <TextField fx:id="fieldDomainesInteret" styleClass="form-control signup-field" promptText='Format JSON : ["Java","Web"] ou laisser vide'/>
-                                        <Label text="Tableau JSON entre crochets, noms entre guillemets." styleClass="signup-field-hint" wrapText="true"/>
+                                        <HBox spacing="8" alignment="CENTER_LEFT">
+                                            <Label text="Domaines d'intérêt" styleClass="form-label"/>
+                                            <Label text="ℹ" styleClass="info-icon"/>
+                                        </HBox>
+                                        <VBox spacing="8">
+                                            <HBox spacing="8" alignment="CENTER_LEFT">
+                                                <TextField fx:id="fieldDomaineInput" styleClass="form-control signup-field" promptText="Ex: Java" HBox.hgrow="ALWAYS"/>
+                                                <Button fx:id="btnAddDomaine" text="Ajouter" styleClass="btn-secondary" onAction="#onAddDomaine"/>
+                                            </HBox>
+                                            <HBox fx:id="flowPaneDomaines" spacing="8" alignment="CENTER_LEFT"/>
+                                        </VBox>
                                     </VBox>
                                 </GridPane>
                             </VBox>

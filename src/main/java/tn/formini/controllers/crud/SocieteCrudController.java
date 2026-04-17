@@ -58,16 +58,22 @@ public class SocieteCrudController {
     
     @FXML
     private Button addButton;
-    
+
+    @FXML
+    private Button viewDetailsButton;
+
     @FXML
     private Button editButton;
-    
+
     @FXML
     private Button deleteButton;
     
     @FXML
     private Button refreshButton;
-    
+
+    @FXML
+    private Button backButton;
+
     @FXML
     private Button searchButton;
     
@@ -91,6 +97,12 @@ public class SocieteCrudController {
 
     @FXML
     private Button resetFiltersButton;
+
+    @FXML
+    private Button filterButton;
+
+    @FXML
+    private Button sortButton;
     
     @FXML
     private Label countLabel;
@@ -363,6 +375,38 @@ public class SocieteCrudController {
     }
 
     @FXML
+    private void handleViewDetailsButton(ActionEvent event) {
+        Societe selectedSociete = tableView.getSelectionModel().getSelectedItem();
+        if (selectedSociete == null) {
+            showAlert("Avertissement", "Veuillez sélectionner une société pour voir les détails", Alert.AlertType.WARNING);
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/crud/societe-details.fxml"));
+            Parent root = loader.load();
+
+            SocieteDetailsController controller = loader.getController();
+            controller.setSociete(selectedSociete);
+
+            Stage stage = new Stage();
+            stage.setTitle("Détails de la Société");
+            Scene scene = new Scene(root, 760, 720);
+            URL css = getClass().getResource("/css/style.css");
+            if (css != null) {
+                scene.getStylesheets().add(css.toExternalForm());
+            }
+            stage.setScene(scene);
+            stage.setMinWidth(640);
+            stage.setMinHeight(560);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+        } catch (IOException e) {
+            showAlert("Erreur", "Impossible d'ouvrir les détails: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
     private void handleEditButton(ActionEvent event) {
         Societe selectedSociete = tableView.getSelectionModel().getSelectedItem();
         if (selectedSociete == null) {
@@ -373,11 +417,11 @@ public class SocieteCrudController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/crud/societe-form.fxml"));
             Parent root = loader.load();
-            
+
             SocieteFormController controller = loader.getController();
             controller.setMode(SocieteFormController.Mode.EDIT);
             controller.setSociete(selectedSociete);
-            
+
             Stage stage = new Stage();
             stage.setTitle("Modifier une Société");
             Scene scene = new Scene(root, 760, 720);
@@ -390,7 +434,7 @@ public class SocieteCrudController {
             stage.setMinHeight(560);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
-            
+
             loadSocietes();
         } catch (IOException e) {
             showAlert("Erreur", "Impossible d'ouvrir le formulaire: " + e.getMessage(), Alert.AlertType.ERROR);
@@ -443,8 +487,21 @@ public class SocieteCrudController {
         applyFiltersAndSorting();
     }
 
+    @FXML
+    private void handleFilter(ActionEvent event) {
+        applyFiltersAndSorting();
+        statusLabel.setText("Filtres appliqués");
+    }
+
+    @FXML
+    private void handleSort(ActionEvent event) {
+        applyFiltersAndSorting();
+        statusLabel.setText("Tri appliqué");
+    }
+
     private void updateButtonStates() {
         boolean isSelected = tableView.getSelectionModel().getSelectedItem() != null;
+        viewDetailsButton.setDisable(!isSelected);
         editButton.setDisable(!isSelected);
         deleteButton.setDisable(!isSelected);
     }
@@ -455,5 +512,11 @@ public class SocieteCrudController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    @FXML
+    private void handleBackButton(ActionEvent event) {
+        Stage stage = (Stage) backButton.getScene().getWindow();
+        stage.close();
     }
 }

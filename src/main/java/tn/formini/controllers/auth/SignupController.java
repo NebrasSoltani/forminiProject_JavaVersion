@@ -22,6 +22,8 @@ import tn.formini.utils.TunisiaGovernorates;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -62,7 +64,9 @@ public class SignupController implements Initializable {
     @FXML private ComboBox<String> comboGenre;
     @FXML private ComboBox<String> comboEtatCivil;
     @FXML private TextField fieldObjectif;
-    @FXML private TextField fieldDomainesInteret;
+    @FXML private TextField fieldDomaineInput;
+    @FXML private Button btnAddDomaine;
+    @FXML private HBox flowPaneDomaines;
     @FXML private TextField fieldSpecialite;
     @FXML private TextArea fieldBio;
     @FXML private Spinner<Integer> spinnerExperience;
@@ -86,6 +90,7 @@ public class SignupController implements Initializable {
     private ToggleGroup roleGroup;
     private java.io.File uploadedCvFile;
     private java.io.File uploadedPhotoFile;
+    private final List<String> domainesList = new ArrayList<>();
 
     public void setOnBack(Runnable onBack) {
         this.onBack = onBack;
@@ -184,9 +189,8 @@ public class SignupController implements Initializable {
                 }
                 String obj = fieldObjectif.getText();
                 a.setObjectif(obj != null && !obj.isBlank() ? obj.trim() : null);
-                String dom = fieldDomainesInteret.getText();
-                if (dom != null && !dom.isBlank()) {
-                    a.setDomaines_interet(dom.trim());
+                if (!domainesList.isEmpty()) {
+                    a.setDomaines_interet(convertDomainesToJson(domainesList));
                 }
                 signupService.signupApprenant(a);
             } else {
@@ -372,6 +376,55 @@ public class SignupController implements Initializable {
                 System.err.println("Failed to load image: " + e.getMessage());
             }
         }
+    }
+
+    @FXML
+    private void onAddDomaine() {
+        String domaine = fieldDomaineInput.getText().trim();
+        if (domaine != null && !domaine.isEmpty() && !domainesList.contains(domaine)) {
+            domainesList.add(domaine);
+            fieldDomaineInput.clear();
+            displayDomainesTags();
+        }
+    }
+
+    private void displayDomainesTags() {
+        flowPaneDomaines.getChildren().clear();
+        for (String domaine : domainesList) {
+            HBox tag = createDomaineTag(domaine);
+            flowPaneDomaines.getChildren().add(tag);
+        }
+    }
+
+    private HBox createDomaineTag(String domaine) {
+        HBox tag = new HBox();
+        tag.getStyleClass().add("domaine-tag");
+        tag.setSpacing(4);
+
+        Label label = new Label(domaine);
+        label.getStyleClass().add("domaine-tag-label");
+
+        Button removeBtn = new Button("×");
+        removeBtn.getStyleClass().add("domaine-tag-remove");
+        removeBtn.setOnAction(e -> {
+            domainesList.remove(domaine);
+            displayDomainesTags();
+        });
+
+        tag.getChildren().addAll(label, removeBtn);
+        return tag;
+    }
+
+    private String convertDomainesToJson(List<String> domaines) {
+        StringBuilder json = new StringBuilder("[");
+        for (int i = 0; i < domaines.size(); i++) {
+            json.append("\"").append(domaines.get(i)).append("\"");
+            if (i < domaines.size() - 1) {
+                json.append(", ");
+            }
+        }
+        json.append("]");
+        return json.toString();
     }
 
     

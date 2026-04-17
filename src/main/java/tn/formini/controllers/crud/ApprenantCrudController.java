@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ApprenantCrudController {
     private static final int ROWS_PER_PAGE = 10;
@@ -72,16 +73,22 @@ public class ApprenantCrudController {
     
     @FXML
     private Button addButton;
-    
+
+    @FXML
+    private Button viewDetailsButton;
+
     @FXML
     private Button editButton;
-    
+
     @FXML
     private Button deleteButton;
     
     @FXML
     private Button refreshButton;
-    
+
+    @FXML
+    private Button backButton;
+
     @FXML
     private TextField searchField;
 
@@ -102,6 +109,12 @@ public class ApprenantCrudController {
 
     @FXML
     private Button resetFiltersButton;
+
+    @FXML
+    private Button filterButton;
+
+    @FXML
+    private Button sortButton;
     
     private ApprenantService apprenantService;
     private UserService userService;
@@ -184,12 +197,7 @@ public class ApprenantCrudController {
         
         domainesColumn.setCellValueFactory(cellData -> {
             Apprenant apprenant = cellData.getValue();
-            return apprenant.getDomaine() != null ? 
-                javafx.beans.binding.Bindings.createStringBinding(() -> {
-                    String domaines = apprenant.getDomaines_interet();
-                    return domaines != null && !domaines.isEmpty() ? domaines : "N/A";
-                }) : 
-                javafx.beans.binding.Bindings.createStringBinding(() -> "N/A");
+            return javafx.beans.binding.Bindings.createStringBinding(() -> formatDomainesInteret(apprenant));
         });
         
         userNomColumn.setCellValueFactory(cellData -> {
@@ -325,7 +333,7 @@ public class ApprenantCrudController {
             case "Objectif":
                 return containsIgnoreCase(apprenant.getObjectif(), keyword);
             case "Domaines":
-                return containsIgnoreCase(apprenant.getDomaines_interet(), keyword);
+                return containsIgnoreCase(formatDomainesInteret(apprenant), keyword);
             case "Tous":
             default:
                 return String.valueOf(apprenant.getId()).contains(keyword)
@@ -334,7 +342,7 @@ public class ApprenantCrudController {
                         || containsIgnoreCase(apprenant.getGenre(), keyword)
                         || containsIgnoreCase(apprenant.getEtat_civil(), keyword)
                         || containsIgnoreCase(apprenant.getObjectif(), keyword)
-                        || containsIgnoreCase(apprenant.getDomaines_interet(), keyword);
+                        || containsIgnoreCase(formatDomainesInteret(apprenant), keyword);
         }
     }
 
@@ -347,6 +355,36 @@ public class ApprenantCrudController {
 
     private String getEmail(Apprenant apprenant) {
         return apprenant.getUser() != null ? nullSafe(apprenant.getUser().getEmail()) : "";
+    }
+
+    private String formatDomainesInteret(Apprenant apprenant) {
+        if (apprenant == null) {
+            return "N/A";
+        }
+
+        String domainesRaw = nullSafe(apprenant.getDomaines_interet()).trim();
+        if (!domainesRaw.isEmpty() && !"[]".equals(domainesRaw)) {
+            // Most records are stored as a JSON-like array string: ["IA","Web"].
+            String cleaned = domainesRaw
+                    .replace("[", "")
+                    .replace("]", "")
+                    .replace("\"", "")
+                    .trim();
+
+            if (!cleaned.isEmpty()) {
+                return cleaned.contains(",")
+                        ? List.of(cleaned.split(","))
+                        .stream()
+                        .map(String::trim)
+                        .filter(value -> !value.isEmpty())
+                        .collect(Collectors.joining(", "))
+                        : cleaned;
+            }
+        }
+
+        return apprenant.getDomaine() != null && apprenant.getDomaine().getNom() != null
+                ? apprenant.getDomaine().getNom()
+                : "N/A";
     }
 
     private boolean containsIgnoreCase(String source, String keyword) {
@@ -402,6 +440,38 @@ public class ApprenantCrudController {
     }
 
     @FXML
+    private void handleViewDetailsButton(ActionEvent event) {
+        Apprenant selectedApprenant = tableView.getSelectionModel().getSelectedItem();
+        if (selectedApprenant == null) {
+            showAlert("Avertissement", "Veuillez sélectionner un apprenant pour voir les détails", Alert.AlertType.WARNING);
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/crud/apprenant-details.fxml"));
+            Parent root = loader.load();
+
+            ApprenantDetailsController controller = loader.getController();
+            controller.setApprenant(selectedApprenant);
+
+            Stage stage = new Stage();
+            stage.setTitle("Détails de l'Apprenant");
+            Scene scene = new Scene(root, 760, 720);
+            URL css = getClass().getResource("/css/style.css");
+            if (css != null) {
+                scene.getStylesheets().add(css.toExternalForm());
+            }
+            stage.setScene(scene);
+            stage.setMinWidth(640);
+            stage.setMinHeight(560);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+        } catch (IOException e) {
+            showAlert("Erreur", "Impossible d'ouvrir les détails: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
     private void handleEditButton(ActionEvent event) {
         Apprenant selectedApprenant = tableView.getSelectionModel().getSelectedItem();
         if (selectedApprenant == null) {
@@ -412,11 +482,11 @@ public class ApprenantCrudController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/crud/apprenant-form.fxml"));
             Parent root = loader.load();
-            
+
             ApprenantFormController controller = loader.getController();
             controller.setMode(ApprenantFormController.Mode.EDIT);
             controller.setApprenant(selectedApprenant);
-            
+
             Stage stage = new Stage();
             stage.setTitle("Modifier un Apprenant");
             Scene scene = new Scene(root, 760, 720);
@@ -429,7 +499,7 @@ public class ApprenantCrudController {
             stage.setMinHeight(560);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
-            
+
             loadApprenants();
         } catch (IOException e) {
             showAlert("Erreur", "Impossible d'ouvrir le formulaire: " + e.getMessage(), Alert.AlertType.ERROR);
@@ -482,8 +552,21 @@ public class ApprenantCrudController {
         applyFiltersAndSorting();
     }
 
+    @FXML
+    private void handleFilter(ActionEvent event) {
+        applyFiltersAndSorting();
+        statusLabel.setText("Filtres appliqués");
+    }
+
+    @FXML
+    private void handleSort(ActionEvent event) {
+        applyFiltersAndSorting();
+        statusLabel.setText("Tri appliqué");
+    }
+
     private void updateButtonStates() {
         boolean isSelected = tableView.getSelectionModel().getSelectedItem() != null;
+        viewDetailsButton.setDisable(!isSelected);
         editButton.setDisable(!isSelected);
         deleteButton.setDisable(!isSelected);
     }
@@ -494,5 +577,11 @@ public class ApprenantCrudController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    @FXML
+    private void handleBackButton(ActionEvent event) {
+        Stage stage = (Stage) backButton.getScene().getWindow();
+        stage.close();
     }
 }

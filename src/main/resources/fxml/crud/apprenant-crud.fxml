@@ -12,6 +12,9 @@
         <children>
             <HBox alignment="CENTER_LEFT" spacing="15">
                 <children>
+                    <Button fx:id="backButton" text="← Retour" onAction="#handleBackButton" 
+                            prefWidth="100" prefHeight="35"
+                            style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"/>
                     <Label text="Gestion des Apprenants" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
                     <Region HBox.hgrow="ALWAYS"/>
                     <Label fx:id="countLabel" text="Total: 0 apprenants" style="-fx-font-size: 14px; -fx-text-fill: #6c757d; -fx-background-color: #e9ecef; -fx-background-radius: 20; -fx-padding: 5 15;"/>
@@ -47,9 +50,15 @@
                     <ComboBox fx:id="etatCivilFilterComboBox" prefWidth="140" prefHeight="36" promptText="Etat civil"/>
                     <ComboBox fx:id="sortByComboBox" prefWidth="150" prefHeight="36" promptText="Trier par"/>
                     <ComboBox fx:id="sortDirectionComboBox" prefWidth="140" prefHeight="36" promptText="Sens"/>
+                    <Button fx:id="filterButton" text="Filtrer" onAction="#handleFilter"
+                            prefWidth="92" prefHeight="36"
+                            styleClass="btn-filter"/>
+                    <Button fx:id="sortButton" text="Trier" onAction="#handleSort"
+                            prefWidth="88" prefHeight="36"
+                            styleClass="btn-sort"/>
                     <Button fx:id="resetFiltersButton" text="Réinitialiser" onAction="#handleResetFilters"
                             prefWidth="120" prefHeight="36"
-                            style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                            styleClass="btn-reset-filters"/>
                 </children>
             </HBox>
             
@@ -60,10 +69,13 @@
                             prefWidth="180" prefHeight="40"
                             style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"/>
                     <Region HBox.hgrow="ALWAYS"/>
-                    <Button fx:id="editButton" text="Modifier" onAction="#handleEditButton" disable="true" 
+                    <Button fx:id="viewDetailsButton" text="Voir Détails" onAction="#handleViewDetailsButton" disable="true"
+                            prefWidth="120" prefHeight="40"
+                            style="-fx-background-color: #17a2b8; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                    <Button fx:id="editButton" text="Modifier" onAction="#handleEditButton" disable="true"
                             prefWidth="100" prefHeight="40"
                             style="-fx-background-color: #ffc107; -fx-text-fill: #212529; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"/>
-                    <Button fx:id="deleteButton" text="Supprimer" onAction="#handleDeleteButton" disable="true" 
+                    <Button fx:id="deleteButton" text="Supprimer" onAction="#handleDeleteButton" disable="true"
                             prefWidth="100" prefHeight="40"
                             style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"/>
                     <Button fx:id="refreshButton" text="Actualiser" onAction="#handleRefreshButton" 
