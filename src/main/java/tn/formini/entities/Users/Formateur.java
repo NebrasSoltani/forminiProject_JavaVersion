@@ -45,24 +45,14 @@ public class Formateur {
         }
 
         // Validation des URLs (optionnelles mais si fournies doivent être valides)
-        if (linkedin != null && !linkedin.trim().isEmpty()) {
-            if (!linkedin.startsWith("http://") && !linkedin.startsWith("https://"))
-                throw new IllegalArgumentException("L'URL LinkedIn doit commencer par http:// ou https://.");
-            if (linkedin.length() > 500)
-                throw new IllegalArgumentException("L'URL LinkedIn ne doit pas dépasser 500 caractères.");
-        }
+        if (linkedin != null && linkedin.length() > 500)
+            throw new IllegalArgumentException("L'URL LinkedIn ne doit pas dépasser 500 caractères.");
 
-        if (portfolio != null && !portfolio.trim().isEmpty()) {
-            if (!portfolio.startsWith("http://") && !portfolio.startsWith("https://"))
-                throw new IllegalArgumentException("L'URL portfolio doit commencer par http:// ou https://.");
-            if (portfolio.length() > 500)
-                throw new IllegalArgumentException("L'URL portfolio ne doit pas dépasser 500 caractères.");
-        }
+        if (portfolio != null && portfolio.length() > 500)
+            throw new IllegalArgumentException("L'URL portfolio ne doit pas dépasser 500 caractères.");
 
-        if (cv != null && !cv.trim().isEmpty()) {
-            if (cv.length() > 500)
-                throw new IllegalArgumentException("L'URL du CV ne doit pas dépasser 500 caractères.");
-        }
+        if (cv != null && cv.length() > 500)
+            throw new IllegalArgumentException("L'URL du CV ne doit pas dépasser 500 caractères.");
 
         // Validation de l'utilisateur obligatoire
         if (user == null)
@@ -96,22 +86,14 @@ public class Formateur {
     }
     public String getLinkedin() { return linkedin; }
     public void setLinkedin(String linkedin) {
-        if (linkedin != null && !linkedin.trim().isEmpty()) {
-            if (!linkedin.startsWith("http://") && !linkedin.startsWith("https://"))
-                throw new IllegalArgumentException("L'URL LinkedIn doit commencer par http:// ou https://.");
-            if (linkedin.length() > 500)
-                throw new IllegalArgumentException("L'URL LinkedIn ne doit pas dépasser 500 caractères.");
-        }
+        if (linkedin != null && linkedin.length() > 500)
+            throw new IllegalArgumentException("L'URL LinkedIn ne doit pas dépasser 500 caractères.");
         this.linkedin = linkedin;
     }
     public String getPortfolio() { return portfolio; }
     public void setPortfolio(String portfolio) {
-        if (portfolio != null && !portfolio.trim().isEmpty()) {
-            if (!portfolio.startsWith("http://") && !portfolio.startsWith("https://"))
-                throw new IllegalArgumentException("L'URL portfolio doit commencer par http:// ou https://.");
-            if (portfolio.length() > 500)
-                throw new IllegalArgumentException("L'URL portfolio ne doit pas dépasser 500 caractères.");
-        }
+        if (portfolio != null && portfolio.length() > 500)
+            throw new IllegalArgumentException("L'URL portfolio ne doit pas dépasser 500 caractères.");
         this.portfolio = portfolio;
     }
     public String getCv() { return cv; }
