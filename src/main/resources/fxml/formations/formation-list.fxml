@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.TilePane?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.formini.controllers.formations.FormationListController"
+            style="-fx-background-color: #f5f6fa;">
+
+    <top>
+        <HBox spacing="10" style="-fx-padding: 12; -fx-background-color: white; -fx-border-color: #ecf0f1; -fx-border-width: 0 0 1 0;">
+            <children>
+                <TextField fx:id="searchField" promptText="Rechercher une formation..." onKeyReleased="#handleSearch" HBox.hgrow="ALWAYS"/>
+                <Button text="Actualiser" onAction="#handleRefresh"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="resultCountLabel" text="0 formation(s)" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            </children>
+            <padding>
+                <Insets top="8" right="10" bottom="8" left="10"/>
+            </padding>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fx:id="catalogScroll" fitToWidth="true" style="-fx-background: transparent; -fx-background-color: transparent;">
+            <content>
+                <TilePane fx:id="formationsGrid" prefTileWidth="260" prefColumns="3" hgap="16" vgap="16" style="-fx-padding: 16;"/>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>
+

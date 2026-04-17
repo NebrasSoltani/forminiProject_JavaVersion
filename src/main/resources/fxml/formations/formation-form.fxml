@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="tn.formini.controllers.formations.FormationFormController"
+      spacing="12" style="-fx-padding: 16; -fx-background-color: white;">
+
+    <children>
+        <Label fx:id="titleLabel" text="Creer une formation" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+        <ScrollPane fitToWidth="true" prefHeight="620" style="-fx-background-color: transparent;">
+            <content>
+                <GridPane hgap="10" vgap="10" style="-fx-padding: 4;">
+                    <columnConstraints>
+                        <ColumnConstraints minWidth="160" prefWidth="180"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                    </columnConstraints>
+
+                    <children>
+                        <Label text="Titre*" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                        <TextField fx:id="titreField" promptText="Titre de la formation" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                        <Label text="Categorie*" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                        <TextField fx:id="categorieField" promptText="Ex: Developpement" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                        <Label text="Niveau*" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                        <ComboBox fx:id="niveauCombo" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                        <Label text="Langue*" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                        <TextField fx:id="langueField" promptText="fr, en..." GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                        <Label text="Description courte*" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                        <TextArea fx:id="descriptionCourteArea" prefRowCount="2" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                        <Label text="Description detaillee" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                        <TextArea fx:id="descriptionDetailleeArea" prefRowCount="3" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+                        <Label text="Objectifs pedagogiques" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                        <TextArea fx:id="objectifsArea" prefRowCount="3" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+                        <Label text="Prerequis" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+                        <TextArea fx:id="prerequisArea" prefRowCount="2" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+
+                        <Label text="Programme*" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
+                        <TextArea fx:id="programmeArea" prefRowCount="4" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
+
+                        <Label text="Duree (heures)*" GridPane.rowIndex="9" GridPane.columnIndex="0"/>
+                        <TextField fx:id="dureeField" GridPane.rowIndex="9" GridPane.columnIndex="1"/>
+
+                        <Label text="Nombre de lecons*" GridPane.rowIndex="10" GridPane.columnIndex="0"/>
+                        <TextField fx:id="nombreLeconsField" GridPane.rowIndex="10" GridPane.columnIndex="1"/>
+
+                        <Label text="Format*" GridPane.rowIndex="11" GridPane.columnIndex="0"/>
+                        <ComboBox fx:id="formatCombo" GridPane.rowIndex="11" GridPane.columnIndex="1"/>
+
+                        <Label text="Type acces*" GridPane.rowIndex="12" GridPane.columnIndex="0"/>
+                        <ComboBox fx:id="typeAccesCombo" GridPane.rowIndex="12" GridPane.columnIndex="1"/>
+
+                        <Label text="Prix" GridPane.rowIndex="13" GridPane.columnIndex="0"/>
+                        <TextField fx:id="prixField" promptText="Ex: 199.99" GridPane.rowIndex="13" GridPane.columnIndex="1"/>
+
+                        <Label text="Image couverture" GridPane.rowIndex="14" GridPane.columnIndex="0"/>
+                        <HBox spacing="8" GridPane.rowIndex="14" GridPane.columnIndex="1">
+                            <children>
+                                <TextField fx:id="imageField" promptText="URL, chemin local ou /images/..." HBox.hgrow="ALWAYS" onKeyReleased="#handleImageTyped"/>
+                                <Button text="Choisir" onAction="#handleChooseImage"/>
+                            </children>
+                        </HBox>
+
+                        <Label text="Apercu" GridPane.rowIndex="15" GridPane.columnIndex="0"/>
+                        <ImageView fx:id="coverPreview" fitWidth="220" fitHeight="120" preserveRatio="true" smooth="true" GridPane.rowIndex="15" GridPane.columnIndex="1"/>
+
+                        <Label text="Statut*" GridPane.rowIndex="16" GridPane.columnIndex="0"/>
+                        <ComboBox fx:id="statutCombo" GridPane.rowIndex="16" GridPane.columnIndex="1"/>
+
+                        <Label text="Options" GridPane.rowIndex="17" GridPane.columnIndex="0"/>
+                        <HBox spacing="16" GridPane.rowIndex="17" GridPane.columnIndex="1">
+                            <children>
+                                <CheckBox fx:id="certificatCheck" text="Certificat"/>
+                                <CheckBox fx:id="quizCheck" text="Quiz"/>
+                                <CheckBox fx:id="fichiersCheck" text="Fichiers"/>
+                                <CheckBox fx:id="forumCheck" text="Forum"/>
+                            </children>
+                        </HBox>
+                    </children>
+                </GridPane>
+            </content>
+        </ScrollPane>
+
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <children>
+                <Button text="Annuler" onAction="#handleCancel"/>
+                <Button text="Enregistrer" onAction="#handleSave"
+                        style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            </children>
+            <padding>
+                <Insets top="8"/>
+            </padding>
+        </HBox>
+    </children>
+</VBox>
+

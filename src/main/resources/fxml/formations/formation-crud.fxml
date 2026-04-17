@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="tn.formini.controllers.formations.FormationCrudController"
+      spacing="12" style="-fx-padding: 16; -fx-background-color: #f8f9fa;">
+
+    <children>
+        <Label fx:id="headerLabel" text="Mes formations" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+        <HBox spacing="10">
+            <children>
+                <Button text="+ Creer" onAction="#handleCreate" style="-fx-background-color: #2ecc71; -fx-text-fill: white;"/>
+                <Button text="Modifier" onAction="#handleEdit" style="-fx-background-color: #f39c12; -fx-text-fill: white;"/>
+                <Button text="Supprimer" onAction="#handleDelete" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+                <Button text="Gerer les lecons" onAction="#handleManageLessons" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Actualiser" onAction="#handleRefresh"/>
+            </children>
+        </HBox>
+
+        <TableView fx:id="formationTable" VBox.vgrow="ALWAYS">
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+            </columnResizePolicy>
+            <columns>
+                <TableColumn fx:id="idColumn" text="ID" prefWidth="60"/>
+                <TableColumn fx:id="titreColumn" text="Titre" prefWidth="220"/>
+                <TableColumn fx:id="categorieColumn" text="Categorie" prefWidth="120"/>
+                <TableColumn fx:id="niveauColumn" text="Niveau" prefWidth="100"/>
+                <TableColumn fx:id="langueColumn" text="Langue" prefWidth="90"/>
+                <TableColumn fx:id="dureeColumn" text="Duree" prefWidth="80"/>
+                <TableColumn fx:id="leconsColumn" text="Lecons" prefWidth="90"/>
+                <TableColumn fx:id="statutColumn" text="Statut" prefWidth="90"/>
+                <TableColumn fx:id="prixColumn" text="Prix" prefWidth="100"/>
+            </columns>
+        </TableView>
+    </children>
+</VBox>
+
