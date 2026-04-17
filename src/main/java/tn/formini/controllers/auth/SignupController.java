@@ -6,6 +6,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
@@ -15,6 +17,8 @@ import tn.formini.entities.Users.Apprenant;
 import tn.formini.entities.Users.Formateur;
 import tn.formini.entities.Users.User;
 import tn.formini.services.UsersService.SignupService;
+import tn.formini.services.FileUploadService;
+import tn.formini.utils.TunisiaGovernorates;
 
 import java.io.IOException;
 import java.net.URL;
@@ -43,14 +47,17 @@ public class SignupController implements Initializable {
     @FXML private Button btnTogglePasswordConfirm;
     @FXML private Button btnGoToLogin;
     @FXML private Button btnUploadCv;
+    @FXML private Button btnUploadPhoto;
     @FXML private Label lblCvFileName;
+    @FXML private Label lblPhotoFileName;
+    @FXML private ImageView imageViewPhoto;
     @FXML private Label eyeIcon;
     @FXML private Label eyeSlashIcon;
     @FXML private Label eyeIconConfirm;
     @FXML private Label eyeSlashIconConfirm;
     @FXML private TextField fieldNom;
     @FXML private TextField fieldPrenom;
-    @FXML private TextField fieldGouvernorat;
+    @FXML private ComboBox<String> fieldGouvernorat;
     @FXML private DatePicker fieldDateNaissance;
     @FXML private ComboBox<String> comboGenre;
     @FXML private ComboBox<String> comboEtatCivil;
@@ -62,6 +69,7 @@ public class SignupController implements Initializable {
     @FXML private TextField fieldLinkedin;
     @FXML private TextField fieldPortfolio;
     @FXML private TextField fieldCv;
+    @FXML private TextField fieldPhoto;
     
     // Error labels
     @FXML private Label errorEmail;
@@ -74,8 +82,10 @@ public class SignupController implements Initializable {
     @FXML private Label errorSpecialite;
 
     private final SignupService signupService = new SignupService();
+    private final FileUploadService fileUploadService = new FileUploadService();
     private ToggleGroup roleGroup;
     private java.io.File uploadedCvFile;
+    private java.io.File uploadedPhotoFile;
 
     public void setOnBack(Runnable onBack) {
         this.onBack = onBack;
@@ -89,6 +99,7 @@ public class SignupController implements Initializable {
 
         comboGenre.getItems().addAll("homme", "femme", "autre");
         comboEtatCivil.getItems().addAll("celibataire", "marie", "divorce", "veuf");
+        fieldGouvernorat.setItems(TunisiaGovernorates.asObservableList());
 
         spinnerExperience.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 70, 0));
 
@@ -147,9 +158,20 @@ public class SignupController implements Initializable {
             user.setNom(trimToNull(fieldNom.getText()));
             user.setPrenom(trimToNull(fieldPrenom.getText()));
             user.setTelephone(normalizePhone(fieldTelephone.getText()));
-            String gouv = fieldGouvernorat.getText();
-            user.setGouvernorat(gouv != null && !gouv.isBlank() ? gouv.trim() : null);
+            user.setGouvernorat(fieldGouvernorat.getValue());
             user.setDate_naissance(dateNaissance);
+
+            // Handle photo upload
+            String photoPath = null;
+            if (uploadedPhotoFile != null) {
+                photoPath = fileUploadService.uploadPhoto(uploadedPhotoFile);
+            } else {
+                String photoUrl = fieldPhoto.getText();
+                if (photoUrl != null && !photoUrl.trim().isEmpty()) {
+                    photoPath = photoUrl.trim();
+                }
+            }
+            user.setPhoto(photoPath);
 
             if (rbApprenant.isSelected()) {
                 Apprenant a = new Apprenant();
@@ -298,26 +320,57 @@ public class SignupController implements Initializable {
     private void onUploadCv() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choisir un fichier CV");
-        
+
         // Set extension filters
         FileChooser.ExtensionFilter pdfFilter = new FileChooser.ExtensionFilter("Fichiers PDF", "*.pdf");
         FileChooser.ExtensionFilter docFilter = new FileChooser.ExtensionFilter("Documents Word", "*.doc", "*.docx");
         FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("Tous les fichiers", "*.*");
-        
+
         fileChooser.getExtensionFilters().addAll(pdfFilter, docFilter, allFilter);
         fileChooser.setSelectedExtensionFilter(pdfFilter);
-        
+
         // Show open dialog
         Stage stage = (Stage) btnUploadCv.getScene().getWindow();
         java.io.File selectedFile = fileChooser.showOpenDialog(stage);
-        
+
         if (selectedFile != null) {
             uploadedCvFile = selectedFile;
             lblCvFileName.setText(selectedFile.getName());
             fieldCv.setText(selectedFile.getAbsolutePath());
-            
+
             // Optional: You could copy the file to a specific uploads directory
             // For now, we'll just store the reference
+        }
+    }
+
+    @FXML
+    private void onUploadPhoto() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choisir une photo de profil");
+
+        // Set extension filters for images
+        FileChooser.ExtensionFilter imageFilter = new FileChooser.ExtensionFilter("Images", "*.jpg", "*.jpeg", "*.png", "*.gif", "*.bmp");
+        FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("Tous les fichiers", "*.*");
+
+        fileChooser.getExtensionFilters().addAll(imageFilter, allFilter);
+        fileChooser.setSelectedExtensionFilter(imageFilter);
+
+        // Show open dialog
+        Stage stage = (Stage) btnUploadPhoto.getScene().getWindow();
+        java.io.File selectedFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedFile != null) {
+            uploadedPhotoFile = selectedFile;
+            lblPhotoFileName.setText(selectedFile.getName());
+            fieldPhoto.setText(selectedFile.getAbsolutePath());
+
+            // Load and display the image
+            try {
+                Image image = new Image(selectedFile.toURI().toString());
+                imageViewPhoto.setImage(image);
+            } catch (Exception e) {
+                System.err.println("Failed to load image: " + e.getMessage());
+            }
         }
     }
 

@@ -40,6 +40,18 @@
                             style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"/>
                 </children>
             </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <children>
+                    <ComboBox fx:id="searchScopeComboBox" prefWidth="170" prefHeight="36" promptText="Champ recherche"/>
+                    <ComboBox fx:id="genreFilterComboBox" prefWidth="130" prefHeight="36" promptText="Genre"/>
+                    <ComboBox fx:id="etatCivilFilterComboBox" prefWidth="140" prefHeight="36" promptText="Etat civil"/>
+                    <ComboBox fx:id="sortByComboBox" prefWidth="150" prefHeight="36" promptText="Trier par"/>
+                    <ComboBox fx:id="sortDirectionComboBox" prefWidth="140" prefHeight="36" promptText="Sens"/>
+                    <Button fx:id="resetFiltersButton" text="Réinitialiser" onAction="#handleResetFilters"
+                            prefWidth="120" prefHeight="36"
+                            style="-fx-background-color: #6c757d; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                </children>
+            </HBox>
             
             <!-- Action Buttons -->
             <HBox alignment="CENTER_LEFT" spacing="10">
@@ -80,6 +92,11 @@
                     <TableColumn fx:id="userNomColumn" text="Nom Complet" prefWidth="150"/>
                 </columns>
             </TableView>
+            <HBox alignment="CENTER_RIGHT" style="-fx-padding: 10 10 5 10;">
+                <children>
+                    <Pagination fx:id="pagination" pageCount="1" maxPageIndicatorCount="5"/>
+                </children>
+            </HBox>
         </children>
     </VBox>
     
