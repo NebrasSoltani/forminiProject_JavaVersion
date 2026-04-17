@@ -16,9 +16,11 @@ import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import tn.formini.entities.formations.Formation;
 import tn.formini.entities.formations.Lecon;
 import tn.formini.services.formations.LeconService;
+import tn.formini.utils.StageWindowMode;
 
 import java.io.IOException;
 import java.awt.Desktop;
@@ -99,8 +101,13 @@ public class LeconCrudController {
         Optional<ButtonType> result = confirm.showAndWait();
 
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            leconService.supprimer(selected.getId());
-            refreshGrid();
+            boolean deleted = leconService.deleteById(selected.getId());
+            if (deleted) {
+                refreshGrid();
+            } else {
+                String details = safe(leconService.getLastDeleteError(), "Cause inconnue.");
+                showError("Suppression impossible: " + details);
+            }
         }
     }
 
@@ -128,6 +135,14 @@ public class LeconCrudController {
             sortCombo.setValue("Ordre croissant");
         }
         applyFiltersAndSorting();
+    }
+
+    @FXML
+    private void handleBack() {
+        Window window = headerLabel != null && headerLabel.getScene() != null ? headerLabel.getScene().getWindow() : null;
+        if (window instanceof Stage stage) {
+            stage.close();
+        }
     }
 
     private void refreshGrid() {
@@ -270,6 +285,7 @@ public class LeconCrudController {
             stage.setTitle(lecon == null ? "Nouvelle lecon" : "Modifier lecon");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
+            StageWindowMode.skipAutoMaximize(stage);
             stage.showAndWait();
         } catch (IOException ex) {
             showError("Impossible d'ouvrir le formulaire lecon: " + ex.getMessage());

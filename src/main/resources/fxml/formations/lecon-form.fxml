@@ -5,12 +5,12 @@
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="tn.formini.controllers.formations.LeconFormController"
-      spacing="12" style="-fx-padding: 16; -fx-background-color: white;">
+      spacing="12" stylesheets="@/css/style.css" styleClass="formation-form-root">
 
     <children>
-        <Label fx:id="titleLabel" text="Creer une lecon" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+        <Label fx:id="titleLabel" text="Creer une lecon" styleClass="formation-form-title"/>
 
-        <GridPane hgap="10" vgap="10">
+        <GridPane hgap="10" vgap="10" styleClass="formation-form-grid">
             <columnConstraints>
                 <ColumnConstraints minWidth="130" prefWidth="150"/>
                 <ColumnConstraints hgrow="ALWAYS"/>
@@ -43,11 +43,10 @@
             </children>
         </GridPane>
 
-        <HBox spacing="10" alignment="CENTER_RIGHT">
+        <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="formation-form-actions">
             <children>
-                <Button text="Annuler" onAction="#handleCancel"/>
-                <Button text="Enregistrer" onAction="#handleSave"
-                        style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Button text="Annuler" onAction="#handleCancel" styleClass="btn-secondary"/>
+                <Button text="Enregistrer" onAction="#handleSave" styleClass="btn-primary"/>
             </children>
         </HBox>
     </children>

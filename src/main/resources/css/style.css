@@ -1295,3 +1295,90 @@
     -fx-background-color: #2563eb;
 }
 
+/* ── Formulaires formations/lecons ─────────────────────────── */
+.formation-form-root {
+    -fx-padding: 18px;
+    -fx-background-color: #f8fafc;
+}
+
+.formation-form-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0f172a;
+}
+
+.formation-form-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-fit-to-width: true;
+}
+
+.formation-form-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.formation-form-grid {
+    -fx-padding: 16px;
+    -fx-background-color: white;
+    -fx-background-radius: 16px;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 16px;
+    -fx-border-width: 1px;
+    -fx-hgap: 12px;
+    -fx-vgap: 12px;
+}
+
+.formation-form-grid > .label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #475569;
+}
+
+.formation-form-root .text-field {
+    -fx-min-height: 40px;
+}
+
+.formation-form-root .text-field,
+.formation-form-root .text-area,
+.formation-form-root .combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #dbe3ee;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-font-size: 13px;
+}
+
+.formation-form-root .text-field:focused,
+.formation-form-root .text-area:focused,
+.formation-form-root .combo-box:focused {
+    -fx-border-color: #6974e8;
+    -fx-effect: dropshadow(gaussian, rgba(105, 116, 232, 0.2), 8, 0, 0, 0);
+}
+
+.formation-form-root .text-area .content {
+    -fx-background-color: white;
+    -fx-background-radius: 9px;
+}
+
+.formation-form-inline,
+.formation-form-options {
+    -fx-alignment: center-left;
+}
+
+.formation-form-root .check-box {
+    -fx-text-fill: #334155;
+    -fx-font-weight: 600;
+}
+
+.formation-form-actions {
+    -fx-padding: 10px 0 0 0;
+}
+
+.formation-form-actions .btn-primary,
+.formation-form-actions .btn-secondary {
+    -fx-min-width: 120px;
+    -fx-font-size: 13px;
+}
+
+
