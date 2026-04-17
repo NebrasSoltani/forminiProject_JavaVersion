@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.order.OrderEditFormController"
+      spacing="20" style="-fx-background-color: #f8fafc; -fx-padding: 20;">
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+        <VBox spacing="5">
+            <Label fx:id="orderNumberLabel" text="Commande #000000" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+            <Label text="Modifier les informations de la commande" style="-fx-font-size: 14; -fx-text-fill: #64748b;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="×" onAction="#cancelEdit" style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-background-radius: 50%; -fx-pref-width: 35; -fx-pref-height: 35; -fx-font-size: 18; -fx-font-weight: bold;"/>
+    </HBox>
+
+    <!-- Quick Status Actions -->
+    <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+        <Label text="Actions Rapides:" style="-fx-font-size: 14; -fx-font-weight: 600; -fx-text-fill: #374151;"/>
+        <Button text="En Cours" onAction="#markAsProcessing" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 16; -fx-font-weight: 500;"/>
+        <Button text="Expédiée" onAction="#markAsShipped" style="-fx-background-color: #06b6d4; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 16; -fx-font-weight: 500;"/>
+        <Button text="Livrée" onAction="#markAsDelivered" style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 16; -fx-font-weight: 500;"/>
+        <Button text="Annuler" onAction="#markAsCanceled" style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 16; -fx-font-weight: 500;"/>
+    </HBox>
+
+    <!-- Form Content -->
+    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-border-color: transparent;">
+        <VBox spacing="20">
+            <!-- Customer Information -->
+            <VBox spacing="15" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                <Label text="Informations Client" style="-fx-font-size: 16; -fx-font-weight: 600; -fx-text-fill: #1e293b;"/>
+                
+                <GridPane hgap="15" vgap="15">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
+                    </columnConstraints>
+                    
+                    <Label text="Nom du client (lecture seule)" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-font-weight: 500; -fx-text-fill: #6b7280;"/>
+                    <TextField fx:id="customerNameField" GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-pref-height: 40; -fx-background-radius: 8; -fx-border-color: #e5e7eb; -fx-border-radius: 8; -fx-padding: 0 12; -fx-opacity: 0.7; -fx-background-color: #f3f4f6;"/>
+                    <Label fx:id="customerNameError" GridPane.columnIndex="0" GridPane.rowIndex="2" style="-fx-text-fill: #ef4444; -fx-font-size: 12; -fx-wrap-text: true;" visible="false"/>
+                    
+                    <Label text="Email (lecture seule)" GridPane.columnIndex="1" GridPane.rowIndex="0" style="-fx-font-weight: 500; -fx-text-fill: #6b7280;"/>
+                    <TextField fx:id="customerEmailField" GridPane.columnIndex="1" GridPane.rowIndex="1" style="-fx-pref-height: 40; -fx-background-radius: 8; -fx-border-color: #e5e7eb; -fx-border-radius: 8; -fx-padding: 0 12; -fx-opacity: 0.7; -fx-background-color: #f3f4f6;"/>
+                    <Label fx:id="customerEmailError" GridPane.columnIndex="1" GridPane.rowIndex="2" style="-fx-text-fill: #ef4444; -fx-font-size: 12; -fx-wrap-text: true;" visible="false"/>
+                    
+                    <Label text="Téléphone" GridPane.columnIndex="0" GridPane.rowIndex="3" style="-fx-font-weight: 500; -fx-text-fill: #374151;"/>
+                    <TextField fx:id="customerPhoneField" GridPane.columnIndex="0" GridPane.rowIndex="4" style="-fx-pref-height: 40; -fx-background-radius: 8; -fx-border-color: #e5e7eb; -fx-border-radius: 8; -fx-padding: 0 12;"/>
+                    <Label fx:id="customerPhoneError" GridPane.columnIndex="0" GridPane.rowIndex="5" style="-fx-text-fill: #ef4444; -fx-font-size: 12; -fx-wrap-text: true;" visible="false"/>
+                    
+                    <Label text="Adresse de livraison" GridPane.columnIndex="1" GridPane.rowIndex="3" style="-fx-font-weight: 500; -fx-text-fill: #374151;"/>
+                    <TextArea fx:id="shippingAddressArea" GridPane.columnIndex="1" GridPane.rowIndex="4" prefHeight="80" style="-fx-background-radius: 8; -fx-border-color: #e5e7eb; -fx-border-radius: 8; -fx-padding: 12;"/>
+                </GridPane>
+            </VBox>
+
+            <!-- Order Information -->
+            <VBox spacing="15" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                <Label text="Informations Commande" style="-fx-font-size: 16; -fx-font-weight: 600; -fx-text-fill: #1e293b;"/>
+                
+                <GridPane hgap="15" vgap="15">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
+                    </columnConstraints>
+                    
+                    <Label text="Montant total *" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-font-weight: 500; -fx-text-fill: #374151;"/>
+                    <TextField fx:id="totalAmountField" GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-pref-height: 40; -fx-background-radius: 8; -fx-border-color: #e5e7eb; -fx-border-radius: 8; -fx-padding: 0 12;"/>
+                    <Label fx:id="totalAmountError" GridPane.columnIndex="0" GridPane.rowIndex="2" style="-fx-text-fill: #ef4444; -fx-font-size: 12; -fx-wrap-text: true;" visible="false"/>
+                    
+                    <Label text="Statut *" GridPane.columnIndex="1" GridPane.rowIndex="0" style="-fx-font-weight: 500; -fx-text-fill: #374151;"/>
+                    <ComboBox fx:id="statusComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1" style="-fx-pref-height: 40; -fx-background-radius: 8; -fx-border-color: #e5e7eb; -fx-border-radius: 8;"/>
+                    
+                    <Label text="Nombre d'articles *" GridPane.columnIndex="0" GridPane.rowIndex="3" style="-fx-font-weight: 500; -fx-text-fill: #374151;"/>
+                    <TextField fx:id="itemCountField" GridPane.columnIndex="0" GridPane.rowIndex="4" style="-fx-pref-height: 40; -fx-background-radius: 8; -fx-border-color: #e5e7eb; -fx-border-radius: 8; -fx-padding: 0 12;"/>
+                    <Label fx:id="itemCountError" GridPane.columnIndex="0" GridPane.rowIndex="5" style="-fx-text-fill: #ef4444; -fx-font-size: 12; -fx-wrap-text: true;" visible="false"/>
+                    
+                    <Label text="Description des articles" GridPane.columnIndex="1" GridPane.rowIndex="3" style="-fx-font-weight: 500; -fx-text-fill: #374151;"/>
+                    <TextArea fx:id="itemsDescriptionArea" GridPane.columnIndex="1" GridPane.rowIndex="4" prefHeight="80" style="-fx-background-radius: 8; -fx-border-color: #e5e7eb; -fx-border-radius: 8; -fx-padding: 12;"/>
+                </GridPane>
+            </VBox>
+
+            <!-- Payment Information -->
+            <VBox spacing="15" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                <Label text="Informations Paiement" style="-fx-font-size: 16; -fx-font-weight: 600; -fx-text-fill: #1e293b;"/>
+                
+                <GridPane hgap="15" vgap="15">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
+                    </columnConstraints>
+                    
+                    <Label text="Méthode de paiement" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-font-weight: 500; -fx-text-fill: #374151;"/>
+                    <ComboBox fx:id="paymentMethodComboBox" GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-pref-height: 40; -fx-background-radius: 8; -fx-border-color: #e5e7eb; -fx-border-radius: 8;"/>
+                    
+                    <Label text="Statut de paiement" GridPane.columnIndex="1" GridPane.rowIndex="0" style="-fx-font-weight: 500; -fx-text-fill: #374151;"/>
+                    <ComboBox fx:id="paymentStatusComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1" style="-fx-pref-height: 40; -fx-background-radius: 8; -fx-border-color: #e5e7eb; -fx-border-radius: 8;"/>
+                </GridPane>
+            </VBox>
+
+            <!-- Notes -->
+            <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                <Label text="Notes" style="-fx-font-size: 16; -fx-font-weight: 600; -fx-text-fill: #1e293b;"/>
+                <TextArea fx:id="notesArea" prefHeight="80" promptText="Ajouter des notes sur cette commande..." style="-fx-background-radius: 8; -fx-border-color: #e5e7eb; -fx-border-radius: 8; -fx-padding: 12;"/>
+            </VBox>
+
+            <!-- Validation Messages -->
+            <Label fx:id="validationLabel" style="-fx-text-fill: #ef4444; -fx-font-size: 12; -fx-wrap-text: true;" visible="false"/>
+
+        </VBox>
+    </ScrollPane>
+
+    <!-- Action Buttons -->
+    <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+        <Button fx:id="cancelButton" text="Annuler" onAction="#cancelEdit" style="-fx-background-color: #6b7280; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 12 24; -fx-font-weight: 500;"/>
+        <Button fx:id="saveButton" text="Enregistrer" onAction="#saveOrder" style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 12 24; -fx-font-weight: 600;"/>
+    </HBox>
+
+</VBox>
