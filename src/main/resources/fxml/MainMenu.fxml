@@ -55,6 +55,10 @@
                 <Region prefHeight="20"/>
                 <Label text="GESTION DES PRODUITS" style="-fx-font-size: 11px; -fx-text-fill: #64748b; -fx-font-weight: bold; -fx-padding: 0 0 10 10;"/>
                 <Button fx:id="btnProductManage" text="  Gérer les Produits" onAction="#showProductManage" styleClass="nav-sub" maxWidth="Infinity"/>
+                
+                <Region prefHeight="20"/>
+                <Label text="GESTION DES COMMANDES" style="-fx-font-size: 11px; -fx-text-fill: #64748b; -fx-font-weight: bold; -fx-padding: 0 0 10 10;"/>
+                <Button fx:id="btnOrderManage" text="  Gérer les Commandes" onAction="#showOrderManage" styleClass="nav-sub" maxWidth="Infinity"/>
             </VBox>
 
             <!-- Bottom Navigation Actions -->

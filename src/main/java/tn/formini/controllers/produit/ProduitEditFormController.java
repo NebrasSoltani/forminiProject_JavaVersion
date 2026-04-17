@@ -42,6 +42,7 @@ public class ProduitEditFormController {
     @FXML private Label errDescription;
     @FXML private Label errPrix;
     @FXML private Label errStock;
+    @FXML private Label errImage;
 
     private Produit produit;
     private ProduitService produitService;
@@ -57,16 +58,379 @@ public class ProduitEditFormController {
             "Informatique", "Scientifique", "Accessoires", "Outils intelligents"
         );
         
-        // Initialize statuses
-        fieldStatut.getItems().addAll("disponible", "épuisé", "archivé");
+        // Initialize statuts
+        fieldStatut.getItems().addAll(
+            "disponible", "épuisé", "archive"
+        );
         
-        // Add listeners for real-time validation
-        fieldNom.textProperty().addListener((obs, oldVal, newVal) -> clearError(errNom));
-        fieldCategorie.valueProperty().addListener((obs, oldVal, newVal) -> clearError(errCategorie));
-        fieldStatut.valueProperty().addListener((obs, oldVal, newVal) -> clearError(errStatut));
-        fieldDescription.textProperty().addListener((obs, oldVal, newVal) -> clearError(errDescription));
-        fieldPrix.textProperty().addListener((obs, oldVal, newVal) -> clearError(errPrix));
-        fieldStock.textProperty().addListener((obs, oldVal, newVal) -> clearError(errStock));
+        // Setup validation listeners
+        setupValidationListeners();
+        
+        // Initialize validation state
+        clearAllValidationErrors();
+    }
+    
+    private void setupValidationListeners() {
+        // Name validation
+        fieldNom.textProperty().addListener((obs, oldVal, newVal) -> {
+            System.out.println("DEBUG: Name field changed from '" + oldVal + "' to '" + newVal + "'");
+            validateNom();
+        });
+        
+        // Category validation
+        fieldCategorie.valueProperty().addListener((obs, oldVal, newVal) -> {
+            validateCategorie();
+        });
+        
+        // Description validation
+        fieldDescription.textProperty().addListener((obs, oldVal, newVal) -> {
+            validateDescription();
+        });
+        
+        // Price validation
+        fieldPrix.textProperty().addListener((obs, oldVal, newVal) -> {
+            System.out.println("DEBUG: Price field changed from '" + oldVal + "' to '" + newVal + "'");
+            validatePrix();
+        });
+        
+        // Stock validation
+        fieldStock.textProperty().addListener((obs, oldVal, newVal) -> {
+            validateStock();
+        });
+        
+        // Date validation
+        fieldDateCreation.valueProperty().addListener((obs, oldVal, newVal) -> {
+            validateDateCreation();
+        });
+        
+        // Status validation
+        fieldStatut.valueProperty().addListener((obs, oldVal, newVal) -> {
+            validateStatut();
+        });
+        
+        // Image validation
+        fieldImage.textProperty().addListener((obs, oldVal, newVal) -> {
+            validateImage();
+        });
+    }
+    
+    // ===== VALIDATION METHODS =====
+    
+    private boolean validateNom() {
+        String nom = fieldNom.getText().trim();
+        System.out.println("DEBUG: validateNom() called with value: '" + nom + "'");
+        
+        // Clear previous error
+        clearError(errNom);
+        
+        if (nom.isEmpty()) {
+            System.out.println("DEBUG: Name is empty, showing error");
+            showValidationError(errNom, "Le nom du produit est obligatoire.");
+            return false;
+        }
+        if (nom.length() < 3) {
+            showValidationError(errNom, "Le nom doit contenir au moins 3 caractères.");
+            return false;
+        }
+        if (nom.length() > 255) {
+            showValidationError(errNom, "Le nom ne doit pas dépasser 255 caractères.");
+            return false;
+        }
+        // Check for valid characters (letters, numbers, spaces, hyphens, underscores, apostrophes)
+        if (!nom.matches("^[a-zA-Z0-9\\s\\-_\\'àâäéèêëïîôöùûüçÀÂÄÉÈÊËÏÎÔÖÙÛÜÇ]+$")) {
+            showValidationError(errNom, "Le nom ne peut contenir que des lettres, chiffres, espaces, tirets, underscores et apostrophes.");
+            return false;
+        }
+        // Check for consecutive spaces
+        if (nom.contains("  ")) {
+            showValidationError(errNom, "Le nom ne peut pas contenir d'espaces consécutifs.");
+            return false;
+        }
+        // Check for repeated characters (spam prevention)
+        if (nom.matches("^(.)\\1{4,}$")) {
+            showValidationError(errNom, "Le nom semble invalide (caractères répétés).");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private boolean validateCategorie() {
+        String categorie = fieldCategorie.getValue();
+        
+        clearError(errCategorie);
+        
+        if (categorie == null || categorie.trim().isEmpty()) {
+            showValidationError(errCategorie, "La catégorie est obligatoire.");
+            return false;
+        }
+        if (categorie.length() < 2) {
+            showValidationError(errCategorie, "La catégorie doit contenir au moins 2 caractères.");
+            return false;
+        }
+        if (categorie.length() > 100) {
+            showValidationError(errCategorie, "La catégorie ne doit pas dépasser 100 caractères.");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private boolean validateDescription() {
+        String description = fieldDescription.getText().trim();
+        
+        clearError(errDescription);
+        
+        if (description.isEmpty()) {
+            showValidationError(errDescription, "La description est obligatoire.");
+            return false;
+        }
+        if (description.length() < 10) {
+            showValidationError(errDescription, "La description doit contenir au moins 10 caractères.");
+            return false;
+        }
+        if (description.length() > 2000) {
+            showValidationError(errDescription, "La description ne doit pas dépasser 2000 caractères.");
+            return false;
+        }
+        // Check for reasonable content
+        if (description.matches("^(.)\\1{5,}$")) {
+            showValidationError(errDescription, "La description semble invalide (caractères répétés).");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private boolean validatePrix() {
+        String prixStr = fieldPrix.getText().trim();
+        System.out.println("DEBUG: validatePrix() called with value: '" + prixStr + "'");
+        
+        clearError(errPrix);
+        
+        if (prixStr.isEmpty()) {
+            System.out.println("DEBUG: Price is empty, showing error");
+            showValidationError(errPrix, "Le prix est obligatoire.");
+            return false;
+        }
+        
+        // Check for valid number format (prevent multiple dots, commas, etc.)
+        if (!prixStr.matches("^\\d+(\\.\\d{1,2})?$")) {
+            showValidationError(errPrix, "Format de prix invalide. Utilisez: 25.99");
+            return false;
+        }
+        
+        try {
+            double prix = Double.parseDouble(prixStr);
+            if (prix <= 0) {
+                showValidationError(errPrix, "Le prix doit être strictement positif.");
+                return false;
+            }
+            if (prix < 0.01) {
+                showValidationError(errPrix, "Le prix minimum est de 0.01 DT.");
+                return false;
+            }
+            if (prix > 999999.99) {
+                showValidationError(errPrix, "Le prix ne peut pas dépasser 999,999.99 DT.");
+                return false;
+            }
+            // Check for reasonable decimal places
+            if (prixStr.contains(".") && prixStr.split("\\.")[1].length() > 2) {
+                showValidationError(errPrix, "Le prix ne peut pas avoir plus de 2 décimales.");
+                return false;
+            }
+            // Check for unrealistic prices (business logic)
+            if (prix > 10000 && prixStr.length() < 5) {
+                showValidationError(errPrix, "Vérifiez le prix saisi (semble trop élevé).");
+                return false;
+            }
+            
+        } catch (NumberFormatException e) {
+            showValidationError(errPrix, "Le prix doit être un nombre valide (ex: 25.99).");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private boolean validateStock() {
+        String stockStr = fieldStock.getText().trim();
+        
+        clearError(errStock);
+        
+        if (stockStr.isEmpty()) {
+            showValidationError(errStock, "La quantité en stock est obligatoire.");
+            return false;
+        }
+        
+        // Check for valid integer format (prevent decimals, letters, etc.)
+        if (!stockStr.matches("^\\d+$")) {
+            showValidationError(errStock, "La quantité doit être un nombre entier positif.");
+            return false;
+        }
+        
+        try {
+            int stock = Integer.parseInt(stockStr);
+            if (stock < 0) {
+                showValidationError(errStock, "La quantité en stock ne peut pas être négative.");
+                return false;
+            }
+            // Check for reasonable stock limits
+            if (stock > 1000000) {
+                showValidationError(errStock, "La quantité ne peut pas dépasser 1,000,000 unités.");
+                return false;
+            }
+            // Warning for high stock (business logic)
+            if (stock > 50000) {
+                showValidationError(errStock, "Attention: très grande quantité en stock.");
+                return false;
+            }
+            // Check for unrealistic single-digit stock with leading zeros
+            if (stockStr.length() > 1 && stockStr.startsWith("0")) {
+                showValidationError(errStock, "Format invalide: pas de zéros au début.");
+                return false;
+            }
+            
+        } catch (NumberFormatException e) {
+            showValidationError(errStock, "La quantité doit être un nombre entier valide.");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private boolean validateDateCreation() {
+        // Date validation for modification form is optional
+        return true;
+    }
+    
+    private boolean validateImage() {
+        String imageUrl = fieldImage.getText().trim();
+        
+        // Image is optional, but if provided, must be valid
+        if (imageUrl.isEmpty()) {
+            return true; // Image is optional
+        }
+        
+        // Check for valid URL format
+        if (!isValidImageUrl(imageUrl)) {
+            showValidationError(errImage, "Format d'URL d'image invalide.");
+            return false;
+        }
+        
+        // Check for supported image formats
+        if (!isSupportedImageFormat(imageUrl)) {
+            showValidationError(errImage, "Format d'image non supporté. Utilisez: JPG, PNG, GIF, WebP");
+            return false;
+        }
+        
+        // Check for reasonable URL length
+        if (imageUrl.length() > 2048) {
+            showValidationError(errImage, "URL d'image trop longue (max 2048 caractères).");
+            return false;
+        }
+        
+        // Check for suspicious patterns
+        if (containsSuspiciousPatterns(imageUrl)) {
+            showValidationError(errImage, "URL d'image suspecte ou non sécurisée.");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private boolean isValidImageUrl(String url) {
+        // Check for valid URL patterns (HTTP/HTTPS, file, data URIs)
+        return url.matches("^(https?://|file:/|data:image/).*") || 
+               url.matches("^[a-zA-Z]:\\\\.*") || // Windows file path
+               url.matches("^/.*"); // Unix file path
+    }
+    
+    private boolean isSupportedImageFormat(String url) {
+        String lowerUrl = url.toLowerCase();
+        return lowerUrl.matches(".*\\.(jpg|jpeg|png|gif|webp|bmp|svg)(\\?.*)?$") ||
+               lowerUrl.matches("data:image/(jpg|jpeg|png|gif|webp|bmp|svg);.*");
+    }
+    
+    private boolean containsSuspiciousPatterns(String url) {
+        String lowerUrl = url.toLowerCase();
+        // Check for suspicious patterns
+        return lowerUrl.contains("javascript:") ||
+               lowerUrl.contains("<script") ||
+               lowerUrl.contains("data:text/html") ||
+               lowerUrl.contains("..") || // Directory traversal
+               lowerUrl.contains("eval(") ||
+               lowerUrl.contains("document.cookie");
+    }
+    
+    private boolean validateStatut() {
+        String statut = fieldStatut.getValue();
+        
+        clearError(errStatut);
+        
+        if (statut == null || statut.trim().isEmpty()) {
+            showValidationError(errStatut, "Le statut est obligatoire.");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private boolean validateAll() {
+        System.out.println("DEBUG: validateAll() called");
+        boolean isValid = true;
+        isValid &= validateNom();
+        System.out.println("DEBUG: validateNom() result: " + isValid);
+        isValid &= validateCategorie();
+        System.out.println("DEBUG: validateCategorie() result: " + isValid);
+        isValid &= validateDescription();
+        System.out.println("DEBUG: validateDescription() result: " + isValid);
+        isValid &= validatePrix();
+        System.out.println("DEBUG: validatePrix() result: " + isValid);
+        isValid &= validateStock();
+        System.out.println("DEBUG: validateStock() result: " + isValid);
+        isValid &= validateImage();
+        System.out.println("DEBUG: validateImage() result: " + isValid);
+        isValid &= validateStatut();
+        System.out.println("DEBUG: validateStatut() result: " + isValid);
+        System.out.println("DEBUG: Final validation result: " + isValid);
+        return isValid;
+    }
+    
+    private void clearError(Label errorLabel) {
+        errorLabel.setVisible(false);
+        errorLabel.setText("");
+    }
+    
+    private void showValidationError(Label errorLabel, String message) {
+        errorLabel.setText(message);
+        errorLabel.setVisible(true);
+    }
+    
+    private void showValidationSummary() {
+        StringBuilder errors = new StringBuilder("Veuillez corriger les erreurs suivantes:\n");
+        
+        if (errNom.isVisible()) errors.append("• ").append(errNom.getText()).append("\n");
+        if (errCategorie.isVisible()) errors.append("• ").append(errCategorie.getText()).append("\n");
+        if (errDescription.isVisible()) errors.append("• ").append(errDescription.getText()).append("\n");
+        if (errPrix.isVisible()) errors.append("• ").append(errPrix.getText()).append("\n");
+        if (errStock.isVisible()) errors.append("• ").append(errStock.getText()).append("\n");
+        if (errImage != null && errImage.isVisible()) errors.append("• ").append(errImage.getText()).append("\n");
+        if (errStatut.isVisible()) errors.append("• ").append(errStatut.getText()).append("\n");
+        
+        validationSummary.setText(errors.toString());
+        validationSummary.setVisible(true);
+    }
+    
+    private void clearAllValidationErrors() {
+        clearError(errNom);
+        clearError(errCategorie);
+        clearError(errDescription);
+        clearError(errPrix);
+        clearError(errStock);
+        if (errImage != null) clearError(errImage);
+        clearError(errStatut);
+        validationSummary.setVisible(false);
     }
 
     public void setProduit(Produit produit) {
@@ -101,11 +465,20 @@ public class ProduitEditFormController {
 
     @FXML
     public void updateProduit() {
-        if (!validateForm()) {
+        System.out.println("DEBUG: updateProduit() called - SAVE BUTTON PRESSED!");
+        
+        // Simple test to make sure the method is called
+        showAlert(Alert.AlertType.INFORMATION, "Test", "Save button was pressed!");
+        
+        if (!validateAll()) {
+            System.out.println("DEBUG: Validation failed, showing summary");
+            showValidationSummary();
             return;
         }
 
         try {
+            System.out.println("DEBUG: Validation passed, updating product");
+            
             // Update product with new values
             produit.setNom(fieldNom.getText().trim());
             produit.setCategorie(fieldCategorie.getValue());
@@ -114,26 +487,36 @@ public class ProduitEditFormController {
             produit.setPrix(new BigDecimal(fieldPrix.getText().trim()));
             produit.setStock(Integer.parseInt(fieldStock.getText().trim()));
             produit.setImage(fieldImage.getText().trim());
+            
+            // Set creation date if not null
+            if (fieldDateCreation.getValue() != null) {
+                produit.setDate_creation(Date.from(fieldDateCreation.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            }
 
-            // Validate the product
-            produit.valider();
+            System.out.println("DEBUG: Product data updated: " + produit.getNom() + ", " + produit.getPrix() + ", " + produit.getStock());
 
             // Update in database
             produitService.modifier(produit);
+            System.out.println("DEBUG: Database update completed");
 
             showAlert(Alert.AlertType.INFORMATION, "Succès", "Produit mis à jour avec succès!");
             
             if (onProductUpdated != null) {
+                System.out.println("DEBUG: Calling onProductUpdated callback");
                 onProductUpdated.run();
             }
             
             close();
 
         } catch (NumberFormatException e) {
+            System.err.println("ERROR: NumberFormatException in updateProduit: " + e.getMessage());
             showError("Format invalide pour le prix ou le stock.");
         } catch (IllegalArgumentException e) {
+            System.err.println("ERROR: IllegalArgumentException in updateProduit: " + e.getMessage());
             showError(e.getMessage());
         } catch (Exception e) {
+            System.err.println("ERROR: Exception in updateProduit: " + e.getMessage());
+            e.printStackTrace();
             showError("Erreur lors de la mise à jour: " + e.getMessage());
         }
     }
@@ -258,29 +641,29 @@ public class ProduitEditFormController {
         // Validate name
         String nom = fieldNom.getText().trim();
         if (nom.isEmpty()) {
-            showError(errNom, "Le nom est obligatoire");
+            showValidationError(errNom, "Le nom est obligatoire");
             isValid = false;
         } else if (nom.length() > 255) {
-            showError(errNom, "Le nom ne doit pas dépasser 255 caractères");
+            showValidationError(errNom, "Le nom ne doit pas dépasser 255 caractères");
             isValid = false;
         }
 
         // Validate category
         if (fieldCategorie.getValue() == null || fieldCategorie.getValue().trim().isEmpty()) {
-            showError(errCategorie, "La catégorie est obligatoire");
+            showValidationError(errCategorie, "La catégorie est obligatoire");
             isValid = false;
         }
 
         // Validate status
         if (fieldStatut.getValue() == null || fieldStatut.getValue().trim().isEmpty()) {
-            showError(errStatut, "Le statut est obligatoire");
+            showValidationError(errStatut, "Le statut est obligatoire");
             isValid = false;
         }
 
         // Validate description
         String description = fieldDescription.getText().trim();
         if (description.isEmpty()) {
-            showError(errDescription, "La description est obligatoire");
+            showValidationError(errDescription, "La description est obligatoire");
             isValid = false;
         }
 
@@ -288,17 +671,17 @@ public class ProduitEditFormController {
         try {
             String prixText = fieldPrix.getText().trim();
             if (prixText.isEmpty()) {
-                showError(errPrix, "Le prix est obligatoire");
+                showValidationError(errPrix, "Le prix est obligatoire");
                 isValid = false;
             } else {
                 BigDecimal prix = new BigDecimal(prixText);
                 if (prix.compareTo(BigDecimal.ZERO) < 0) {
-                    showError(errPrix, "Le prix ne peut pas être négatif");
+                    showValidationError(errPrix, "Le prix ne peut pas être négatif");
                     isValid = false;
                 }
             }
         } catch (NumberFormatException e) {
-            showError(errPrix, "Format de prix invalide");
+            showValidationError(errPrix, "Format de prix invalide");
             isValid = false;
         }
 
@@ -306,17 +689,17 @@ public class ProduitEditFormController {
         try {
             String stockText = fieldStock.getText().trim();
             if (stockText.isEmpty()) {
-                showError(errStock, "Le stock est obligatoire");
+                showValidationError(errStock, "Le stock est obligatoire");
                 isValid = false;
             } else {
                 int stock = Integer.parseInt(stockText);
                 if (stock < 0) {
-                    showError(errStock, "Le stock ne peut pas être négatif");
+                    showValidationError(errStock, "Le stock ne peut pas être négatif");
                     isValid = false;
                 }
             }
         } catch (NumberFormatException e) {
-            showError(errStock, "Format de stock invalide");
+            showValidationError(errStock, "Format de stock invalide");
             isValid = false;
         }
 
@@ -326,11 +709,6 @@ public class ProduitEditFormController {
     private void showError(Label errorLabel, String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
-    }
-
-    private void clearError(Label errorLabel) {
-        errorLabel.setVisible(false);
-        errorLabel.setText("");
     }
 
     private void clearAllErrors() {

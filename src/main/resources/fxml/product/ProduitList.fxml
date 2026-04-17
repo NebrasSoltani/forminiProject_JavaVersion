@@ -44,6 +44,24 @@
                 </FlowPane>
             </VBox>
         </ScrollPane>
+        
+        <!-- Pagination Controls -->
+        <HBox fx:id="paginationContainer" alignment="CENTER" spacing="15" style="-fx-padding: 20 20 20 20; -fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-width: 1 0 0 0;">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Button fx:id="firstPageBtn" styleClass="pagination-btn" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-pref-width: 35; -fx-pref-height: 35; -fx-font-size: 14px;"/>
+                <Button fx:id="prevPageBtn" styleClass="pagination-btn" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-pref-width: 35; -fx-pref-height: 35; -fx-font-size: 14px;"/>
+            </HBox>
+            
+            <VBox alignment="CENTER" spacing="5">
+                <Label fx:id="currentPageLabel" text="Page 1 sur 1" styleClass="pagination-info" style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #1e293b;"/>
+                <Label fx:id="totalItemsLabel" text="0 produits" styleClass="pagination-info" style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+            </VBox>
+            
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <Button fx:id="nextPageBtn" styleClass="pagination-btn" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-pref-width: 35; -fx-pref-height: 35; -fx-font-size: 14px;"/>
+                <Button fx:id="lastPageBtn" styleClass="pagination-btn" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-pref-width: 35; -fx-pref-height: 35; -fx-font-size: 14px;"/>
+            </HBox>
+        </HBox>
     </VBox>
 
     <!-- Empty State -->
