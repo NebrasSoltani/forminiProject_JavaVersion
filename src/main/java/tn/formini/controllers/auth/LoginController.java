@@ -118,7 +118,7 @@ public class LoginController {
 
             // Save remember me preference
             if (cbRememberMe.isSelected()) {
-                saveRememberedCredentials(email);
+                saveRememberedCredentials(email, password);
             } else {
                 clearRememberedCredentials();
             }
@@ -136,8 +136,21 @@ public class LoginController {
 
     @FXML
     public void onForgotPassword(ActionEvent event) {
-        // TODO: Implement password recovery
-        showInfo("Fonctionnalité de récupération de mot de passe bientôt disponible.");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth/PasswordResetRequest.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) btnForgotPassword.getScene().getWindow();
+            if (stage.getScene() != null) {
+                stage.getScene().setRoot(root);
+            } else {
+                stage.setScene(new javafx.scene.Scene(root));
+            }
+            stage.setTitle("Formini - Reset Password");
+        } catch (Exception e) {
+            showError("Erreur lors de l'ouverture de la page de réinitialisation.");
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -333,18 +346,22 @@ public class LoginController {
         boolean rememberMe = prefs.getBoolean("rememberMe", false);
         if (rememberMe) {
             String savedEmail = prefs.get("email", "");
+            String savedPassword = prefs.get("password", "");
             fieldEmail.setText(savedEmail);
+            fieldPassword.setText(savedPassword);
             cbRememberMe.setSelected(true);
         }
     }
 
-    private void saveRememberedCredentials(String email) {
+    private void saveRememberedCredentials(String email, String password) {
         prefs.putBoolean("rememberMe", true);
         prefs.put("email", email);
+        prefs.put("password", password);
     }
 
     private void clearRememberedCredentials() {
         prefs.putBoolean("rememberMe", false);
         prefs.remove("email");
+        prefs.remove("password");
     }
 }

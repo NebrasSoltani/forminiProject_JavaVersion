@@ -17,15 +17,23 @@ import tn.formini.services.UsersService.SocieteService;
 import tn.formini.services.UsersService.UserService;
 
 import java.io.IOException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
 public class SocieteCrudController {
+    private static final int ROWS_PER_PAGE = 10;
 
     @FXML
     private TableView<Societe> tableView;
+
+    @FXML
+    private Pagination pagination;
     
     @FXML
     private TableColumn<Societe, Integer> idColumn;
@@ -65,6 +73,24 @@ public class SocieteCrudController {
     
     @FXML
     private TextField searchField;
+
+    @FXML
+    private ComboBox<String> searchScopeComboBox;
+
+    @FXML
+    private TextField secteurFilterField;
+
+    @FXML
+    private CheckBox hasWebsiteCheckBox;
+
+    @FXML
+    private ComboBox<String> sortByComboBox;
+
+    @FXML
+    private ComboBox<String> sortDirectionComboBox;
+
+    @FXML
+    private Button resetFiltersButton;
     
     @FXML
     private Label countLabel;
@@ -78,6 +104,7 @@ public class SocieteCrudController {
     private SocieteService societeService;
     private UserService userService;
     private ObservableList<Societe> societeList = FXCollections.observableArrayList();
+    private ObservableList<Societe> filteredSocieteList = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
@@ -85,6 +112,8 @@ public class SocieteCrudController {
         userService = new UserService();
         
         setupTableColumns();
+        setupAdvancedControls();
+        setupPagination();
         loadSocietes();
         
         tableView.getSelectionModel().selectedItemProperty().addListener(
@@ -95,6 +124,34 @@ public class SocieteCrudController {
         );
         
         updateButtonStates();
+    }
+
+    private void setupPagination() {
+        pagination.setPageFactory(this::createPage);
+    }
+
+    private void setupAdvancedControls() {
+        searchScopeComboBox.setItems(FXCollections.observableArrayList(
+                "Tous", "ID", "Nom société", "Secteur", "Description", "Adresse", "Site web", "Email"
+        ));
+        sortByComboBox.setItems(FXCollections.observableArrayList(
+                "ID", "Nom société", "Secteur", "Email"
+        ));
+        sortDirectionComboBox.setItems(FXCollections.observableArrayList(
+                "Ascendant", "Descendant"
+        ));
+
+        searchScopeComboBox.setValue("Tous");
+        sortByComboBox.setValue("ID");
+        sortDirectionComboBox.setValue("Ascendant");
+        hasWebsiteCheckBox.setSelected(false);
+
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> applyFiltersAndSorting());
+        secteurFilterField.textProperty().addListener((obs, oldVal, newVal) -> applyFiltersAndSorting());
+        hasWebsiteCheckBox.selectedProperty().addListener((obs, oldVal, newVal) -> applyFiltersAndSorting());
+        searchScopeComboBox.valueProperty().addListener((obs, oldVal, newVal) -> applyFiltersAndSorting());
+        sortByComboBox.valueProperty().addListener((obs, oldVal, newVal) -> applyFiltersAndSorting());
+        sortDirectionComboBox.valueProperty().addListener((obs, oldVal, newVal) -> applyFiltersAndSorting());
     }
 
     private void setupTableColumns() {
@@ -118,7 +175,7 @@ public class SocieteCrudController {
             statusLabel.setText("Chargement...");
             List<Societe> societes = societeService.afficher();
             societeList = FXCollections.observableArrayList(societes);
-            tableView.setItems(societeList);
+            applyFiltersAndSorting();
             updateUI();
             statusLabel.setText("Prêt");
         } catch (Exception e) {
@@ -132,13 +189,141 @@ public class SocieteCrudController {
             societeList = FXCollections.observableArrayList();
         }
         // Update count label
-        int count = societeList.size();
+        int count = filteredSocieteList.size();
         countLabel.setText("Total: " + count + " societe" + (count > 1 ? "s" : ""));
         
         // Update last update time
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         lastUpdateLabel.setText("Dernière mise à jour: " + now.format(formatter));
+    }
+
+    private TableView<Societe> createPage(int pageIndex) {
+        updateTablePage(pageIndex);
+        return tableView;
+    }
+
+    private void updateTablePage(int pageIndex) {
+        int fromIndex = pageIndex * ROWS_PER_PAGE;
+        if (fromIndex >= filteredSocieteList.size()) {
+            tableView.setItems(FXCollections.observableArrayList());
+            return;
+        }
+
+        int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, filteredSocieteList.size());
+        tableView.setItems(FXCollections.observableArrayList(filteredSocieteList.subList(fromIndex, toIndex)));
+    }
+
+    private void refreshPagination() {
+        int pageCount = Math.max(1, (int) Math.ceil((double) filteredSocieteList.size() / ROWS_PER_PAGE));
+        pagination.setPageCount(pageCount);
+
+        int currentPage = pagination.getCurrentPageIndex();
+        if (currentPage >= pageCount) {
+            currentPage = pageCount - 1;
+            pagination.setCurrentPageIndex(currentPage);
+        }
+
+        updateTablePage(currentPage);
+    }
+
+    private void setFilteredSocieteList(List<Societe> societes) {
+        filteredSocieteList = FXCollections.observableArrayList(societes != null ? societes : List.of());
+        tableView.getSelectionModel().clearSelection();
+        refreshPagination();
+    }
+
+    private void applyFiltersAndSorting() {
+        String keyword = normalize(searchField.getText());
+        String scope = valueOrDefault(searchScopeComboBox.getValue(), "Tous");
+        String secteurFilter = normalize(secteurFilterField.getText());
+        boolean onlyWithWebsite = hasWebsiteCheckBox.isSelected();
+
+        List<Societe> results = societeList.stream()
+                .filter(societe -> matchesKeyword(societe, keyword, scope))
+                .filter(societe -> secteurFilter.isEmpty() || containsIgnoreCase(societe.getSecteur(), secteurFilter))
+                .filter(societe -> !onlyWithWebsite || !nullSafe(societe.getSite_web()).isBlank())
+                .sorted(buildComparator())
+                .toList();
+
+        setFilteredSocieteList(results);
+        updateUI();
+    }
+
+    private Comparator<Societe> buildComparator() {
+        String sortBy = valueOrDefault(sortByComboBox.getValue(), "ID");
+        String sortDirection = valueOrDefault(sortDirectionComboBox.getValue(), "Ascendant");
+
+        Comparator<Societe> comparator;
+        switch (sortBy) {
+            case "Nom société":
+                comparator = Comparator.comparing(s -> nullSafe(s.getNom_societe()), String.CASE_INSENSITIVE_ORDER);
+                break;
+            case "Secteur":
+                comparator = Comparator.comparing(s -> nullSafe(s.getSecteur()), String.CASE_INSENSITIVE_ORDER);
+                break;
+            case "Email":
+                comparator = Comparator.comparing(this::getEmail, String.CASE_INSENSITIVE_ORDER);
+                break;
+            case "ID":
+            default:
+                comparator = Comparator.comparingInt(Societe::getId);
+                break;
+        }
+
+        return "Descendant".equalsIgnoreCase(sortDirection) ? comparator.reversed() : comparator;
+    }
+
+    private boolean matchesKeyword(Societe societe, String keyword, String scope) {
+        if (keyword.isEmpty()) {
+            return true;
+        }
+
+        switch (scope) {
+            case "ID":
+                return String.valueOf(societe.getId()).contains(keyword);
+            case "Nom société":
+                return containsIgnoreCase(societe.getNom_societe(), keyword);
+            case "Secteur":
+                return containsIgnoreCase(societe.getSecteur(), keyword);
+            case "Description":
+                return containsIgnoreCase(societe.getDescription(), keyword);
+            case "Adresse":
+                return containsIgnoreCase(societe.getAdresse(), keyword);
+            case "Site web":
+                return containsIgnoreCase(societe.getSite_web(), keyword);
+            case "Email":
+                return containsIgnoreCase(getEmail(societe), keyword);
+            case "Tous":
+            default:
+                return String.valueOf(societe.getId()).contains(keyword)
+                        || containsIgnoreCase(societe.getNom_societe(), keyword)
+                        || containsIgnoreCase(societe.getSecteur(), keyword)
+                        || containsIgnoreCase(societe.getDescription(), keyword)
+                        || containsIgnoreCase(societe.getAdresse(), keyword)
+                        || containsIgnoreCase(societe.getSite_web(), keyword)
+                        || containsIgnoreCase(getEmail(societe), keyword);
+        }
+    }
+
+    private String getEmail(Societe societe) {
+        return societe.getUser() != null ? nullSafe(societe.getUser().getEmail()) : "";
+    }
+
+    private boolean containsIgnoreCase(String source, String keyword) {
+        return normalize(source).contains(keyword);
+    }
+
+    private String normalize(String value) {
+        return nullSafe(value).toLowerCase(Locale.ROOT).trim();
+    }
+
+    private String nullSafe(String value) {
+        return Objects.toString(value, "");
+    }
+
+    private String valueOrDefault(String value, String fallback) {
+        return (value == null || value.isBlank()) ? fallback : value;
     }
     
     private void updateSelectionStatus(Societe selected) {
@@ -160,7 +345,14 @@ public class SocieteCrudController {
             
             Stage stage = new Stage();
             stage.setTitle("Ajouter une Société");
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root, 760, 720);
+            URL css = getClass().getResource("/css/style.css");
+            if (css != null) {
+                scene.getStylesheets().add(css.toExternalForm());
+            }
+            stage.setScene(scene);
+            stage.setMinWidth(640);
+            stage.setMinHeight(560);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
             
@@ -188,7 +380,14 @@ public class SocieteCrudController {
             
             Stage stage = new Stage();
             stage.setTitle("Modifier une Société");
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root, 760, 720);
+            URL css = getClass().getResource("/css/style.css");
+            if (css != null) {
+                scene.getStylesheets().add(css.toExternalForm());
+            }
+            stage.setScene(scene);
+            stage.setMinWidth(640);
+            stage.setMinHeight(560);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
             
@@ -230,27 +429,18 @@ public class SocieteCrudController {
 
     @FXML
     private void handleSearch(ActionEvent event) {
-        String searchText = searchField.getText().trim();
-        if (searchText.isEmpty()) {
-            loadSocietes();
-        } else {
-            searchSocietes(searchText);
-        }
+        applyFiltersAndSorting();
     }
 
-    private void searchSocietes(String searchText) {
-        try {
-            int searchId = Integer.parseInt(searchText);
-            Societe societe = societeService.findById(searchId);
-            if (societe != null) {
-                societeList = FXCollections.observableArrayList(societe);
-            } else {
-                societeList = FXCollections.observableArrayList();
-            }
-        } catch (NumberFormatException e) {
-            societeList = FXCollections.observableArrayList(societeService.findByNom(searchText));
-        }
-        tableView.setItems(societeList);
+    @FXML
+    private void handleResetFilters(ActionEvent event) {
+        searchField.clear();
+        secteurFilterField.clear();
+        hasWebsiteCheckBox.setSelected(false);
+        searchScopeComboBox.setValue("Tous");
+        sortByComboBox.setValue("ID");
+        sortDirectionComboBox.setValue("Ascendant");
+        applyFiltersAndSorting();
     }
 
     private void updateButtonStates() {
