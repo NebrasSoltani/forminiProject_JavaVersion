@@ -7,13 +7,13 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="tn.formini.controllers.order.OrderListController"
-      spacing="20" style="-fx-background-color: #f8fafc; -fx-padding: 20;">
+      spacing="15" style="-fx-background-color: #f8fafc; -fx-padding: 15;">
 
     <!-- Header -->
-    <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
-        <VBox spacing="5">
-            <Label text="Gestion des Commandes" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
-            <Label text="Gérez toutes vos commandes et leur statut" style="-fx-font-size: 14; -fx-text-fill: #64748b;"/>
+    <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+        <VBox spacing="3">
+            <Label text="Gestion des Commandes" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+            <Label text="Gérez toutes vos commandes et leur statut" style="-fx-font-size: 12; -fx-text-fill: #64748b;"/>
         </VBox>
         <Region HBox.hgrow="ALWAYS"/>
         <Button text="Retour" onAction="#goBack" style="-fx-background-color: #64748b; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 10 20; -fx-font-weight: 500;"/>
@@ -21,40 +21,40 @@
 
     <!-- Statistics Cards -->
     <HBox spacing="15" alignment="CENTER">
-        <VBox spacing="5" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2); -fx-alignment: center;">
-            <Label text="Total Commandes" style="-fx-font-size: 14; -fx-text-fill: #64748b; -fx-font-weight: 500;"/>
-            <Label fx:id="totalOrdersLabel" text="0" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+        <VBox spacing="3" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2); -fx-alignment: center;">
+            <Label text="Total Commandes" style="-fx-font-size: 12; -fx-text-fill: #64748b; -fx-font-weight: 500;"/>
+            <Label fx:id="totalOrdersLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
         </VBox>
         
-        <VBox spacing="5" style="-fx-background-color: #fef3c7; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2); -fx-alignment: center;">
-            <Label text="En Attente" style="-fx-font-size: 14; -fx-text-fill: #92400e; -fx-font-weight: 500;"/>
-            <Label fx:id="pendingOrdersLabel" text="0" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #b45309;"/>
+        <VBox spacing="3" style="-fx-background-color: #fef3c7; -fx-background-radius: 12; -fx-padding: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2); -fx-alignment: center;">
+            <Label text="En Attente" style="-fx-font-size: 12; -fx-text-fill: #92400e; -fx-font-weight: 500;"/>
+            <Label fx:id="pendingOrdersLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
         </VBox>
         
-        <VBox spacing="5" style="-fx-background-color: #dbeafe; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2); -fx-alignment: center;">
-            <Label text="En Cours" style="-fx-font-size: 14; -fx-text-fill: #1e40af; -fx-font-weight: 500;"/>
-            <Label fx:id="processingOrdersLabel" text="0" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #2563eb;"/>
+        <VBox spacing="3" style="-fx-background-color: #dbeafe; -fx-background-radius: 12; -fx-padding: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2); -fx-alignment: center;">
+            <Label text="En Cours" style="-fx-font-size: 12; -fx-text-fill: #1e40af; -fx-font-weight: 500;"/>
+            <Label fx:id="processingOrdersLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
         </VBox>
         
-        <VBox spacing="5" style="-fx-background-color: #d1fae5; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2); -fx-alignment: center;">
-            <Label text="Livrées" style="-fx-font-size: 14; -fx-text-fill: #065f46; -fx-font-weight: 500;"/>
-            <Label fx:id="deliveredOrdersLabel" text="0" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #059669;"/>
+        <VBox spacing="3" style="-fx-background-color: #d1fae5; -fx-background-radius: 12; -fx-padding: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2); -fx-alignment: center;">
+            <Label text="Livrées" style="-fx-font-size: 12; -fx-text-fill: #065f46; -fx-font-weight: 500;"/>
+            <Label fx:id="deliveredOrdersLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
         </VBox>
     </HBox>
 
     <!-- Search and Filter Bar -->
-    <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
-        <HBox spacing="10" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+    <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+        <HBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
             <TextField fx:id="searchField" promptText="Rechercher par numéro, nom, email..." 
-                       style="-fx-pref-height: 40; -fx-background-radius: 8; -fx-border-color: #e5e7eb; -fx-border-radius: 8; -fx-padding: 0 15;" HBox.hgrow="ALWAYS"/>
-            <ComboBox fx:id="statusFilter" prefWidth="200" style="-fx-pref-height: 40; -fx-background-radius: 8; -fx-border-color: #e5e7eb; -fx-border-radius: 8;"/>
+                       style="-fx-pref-height: 35; -fx-background-radius: 8; -fx-border-color: #e5e7eb; -fx-border-radius: 8; -fx-padding: 0 12;" HBox.hgrow="ALWAYS"/>
+            <ComboBox fx:id="statusFilter" prefWidth="180" style="-fx-pref-height: 35; -fx-background-radius: 8; -fx-border-color: #e5e7eb; -fx-border-radius: 8;"/>
         </HBox>
         
-        <HBox spacing="10">
+        <HBox spacing="8">
             <Button fx:id="refreshButton" text="Actualiser" onAction="#refreshOrders" 
-                   style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 10 20; -fx-font-weight: 500;"/>
+                   style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 15; -fx-font-weight: 500; -fx-font-size: 12px;"/>
             <Button fx:id="addOrderButton" text="Nouvelle Commande" onAction="#addNewOrder" 
-                   style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 10 20; -fx-font-weight: 500;"/>
+                   style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 15; -fx-font-weight: 500; -fx-font-size: 12px;"/>
         </HBox>
     </HBox>
 
