@@ -299,14 +299,14 @@ public class ProduitListController implements Initializable {
     private VBox createProductCard(Produit produit) {
         VBox card = new VBox();
         card.getStyleClass().addAll("product-card", "card");
-        card.setSpacing(10);
-        card.setPadding(new Insets(15));
-        card.setPrefWidth(280);
+        card.setSpacing(8);
+        card.setPadding(new Insets(12));
+        card.setPrefWidth(220);
 
         // Product Image
         ImageView imageView = new ImageView();
-        imageView.setFitWidth(250);
-        imageView.setFitHeight(150);
+        imageView.setFitWidth(200);
+        imageView.setFitHeight(120);
         imageView.setPreserveRatio(true);
         imageView.setSmooth(true);
         imageView.setStyle("-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-background-radius: 8;");

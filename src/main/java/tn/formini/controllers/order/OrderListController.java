@@ -199,19 +199,19 @@ public class OrderListController {
 
     private VBox createOrderCard(Order order) {
         VBox card = new VBox();
-        card.setSpacing(10);
+        card.setSpacing(8);
         card.setStyle("-fx-background-color: white; -fx-border-color: #e5e7eb; -fx-border-radius: 12; " +
-                     "-fx-background-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
-        card.setPrefWidth(350);
+                     "-fx-background-radius: 12; -fx-padding: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        card.setPrefWidth(300);
 
         // Header with order number and status
         HBox header = new HBox();
-        header.setSpacing(10);
+        header.setSpacing(8);
         header.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
         // Order number
         Label orderNumberLabel = new Label(order.getOrderNumber());
-        orderNumberLabel.setFont(Font.font("System", FontWeight.BOLD, 16));
+        orderNumberLabel.setFont(Font.font("System", FontWeight.BOLD, 14));
         orderNumberLabel.setStyle("-fx-text-fill: #1f2937;");
 
         // Status badge
@@ -284,7 +284,7 @@ public class OrderListController {
         Button button = new Button();
         button.setPrefSize(90, 32);
         button.setStyle("-fx-background-color: #10b981; -fx-background-radius: 6; -fx-cursor: hand; -fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: white;");
-        button.setText("Edit Order");
+        button.setText("modifier");
         return button;
     }
 
@@ -292,7 +292,7 @@ public class OrderListController {
         Button button = new Button();
         button.setPrefSize(100, 32);
         button.setStyle("-fx-background-color: #ef4444; -fx-background-radius: 6; -fx-cursor: hand; -fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: white;");
-        button.setText("Delete Order");
+        button.setText("supprimer");
         return button;
     }
 
