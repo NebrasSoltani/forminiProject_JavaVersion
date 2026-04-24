@@ -6,8 +6,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
-import tn.formini.entities.Evenement;
-import tn.formini.services.EvenementService;
+import tn.formini.entities.evenements.Evenement;
+import tn.formini.services.evenementsService.EvenementService;
 
 import java.net.URL;
 import java.time.LocalDate;

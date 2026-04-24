@@ -5,7 +5,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import tn.formini.entities.Evenement;
+import tn.formini.entities.evenements.Evenement;
 
 public class EventUiUtils {
 

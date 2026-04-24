@@ -1,6 +1,6 @@
 package tn.formini.tools;
 
-import tn.formini.entities.User;
+import tn.formini.entities.Users.User;
 
 public class SessionManager {
     private static User currentUser;

@@ -11,13 +11,14 @@
     <HBox alignment="CENTER_LEFT" spacing="20">
         <Label text="📅 Liste des Événements" styleClass="page-title"/>
         <Region HBox.hgrow="ALWAYS"/>
+        <Button text="📊 Statistiques" onAction="#showEventStats" style="-fx-background-color: #6974e8; -fx-text-fill: white; -fx-padding: 8 15; -fx-background-radius: 8; -fx-cursor: hand;"/>
         <Button text="➕ Nouvel Événement" onAction="#goToAdd" styleClass="nav-btn-active"/>
     </HBox>
 
-    <!-- Filters -->
     <HBox spacing="10" alignment="CENTER_LEFT" styleClass="topbar" style="-fx-background-radius: 10;">
         <TextField fx:id="searchField" promptText="Rechercher par nom..." prefWidth="200"/>
         <ComboBox fx:id="filterType" promptText="Type" prefWidth="150"/>
+        <ComboBox fx:id="sortOptions" promptText="Trier par..." prefWidth="150"/>
         <CheckBox fx:id="filterLive" text="Live 🔴"/>
         <CheckBox fx:id="filterActif" text="Actif"/>
         <Button text="Réinitialiser" onAction="#resetFilters" styleClass="icon-btn"/>
@@ -25,10 +26,8 @@
         <Label fx:id="labelCount" text="0 événement(s)" styleClass="topbar-date"/>
     </HBox>
 
-    <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" style="-fx-background-color: transparent; -fx-padding: 10;">
-        <FlowPane fx:id="eventGrid" hgap="25" vgap="25" style="-fx-padding: 10;">
-            <!-- Cards will be injected here -->
-        </FlowPane>
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll-pane" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-width: 0;">
+        <FlowPane fx:id="eventGrid" hgap="25" vgap="25" prefWrapLength="1000" style="-fx-padding: 10;"/>
     </ScrollPane>
 
     <HBox alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 10;">

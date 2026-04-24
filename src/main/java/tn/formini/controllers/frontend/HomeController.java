@@ -11,8 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import tn.formini.entities.Evenement;
-import tn.formini.services.EvenementService;
+import tn.formini.entities.evenements.Evenement;
+import tn.formini.services.evenementsService.EvenementService;
 
 import java.net.URL;
 import java.util.List;

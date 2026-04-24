@@ -6,9 +6,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
-import tn.formini.entities.Blog;
-import tn.formini.services.BlogService;
-import tn.formini.services.EvenementService;
+import tn.formini.entities.evenements.Blog;
+import tn.formini.services.evenementsService.BlogService;
+import tn.formini.services.evenementsService.EvenementService;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -121,8 +121,8 @@ public class BlogFormController implements Initializable {
         );
         // Récupération de l'événement lié
         Object selectedEvt = fieldEvenement.getValue();
-        if (selectedEvt instanceof tn.formini.entities.Evenement) {
-            blog.setEvenement_id(((tn.formini.entities.Evenement) selectedEvt).getId());
+        if (selectedEvt instanceof tn.formini.entities.evenements.Evenement) {
+            blog.setEvenement_id(((tn.formini.entities.evenements.Evenement) selectedEvt).getId());
         } else {
             blog.setEvenement_id(null);
         }

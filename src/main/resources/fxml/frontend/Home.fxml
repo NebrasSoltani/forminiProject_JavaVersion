@@ -14,33 +14,122 @@
     <VBox spacing="60" style="-fx-background-color: #fdfdfd;">
         <padding><Insets top="40" right="60" bottom="60" left="60"/></padding>
 
-        <!-- Hero Section Inspired by Onix Digital -->
-        <VBox styleClass="hero-section" spacing="25" alignment="CENTER_LEFT">
-            <VBox spacing="10">
-                <Label text="Bienvenue sur Formini.tn" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-weight: bold; -fx-font-size: 18px;"/>
-                <TextFlow lineSpacing="5">
+        <!-- Hero Section Enhanced with Stats -->
+        <VBox styleClass="hero-section" spacing="35" alignment="CENTER_LEFT">
+            <VBox spacing="15">
+                <Label text="Bienvenue sur Formini.tn" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-weight: bold; -fx-font-size: 18px; -fx-letter-spacing: 1px;"/>
+                <TextFlow lineSpacing="8">
                     <Text text="Formations " styleClass="hero-title"/>
                     <Text text="certifiantes" styleClass="hero-title" style="-fx-fill: #ffa502; -fx-font-style: italic;"/>
                     <Text text=" avec des " styleClass="hero-title"/>
                     <Text text="experts" styleClass="hero-title" style="-fx-fill: #ffa502;"/>
                 </TextFlow>
+                <Label text="Développez vos compétences avec des formateurs expérimentés et obtenez des certifications reconnues sur le marché tunisien." 
+                       styleClass="hero-subtitle" wrapText="true" maxWidth="750" lineSpacing="4"/>
             </VBox>
             
-            <Label text="Développez vos compétences avec des formateurs expérimentés et obtenez des certifications reconnues sur le marché tunisien." 
-                   styleClass="hero-subtitle" wrapText="true" maxWidth="650"/>
-            
+            <HBox spacing="40" alignment="CENTER_LEFT" styleClass="hero-stats-container">
+                <VBox styleClass="stat-item">
+                    <Label text="5000+" styleClass="stat-value"/>
+                    <Label text="Apprenants" styleClass="stat-label"/>
+                </VBox>
+                <Separator orientation="VERTICAL" styleClass="stat-sep" prefHeight="40"/>
+                <VBox styleClass="stat-item">
+                    <Label text="120+" styleClass="stat-value"/>
+                    <Label text="Formations" styleClass="stat-label"/>
+                </VBox>
+                <Separator orientation="VERTICAL" styleClass="stat-sep" prefHeight="40"/>
+                <VBox styleClass="stat-item">
+                    <Label text="98%" styleClass="stat-value"/>
+                    <Label text="Satisfaction" styleClass="stat-label"/>
+                </VBox>
+            </HBox>
+
             <HBox spacing="20">
-                <Button text="Rejoindre Formini" styleClass="main-button-onix" style="-fx-background-color: #ff4b5c; -fx-padding: 15 40;"/>
-                <Button text="Nos Formations" styleClass="main-button-onix" style="-fx-padding: 15 40;"/>
+                <Button text="Rejoindre Formini" styleClass="main-button-onix" style="-fx-background-color: -fx-accent; -fx-padding: 18 45; -fx-font-size: 16px;"/>
+                <Button text="Nos Formations" styleClass="main-button-onix" style="-fx-background-color: transparent; -fx-border-color: white; -fx-border-radius: 25; -fx-padding: 18 45; -fx-font-size: 16px;"/>
             </HBox>
         </VBox>
 
-        <!-- Evenements Area -->
-        <VBox spacing="30">
-            <VBox spacing="5">
-                <Label text="Nos ÉVÉNEMENTS à venir" styleClass="section-tag-onix"/>
-                <Label text="Découvrez nos sessions interactives" styleClass="section-heading-onix"/>
+        <!-- Services Grid Inspired by Path2Learn -->
+        <VBox spacing="40">
+            <VBox spacing="10" alignment="CENTER">
+                <Label text="NOS SERVICES" styleClass="section-tag-onix"/>
+                <Label text="Tout ce dont vous avez besoin pour réussir" styleClass="section-heading-onix" style="-fx-text-alignment: center;"/>
             </VBox>
+
+            <GridPane hgap="30" vgap="30">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="33.3"/>
+                    <ColumnConstraints percentWidth="33.3"/>
+                    <ColumnConstraints percentWidth="33.3"/>
+                </columnConstraints>
+
+                <!-- Formations -->
+                <VBox styleClass="service-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <StackPane styleClass="service-icon-bg" style="-fx-background-color: #ecfeff;">
+                        <Label text="🎓" styleClass="service-icon-text"/>
+                    </StackPane>
+                    <Label text="Formations" styleClass="service-title"/>
+                    <Label text="Accédez à des cours complets avec vidéos et supports." styleClass="service-description"/>
+                </VBox>
+
+                <!-- Événements -->
+                <VBox styleClass="service-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <StackPane styleClass="service-icon-bg" style="-fx-background-color: #fef2f2;">
+                        <Label text="🎪" styleClass="service-icon-text"/>
+                    </StackPane>
+                    <Label text="Événements" styleClass="service-title"/>
+                    <Label text="Webinaires et ateliers live avec des experts." styleClass="service-description"/>
+                </VBox>
+
+                <!-- Blogs -->
+                <VBox styleClass="service-card" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                    <StackPane styleClass="service-icon-bg" style="-fx-background-color: #f0fdf4;">
+                        <Label text="📝" styleClass="service-icon-text"/>
+                    </StackPane>
+                    <Label text="Blogs" styleClass="service-title"/>
+                    <Label text="Articles et actualités sur les technologies." styleClass="service-description"/>
+                </VBox>
+
+                <!-- Quiz -->
+                <VBox styleClass="service-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <StackPane styleClass="service-icon-bg" style="-fx-background-color: #fff7ed;">
+                        <Label text="❓" styleClass="service-icon-text"/>
+                    </StackPane>
+                    <Label text="Quiz Interactifs" styleClass="service-title"/>
+                    <Label text="Testez vos connaissances et progressez." styleClass="service-description"/>
+                </VBox>
+
+                <!-- Communauté -->
+                <VBox styleClass="service-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <StackPane styleClass="service-icon-bg" style="-fx-background-color: #f5f3ff;">
+                        <Label text="👥" styleClass="service-icon-text"/>
+                    </StackPane>
+                    <Label text="Communauté" styleClass="service-title"/>
+                    <Label text="Échangez avec d'autres apprenants passionnés." styleClass="service-description"/>
+                </VBox>
+
+                <!-- Projets -->
+                <VBox styleClass="service-card" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                    <StackPane styleClass="service-icon-bg" style="-fx-background-color: #fdf2f8;">
+                        <Label text="💼" styleClass="service-icon-text"/>
+                    </StackPane>
+                    <Label text="Projets" styleClass="service-title"/>
+                    <Label text="Réalisez des projets réels pour votre portfolio." styleClass="service-description"/>
+                </VBox>
+            </GridPane>
+        </VBox>
+
+        <!-- Events List Area -->
+        <VBox spacing="35">
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <Label text="WEBINAIRES &amp; SESSIONS LIVE" styleClass="section-tag-onix"/>
+                    <Label text="Nos prochains Événements" styleClass="section-heading-onix"/>
+                </VBox>
+                <Button text="Voir tout →" styleClass="view-all-link"/>
+            </HBox>
             <FlowPane fx:id="eventGrid" hgap="35" vgap="40" prefWrapLength="1100"/>
         </VBox>
 

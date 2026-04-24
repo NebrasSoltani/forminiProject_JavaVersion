@@ -1,39 +1,133 @@
 package tn.formini.controllers.dashboard;
 
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import tn.formini.services.BlogService;
-import tn.formini.services.EvenementService;
-import tn.formini.services.UserService; // Assuming there's a UserService for participants
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import tn.formini.entities.Users.User;
+import tn.formini.services.UsersService.SessionManager;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+public class DashboardController {
 
-public class DashboardController implements Initializable {
+    @FXML
+    private Label welcomeLabel;
+    
+    @FXML
+    private Label userRoleLabel;
+    
+    @FXML
+    private Label userInfoLabel;
+    
+    @FXML
+    private VBox contentArea;
 
-    @FXML private Label labelTotalBlogs;
-    @FXML private Label labelTotalEvents;
-    @FXML private Label labelTotalParticipants;
+    private SessionManager sessionManager;
+    private User currentUser;
 
-    private final BlogService blogService = new BlogService();
-    private final EvenementService eventService = new EvenementService();
-    private final UserService userService = new UserService();
-
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        loadStats();
+    @FXML
+    public void initialize() {
+        sessionManager = SessionManager.getInstance();
+        
+        // Check if user is logged in
+        if (!sessionManager.isLoggedIn()) {
+            redirectToLogin();
+            return;
+        }
+        
+        currentUser = sessionManager.getCurrentUser();
+        loadUserDashboard();
     }
 
-    private void loadStats() {
-        try {
-            int blogs = blogService.afficher().size();
-            int events = eventService.afficher().size();
-            int participants = userService.afficher().size();
+    private void loadUserDashboard() {
+        if (currentUser == null) {
+            redirectToLogin();
+            return;
+        }
 
-            labelTotalBlogs.setText(String.valueOf(blogs));
-            labelTotalEvents.setText(String.valueOf(events));
-            labelTotalParticipants.setText(String.valueOf(participants));
+        // Set user information
+        welcomeLabel.setText("Bienvenue, " + currentUser.getPrenom() + " " + currentUser.getNom() + "!");
+        userRoleLabel.setText("Rôle: " + getRoleDisplayName(currentUser.getRole_utilisateur()));
+        userInfoLabel.setText("Email: " + currentUser.getEmail());
+
+        // Redirect to appropriate dashboard based on role
+        try {
+            String role = currentUser.getRole_utilisateur().toLowerCase();
+            FXMLLoader loader = null;
+            
+            switch (role) {
+                case "admin":
+                    loader = new FXMLLoader(getClass().getResource("/fxml/dashboard/admin-dashboard.fxml"));
+                    break;
+                case "formateur":
+                    loader = new FXMLLoader(getClass().getResource("/fxml/dashboard/formateur-dashboard.fxml"));
+                    break;
+                case "apprenant":
+                    loader = new FXMLLoader(getClass().getResource("/fxml/dashboard/apprenant-dashboard.fxml"));
+                    break;
+                case "societe":
+                    loader = new FXMLLoader(getClass().getResource("/fxml/dashboard/societe-dashboard.fxml"));
+                    break;
+            }
+            
+            if (loader != null) {
+                Parent dashboardContent = loader.load();
+                contentArea.getChildren().setAll(dashboardContent);
+            }
+        } catch (Exception e) {
+            System.err.println("Error loading dashboard content: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private String getRoleDisplayName(String role) {
+        if (role == null) return "Inconnu";
+        switch (role.toLowerCase()) {
+            case "admin": return "Administrateur";
+            case "formateur": return "Formateur";
+            case "apprenant": return "Apprenant";
+            case "societe": return "Société";
+            default: return role;
+        }
+    }
+
+    private void redirectToLogin() {
+        try {
+            sessionManager.logout();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth/Login.fxml"));
+            Parent root = loader.load();
+            
+            Stage stage = null;
+            if (welcomeLabel != null && welcomeLabel.getScene() != null) {
+                stage = (Stage) welcomeLabel.getScene().getWindow();
+            }
+            if (stage == null) stage = new Stage();
+            
+            stage.setScene(new Scene(root));
+            stage.setTitle("Formini - Connexion");
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleLogout() {
+        sessionManager.logout();
+        redirectToLogin();
+    }
+
+    @FXML
+    private void handleProfile() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth/EditProfile.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Mon Profil");
+            stage.setScene(new Scene(root));
+            stage.show();
         } catch (Exception e) {
             e.printStackTrace();
         }

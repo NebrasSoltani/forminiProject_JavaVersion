@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="tn.formini.controllers.crud.SocieteFormController"
+           styleClass="signup-page"
+           minHeight="400">
+
+    <VBox alignment="TOP_CENTER" spacing="0">
+        <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
+        <VBox maxWidth="720" spacing="18" alignment="TOP_CENTER" styleClass="signup-column">
+
+            <VBox spacing="8" alignment="CENTER_LEFT" styleClass="signup-hero crud-form-hero">
+                <Label text="Société" styleClass="signup-hero-kicker"/>
+                <Label text="Compte représentant &amp; fiche entreprise" styleClass="signup-hero-title"/>
+                <Label fx:id="heroSubLabel" text="Comme à l'inscription : d'abord le compte du contact (rôle société), puis les informations de l'entreprise."
+                       wrapText="true" styleClass="signup-hero-sub" maxWidth="680"/>
+            </VBox>
+
+            <VBox styleClass="signup-card crud-form-card" spacing="0" VBox.vgrow="ALWAYS">
+                <ScrollPane fitToWidth="true" styleClass="signup-scroll" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+                    <VBox spacing="24" styleClass="signup-card-inner crud-form-body">
+                        <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
+                        <VBox spacing="16" styleClass="crud-form-section">
+                            <VBox spacing="4">
+                                <Label text="Étape 1" styleClass="signup-section-kicker"/>
+                                <Label text="Identité &amp; connexion (contact société)" styleClass="signup-section-title"/>
+                            </VBox>
+                            <GridPane hgap="18" vgap="18" styleClass="signup-grid">
+                                <columnConstraints>
+                                    <ColumnConstraints hgrow="ALWAYS" minWidth="140" percentWidth="50"/>
+                                    <ColumnConstraints hgrow="ALWAYS" minWidth="140" percentWidth="50"/>
+                                </columnConstraints>
+
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                    <Label text="Email *" styleClass="form-label"/>
+                                    <TextField fx:id="emailField" styleClass="form-control signup-field" promptText="vous@exemple.tn"/>
+                                    <Label fx:id="errorEmail" styleClass="error-label" text="" visible="false" managed="false"/>
+                                </VBox>
+                                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                    <Label text="Téléphone *" styleClass="form-label"/>
+                                    <TextField fx:id="telephoneField" styleClass="form-control signup-field" promptText="8 à 12 chiffres"/>
+                                    <Label fx:id="errorTelephone" styleClass="error-label" text="" visible="false" managed="false"/>
+                                </VBox>
+
+                                <VBox fx:id="passwordGroup" styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                    <Label text="Mot de passe *" styleClass="form-label"/>
+                                    <HBox spacing="8" alignment="CENTER_RIGHT">
+                                        <PasswordField fx:id="passwordField" styleClass="form-control signup-field" promptText="8+ caractères, maj., min., chiffre" HBox.hgrow="ALWAYS"/>
+                                        <Button fx:id="btnTogglePassword" styleClass="btn-toggle-password-icon" onAction="#onTogglePassword">
+                                            <graphic>
+                                                <StackPane>
+                                                    <Label fx:id="eyeIcon" text="&#x1F441;" styleClass="icon-eye"/>
+                                                    <Label fx:id="eyeSlashIcon" text="&#x1F441;&#x200D;&#x1F5E8;" styleClass="icon-eye-slash" visible="false" managed="false"/>
+                                                </StackPane>
+                                            </graphic>
+                                        </Button>
+                                    </HBox>
+                                </VBox>
+                                <VBox fx:id="passwordConfirmGroup" styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                    <Label text="Confirmer *" styleClass="form-label"/>
+                                    <HBox spacing="8" alignment="CENTER_RIGHT">
+                                        <PasswordField fx:id="passwordConfirmField" styleClass="form-control signup-field" promptText="Même mot de passe" HBox.hgrow="ALWAYS"/>
+                                        <Button fx:id="btnTogglePasswordConfirm" styleClass="btn-toggle-password-icon" onAction="#onTogglePasswordConfirm">
+                                            <graphic>
+                                                <StackPane>
+                                                    <Label fx:id="eyeIconConfirm" text="&#x1F441;" styleClass="icon-eye"/>
+                                                    <Label fx:id="eyeSlashIconConfirm" text="&#x1F441;&#x200D;&#x1F5E8;" styleClass="icon-eye-off" visible="false" managed="false"/>
+                                                </StackPane>
+                                            </graphic>
+                                        </Button>
+                                    </HBox>
+                                </VBox>
+
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                                    <Label text="Nom *" styleClass="form-label"/>
+                                    <TextField fx:id="nomField" styleClass="form-control signup-field" promptText="Nom du contact"/>
+                                    <Label fx:id="errorNom" styleClass="error-label" text="" visible="false" managed="false"/>
+                                </VBox>
+                                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                    <Label text="Prénom *" styleClass="form-label"/>
+                                    <TextField fx:id="prenomField" styleClass="form-control signup-field" promptText="Prénom"/>
+                                    <Label fx:id="errorPrenom" styleClass="error-label" text="" visible="false" managed="false"/>
+                                </VBox>
+
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                                    <Label text="Gouvernorat" styleClass="form-label"/>
+                                    <ComboBox fx:id="gouvernoratField" styleClass="form-control signup-field" maxWidth="Infinity" promptText="Choisir un gouvernorat"/>
+                                </VBox>
+                                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                    <Label text="Date de naissance *" styleClass="form-label"/>
+                                    <DatePicker fx:id="dateNaissanceField" styleClass="form-control signup-field" maxWidth="Infinity" promptText="JJ/MM/AAAA"/>
+                                    <Label fx:id="errorDateNaissance" styleClass="error-label" text="" visible="false" managed="false"/>
+                                </VBox>
+
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.columnSpan="2">
+                                    <Label text="Photo de profil" styleClass="form-label"/>
+                                    <HBox spacing="12" alignment="CENTER_LEFT" styleClass="crud-upload-box">
+                                        <VBox spacing="8" alignment="CENTER">
+                                            <ImageView fx:id="imageViewPhoto" fitWidth="100" fitHeight="100" preserveRatio="true"/>
+                                        </VBox>
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <HBox spacing="8" alignment="CENTER_LEFT">
+                                                <Button fx:id="btnUploadPhoto" text="Choisir une photo" styleClass="btn-secondary signup-btn-upload" onAction="#onUploadPhoto"/>
+                                                <Label fx:id="lblPhotoFileName" text="Aucune photo sélectionnée" styleClass="signup-file-name"/>
+                                            </HBox>
+                                            <TextField fx:id="photoField" styleClass="form-control signup-field" promptText="Ou lien URL vers photo"/>
+                                        </VBox>
+                                    </HBox>
+                                </VBox>
+                            </GridPane>
+                            <Label fx:id="passwordHintLabel" text="Mot de passe : au moins 8 caractères, une majuscule, une minuscule et un chiffre."
+                                   styleClass="signup-field-hint" wrapText="true"/>
+                        </VBox>
+
+                        <Separator styleClass="signup-sep"/>
+
+                        <VBox spacing="16" styleClass="crud-form-section">
+                            <VBox spacing="4">
+                                <Label text="Étape 2" styleClass="signup-section-kicker"/>
+                                <Label text="Fiche entreprise" styleClass="signup-section-title"/>
+                            </VBox>
+                            <GridPane hgap="18" vgap="18" styleClass="signup-grid">
+                                <columnConstraints>
+                                    <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                                    <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                                </columnConstraints>
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2">
+                                    <Label text="Nom de la société *" styleClass="form-label"/>
+                                    <TextField fx:id="nomSocieteField" styleClass="form-control signup-field" promptText="Raison sociale"/>
+                                    <Label fx:id="errorNomSociete" styleClass="error-label" text="" visible="false" managed="false"/>
+                                </VBox>
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                    <Label text="Secteur" styleClass="form-label"/>
+                                    <TextField fx:id="secteurTextField" styleClass="form-control signup-field" promptText="Ex. IT, Industrie…"/>
+                                </VBox>
+                                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                    <Label text="Site Web" styleClass="form-label"/>
+                                    <TextField fx:id="siteWebTextField" styleClass="form-control signup-field" promptText="https://…"/>
+                                </VBox>
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
+                                    <Label text="Adresse" styleClass="form-label"/>
+                                    <TextField fx:id="adresseTextField" styleClass="form-control signup-field" promptText="Adresse complète"/>
+                                </VBox>
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2">
+                                    <Label text="Description" styleClass="form-label"/>
+                                    <TextArea fx:id="descriptionTextArea" styleClass="form-control signup-field signup-textarea" prefRowCount="4" wrapText="true" promptText="Présentation de l'entreprise, activités…"/>
+                                </VBox>
+                            </GridPane>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+
+                <HBox spacing="14" alignment="CENTER_RIGHT" styleClass="signup-actions crud-form-actions">
+                    <padding><Insets top="12" right="20" bottom="18" left="20"/></padding>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="cancelButton" text="Annuler" onAction="#handleCancelButton" styleClass="btn-secondary signup-btn-secondary"/>
+                    <Button fx:id="saveButton" text="Enregistrer" onAction="#handleSaveButton" styleClass="btn-primary signup-btn-primary"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </VBox>
+</StackPane>

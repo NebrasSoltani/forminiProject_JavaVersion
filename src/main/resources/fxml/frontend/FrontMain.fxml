@@ -16,23 +16,30 @@
 
     <!-- Top Navbar -->
     <top>
-        <HBox spacing="30" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-padding: 15 40; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 2);">
+        <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-padding: 12 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 2);">
             <VBox spacing="-2">
-                <Label text="Formini.tn" styleClass="logo-text-bold" style="-fx-text-fill: #6366f1;"/>
-                <Label text="فروميني.تونس" styleClass="logo-arabic" style="-fx-text-fill: #94a3b8;"/>
+                <Label text="Formini.tn" styleClass="logo-text-bold" style="-fx-text-fill: -fx-primary; -fx-font-size: 18px;"/>
+                <Label text="EXCELLENCE FORMATION" style="-fx-text-fill: -fx-warning; -fx-font-size: 8px; -fx-font-weight: bold; -fx-letter-spacing: 0.5px;"/>
             </VBox>
             
             <Region HBox.hgrow="ALWAYS"/>
             
-            <HBox spacing="25" alignment="CENTER">
-                <Hyperlink text="Accueil" onAction="#showHome" styleClass="front-nav-link" style="-fx-text-fill: #6974e8; -fx-font-weight: bold;"/>
+            <HBox spacing="20" alignment="CENTER">
+                <Hyperlink text="Accueil" onAction="#showHome" styleClass="front-nav-link" style="-fx-text-fill: -fx-primary; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+                <Hyperlink text="Formations" onAction="#showFormations" styleClass="front-nav-link" style="-fx-font-size: 12px;"/>
+                <Hyperlink text="Boutique" onAction="#showShop" styleClass="front-nav-link" style="-fx-font-size: 12px;"/>
+                <Hyperlink text="Panier" onAction="#showCart" styleClass="front-nav-link" style="-fx-font-size: 12px;"/>
+                <Hyperlink text="Événements" onAction="#showEvents" styleClass="front-nav-link" style="-fx-font-size: 12px;"/>
+                <Hyperlink text="À Propos" onAction="#showAbout" styleClass="front-nav-link" style="-fx-font-size: 12px;"/>
             </HBox>
             
             <Region HBox.hgrow="ALWAYS"/>
             
-            <HBox spacing="15" alignment="CENTER">
-                <Button text="Connexion" styleClass="btn-secondary"/>
-                <Button text="Dashboard Admin" onAction="#switchToAdmin" styleClass="btn-primary"/>
+            <HBox spacing="12" alignment="CENTER">
+                <Button text="Connexion" onAction="#showLogin" style="-fx-background-color: transparent; -fx-text-fill: -fx-primary; -fx-font-weight: bold; -fx-cursor: hand; -fx-font-size: 12px;"/>
+                <Hyperlink text="S'inscrire" onAction="#showSignup" styleClass="front-nav-link" style="-fx-text-fill: -fx-primary; -fx-font-size: 12px;"/>
+                <Hyperlink text="Profil" onAction="#showEditProfile" styleClass="front-nav-link" style="-fx-text-fill: -fx-primary; -fx-font-size: 12px;"/>
+                <Button text="Admin" onAction="#switchToAdmin" styleClass="main-button-onix" style="-fx-background-color: -fx-primary; -fx-padding: 6 15; -fx-font-size: 11px;"/>
             </HBox>
         </HBox>
     </top>

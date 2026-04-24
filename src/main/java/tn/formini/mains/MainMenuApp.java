@@ -5,64 +5,59 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import tn.formini.utils.AdminInitializer;
 import java.io.File;
+import java.net.URL;
 
 public class MainMenuApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Initialiser une session avec un utilisateur réel de la DB
-        try {
-            tn.formini.services.UserService us = new tn.formini.services.UserService();
-            java.util.List<tn.formini.entities.User> users = us.afficher();
-            tn.formini.entities.User sessionUser;
-            if (users.isEmpty()) {
-                sessionUser = new tn.formini.entities.User();
-                sessionUser.setNom("Admin");
-                sessionUser.setPrenom("Système");
-                sessionUser.setEmail("admin@formini.tn");
-                sessionUser.setPassword("admin");
-                sessionUser.setRole_utilisateur("admin");
-                us.ajouter(sessionUser);
-            } else {
-                sessionUser = users.get(0);
-            }
-            tn.formini.tools.SessionManager.setCurrentUser(sessionUser);
-            System.out.println("Session active pour : " + sessionUser.getNom());
-        } catch (Exception e) {
-            System.err.println("Erreur session : " + e.getMessage());
-        }
+        AdminInitializer.initializeAdmin();
+        initializeSession();
 
         // Essaie plusieurs chemins
         String[] chemins = {
-                "/tn/formini/fxml/MainMenu.fxml",
-                "/fxml/MainMenu.fxml",
-                "/fxml/MainMenu.fxml",
-                "tn/formini/fxml/MainMenu.fxml"
+                "/fxml/MainMenu.fxml"
         };
 
         Parent root = null;
         for (String chemin : chemins) {
             try {
                 System.out.println("Tentative: " + chemin);
-                root = FXMLLoader.load(getClass().getResource(chemin));
-                if (root != null) {
+                URL resource = getClass().getResource(chemin);
+                System.out.println("Resource URL: " + (resource != null ? resource.toString() : "NULL"));
+                
+                if (resource != null) {
+                    System.out.println("Resource exists, attempting to load FXML...");
+                    root = FXMLLoader.load(resource);
                     System.out.println("FXML trouvé au chemin: " + chemin);
                     break;
+                } else {
+                    System.out.println("Resource null pour: " + chemin);
+                    // Try to debug what's available
+                    System.out.println("Current class: " + getClass().getName());
+                    System.out.println("Class loader: " + getClass().getClassLoader());
                 }
             } catch (Exception e) {
-                System.out.println("Échec pour: " + chemin);
+                System.out.println("Échec pour: " + chemin + " - " + e.getMessage());
+                e.printStackTrace();
             }
         }
 
         if (root == null) {
             System.err.println("Fichier FXML introuvable !");
             System.err.println("Dossiers disponibles dans resources:");
-            String path = getClass().getResource("/").getPath();
-            System.out.println("Resources path: " + path);
-            File dir = new File(path);
-            if (dir.exists()) {
-                listFiles(dir, "");
+            URL resourceRoot = getClass().getResource("/");
+            if (resourceRoot != null) {
+                String path = resourceRoot.getPath();
+                System.out.println("Resources path: " + path);
+                File dir = new File(path);
+                if (dir.exists()) {
+                    listFiles(dir, "");
+                }
+            } else {
+                System.err.println("Impossible de localiser le dossier des ressources (getClass().getResource(\"/\") est null)");
             }
             return;
         }
@@ -71,6 +66,23 @@ public class MainMenuApp extends Application {
         primaryStage.setTitle("Formini - Menu Principal");
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    private void initializeSession() {
+        // Session initialization - admin is already created by AdminInitializer
+        try {
+            tn.formini.services.UsersService.UserService us = new tn.formini.services.UsersService.UserService();
+            tn.formini.entities.Users.User adminUser = AdminInitializer.getAdminUser();
+            
+            if (adminUser != null) {
+                tn.formini.tools.SessionManager.setCurrentUser(adminUser);
+                System.out.println("Session active pour : " + adminUser.getNom() + " " + adminUser.getPrenom());
+            } else {
+                System.err.println("Admin user not found for session initialization");
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur session : " + e.getMessage());
+        }
     }
 
     private void listFiles(File dir, String indent) {
