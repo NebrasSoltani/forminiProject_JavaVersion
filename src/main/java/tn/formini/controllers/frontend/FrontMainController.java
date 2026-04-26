@@ -33,7 +33,32 @@ public class FrontMainController implements Initializable {
     private void loadPage(String fxml) {
         try {
             URL resource = getClass().getResource(fxml);
+            if (resource == null) {
+                System.err.println("[FrontMainController] FXML introuvable : " + fxml);
+                return;
+            }
             FXMLLoader loader = new FXMLLoader(resource);
+            /*
+             * Si Spring est disponible, on l'utilise pour créer le contrôleur
+             * (nécessaire pour les @Component avec @Autowired).
+             * Si le contrôleur n'est pas un bean Spring, on tombe en fallback
+             * sur l'instanciation standard (constructeur par défaut).
+             */
+            if (springContext != null) {
+                loader.setControllerFactory(clazz -> {
+                    try {
+                        return springContext.getBean(clazz);
+                    } catch (Exception ex) {
+                        /* Fallback : contrôleur non géré par Spring */
+                        try {
+                            return clazz.getDeclaredConstructor().newInstance();
+                        } catch (Exception e2) {
+                            throw new RuntimeException(
+                                "Impossible d'instancier le contrôleur : " + clazz.getName(), e2);
+                        }
+                    }
+                });
+            }
             contentArea.getChildren().setAll((Parent) loader.load());
         } catch (IOException e) {
             e.printStackTrace();

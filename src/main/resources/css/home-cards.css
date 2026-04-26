@@ -1,0 +1,178 @@
+/*
+ * home-cards.css
+ * Styles dédiés aux cartes de la page d'accueil (blogs + événements).
+ * Coins arrondis, ombre portée, hover élévation, badge LIVE.
+ */
+
+/* ── Carte de base ───────────────────────────────────────────────────── */
+.home-card {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.10), 12, 0, 0, 4);
+    -fx-cursor: hand;
+    -fx-transition: all 0.25s ease;
+    -fx-border-radius: 14;
+    -fx-border-color: transparent;
+    -fx-border-width: 1.5;
+}
+
+/* Hover : légère élévation + contour violet */
+.home-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(99, 102, 241, 0.22), 18, 0, 0, 8);
+    -fx-border-color: #c7d2fe;
+    -fx-translate-y: -4;
+}
+
+/* ── ScrollPane transparent (pas de fond gris) ───────────────────────── */
+.scroll-pane-transparent {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-pane-transparent .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Scrollbar invisible */
+.scroll-pane-transparent .scroll-bar:horizontal {
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
+    -fx-opacity: 0;
+}
+
+.scroll-pane-transparent .scroll-bar:vertical {
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+    -fx-opacity: 0;
+}
+
+/* ── Badges catégorie / type ─────────────────────────────────────────── */
+.badge-blog {
+    -fx-background-color: #e0e7ff;
+    -fx-text-fill: #4338ca;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-padding: 3 10;
+    -fx-background-radius: 20;
+}
+
+.badge-event {
+    -fx-background-color: #d1fae5;
+    -fx-text-fill: #065f46;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-padding: 3 10;
+    -fx-background-radius: 20;
+}
+
+/* ── Badge LIVE clignotant ───────────────────────────────────────────── */
+.badge-live {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-padding: 3 8;
+    -fx-background-radius: 20;
+}
+
+/* ── Barre de filtrage ───────────────────────────────────────────────── */
+.filter-bar {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.07), 12, 0, 0, 3);
+    -fx-padding: 24 30 20 30;
+}
+
+/* ComboBox filtre */
+.filter-combo {
+    -fx-font-size: 13px;
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 8 12;
+}
+
+.filter-combo:focused {
+    -fx-border-color: #6366f1;
+    -fx-effect: dropshadow(three-pass-box, rgba(99, 102, 241, 0.2), 6, 0, 0, 0);
+}
+
+.filter-combo .list-cell {
+    -fx-font-size: 13px;
+    -fx-padding: 6 12;
+}
+
+/* ── Bouton "Tout afficher" ──────────────────────────────────────────── */
+.btn-reset {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #475569;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 9 20;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+}
+
+.btn-reset:hover {
+    -fx-background-color: #e2e8f0;
+}
+
+/* ── Labels titres de section ────────────────────────────────────────── */
+.section-tag-blog {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #6366f1;
+    -fx-letter-spacing: 1.5px;
+}
+
+.section-tag-event {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #10b981;
+    -fx-letter-spacing: 1.5px;
+}
+
+/* ── En-tête hero (réutilisation du style existant si absent) ─────────── */
+.hero-section {
+    -fx-background-color: linear-gradient(to bottom right, #1e1b4b, #312e81, #4338ca);
+    -fx-background-radius: 20;
+    -fx-padding: 50 60;
+}
+
+.hero-title {
+    -fx-fill: white;
+    -fx-font-size: 38px;
+    -fx-font-weight: bold;
+}
+
+.hero-subtitle {
+    -fx-text-fill: rgba(255, 255, 255, 0.75);
+    -fx-font-size: 15px;
+    -fx-line-spacing: 4;
+}
+
+.hero-stats-container {
+    -fx-padding: 20 0 0 0;
+}
+
+.stat-item {
+    -fx-alignment: CENTER;
+}
+
+.stat-value {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.stat-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: rgba(255, 255, 255, 0.6);
+}
+
+.stat-sep {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-pref-width: 1.5;
+}

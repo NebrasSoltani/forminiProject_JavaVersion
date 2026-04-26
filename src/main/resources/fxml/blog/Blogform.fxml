@@ -68,13 +68,31 @@
                     <ComboBox fx:id="fieldEvenement" styleClass="form-control" maxWidth="Infinity" promptText="Lier à un événement"/>
                 </VBox>
 
+                <!-- Assistant Rédaction GROQ -->
+                <VBox GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.columnSpan="2" spacing="8">
+                    <TitledPane text="🤖 Assistant Rédaction IA (Groq)" expanded="false" styleClass="form-control">
+                        <VBox spacing="10">
+                            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+                            <ScrollPane fitToWidth="true" prefHeight="150" styleClass="scroll-pane">
+                                <VBox fx:id="chatBox" spacing="8">
+                                    <Label text="L'IA de Formini est prête à vous aider pour rédiger ou améliorer votre article !" textFill="#64748b"/>
+                                </VBox>
+                            </ScrollPane>
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <TextField fx:id="chatInput" promptText="Posez une question sur le titre ou le contenu..." HBox.hgrow="ALWAYS" styleClass="form-control"/>
+                                <Button text="Envoyer" onAction="#handleSendChatMessage" styleClass="btn-primary" style="-fx-padding: 8 15;"/>
+                            </HBox>
+                        </VBox>
+                    </TitledPane>
+                </VBox>
+
                 <!-- Tags & Publication -->
-                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="4">
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="5">
                     <Label text="Mots-clés (Tags)" styleClass="form-label"/>
                     <TextField fx:id="fieldTags" styleClass="form-control" promptText="java, dev, formation..."/>
                 </VBox>
 
-                <HBox spacing="20" GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="CENTER_LEFT">
+                <HBox spacing="20" GridPane.columnIndex="1" GridPane.rowIndex="5" alignment="CENTER_LEFT">
                     <VBox styleClass="form-group" HBox.hgrow="ALWAYS">
                         <Label text="Date" styleClass="form-label"/>
                         <DatePicker fx:id="fieldDatePublication" styleClass="form-control" maxWidth="Infinity"/>

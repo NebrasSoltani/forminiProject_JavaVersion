@@ -174,9 +174,31 @@ public class BlogListController implements Initializable {
 
             StackPane imgHeader = new StackPane();
             imgHeader.getStyleClass().add("card-image-cover");
-            Label icon = new Label("📝");
-            icon.setStyle("-fx-font-size: 40px;");
-            imgHeader.getChildren().add(icon);
+            imgHeader.setPrefHeight(180);
+
+            boolean imageLoaded = false;
+            if (b.getImage() != null && !b.getImage().trim().isEmpty()) {
+                try {
+                    String path = b.getImage();
+                    if (!path.startsWith("http") && !path.startsWith("file:")) {
+                        path = "file:" + path;
+                    }
+                    Image img = new Image(path, 320, 180, true, true);
+                    if (!img.isError()) {
+                        ImageView iv = new ImageView(img);
+                        iv.setFitWidth(320);
+                        iv.setFitHeight(180);
+                        iv.setPreserveRatio(true);
+                        imgHeader.getChildren().add(iv);
+                        imageLoaded = true;
+                    }
+                } catch (Exception ignored) {}
+            }
+            if (!imageLoaded) {
+                Label icon = new Label("📝");
+                icon.setStyle("-fx-font-size: 40px;");
+                imgHeader.getChildren().add(icon);
+            }
 
             VBox body = new VBox(15);
             body.setPadding(new javafx.geometry.Insets(25));

@@ -49,6 +49,10 @@ public class BlogFormController implements Initializable {
     @FXML private ImageView blogPreview;
     @FXML private ProgressIndicator aiLoading;
 
+    // Chatbot Groq
+    @FXML private javafx.scene.layout.VBox chatBox;
+    @FXML private TextField chatInput;
+
     private MainController   mainController;
     private Blog             blogToEdit;
     private File             imageFile;
@@ -58,6 +62,7 @@ public class BlogFormController implements Initializable {
 
     private final BlogService      blogService     = new BlogService();
     private final EvenementService evenementService = new EvenementService();
+    private final tn.formini.services.ai.GroqChatService groqService = new tn.formini.services.ai.GroqChatService();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -245,6 +250,52 @@ public class BlogFormController implements Initializable {
             blogPreview.setImage(new Image(file.toURI().toString()));
             fieldImage.setText(file.getName());
         }
+    }
+
+    @FXML
+    public void handleSendChatMessage() {
+        String msg = chatInput.getText().trim();
+        if (msg.isEmpty()) return;
+
+        chatInput.clear();
+
+        // 1. Afficher message utilisateur
+        Label userLabel = new Label("👤 Moi: " + msg);
+        userLabel.setStyle("-fx-background-color: #f1f5f9; -fx-padding: 8 12; -fx-background-radius: 12; -fx-font-weight: bold; -fx-text-fill: #334155;");
+        userLabel.setWrapText(true);
+        chatBox.getChildren().add(userLabel);
+
+        // 2. Afficher indicateur de chargement
+        Label loadingLabel = new Label("🤖 L'IA réfléchit...");
+        loadingLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-style: italic;");
+        chatBox.getChildren().add(loadingLabel);
+
+        // 3. Appel API Groq asynchrone
+        new Thread(() -> {
+            String titre   = fieldTitre.getText()   != null ? fieldTitre.getText().trim()   : "";
+            String res     = fieldResume.getText()  != null ? fieldResume.getText().trim()  : "";
+            String contenu = fieldContenu.getText() != null ? fieldContenu.getText().trim() : "";
+
+            String systemPrompt = "Tu es 'Formini IA', un assistant expert en rédaction de contenu éducatif et blogs. "
+                    + "Ton rôle est d'aider en temps réel le rédacteur à améliorer son article, trouver de bonnes idées, "
+                    + "ou lui recommander des approches selon ce qu'il a déjà écrit. "
+                    + "Sois concis, professionnel et apporte de la valeur. Utilise le Markdown pour la clarté. "
+                    + "Contexte actuel du blog (en cours d'édition) -> "
+                    + "TITRE : '" + titre + "' | "
+                    + "RÉSUMÉ : '" + res + "' | "
+                    + "CONTENU : '" + (contenu.length() > 600 ? contenu.substring(0, 600) + "..." : contenu) + "'";
+
+            String reponse = groqService.chat(systemPrompt, msg);
+
+            // 4. Mettre à jour l'UI avec la réponse
+            Platform.runLater(() -> {
+                chatBox.getChildren().remove(loadingLabel);
+                Label botLabel = new Label("🤖 Formini IA:\n" + reponse);
+                botLabel.setStyle("-fx-background-color: #eff6ff; -fx-padding: 12; -fx-background-radius: 12; -fx-border-color: #bfdbfe; -fx-border-radius: 12; -fx-text-fill: #1e3a8a;");
+                botLabel.setWrapText(true);
+                chatBox.getChildren().add(botLabel);
+            });
+        }).start();
     }
 
     @FXML
