@@ -13,9 +13,17 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+
+@Component
 public class FrontMainController implements Initializable {
 
     @FXML private StackPane contentArea;
+
+    @Autowired
+    private ApplicationContext springContext;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -119,6 +127,10 @@ public class FrontMainController implements Initializable {
         try {
             URL resource = getClass().getResource("/fxml/MainMenu.fxml");
             FXMLLoader loader = new FXMLLoader(resource);
+            // CRUCIAL: Use Spring to load the MainController and its dependencies
+            if (springContext != null) {
+                loader.setControllerFactory(springContext::getBean);
+            }
             Parent root = loader.load();
             contentArea.getScene().setRoot(root);
         } catch (IOException e) {

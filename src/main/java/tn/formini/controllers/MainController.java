@@ -12,6 +12,9 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import tn.formini.controllers.blog.BlogFormController;
 import tn.formini.controllers.blog.BlogListController;
 import tn.formini.controllers.evenement.EvenementFormController;
@@ -28,6 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
+@Component
 public class MainController implements Initializable {
 
     @FXML private StackPane contentArea;
@@ -51,6 +55,9 @@ public class MainController implements Initializable {
     @FXML private Button btnProductManage;
     @FXML private Button btnOrderManage;
 
+    @Autowired
+    private ApplicationContext springContext;
+
     private List<Button> navButtons;
 
     @Override
@@ -73,26 +80,21 @@ public class MainController implements Initializable {
 
     private Object loadPage(String fxmlPath) {
         try {
-            System.out.println("DEBUG: Loading FXML: " + fxmlPath);
+            System.out.println("DEBUG: Loading FXML with Spring: " + fxmlPath);
             URL resource = getClass().getResource(fxmlPath);
             if (resource == null) {
                 System.err.println("FXML introuvable : " + fxmlPath);
                 return null;
             }
-            System.out.println("DEBUG: FXML found at: " + resource);
 
             FXMLLoader loader = new FXMLLoader(resource);
-            Node page = loader.load();
-            System.out.println("DEBUG: FXML loaded successfully");
-            Object controller = loader.getController();
-            System.out.println("DEBUG: Controller: " + (controller != null ? controller.getClass().getSimpleName() : "null"));
-
-            System.out.println("DEBUG: ContentArea before: " + contentArea.getChildren().size() + " children");
-            contentArea.getChildren().setAll(page);
-            System.out.println("DEBUG: ContentArea after: " + contentArea.getChildren().size() + " children");
-            System.out.println("DEBUG: Page loaded: " + (page != null ? page.getClass().getSimpleName() : "null"));
+            // CRUCIAL: Utiliser le contexte Spring pour charger les controllers des pages
+            loader.setControllerFactory(springContext::getBean);
             
-            return controller;
+            Node page = loader.load();
+            contentArea.getChildren().setAll(page);
+            
+            return loader.getController();
         } catch (Exception e) {
             System.err.println("DEBUG: Error loading FXML: " + e.getMessage());
             e.printStackTrace();
@@ -144,6 +146,10 @@ public class MainController implements Initializable {
         try {
             URL resource = getClass().getResource("/fxml/frontend/FrontMain.fxml");
             FXMLLoader loader = new FXMLLoader(resource);
+            // CRUCIAL: Use Spring to load the FrontMainController and its dependencies
+            if (springContext != null) {
+                loader.setControllerFactory(springContext::getBean);
+            }
             Parent root = loader.load();
             contentArea.getScene().setRoot(root);
         } catch (IOException e) {

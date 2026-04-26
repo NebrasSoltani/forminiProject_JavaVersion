@@ -5,7 +5,10 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import tn.formini.entities.order.Order;
 import tn.formini.services.order.OrderService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class OrderEditFormController {
 
     @FXML private Label orderNumberLabel;
@@ -35,6 +38,7 @@ public class OrderEditFormController {
     @FXML private Label paymentMethodError;
     @FXML private Label paymentStatusError;
 
+    @Autowired
     private OrderService orderService;
     private Order currentOrder;
     private Runnable onOrderUpdated;
@@ -44,8 +48,7 @@ public class OrderEditFormController {
         System.out.println("DEBUG: OrderEditFormController initialize() called");
         
         try {
-            orderService = new OrderService();
-            System.out.println("DEBUG: OrderService created");
+            System.out.println("DEBUG: OrderService injected: " + (orderService != null));
             
             setupComboBoxes();
             System.out.println("DEBUG: ComboBoxes setup completed");

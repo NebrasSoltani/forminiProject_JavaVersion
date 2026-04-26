@@ -1,21 +1,33 @@
 package tn.formini.controllers.blog;
 import tn.formini.controllers.MainController;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import tn.formini.entities.evenements.Blog;
+import tn.formini.repositories.BlogRepository;
+import tn.formini.services.CloudinaryService;
 import tn.formini.services.evenementsService.BlogService;
 import tn.formini.services.evenementsService.EvenementService;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.ResourceBundle;
 
+@Component
 public class BlogFormController implements Initializable {
 
     @FXML private Label                labelFormTitle;
@@ -34,8 +46,16 @@ public class BlogFormController implements Initializable {
     @FXML private Label errContenu;
     @FXML private Label errCategorie;
 
+    @FXML private ImageView blogPreview;
+    @FXML private ProgressIndicator aiLoading;
+
     private MainController   mainController;
     private Blog             blogToEdit;
+    private File             imageFile;
+
+    @Autowired private CloudinaryService cloudinaryService;
+    @Autowired private BlogRepository blogRepository;
+
     private final BlogService      blogService     = new BlogService();
     private final EvenementService evenementService = new EvenementService();
 
@@ -100,48 +120,116 @@ public class BlogFormController implements Initializable {
                             .atZone(ZoneId.systemDefault()).toLocalDate()
             );
         }
+        if (blog.getImage() != null && blog.getImage().startsWith("http")) {
+            blogPreview.setImage(new Image(blog.getImage()));
+        }
     }
 
     @FXML
     public void saveBlog() {
         if (!validate()) return;
 
-        Blog blog = (blogToEdit != null) ? blogToEdit : new Blog();
-        blog.setTitre(fieldTitre.getText().trim());
-        blog.setCategorie(fieldCategorie.getValue());
-        blog.setResume(fieldResume.getText().trim());
-        blog.setContenu(fieldContenu.getText().trim());
-        blog.setImage(fieldImage.getText().trim());
-        String tags = fieldTags.getText().trim();
-        blog.setTags(ensureJsonArray(tags));
-        blog.setIs_publie(fieldIsPublie.isSelected());
-        blog.setDate_publication(
-                Date.from(fieldDatePublication.getValue()
-                        .atStartOfDay(ZoneId.systemDefault()).toInstant())
-        );
-        // Récupération de l'événement lié
-        Object selectedEvt = fieldEvenement.getValue();
-        if (selectedEvt instanceof tn.formini.entities.evenements.Evenement) {
-            blog.setEvenement_id(((tn.formini.entities.evenements.Evenement) selectedEvt).getId());
-        } else {
-            blog.setEvenement_id(null);
+        try {
+            String cloudinaryUrl = fieldImage.getText();
+
+            if (imageFile != null) {
+                cloudinaryUrl = cloudinaryService.uploadImage(imageFile);
+            }
+
+            Blog blog = (blogToEdit != null) ? blogToEdit : new Blog();
+            blog.setTitre(fieldTitre.getText().trim());
+            blog.setCategorie(fieldCategorie.getValue());
+            blog.setResume(fieldResume.getText().trim());
+            blog.setContenu(fieldContenu.getText().trim());
+            blog.setImage(cloudinaryUrl);
+            String tags = fieldTags.getText().trim();
+            blog.setTags(ensureJsonArray(tags));
+            blog.setIs_publie(fieldIsPublie.isSelected());
+            blog.setDate_publication(
+                    Date.from(fieldDatePublication.getValue()
+                            .atStartOfDay(ZoneId.systemDefault()).toInstant())
+            );
+            
+            Object selectedEvt = fieldEvenement.getValue();
+            if (selectedEvt instanceof tn.formini.entities.evenements.Evenement) {
+                blog.setEvenement_id(((tn.formini.entities.evenements.Evenement) selectedEvt).getId());
+            } else {
+                blog.setEvenement_id(null);
+            }
+
+            if (tn.formini.tools.SessionManager.getCurrentUser() != null) {
+                blog.setAuteur_id(tn.formini.tools.SessionManager.getCurrentUser().getId());
+            } else {
+                blog.setAuteur_id(1); 
+            }
+
+            // Validation de l'entité
+            blog.valider();
+
+            // Utilisation du repository JPA
+            blogRepository.save(blog);
+
+            showSuccess(blogToEdit == null ? "Blog ajouté avec succès !" : "Blog mis à jour !");
+            mainController.showBlogList();
+        } catch (IllegalArgumentException e) {
+            showError("Erreur de validation : " + e.getMessage());
+        } catch (Exception e) {
+            showError("Erreur d'enregistrement : " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void handleGenerateAIImage() {
+        final String titre = fieldTitre.getText().trim();
+        String initialContext = fieldContenu.getText().trim();
+        if (initialContext.isEmpty()) initialContext = fieldResume.getText().trim();
+        final String context = initialContext;
+
+        if (titre.isEmpty()) {
+            showError("Saisissez un titre pour l'IA.");
+            return;
         }
 
-        // Auteur (Session)
-        if (tn.formini.tools.SessionManager.getCurrentUser() != null) {
-            blog.setAuteur_id(tn.formini.tools.SessionManager.getCurrentUser().getId());
-        } else {
-            blog.setAuteur_id(1); // Fallback
-        }
+        aiLoading.setVisible(true);
 
-        if (blogToEdit == null) {
-            blogService.ajouter(blog);
-        } else {
-            blogService.modifier(blog);
-        }
+        new Thread(() -> {
+            try {
+                String promptText = titre + " " + (context.length() > 60 ? context.substring(0, 60) : context) + " professional blog post hero image";
+                String encodedPrompt = java.net.URLEncoder.encode(promptText, "UTF-8");
+                String apiUrl = "https://image.pollinations.ai/prompt/" + encodedPrompt + "?seed=" + System.currentTimeMillis();
+                
+                URL url = new URL(apiUrl);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setConnectTimeout(60000);
+                conn.setReadTimeout(60000);
 
-        showSuccess(blogToEdit == null ? "Blog ajouté avec succès !" : "Blog mis à jour !");
-        mainController.showBlogList();
+                if (conn.getResponseCode() == 200) {
+                    File tempFile = File.createTempFile("ai_blog_", ".jpg");
+                    tempFile.deleteOnExit();
+                    
+                    try (InputStream in = conn.getInputStream();
+                         FileOutputStream out = new FileOutputStream(tempFile)) {
+                        byte[] buffer = new byte[1024];
+                        int bytesRead;
+                        while ((bytesRead = in.read(buffer)) != -1) {
+                            out.write(buffer, 0, bytesRead);
+                        }
+                    }
+                    
+                    this.imageFile = tempFile;
+                    Platform.runLater(() -> blogPreview.setImage(new Image(tempFile.toURI().toString())));
+                } else {
+                    int responseCode = conn.getResponseCode();
+                    Platform.runLater(() -> showError("Erreur IA (Code: " + responseCode + ")"));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Platform.runLater(() -> showError("Erreur IA : " + e.getMessage()));
+            } finally {
+                Platform.runLater(() -> aiLoading.setVisible(false));
+            }
+        }).start();
     }
 
     @FXML
@@ -152,7 +240,11 @@ public class BlogFormController implements Initializable {
                 new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif")
         );
         java.io.File file = chooser.showOpenDialog(fieldImage.getScene().getWindow());
-        if (file != null) fieldImage.setText(file.toURI().toString());
+        if (file != null) {
+            this.imageFile = file;
+            blogPreview.setImage(new Image(file.toURI().toString()));
+            fieldImage.setText(file.getName());
+        }
     }
 
     @FXML
@@ -195,6 +287,13 @@ public class BlogFormController implements Initializable {
     private void showSuccess(String msg) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, msg, ButtonType.OK);
         alert.setTitle("Succès");
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+
+    private void showError(String msg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
+        alert.setTitle("Erreur");
         alert.setHeaderText(null);
         alert.showAndWait();
     }

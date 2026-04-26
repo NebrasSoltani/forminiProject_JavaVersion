@@ -14,6 +14,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.springframework.stereotype.Component;
 import tn.formini.controllers.MainController;
 import tn.formini.entities.order.Order;
 import tn.formini.services.order.OrderService;
@@ -24,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.function.Consumer;
 
+@Component
 public class OrderListController {
 
     @FXML private TextField searchField;
@@ -43,8 +45,13 @@ public class OrderListController {
     @FXML private Button lastPageBtn;
     @FXML private Label totalItemsLabel;
 
+    @org.springframework.beans.factory.annotation.Autowired
     private OrderService orderService;
     private MainController mainController;
+    
+    @org.springframework.beans.factory.annotation.Autowired
+    private org.springframework.context.ApplicationContext springContext;
+    
     private Consumer<Void> onClose;
     private List<Order> allOrders;
     private List<Order> filteredOrders;
@@ -57,7 +64,6 @@ public class OrderListController {
     @FXML
     public void initialize() {
         try {
-            orderService = new OrderService();
             setupStatusFilter();
             setupSearchListener();
             initializePagination();
@@ -377,6 +383,7 @@ public class OrderListController {
             }
             
             FXMLLoader loader = new FXMLLoader(fxmlResource);
+            loader.setControllerFactory(springContext::getBean);
             System.out.println("DEBUG: Loading FXML...");
             
             VBox root = loader.load();

@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import javafx.embed.swing.SwingFXUtils;
 import org.knowm.xchart.*;
 import org.knowm.xchart.style.Styler;
+import org.springframework.stereotype.Component;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.ArrayList;
 
+@Component
 public class StatisticsController implements Initializable {
 
     @FXML private StackPane chartContainer;

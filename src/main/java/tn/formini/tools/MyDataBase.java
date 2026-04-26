@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class MyDataBase {
-    String url ="jdbc:mysql://localhost:3306/formation_db";
+    String url ="jdbc:mysql://localhost:3306/formini_db";
     String user="root";
     String pwd="";
     private Connection cnx;

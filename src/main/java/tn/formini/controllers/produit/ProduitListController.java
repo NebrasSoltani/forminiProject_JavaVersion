@@ -12,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.springframework.stereotype.Component;
 import tn.formini.controllers.MainController;
 import tn.formini.controllers.produit.ProduitEditFormController;
 import tn.formini.entities.produits.Produit;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
+@Component
 public class ProduitListController implements Initializable {
 
     @FXML private Label labelFormTitle;

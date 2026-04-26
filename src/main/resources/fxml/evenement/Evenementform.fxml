@@ -2,6 +2,7 @@
 
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.geometry.Insets?>
 
 <VBox xmlns="http://javafx.com/javafx"
@@ -64,12 +65,18 @@
                 </VBox>
 
                 <!-- Multimédia -->
-                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="4">
-                    <Label text="Image principale" styleClass="form-label"/>
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="4" spacing="10">
+                    <Label text="Image principale (Locale ou IA 🤖)" styleClass="form-label"/>
                     <HBox spacing="10" alignment="CENTER_LEFT">
-                        <TextField fx:id="fieldImage" styleClass="form-control" promptText="URL de l'image" HBox.hgrow="ALWAYS"/>
+                        <TextField fx:id="fieldImage" styleClass="form-control" promptText="URL Cloudinary" HBox.hgrow="ALWAYS" editable="false"/>
                         <Button text="📁" onAction="#browseImage" styleClass="icon-btn"/>
+                        <Button text="🤖 IA" onAction="#handleGenerateAIImage" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" styleClass="icon-btn"/>
+                        <Button text="🔄" onAction="#handleGenerateAIImage" styleClass="icon-btn"/>
                     </HBox>
+                    <StackPane alignment="CENTER" style="-fx-background-color: #ecf0f1; -fx-background-radius: 5;">
+                        <ImageView fx:id="eventPreview" fitHeight="150.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" />
+                        <ProgressIndicator fx:id="aiLoading" visible="false" maxHeight="40" maxWidth="40" />
+                    </StackPane>
                 </VBox>
                 <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="4">
                     <Label text="Image 360°" styleClass="form-label"/>

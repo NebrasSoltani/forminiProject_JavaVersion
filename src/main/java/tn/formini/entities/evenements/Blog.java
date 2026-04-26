@@ -1,25 +1,39 @@
 package tn.formini.entities.evenements;
 
 
+import jakarta.persistence.*;
 import tn.formini.entities.Users.User;
 
 import java.util.Date;
 
+@Entity
+@Table(name = "blog")
 public class Blog {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    
     private String titre;
+    
+    @Column(columnDefinition = "TEXT")
     private String contenu;
+    
     private String image;
     private Date date_publication;
     private String categorie;
     private int auteur_id;
     private Integer evenement_id;
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String resume;
     private boolean is_publie;
     private String tags;
 
+    @Transient
     private User auteur;
+    
+    @Transient
     private Evenement evenement;
 
     public Blog() {}

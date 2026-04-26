@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 import javafx.stage.Modality;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import org.springframework.stereotype.Component;
 import tn.formini.entities.evenements.Evenement;
 import tn.formini.services.evenementsService.EvenementService;
 import tn.formini.services.ToolsService;
@@ -28,6 +29,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Component
 public class EvenementListController implements Initializable {
 
     @FXML private FlowPane eventGrid;
@@ -40,7 +42,13 @@ public class EvenementListController implements Initializable {
     @FXML private Pagination pagination;
 
     private MainController mainController;
-    private final EvenementService service = new EvenementService();
+    
+    @org.springframework.beans.factory.annotation.Autowired
+    private tn.formini.repositories.EvenementRepository evenementRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private org.springframework.context.ApplicationContext springContext;
+
     private final ToolsService toolsService = new ToolsService();
     private List<Evenement> allEvenements = new ArrayList<>();
     private List<Evenement> filteredEvenements = new ArrayList<>();
@@ -78,9 +86,10 @@ public class EvenementListController implements Initializable {
     }
 
     private void setupFilters() {
-        filterType.setItems(FXCollections.observableArrayList(
-                "Tous", "Conférence", "Atelier", "Webinaire", "Formation", "Autre"
-        ));
+        java.util.List<String> filterOptions = new java.util.ArrayList<>();
+        filterOptions.add("Tous");
+        filterOptions.addAll(Evenement.DISPLAY_TYPES);
+        filterType.setItems(FXCollections.observableArrayList(filterOptions));
         sortOptions.setItems(FXCollections.observableArrayList(
                 "Défaut", "Titre (A-Z)", "Titre (Z-A)", "Date (Récent)", "Date (Ancien)"
         ));
@@ -93,7 +102,7 @@ public class EvenementListController implements Initializable {
     }
 
     private void loadEvenements() {
-        allEvenements = service.afficher();
+        allEvenements = evenementRepository.findAll(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "id"));
         applyFilters();
     }
 
@@ -109,8 +118,9 @@ public class EvenementListController implements Initializable {
         String type = filterType.getValue();
 
         List<Evenement> temp = allEvenements.stream().filter(e -> {
-            boolean matchSearch = search.isEmpty() || e.getTitre().toLowerCase().contains(search);
-            boolean matchType = type == null || type.equals("Tous") || e.getType().equalsIgnoreCase(type);
+            boolean matchSearch = search.isEmpty() || (e.getTitre() != null && e.getTitre().toLowerCase().contains(search));
+            boolean matchType = type == null || type.equals("Tous") ||
+                    (e.getType() != null && e.getType().equalsIgnoreCase(Evenement.normalizeType(type)));
             boolean matchLive = !filterLive.isSelected() || e.isLive();
             boolean matchActif = !filterActif.isSelected() || e.isIs_actif();
             return matchSearch && matchType && matchLive && matchActif;
@@ -242,6 +252,7 @@ public class EvenementListController implements Initializable {
     public void showEventStats() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/evenement/Statistics.fxml"));
+            loader.setControllerFactory(springContext::getBean);
             Pane root = loader.load();
             StatisticsController controller = loader.getController();
             
@@ -289,7 +300,7 @@ public class EvenementListController implements Initializable {
         confirm.setTitle("Confirmation");
         confirm.showAndWait().ifPresent(bt -> {
             if (bt == ButtonType.YES) {
-                service.supprimer(evt.getId());
+                evenementRepository.delete(evt);
                 loadEvenements();
             }
         });

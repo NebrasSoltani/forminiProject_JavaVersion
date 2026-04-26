@@ -7,9 +7,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.springframework.stereotype.Component;
 import tn.formini.entities.Users.User;
 import tn.formini.services.UsersService.SessionManager;
 
+@Component
 public class DashboardController {
 
     @FXML

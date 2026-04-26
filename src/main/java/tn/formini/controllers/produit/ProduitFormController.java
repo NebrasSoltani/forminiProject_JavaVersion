@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
+import org.springframework.stereotype.Component;
 import tn.formini.controllers.MainController;
 import tn.formini.entities.produits.Produit;
 import tn.formini.services.produitsService.ProduitService;
@@ -18,6 +19,7 @@ import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
+@Component
 public class ProduitFormController implements Initializable {
 
     @FXML private Label labelFormTitle;

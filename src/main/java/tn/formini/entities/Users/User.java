@@ -1,11 +1,15 @@
 package tn.formini.entities.Users;
 
 
+import jakarta.persistence.*;
 import java.util.Date;
 
-
+@Entity
+@Table(name = "user")
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String email;
     private String roles; // JSON
@@ -19,7 +23,7 @@ public class User {
     private String niveau_etude;
     private String role_utilisateur;
     private String photo;
-    private boolean is_email_verified;
+    private boolean is_email_verified = false;
     private String email_verification_token;
     private Date email_verification_token_expires_at;
     private Date email_verified_at;
@@ -31,9 +35,9 @@ public class User {
     private String avatar_url;
     private String google_authenticator_secret;
     private String backup_codes; // JSON
-    private boolean email_auth_enabled;
-    private boolean google_auth_enabled;
-    private boolean phone_verified;
+    private boolean email_auth_enabled = false;
+    private boolean google_auth_enabled = false;
+    private boolean phone_verified = false;
     private Date phone_verified_at;
 
     private static final String[] ROLES_VALIDES = {"admin", "formateur", "apprenant", "societe"};

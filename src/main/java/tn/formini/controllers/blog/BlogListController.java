@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 import javafx.stage.Modality;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import org.springframework.stereotype.Component;
 import tn.formini.entities.evenements.Blog;
 import tn.formini.services.evenementsService.BlogService;
 import tn.formini.services.ToolsService;
@@ -29,6 +30,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Component
 public class BlogListController implements Initializable {
 
     @FXML private FlowPane blogGrid;
@@ -40,7 +42,13 @@ public class BlogListController implements Initializable {
     @FXML private Pagination pagination;
 
     private MainController mainController;
-    private final BlogService blogService = new BlogService();
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private tn.formini.repositories.BlogRepository blogRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private org.springframework.context.ApplicationContext springContext;
+
     private final ToolsService toolsService = new ToolsService();
     private List<Blog> allBlogs = new ArrayList<>();
     private List<Blog> filteredBlogs = new ArrayList<>();
@@ -95,7 +103,7 @@ public class BlogListController implements Initializable {
     }
 
     private void loadBlogs() {
-        allBlogs = blogService.afficher();
+        allBlogs = blogRepository.findAll(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "id"));
         applyFilters();
     }
 
@@ -227,6 +235,7 @@ public class BlogListController implements Initializable {
     public void showBlogStats() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/evenement/Statistics.fxml"));
+            loader.setControllerFactory(springContext::getBean);
             Pane root = loader.load();
             StatisticsController controller = loader.getController();
             
@@ -273,7 +282,7 @@ public class BlogListController implements Initializable {
         confirm.setTitle("Confirmation de suppression");
         confirm.showAndWait().ifPresent(bt -> {
             if (bt == ButtonType.YES) {
-                blogService.supprimer(blog.getId());
+                blogRepository.delete(blog);
                 loadBlogs();
             }
         });

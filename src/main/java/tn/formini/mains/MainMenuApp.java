@@ -1,99 +1,63 @@
 package tn.formini.mains;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
+import tn.formini.ForminiApplication;
 import tn.formini.utils.AdminInitializer;
-import java.io.File;
 import java.net.URL;
 
 public class MainMenuApp extends Application {
+
+    private static ConfigurableApplicationContext context;
+
+    @Override
+    public void init() {
+        // Démarre Spring Boot en même temps que JavaFX
+        context = new SpringApplicationBuilder(ForminiApplication.class)
+                .headless(false)
+                .run();
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         AdminInitializer.initializeAdmin();
         initializeSession();
 
-        // Essaie plusieurs chemins
-        String[] chemins = {
-                "/fxml/MainMenu.fxml"
-        };
-
-        Parent root = null;
-        for (String chemin : chemins) {
-            try {
-                System.out.println("Tentative: " + chemin);
-                URL resource = getClass().getResource(chemin);
-                System.out.println("Resource URL: " + (resource != null ? resource.toString() : "NULL"));
-                
-                if (resource != null) {
-                    System.out.println("Resource exists, attempting to load FXML...");
-                    root = FXMLLoader.load(resource);
-                    System.out.println("FXML trouvé au chemin: " + chemin);
-                    break;
-                } else {
-                    System.out.println("Resource null pour: " + chemin);
-                    // Try to debug what's available
-                    System.out.println("Current class: " + getClass().getName());
-                    System.out.println("Class loader: " + getClass().getClassLoader());
-                }
-            } catch (Exception e) {
-                System.out.println("Échec pour: " + chemin + " - " + e.getMessage());
-                e.printStackTrace();
-            }
-        }
-
-        if (root == null) {
-            System.err.println("Fichier FXML introuvable !");
-            System.err.println("Dossiers disponibles dans resources:");
-            URL resourceRoot = getClass().getResource("/");
-            if (resourceRoot != null) {
-                String path = resourceRoot.getPath();
-                System.out.println("Resources path: " + path);
-                File dir = new File(path);
-                if (dir.exists()) {
-                    listFiles(dir, "");
-                }
-            } else {
-                System.err.println("Impossible de localiser le dossier des ressources (getClass().getResource(\"/\") est null)");
-            }
-            return;
-        }
-
+        URL resource = getClass().getResource("/fxml/MainMenu.fxml");
+        
+        // On demande à FXMLLoader d'utiliser Spring pour créer les instances des controllers
+        FXMLLoader loader = new FXMLLoader(resource);
+        loader.setControllerFactory(context::getBean);
+        
+        Parent root = loader.load();
         Scene scene = new Scene(root);
         primaryStage.setTitle("Formini - Menu Principal");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
+    @Override
+    public void stop() {
+        if (context != null) {
+            context.close();
+        }
+        Platform.exit();
+    }
+
     private void initializeSession() {
-        // Session initialization - admin is already created by AdminInitializer
         try {
-            tn.formini.services.UsersService.UserService us = new tn.formini.services.UsersService.UserService();
             tn.formini.entities.Users.User adminUser = AdminInitializer.getAdminUser();
-            
             if (adminUser != null) {
                 tn.formini.tools.SessionManager.setCurrentUser(adminUser);
-                System.out.println("Session active pour : " + adminUser.getNom() + " " + adminUser.getPrenom());
-            } else {
-                System.err.println("Admin user not found for session initialization");
             }
         } catch (Exception e) {
             System.err.println("Erreur session : " + e.getMessage());
-        }
-    }
-
-    private void listFiles(File dir, String indent) {
-        File[] files = dir.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                System.out.println(indent + file.getName());
-                if (file.isDirectory()) {
-                    listFiles(file, indent + "  ");
-                }
-            }
         }
     }
 

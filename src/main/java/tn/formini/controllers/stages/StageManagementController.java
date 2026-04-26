@@ -9,6 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import org.springframework.stereotype.Component;
 import tn.formini.entities.stages.Candidature;
 import tn.formini.entities.stages.OffreStage;
 import tn.formini.services.stageService.CandidatureService;
@@ -23,6 +24,7 @@ import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.List;
 
+@Component
 public class StageManagementController implements Initializable {
 
     @FXML private TextField txtTitreOffre;

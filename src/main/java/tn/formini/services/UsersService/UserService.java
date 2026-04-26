@@ -20,7 +20,7 @@ public class UserService implements service<User> {
     public void ajouter(User u) {
 
 
-        String req = "INSERT INTO user (email, roles, password, nom, prenom, telephone, gouvernorat, date_naissance, role_utilisateur) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String req = "INSERT INTO user (email, roles, password, nom, prenom, telephone, gouvernorat, date_naissance, role_utilisateur, email_auth_enabled, google_auth_enabled, phone_verified, is_email_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             // Hash the password before storing
             String hashedPassword = PasswordUtil.hashPassword(u.getPassword());
@@ -35,6 +35,10 @@ public class UserService implements service<User> {
             ps.setString(7, u.getGouvernorat());
             ps.setTimestamp(8, u.getDate_naissance() != null ? new Timestamp(u.getDate_naissance().getTime()) : null);
             ps.setString(9, u.getRole_utilisateur());
+            ps.setBoolean(10, u.isEmail_auth_enabled());
+            ps.setBoolean(11, u.isGoogle_auth_enabled());
+            ps.setBoolean(12, u.isPhone_verified());
+            ps.setBoolean(13, u.isIs_email_verified());
             ps.executeUpdate();
             
             // Récupérer l'ID généré

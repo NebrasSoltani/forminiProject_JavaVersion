@@ -1,16 +1,22 @@
 package tn.formini.entities.evenements;
 
 
+import jakarta.persistence.*;
 import tn.formini.entities.Users.User;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Entity
+@Table(name = "evenement")
 public class Evenement {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String titre;
+    @Column(columnDefinition = "TEXT")
     private String description;
     private Date date_debut;
     private Date date_fin;
@@ -19,40 +25,67 @@ public class Evenement {
     private Integer nombre_places;
     private boolean is_actif;
     private String type;
+    @Column(columnDefinition = "TEXT")
     private String filieres;      // JSON
+    @Column(columnDefinition = "TEXT")
     private String tags;          // JSON
     private String image360;
     private String url_street_view;
+    @Column(columnDefinition = "TEXT")
     private String resume_auto;
     private Date resume_generated_at;
+    @Column(columnDefinition = "TEXT")
     private String live_summary_data; // JSON
     private String url_live;
     private boolean live;
     private String stream_url;
 
 
+    @Transient
     private User organisateur; // objet lié
 
     /** 1-N : participations à cet événement */
+    @Transient
     private List<ParticipationEvenement> participations = new ArrayList<>();
 
     /** 1-N : commentaires live */
+    @Transient
     private List<LiveComment> liveComments = new ArrayList<>();
 
     /** 1-N : réactions live */
+    @Transient
     private List<LiveReaction> liveReactions = new ArrayList<>();
 
     /** 1-N : blogs liés à cet événement */
+    @Transient
     private List<Blog> blogs = new ArrayList<>();
 
     public static final String[] TYPES_VALIDES = {
             "conference", "atelier", "webinaire", "musique",
-            "technologie", "exposition", "formation", "innovation"
+            "technologie", "exposition", "formation", "innovation", "autre"
     };
 
+    /** French UI labels shown in ComboBox (must match normalizeType mapping below). */
     public static final List<String> DISPLAY_TYPES = List.of(
-            "Tous", "Conférence", "Atelier", "Webinaire", "Formation", "Autre"
+            "Conférence", "Atelier", "Webinaire", "Musique",
+            "Technologie", "Exposition", "Formation", "Innovation", "Autre"
     );
+
+    /**
+     * Converts a French display label (e.g. "Conférence") to the internal
+     * lowercase ASCII key stored in the database (e.g. "conference").
+     */
+    public static String normalizeType(String rawType) {
+        if (rawType == null) return "autre";
+        return rawType.toLowerCase()
+                .replace("é", "e").replace("è", "e").replace("ê", "e").replace("ë", "e")
+                .replace("à", "a").replace("â", "a")
+                .replace("î", "i").replace("ï", "i")
+                .replace("ô", "o")
+                .replace("ù", "u").replace("û", "u").replace("ü", "u")
+                .replace("ç", "c")
+                .trim();
+    }
 
     public Evenement() {}
 
