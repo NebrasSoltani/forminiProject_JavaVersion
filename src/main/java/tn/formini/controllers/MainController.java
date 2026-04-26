@@ -274,7 +274,7 @@ public class MainController implements Initializable {
     public void showProductForm(tn.formini.entities.produits.Produit produit) {
         updateActiveButton(btnProductAdd);
         labelPageTitle.setText(produit == null ? "Nouveau Produit" : "Modifier le Produit");
-        ProduitFormController controller = (ProduitFormController) loadPage("/fxml/produits/ProduitForm_Simple.fxml");
+        ProduitFormController controller = (ProduitFormController) loadPage("/fxml/produits/ProduitForm_Compact.fxml");
         if (controller != null) {
             controller.setMainController(this);
             if (produit != null) {

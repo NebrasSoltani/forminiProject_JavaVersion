@@ -4,40 +4,85 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="tn.formini.controllers.frontend.CartController"
-      spacing="14" styleClass="content-area">
+<ScrollPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="tn.formini.controllers.frontend.CartController"
+            fitToWidth="true"
+            hbarPolicy="NEVER"
+            vbarPolicy="AS_NEEDED"
+            styleClass="cart-page-scroll">
 
-    <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 22 30 0 30;">
-        <Label text="Votre panier" styleClass="page-title"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="btnPrintInvoice" text="&#128196; Imprimer facture" onAction="#printInvoice" styleClass="btn-info btn-small"/>
-        <Button fx:id="btnClear" text="Vider" onAction="#clearCart" styleClass="btn-secondary btn-small"/>
-        <Button fx:id="btnValidate" text="Valider la commande" onAction="#validateOrder" styleClass="btn-primary"/>
-    </HBox>
+    <VBox spacing="20" style="-fx-background-color: #f8f9fa;" fillWidth="true">
+        <padding>
+            <Insets top="24" right="28" bottom="28" left="28"/>
+        </padding>
 
-    <Label fx:id="labelEmpty"
-           text="Votre panier est vide."
-           style="-fx-padding: 40 30 0 30; -fx-text-fill: #64748b; -fx-font-size: 14px;"/>
+        <!-- En-tête -->
+        <HBox alignment="CENTER_LEFT" spacing="16" style="-fx-background-color: white; -fx-border-radius: 8px; -fx-padding: 15px;">
+            <Label text="Mon Panier" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnGetSuggestions" text="Suggestions" onAction="#handleGetSuggestions" 
+                    style="-fx-background-color: #e3f2fd; -fx-border-color: #2196f3; -fx-border-width: 2px; 
+                           -fx-text-fill: #1976d2; -fx-font-weight: bold; -fx-font-size: 14px; 
+                           -fx-background-radius: 8px; -fx-border-radius: 8px; -fx-padding: 10px 20px; -fx-cursor: hand;"/>
+            <Button fx:id="btnPrintInvoice" text="Imprimer" onAction="#printInvoice" 
+                    style="-fx-background-color: #fff3e0; -fx-border-color: #ff9800; -fx-border-width: 2px; 
+                           -fx-text-fill: #e65100; -fx-font-weight: bold; -fx-font-size: 14px; 
+                           -fx-background-radius: 8px; -fx-border-radius: 8px; -fx-padding: 10px 20px; -fx-cursor: hand;"/>
+            <Button fx:id="btnClear" text="Vider" onAction="#clearCart" 
+                    style="-fx-background-color: #ffebee; -fx-border-color: #f44336; -fx-border-width: 2px; 
+                           -fx-text-fill: #d32f2f; -fx-font-weight: bold; -fx-font-size: 14px; 
+                           -fx-background-radius: 8px; -fx-border-radius: 8px; -fx-padding: 10px 20px; -fx-cursor: hand;"/>
+            <Button fx:id="btnValidate" text="Valider" onAction="#validateOrder" 
+                    style="-fx-background-color: #e8f5e8; -fx-border-color: #4caf50; -fx-border-width: 2px; 
+                           -fx-text-fill: #2e7d32; -fx-font-weight: bold; -fx-font-size: 14px; 
+                           -fx-background-radius: 8px; -fx-border-radius: 8px; -fx-padding: 10px 20px; -fx-cursor: hand;"/>
+        </HBox>
 
-    <TableView fx:id="table" VBox.vgrow="ALWAYS" styleClass="modern-table cart-table" style="-fx-padding: 12 30 0 30;">
-        <columns>
-            <TableColumn fx:id="colName" text="Produit" prefWidth="420"/>
-            <TableColumn fx:id="colQty" text="Qté" prefWidth="110"/>
-            <TableColumn fx:id="colUnitPrice" text="Prix" prefWidth="110"/>
-            <TableColumn fx:id="colLineTotal" text="Total ligne" prefWidth="130"/>
-            <TableColumn fx:id="colActions" text="" prefWidth="160"/>
-        </columns>
-    </TableView>
+        <!-- Panier -->
+        <VBox spacing="14" style="-fx-background-color: white; -fx-border-color: #e9ecef; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-padding: 20px;" fillWidth="true">
+            <Label fx:id="labelEmpty" text="Votre panier est vide"
+                   style="-fx-font-size: 16px; -fx-text-fill: #6c757d; -fx-font-style: italic;" visible="false"/>
 
-    <HBox alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 12 30 30 30;">
-        <VBox styleClass="cart-summary-card" alignment="CENTER_RIGHT" spacing="6">
-            <Label text="Total à payer" styleClass="cart-summary-title"/>
-            <Label fx:id="labelItemsCount" text="0 produits / 0 articles" styleClass="cart-summary-meta"/>
-            <Label fx:id="labelGrandTotal" text="0.000 DT" styleClass="cart-summary-value"/>
+            <TableView fx:id="table" VBox.vgrow="ALWAYS" style="-fx-background-color: white;"
+                       minHeight="220" prefHeight="280">
+                <columns>
+                    <TableColumn fx:id="colName" text="Produit" prefWidth="280" minWidth="180"/>
+                    <TableColumn fx:id="colQty" text="Quantité" prefWidth="88" minWidth="72"/>
+                    <TableColumn fx:id="colUnitPrice" text="Prix U." prefWidth="104" minWidth="88"/>
+                    <TableColumn fx:id="colLineTotal" text="Total" prefWidth="104" minWidth="88"/>
+                    <TableColumn fx:id="colActions" text="Actions" prefWidth="128" minWidth="108"/>
+                </columns>
+            </TableView>
+
+            <HBox alignment="CENTER_RIGHT" style="-fx-background-color: #f8f9fa; -fx-border-radius: 6px; -fx-padding: 12px;">
+                <VBox alignment="CENTER_RIGHT" spacing="4">
+                    <Label fx:id="labelItemsCount" text="0 article(s)" style="-fx-font-size: 14px; -fx-text-fill: #6c757d;"/>
+                    <Label fx:id="labelGrandTotal" text="0.000 DT" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                </VBox>
+            </HBox>
         </VBox>
-    </HBox>
 
-</VBox>
+        <!-- Suggestions -->
+        <VBox spacing="14" style="-fx-background-color: white; -fx-border-color: #e9ecef; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-padding: 20px;" fillWidth="true" VBox.vgrow="ALWAYS" minHeight="260">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="Suggestions pour vous" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                <ProgressIndicator fx:id="suggestionsLoading" prefWidth="20" prefHeight="20" visible="false"/>
+            </HBox>
 
+            <ScrollPane fx:id="suggestionsScrollPane" fitToWidth="true" minHeight="220" prefHeight="360"
+                        VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-border-color: #e9ecef; -fx-border-width: 1px; -fx-border-radius: 6px;">
+                <VBox fx:id="suggestionsContainer" spacing="14" fillWidth="true">
+                    <padding>
+                        <Insets top="16" right="16" bottom="16" left="16"/>
+                    </padding>
+                </VBox>
+            </ScrollPane>
+
+            <VBox fx:id="noSuggestionsContainer" alignment="CENTER" spacing="6" visible="true">
+                <Label text="Aucune suggestion affichée" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #6c757d;"/>
+                <Label text="Remplissez votre panier puis cliquez sur « Suggestions » pour voir des idées." style="-fx-font-size: 14px; -fx-text-fill: #6c757d; -fx-wrap-text: true;"/>
+            </VBox>
+        </VBox>
+    </VBox>
+</ScrollPane>
