@@ -11,6 +11,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import tn.formini.controllers.blog.BlogFormController;
 import tn.formini.controllers.blog.BlogListController;
 import tn.formini.controllers.evenement.EvenementFormController;
@@ -35,6 +36,9 @@ public class MainController implements Initializable {
     @FXML private Label     labelUserName;
     @FXML private Label     labelUserRole;
 
+    @FXML private VBox sidebar;
+    @FXML private Circle userAvatar;
+
     @FXML private Button btnDashboard;
     @FXML private Button btnBlogList;
     @FXML private Button btnBlogAdd;
@@ -43,6 +47,7 @@ public class MainController implements Initializable {
     @FXML private Button btnProductList;
     @FXML private Button btnStageList;
     @FXML private Button btnProductAdd;
+    @FXML private Button btnCandidatures;
     @FXML private Button btnProductManage;
     @FXML private Button btnOrderManage;
 

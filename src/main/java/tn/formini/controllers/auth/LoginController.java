@@ -11,6 +11,7 @@ import tn.formini.controllers.frontend.FrontMainController;
 import tn.formini.entities.Users.User;
 import tn.formini.services.UsersService.LoginService;
 import tn.formini.services.UsersService.SessionManager;
+import java.util.prefs.Preferences;
 
 
 public class LoginController {
@@ -54,11 +55,16 @@ public class LoginController {
     private LoginService loginService;
     private SessionManager sessionManager;
     private Runnable onBack;
+    private Preferences prefs;
 
     @FXML
     public void initialize() {
         loginService = new LoginService();
         sessionManager = SessionManager.getInstance();
+        prefs = Preferences.userNodeForPackage(LoginController.class);
+        
+        // Load saved email if remember me was checked
+        loadRememberedCredentials();
         
         // Clear errors on input change
         fieldEmail.textProperty().addListener((obs, oldVal, newVal) -> {
@@ -79,40 +85,50 @@ public class LoginController {
     @FXML
     public void onLogin(ActionEvent event) {
         clearErrors();
-        
+
         String email = fieldEmail.getText().trim();
         String password = getPasswordText();
-        
+
         // Validate input
         if (!validateInput(email, password)) {
             return;
         }
-        
+
         // Authenticate user
         User user = loginService.authenticate(email, password);
-        
+
         if (user != null) {
             // Check if account is verified
             if (!loginService.isAccountVerified(user)) {
-                showError("Veuillez vérifier votre adresse email avant de vous connecter.");
+                // Create session temporarily for verification
+                sessionManager.login(user);
+                showInfo("Veuillez vérifier votre adresse email.");
+                navigateToEmailVerification(user.getEmail());
                 return;
             }
-            
+
             // Check if account is active
             if (!loginService.isAccountActive(user)) {
                 showError("Votre compte a été désactivé. Veuillez contacter l'administrateur.");
                 return;
             }
-            
+
             // Create session
             sessionManager.login(user);
-            
+
+            // Save remember me preference
+            if (cbRememberMe.isSelected()) {
+                saveRememberedCredentials(email, password);
+            } else {
+                clearRememberedCredentials();
+            }
+
             // TODO: Update last login when database column is available
             // loginService.updateLastLogin(user.getId());
-            
+
             showSuccess("Connexion réussie ! Redirection...");
             navigateToEditProfile();
-            
+
         } else {
             showError("Email ou mot de passe incorrect.");
         }
@@ -120,8 +136,21 @@ public class LoginController {
 
     @FXML
     public void onForgotPassword(ActionEvent event) {
-        // TODO: Implement password recovery
-        showInfo("Fonctionnalité de récupération de mot de passe bientôt disponible.");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth/PasswordResetRequest.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) btnForgotPassword.getScene().getWindow();
+            if (stage.getScene() != null) {
+                stage.getScene().setRoot(root);
+            } else {
+                stage.setScene(new javafx.scene.Scene(root));
+            }
+            stage.setTitle("Formini - Reset Password");
+        } catch (Exception e) {
+            showError("Erreur lors de l'ouverture de la page de réinitialisation.");
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -288,7 +317,51 @@ public class LoginController {
         }
     }
 
+    private void navigateToEmailVerification(String email) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth/EmailVerification.fxml"));
+            Parent root = loader.load();
+
+            EmailVerificationController controller = loader.getController();
+            controller.setUserEmail(email);
+
+            Stage stage = (Stage) btnLogin.getScene().getWindow();
+            if (stage.getScene() != null) {
+                stage.getScene().setRoot(root);
+            } else {
+                stage.setScene(new javafx.scene.Scene(root));
+            }
+            stage.setTitle("Formini - Vérification Email");
+        } catch (Exception e) {
+            showError("Erreur lors de l'ouverture de la page de vérification.");
+            e.printStackTrace();
+        }
+    }
+
     public void setOnBack(Runnable onBack) {
         this.onBack = onBack;
+    }
+
+    private void loadRememberedCredentials() {
+        boolean rememberMe = prefs.getBoolean("rememberMe", false);
+        if (rememberMe) {
+            String savedEmail = prefs.get("email", "");
+            String savedPassword = prefs.get("password", "");
+            fieldEmail.setText(savedEmail);
+            fieldPassword.setText(savedPassword);
+            cbRememberMe.setSelected(true);
+        }
+    }
+
+    private void saveRememberedCredentials(String email, String password) {
+        prefs.putBoolean("rememberMe", true);
+        prefs.put("email", email);
+        prefs.put("password", password);
+    }
+
+    private void clearRememberedCredentials() {
+        prefs.putBoolean("rememberMe", false);
+        prefs.remove("email");
+        prefs.remove("password");
     }
 }
