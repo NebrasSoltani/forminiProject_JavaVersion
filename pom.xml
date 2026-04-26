@@ -40,6 +40,20 @@
             <version>1.6.2</version>
         </dependency>
 
+        <!-- ScribeJava for OAuth2 -->
+        <dependency>
+            <groupId>com.github.scribejava</groupId>
+            <artifactId>scribejava-apis</artifactId>
+            <version>8.3.1</version>
+        </dependency>
+
+        <!-- JSON processing for OAuth responses -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+
         <!-- JavaFX Dependencies (sans classifier win) -->
         <dependency>
             <groupId>org.openjfx</groupId>
