@@ -28,6 +28,7 @@
                 <Hyperlink text="Accueil" onAction="#showHome" styleClass="front-nav-link" style="-fx-text-fill: -fx-primary; -fx-font-weight: bold; -fx-font-size: 12px;"/>
                 <Hyperlink text="Formations" onAction="#showFormations" styleClass="front-nav-link" style="-fx-font-size: 12px;"/>
                 <Hyperlink text="Boutique" onAction="#showShop" styleClass="front-nav-link" style="-fx-font-size: 12px;"/>
+                <Hyperlink text="Suggestions IA" onAction="#showAISuggestions" styleClass="front-nav-link" style="-fx-text-fill: #9b59b6; -fx-font-weight: bold; -fx-font-size: 12px;"/>
                 <Hyperlink text="Panier" onAction="#showCart" styleClass="front-nav-link" style="-fx-font-size: 12px;"/>
                 <Hyperlink text="Événements" onAction="#showEvents" styleClass="front-nav-link" style="-fx-font-size: 12px;"/>
                 <Hyperlink text="À Propos" onAction="#showAbout" styleClass="front-nav-link" style="-fx-font-size: 12px;"/>
