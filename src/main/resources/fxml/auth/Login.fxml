@@ -105,6 +105,34 @@
                         <Region styleClass="divider-line" HBox.hgrow="ALWAYS"/>
                     </HBox>
 
+                    <!-- OAuth Buttons -->
+                    <VBox spacing="12">
+                        <Button fx:id="btnGoogleLogin" onAction="#onGoogleLogin" styleClass="btn-oauth btn-google" maxWidth="Infinity">
+                            <graphic>
+                                <HBox spacing="12" alignment="CENTER">
+                                    <Label text="G" styleClass="oauth-icon-google"/>
+                                    <Label text="Continuer avec Google" styleClass="oauth-text"/>
+                                </HBox>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="btnGithubLogin" onAction="#onGithubLogin" styleClass="btn-oauth btn-github" maxWidth="Infinity">
+                            <graphic>
+                                <HBox spacing="12" alignment="CENTER">
+                                    <Label text="⚡" styleClass="oauth-icon-github"/>
+                                    <Label text="Continuer avec GitHub" styleClass="oauth-text"/>
+                                </HBox>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="btnCloudflareLogin" onAction="#onCloudflareLogin" styleClass="btn-oauth btn-cloudflare" maxWidth="Infinity">
+                            <graphic>
+                                <HBox spacing="12" alignment="CENTER">
+                                    <Label text="☁" styleClass="oauth-icon-cloudflare"/>
+                                    <Label text="Continuer avec Cloudflare" styleClass="oauth-text"/>
+                                </HBox>
+                            </graphic>
+                        </Button>
+                    </VBox>
+
                     <!-- Lien inscription -->
                     <HBox spacing="8" alignment="CENTER">
                         <Label text="Pas encore de compte ?" styleClass="login-text"/>

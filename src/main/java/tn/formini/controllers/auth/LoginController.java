@@ -11,6 +11,7 @@ import tn.formini.controllers.frontend.FrontMainController;
 import tn.formini.entities.Users.User;
 import tn.formini.services.UsersService.LoginService;
 import tn.formini.services.UsersService.SessionManager;
+import tn.formini.services.auth.OAuthCallbackHandler;
 import java.util.prefs.Preferences;
 
 
@@ -33,6 +34,15 @@ public class LoginController {
     
     @FXML
     private Button btnSignup;
+    
+    @FXML
+    private Button btnGoogleLogin;
+    
+    @FXML
+    private Button btnGithubLogin;
+    
+    @FXML
+    private Button btnCloudflareLogin;
     
     @FXML
     private Button btnTogglePassword;
@@ -227,6 +237,57 @@ public class LoginController {
         } catch (Exception e) {
             System.err.println("Erreur lors de l'ouverture de la page d'inscription: " + e.getMessage());
         }
+    }
+
+    @FXML
+    public void onGoogleLogin(ActionEvent event) {
+        handleOAuthLogin("google");
+    }
+
+    @FXML
+    public void onGithubLogin(ActionEvent event) {
+        handleOAuthLogin("github");
+    }
+
+    @FXML
+    public void onCloudflareLogin(ActionEvent event) {
+        handleOAuthLogin("cloudflare");
+    }
+
+    private void handleOAuthLogin(String provider) {
+        // Run OAuth in a separate thread to avoid blocking UI
+        new Thread(() -> {
+            try {
+                OAuthCallbackHandler handler = new OAuthCallbackHandler();
+                User user;
+                
+                if (provider.equals("google")) {
+                    user = handler.authenticateWithGoogle();
+                } else if (provider.equals("github")) {
+                    user = handler.authenticateWithGithub();
+                } else {
+                    user = handler.authenticateWithCloudflare();
+                }
+                
+                if (user != null) {
+                    // Update UI on JavaFX Application Thread
+                    javafx.application.Platform.runLater(() -> {
+                        sessionManager.login(user);
+                        showSuccess("Connexion via " + provider + " réussie !");
+                        navigateToEditProfile();
+                    });
+                } else {
+                    javafx.application.Platform.runLater(() -> {
+                        showError("Échec de l'authentification " + provider + ". Veuillez réessayer.");
+                    });
+                }
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> {
+                    showError("Erreur lors de l'authentification: " + e.getMessage());
+                });
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private String getPasswordText() {
