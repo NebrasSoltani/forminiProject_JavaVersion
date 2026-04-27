@@ -163,6 +163,7 @@ public class CartController implements Initializable {
             return;
         }
 
+        System.out.println("=== DÉBUT SUGGESTIONS PANIER ===");
         showSuggestionsLoading(true);
         if (suggestionsScrollPane != null) {
             suggestionsScrollPane.setVisible(true);
@@ -173,9 +174,19 @@ public class CartController implements Initializable {
             .map(CartItem::getProduit)
             .toList();
 
+        System.out.println("Produits dans le panier pour IA: " + cartProducts.size());
+        for (int i = 0; i < cartProducts.size(); i++) {
+            Produit p = cartProducts.get(i);
+            System.out.println("  " + (i+1) + ". " + p.getNom() + " (" + p.getCategorie() + ")");
+        }
+
         advancedAIService.getCartBasedSuggestions(cartProducts)
             .thenAccept(suggestions -> {
-                System.out.println("Suggestions IA obtenues: " + suggestions.size() + " produits");
+                System.out.println("=== RÉPONSE IA REÇUE ===");
+                System.out.println("Suggestions IA brutes: " + suggestions.size());
+                for (int i = 0; i < suggestions.size(); i++) {
+                    System.out.println("  " + (i+1) + ". " + suggestions.get(i));
+                }
                 
                 // Convertir les suggestions en objets Produit (si possible)
                 List<Produit> produitsSuggestionnes = convertSuggestionsToProducts(suggestions);
@@ -186,16 +197,21 @@ public class CartController implements Initializable {
                 });
             })
             .exceptionally(throwable -> {
-                System.err.println("Erreur suggestions IA: " + throwable.getMessage());
+                System.err.println("=== ERREUR SUGGESTIONS IA ===");
+                System.err.println("Erreur: " + throwable.getMessage());
+                throwable.printStackTrace();
                 
                 // Fallback vers l'ancien système
                 try {
+                    System.out.println("=== UTILISATION FALLBACK ===");
                     List<Produit> fallbackSuggestions = cartAIService.getProduitsComplementaires();
+                    System.out.println("Fallback suggestions: " + fallbackSuggestions.size());
                     Platform.runLater(() -> {
                         showSuggestionsLoading(false);
                         displaySuggestions(fallbackSuggestions);
                     });
                 } catch (Exception fallbackError) {
+                    System.err.println("Erreur fallback: " + fallbackError.getMessage());
                     Platform.runLater(() -> {
                         showSuggestionsLoading(false);
                         showError("Erreur de suggestions", "Impossible d'obtenir des suggestions: " + fallbackError.getMessage());
@@ -698,6 +714,13 @@ public class CartController implements Initializable {
         
         System.out.println("=== CONVERSION SUGGESTIONS IA ===");
         System.out.println("Suggestions reçues: " + suggestions.size());
+        
+        // Si aucune suggestion, créer des suggestions par défaut
+        if (suggestions.isEmpty()) {
+            System.out.println("⚠️ Aucune suggestion IA, utilisation du fallback");
+            return getFallbackSuggestions();
+        }
+        
         for (int i = 0; i < suggestions.size(); i++) {
             String suggestion = suggestions.get(i);
             System.out.println("Suggestion " + (i+1) + ": " + suggestion);
@@ -713,6 +736,12 @@ public class CartController implements Initializable {
                 produits.add(virtuel);
                 System.out.println("🤖 Produit virtuel créé: " + virtuel.getNom());
             }
+        }
+        
+        // Si aucun produit trouvé, utiliser le fallback
+        if (produits.isEmpty()) {
+            System.out.println("⚠️ Aucun produit trouvé, utilisation du fallback");
+            return getFallbackSuggestions();
         }
         
         System.out.println("Total produits convertis: " + produits.size());
@@ -761,6 +790,63 @@ public class CartController implements Initializable {
             System.err.println("Erreur recherche produit: " + e.getMessage());
         }
         return null;
+    }
+
+    /**
+     * Retourne des suggestions par défaut quand l'IA ne fonctionne pas
+     */
+    private List<Produit> getFallbackSuggestions() {
+        List<Produit> fallback = new ArrayList<>();
+        
+        try {
+            // Obtenir des produits de la même catégorie que ceux du panier
+            List<CartItem> cartItems = cart.getItems();
+            Set<String> cartCategories = cartItems.stream()
+                .map(item -> item.getProduit().getCategorie())
+                .filter(cat -> cat != null && !cat.isEmpty())
+                .collect(java.util.stream.Collectors.toSet());
+            
+            System.out.println("Catégories dans le panier: " + cartCategories);
+            
+            // Prendre quelques produits aléatoires de ces catégories
+            List<Produit> allProducts = cartAIService.getAllProducts();
+            int count = 0;
+            
+            for (Produit produit : allProducts) {
+                if (count >= 5) break; // Maximum 5 suggestions
+                
+                // Vérifier si le produit est dans une catégorie du panier
+                if (cartCategories.contains(produit.getCategorie())) {
+                    // Vérifier que le produit n'est pas déjà dans le panier
+                    boolean alreadyInCart = cartItems.stream()
+                        .anyMatch(item -> item.getProduit().getId() == produit.getId());
+                    
+                    if (!alreadyInCart && produit.getStock() > 0) {
+                        fallback.add(produit);
+                        System.out.println("📦 Ajout au fallback: " + produit.getNom() + " (" + produit.getCategorie() + ")");
+                        count++;
+                    }
+                }
+            }
+            
+            // Si toujours vide, ajouter quelques produits populaires
+            if (fallback.isEmpty()) {
+                System.out.println("⚠️ Fallback vide, ajout de produits populaires");
+                for (Produit produit : allProducts) {
+                    if (count >= 3) break;
+                    if (produit.getStock() > 0) {
+                        fallback.add(produit);
+                        System.out.println("📦 Produit populaire ajouté: " + produit.getNom());
+                        count++;
+                    }
+                }
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Erreur dans getFallbackSuggestions: " + e.getMessage());
+        }
+        
+        return fallback;
     }
 
     /**
