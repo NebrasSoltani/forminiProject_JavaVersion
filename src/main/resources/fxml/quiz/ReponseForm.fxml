@@ -6,39 +6,49 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="tn.formini.controllers.ReponseFormController"
-      spacing="20" style="-fx-background-color: white; -fx-padding: 30;" prefWidth="450">
+      spacing="0" style="-fx-background-color: white;" prefWidth="480">
 
-    <Label fx:id="titreLabel" text="Nouvelle Réponse"
-           style="-fx-text-fill: #1e293b; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+    <!-- Decorative Top Gradient -->
+    <Region style="-fx-background-color: linear-gradient(to right, #43e97b 0%, #38f9d7 100%); -fx-min-height: 8; -fx-max-height: 8;"/>
 
-    <VBox spacing="8">
-        <Label text="Question *" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
-        <ComboBox fx:id="questionCombo" maxWidth="Infinity"
-                  style="-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
+    <VBox spacing="25" style="-fx-padding: 35 40 40 40;">
+        <VBox spacing="5">
+            <Label fx:id="titreLabel" text="Nouvelle Réponse"
+                   style="-fx-text-fill: #1e293b; -fx-font-size: 24px; -fx-font-weight: 900;"/>
+            <Label text="Ajoutez une option de réponse pour une question" style="-fx-text-fill: #94a3b8; -fx-font-size: 13px;"/>
+        </VBox>
+
+        <VBox fx:id="questionBox" spacing="8">
+            <Label text="QUESTION RATTACHÉE *" style="-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-transform: uppercase;"/>
+            <ComboBox fx:id="questionCombo" maxWidth="Infinity"
+                      style="-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-padding: 5; -fx-font-size: 14px;"/>
+        </VBox>
+
+        <VBox spacing="8">
+            <Label text="TEXTE DE LA RÉPONSE *" style="-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-transform: uppercase;"/>
+            <TextArea fx:id="texteField" promptText="Écrivez le texte de la réponse ici..." prefRowCount="3"
+                      style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 10 16; -fx-background-radius: 12; -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-font-size: 14px;"/>
+        </VBox>
+
+        <VBox spacing="8">
+            <Label text="EXPLICATION (FEEDBACK)" style="-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-transform: uppercase;"/>
+            <TextField fx:id="explicationField" promptText="Explication de la réponse (Optionnel)"
+                       style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 12 16; -fx-background-radius: 12; -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-font-size: 14px;"/>
+        </VBox>
+
+        <VBox spacing="12" style="-fx-background-color: #f0fdf4; -fx-padding: 15; -fx-background-radius: 12; -fx-border-color: #bbf7d0; -fx-border-width: 1; -fx-border-radius: 12;">
+            <Label text="STATUT DE LA RÉPONSE" style="-fx-text-fill: #16a34a; -fx-font-size: 11px; -fx-font-weight: 900;"/>
+            <CheckBox fx:id="correcteCheck" text="CETTE RÉPONSE EST CORRECTE"
+                      style="-fx-text-fill: #15803d; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+        </VBox>
+
+        <Label fx:id="errorLabel" text="" style="-fx-text-fill: #ef4444; -fx-font-size: 13px; -fx-font-weight: bold;" wrapText="true"/>
+
+        <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+            <Button text="Annuler" onAction="#annuler"
+                    style="-fx-background-color: white; -fx-text-fill: #64748b; -fx-font-weight: 900; -fx-padding: 12 30; -fx-background-radius: 25; -fx-border-color: #e2e8f0; -fx-border-radius: 25; -fx-cursor: hand; -fx-font-size: 14px;"/>
+            <Button fx:id="btnSauvegarder" text="Enregistrer" onAction="#sauvegarder"
+                    style="-fx-background-color: linear-gradient(to right, #43e97b, #38f9d7); -fx-text-fill: #064e3b; -fx-font-weight: 900; -fx-padding: 12 30; -fx-background-radius: 25; -fx-cursor: hand; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(56,249,215,0.4), 10, 0, 0, 3);"/>
+        </HBox>
     </VBox>
-
-    <VBox spacing="8">
-        <Label text="Texte de la réponse *" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
-        <TextArea fx:id="texteField" promptText="Texte de la réponse..." prefRowCount="3"
-                  style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
-    </VBox>
-
-    <VBox spacing="8">
-        <Label text="Explication" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
-        <TextField fx:id="explicationField" promptText="Explication de la réponse"
-                   style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
-    </VBox>
-
-    <CheckBox fx:id="correcteCheck" text="Cette réponse est correcte"
-              style="-fx-text-fill: #1e293b; -fx-font-size: 14px;"/>
-
-    <Label fx:id="errorLabel" text="" style="-fx-text-fill: #e94560; -fx-font-size: 12px;" wrapText="true"/>
-
-    <HBox spacing="15" alignment="CENTER_RIGHT">
-        <Button text="Annuler" onAction="#annuler"
-                style="-fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-padding: 10 25; -fx-background-radius: 8; -fx-cursor: hand;"/>
-        <Button fx:id="btnSauvegarder" text="Sauvegarder" onAction="#sauvegarder"
-                style="-fx-background-color: #4f46e5; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 25; -fx-background-radius: 8; -fx-cursor: hand;"/>
-    </HBox>
-
 </VBox>

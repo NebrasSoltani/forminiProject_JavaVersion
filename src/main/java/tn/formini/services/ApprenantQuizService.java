@@ -91,6 +91,10 @@ public class ApprenantQuizService {
         resultat.setReussi(reussi);
         resultat.setDate_tentative(new Date());
         
+        // Save the result to the database
+        tn.formini.services.quizService.ResultatQuizService resultatService = new tn.formini.services.quizService.ResultatQuizService();
+        resultatService.ajouter(resultat);
+        
         return resultat;
     }
 

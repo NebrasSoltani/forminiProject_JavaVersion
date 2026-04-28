@@ -9,11 +9,13 @@ import tn.formini.entities.Reponse;
 import tn.formini.services.QuestionService;
 import tn.formini.services.ReponseService;
 
+import javafx.scene.layout.VBox;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class ReponseFormController implements Initializable {
 
+    @FXML private VBox questionBox;
     @FXML private Label titreLabel;
     @FXML private ComboBox<Question> questionCombo;
     @FXML private TextArea texteField;
@@ -44,6 +46,12 @@ public class ReponseFormController implements Initializable {
             questionCombo.getItems().stream()
                     .filter(q -> q.getId() == r.getQuestion().getId())
                     .findFirst().ifPresent(questionCombo::setValue);
+        }
+        
+        // Hide the question box completely when modifying
+        if (questionBox != null) {
+            questionBox.setVisible(false);
+            questionBox.setManaged(false);
         }
     }
 

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.geometry.Insets?>
+<?import java.lang.String?>
+
+<ScrollPane fitToWidth="true" style="-fx-background-color: #0f172a;" xmlns:fx="http://javafx.com/fxml" fx:controller="tn.formini.controllers.quiz.StatistiquesController">
+    <stylesheets>
+        <String fx:value="/css/stats-dark.css"/>
+    </stylesheets>
+    <VBox spacing="20" style="-fx-padding: 30; -fx-background-color: #0f172a;">
+
+        <!-- Premium Hero Header -->
+        <HBox alignment="CENTER_LEFT" style="-fx-background-color: linear-gradient(to bottom right, #0369a1, #0891b2); -fx-padding: 30 35; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(8,145,178,0.45), 25, 0, 0, 8);">
+            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                <Label text="📊 Tableau de Bord" style="-fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-background-color: rgba(255,255,255,0.15); -fx-padding: 4 12; -fx-background-radius: 20;"/>
+                <Label text="Statistiques des Quiz" style="-fx-font-size: 30px; -fx-font-weight: 900; -fx-text-fill: white;"/>
+                <Label text="Aperçu complet de l'activité et des performances de vos apprenants." style="-fx-font-size: 14px; -fx-text-fill: white;"/>
+            </VBox>
+            <VBox alignment="CENTER" spacing="4" style="-fx-background-color: rgba(255,255,255,0.1); -fx-padding: 20 30; -fx-background-radius: 14;">
+                <Label text="✨ Analyse en direct" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                <Label text="Données en temps réel" style="-fx-text-fill: white; -fx-font-size: 11px;"/>
+            </VBox>
+        </HBox>
+
+        <!-- Main Layout -->
+        <HBox spacing="20" VBox.vgrow="ALWAYS">
+
+            <!-- LEFT PANEL: Résumé Global -->
+            <VBox prefWidth="280" style="-fx-background-color: #1e293b; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0, 0, 5);">
+                <HBox style="-fx-background-color: #0369a1; -fx-padding: 16 20; -fx-background-radius: 16 16 0 0;" alignment="CENTER_LEFT" spacing="10">
+                    <Label text="📊" style="-fx-font-size: 18px;"/>
+                    <Label text="Résumé Global" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px;"/>
+                </HBox>
+
+                <VBox spacing="6" style="-fx-padding: 16 16 10 16;">
+                    <VBox style="-fx-background-color: #0f172a; -fx-padding: 14; -fx-background-radius: 10;" spacing="4">
+                        <Label text="❓ Total questions" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblTotalQuestions" text="0" style="-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: 900;"/>
+                    </VBox>
+                    <VBox style="-fx-background-color: #0f172a; -fx-padding: 14; -fx-background-radius: 10;" spacing="4">
+                        <Label text="📝 Total quiz" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblTotalQuiz" text="0" style="-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: 900;"/>
+                    </VBox>
+                    <VBox style="-fx-background-color: #052e16; -fx-padding: 14; -fx-background-radius: 10;" spacing="4">
+                        <Label text="✅ Passages réussis" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblPassagesReussis" text="0" style="-fx-text-fill: #34d399; -fx-font-size: 22px; -fx-font-weight: 900;"/>
+                    </VBox>
+                    <VBox style="-fx-background-color: #450a0a; -fx-padding: 14; -fx-background-radius: 10;" spacing="4">
+                        <Label text="❌ Passages échoués" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblPassagesEchoues" text="0" style="-fx-text-fill: #f87171; -fx-font-size: 22px; -fx-font-weight: 900;"/>
+                    </VBox>
+                </VBox>
+
+                <VBox style="-fx-padding: 5 16 16 16;" spacing="8">
+                    <Label text="Taux de réussite global" style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                    <ProgressBar fx:id="progressReussite" progress="0.0" prefWidth="240" prefHeight="10" style="-fx-accent: #38bdf8; -fx-control-inner-background: #0f172a;"/>
+                    <Label fx:id="lblPourcentageReussite" text="0%" style="-fx-text-fill: #38bdf8; -fx-font-weight: 900; -fx-font-size: 18px;"/>
+                </VBox>
+            </VBox>
+
+            <!-- RIGHT PANEL: Charts -->
+            <VBox spacing="20" HBox.hgrow="ALWAYS">
+
+                <!-- TOP CHART -->
+                <VBox style="-fx-background-color: #1e293b; -fx-background-radius: 16; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 12, 0, 0, 4);" alignment="CENTER">
+                    <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 0 0 12 0;">
+                        <Label text="🏆" style="-fx-font-size: 18px;"/>
+                        <Label text="Taux de réussite global" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px;"/>
+                    </HBox>
+                    <PieChart fx:id="pieReussite" prefHeight="260" style="-fx-background-color: transparent;"/>
+                </VBox>
+
+                <!-- BOTTOM CHARTS -->
+                <HBox spacing="20">
+                    <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: #1e293b; -fx-background-radius: 16; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 12, 0, 0, 4);" alignment="CENTER">
+                        <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 0 0 10 0;">
+                            <Label text="📈" style="-fx-font-size: 16px;"/>
+                            <Label text="Questions par Quiz" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                        </HBox>
+                        <PieChart fx:id="pieQuestions" prefHeight="220" style="-fx-background-color: transparent;"/>
+                    </VBox>
+                    <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: #1e293b; -fx-background-radius: 16; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 12, 0, 0, 4);" alignment="CENTER">
+                        <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 0 0 10 0;">
+                            <Label text="📉" style="-fx-font-size: 16px;"/>
+                            <Label text="Moyenne des Scores" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                        </HBox>
+                        <BarChart fx:id="barScores" prefHeight="220" style="-fx-background-color: transparent;">
+                            <xAxis>
+                                <CategoryAxis side="BOTTOM"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis side="LEFT"/>
+                            </yAxis>
+                        </BarChart>
+                    </VBox>
+                </HBox>
+
+            </VBox>
+
+        </HBox>
+
+    </VBox>
+</ScrollPane>

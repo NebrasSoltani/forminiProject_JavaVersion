@@ -21,12 +21,11 @@ public class QuizService {
         return cnx;
     }
 
-    // ─── CREATE ───────────────────────────────────────────────
     public void ajouter(Quiz q) {
         q.valider();
         String req = "INSERT INTO quiz (titre, description, duree, note_minimale, afficher_correction, melanger, formation_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try {
-            PreparedStatement ps = cnx.prepareStatement(req);
+            PreparedStatement ps = getCnx().prepareStatement(req);
             ps.setString(1, q.getTitre());
             ps.setString(2, q.getDescription());
             ps.setInt(3, q.getDuree());
@@ -39,6 +38,7 @@ public class QuizService {
             System.out.println("Quiz ajouté !");
         } catch (SQLException e) {
             System.out.println("Erreur ajouter quiz : " + e.getMessage());
+            throw new IllegalArgumentException("Erreur BDD : " + e.getMessage());
         }
     }
 
@@ -132,6 +132,7 @@ public class QuizService {
             System.out.println("Quiz modifié !");
         } catch (SQLException e) {
             System.out.println("Erreur modifier quiz : " + e.getMessage());
+            throw new IllegalArgumentException("Erreur BDD : " + e.getMessage());
         }
     }
 

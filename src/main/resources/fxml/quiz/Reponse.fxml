@@ -6,41 +6,74 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="tn.formini.controllers.ReponseController"
-      spacing="25" VBox.vgrow="ALWAYS" style="-fx-background-color: #f8fafc; -fx-padding: 30;">
+      spacing="20" VBox.vgrow="ALWAYS"
+      style="-fx-background-color: #0f172a; -fx-padding: 28 30;">
 
-    <HBox alignment="CENTER_LEFT">
-        <VBox spacing="5">
-            <Label text="Gestion des Réponses" style="-fx-font-size: 26px; -fx-font-weight: 900; -fx-text-fill: #1e293b;"/>
-            <Label text="Définissez les bonnes et mauvaises réponses" style="-fx-font-size: 14px; -fx-text-fill: #64748b;"/>
+    <!-- HEADER -->
+    <HBox alignment="CENTER_LEFT" spacing="16">
+
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="Gestion des Réponses"
+                   style="-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: white;"/>
+            <Label text="Gérez les réponses associées aux questions"
+                   style="-fx-font-size: 13px; -fx-text-fill: #64748b;"/>
         </VBox>
-        <Region HBox.hgrow="ALWAYS"/>
+
+        <!-- Question filter -->
+        <ComboBox fx:id="filtreQuestion" promptText="Toutes les questions"
+                  onAction="#filtrerReponses" prefWidth="300"
+                  style="-fx-background-color: #1e293b;
+                         -fx-border-color: #334155;
+                         -fx-border-radius: 10;
+                         -fx-background-radius: 10;
+                         -fx-padding: 5;"/>
+
+        <!-- Search -->
+        <TextField fx:id="searchField"
+                   promptText="🔍 Rechercher..."
+                   onKeyReleased="#filtrerReponses"
+                   prefWidth="240"
+                   style="-fx-background-color: #1e293b;
+                          -fx-text-fill: white;
+                          -fx-prompt-text-fill: #475569;
+                          -fx-padding: 11 16;
+                          -fx-background-radius: 10;
+                          -fx-border-color: #334155;
+                          -fx-border-radius: 10;
+                          -fx-font-size: 13px;"/>
+
+        <!-- Add button -->
         <Button text="+ Nouvelle Réponse" onAction="#ouvrirFormAjout"
-                styleClass="main-button-onix"/>
+                style="-fx-background-color: #0369a1;
+                       -fx-text-fill: white;
+                       -fx-font-weight: 800;
+                       -fx-font-size: 13px;
+                       -fx-background-radius: 10;
+                       -fx-padding: 11 22;
+                       -fx-cursor: hand;"/>
     </HBox>
 
-    <VBox VBox.vgrow="ALWAYS" maxHeight="Infinity" style="-fx-background-color: white; -fx-background-radius: 20px; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 15, 0, 0, 5);">
-        
-        <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 0 0 20 0;">
-            <TextField fx:id="searchField" promptText="🔍 Rechercher dans les réponses..."
-                       onKeyReleased="#filtrerReponses" prefWidth="350"
-                       style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-prompt-text-fill: #94a3b8; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
-            <ComboBox fx:id="filtreQuestion" promptText="Toutes les questions" onAction="#filtrerReponses"
-                      style="-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-padding: 5;"/>
-        </HBox>
+    <!-- Divider -->
+    <Region style="-fx-background-color: #1e293b; -fx-min-height: 1; -fx-max-height: 1;"/>
 
-        <TableView fx:id="tableReponse" VBox.vgrow="ALWAYS" maxHeight="Infinity" styleClass="modern-table">
-            <columns>
-                <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
-                <TableColumn fx:id="colTexte" text="Texte de la réponse" prefWidth="300"/>
-                <TableColumn fx:id="colCorrecte" text="Correcte" prefWidth="100"/>
-                <TableColumn fx:id="colExplication" text="Explication (Feedback)" prefWidth="300"/>
-                <TableColumn fx:id="colQuestion" text="Rattachée à" prefWidth="150"/>
-                <TableColumn fx:id="colActions" text="Actions" prefWidth="150"/>
-            </columns>
-            <placeholder>
-                <Label text="Aucune réponse trouvée." style="-fx-text-fill: #94a3b8; -fx-font-size: 14px;"/>
-            </placeholder>
-        </TableView>
+    <!-- Responses Table -->
+    <TableView fx:id="tableReponse" VBox.vgrow="ALWAYS" maxHeight="Infinity"
+               style="-fx-background-color: #1e293b;
+                      -fx-background-radius: 12;
+                      -fx-border-color: #334155;
+                      -fx-border-radius: 12;
+                      -fx-table-cell-border-color: #334155;">
+        <columns>
+            <TableColumn fx:id="colTexte"       text="Texte"        prefWidth="300"/>
+            <TableColumn fx:id="colCorrecte"    text="Correcte"     prefWidth="100"/>
+            <TableColumn fx:id="colExplication" text="Explication"  prefWidth="280"/>
+            <TableColumn fx:id="colQuestion"    text="Rattachée à"  prefWidth="160"/>
+            <TableColumn fx:id="colActions"     text="Actions"      prefWidth="120"/>
+        </columns>
+        <placeholder>
+            <Label text="Aucune réponse trouvée."
+                   style="-fx-text-fill: #64748b; -fx-font-size: 14px;"/>
+        </placeholder>
+    </TableView>
 
-    </VBox>
 </VBox>

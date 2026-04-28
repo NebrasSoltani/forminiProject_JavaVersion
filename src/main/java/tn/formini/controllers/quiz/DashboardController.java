@@ -11,6 +11,7 @@ import java.io.IOException;
 public class DashboardController {
 
     @FXML private StackPane contentArea;
+    @FXML private Button btnStatistiques;
     @FXML private Button btnQuiz;
     @FXML private Button btnQuestion;
     @FXML private Button btnReponse;
@@ -36,16 +37,29 @@ public class DashboardController {
     }
 
     private void resetBoutons() {
-        String inactif = "-fx-background-color: transparent; -fx-text-fill: #334155; -fx-font-size: 13px; -fx-padding: 10 24 10 48; -fx-alignment: center-left; -fx-cursor: hand; -fx-border-color: transparent;";
+        String inactif = "-fx-background-color: transparent; -fx-text-fill: #64748b; -fx-font-weight: 900; -fx-background-radius: 20; -fx-padding: 12 25; -fx-cursor: hand; -fx-font-size: 14px; -fx-effect: null;";
+        btnStatistiques.setStyle(inactif);
         btnQuiz.setStyle(inactif);
         btnQuestion.setStyle(inactif);
         btnReponse.setStyle(inactif);
         btnResultat.setStyle(inactif);
-        btnApprenantQuiz.setStyle(inactif);
+        
+        btnApprenantQuiz.setStyle("-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-radius: 20; -fx-text-fill: #0f172a; -fx-font-weight: 900; -fx-background-radius: 20; -fx-padding: 12 25; -fx-cursor: hand; -fx-font-size: 14px;");
     }
 
     private void activerBouton(Button btn) {
-        btn.setStyle("-fx-background-color: #4f46e5; -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 10 24 10 44; -fx-alignment: center-left; -fx-background-radius: 14; -fx-cursor: hand;");
+        if (btn == btnApprenantQuiz) {
+            btn.setStyle("-fx-background-color: #0f172a; -fx-text-fill: white; -fx-font-weight: 900; -fx-background-radius: 20; -fx-padding: 12 25; -fx-cursor: hand; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.3), 10, 0, 0, 3);");
+        } else {
+            btn.setStyle("-fx-background-color: #4f46e5; -fx-text-fill: white; -fx-font-weight: 900; -fx-background-radius: 20; -fx-padding: 12 25; -fx-cursor: hand; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(79,70,229,0.3), 10, 0, 0, 3);");
+        }
+    }
+
+    @FXML
+    public void ouvrirStatistiques() {
+        resetBoutons();
+        activerBouton(btnStatistiques);
+        chargerVue("/fxml/quiz/Statistiques.fxml");
     }
 
     @FXML

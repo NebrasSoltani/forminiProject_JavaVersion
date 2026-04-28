@@ -1,51 +1,173 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="tn.formini.controllers.ApprenantQuizPasserController"
-      spacing="15" style="-fx-background-color: #1a1a2e; -fx-padding: 30;">
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="tn.formini.controllers.ApprenantQuizPasserController"
+           style="-fx-background-color: linear-gradient(to bottom right, #e2e8f0, #f8fafc);">
 
-    <HBox alignment="CENTER_LEFT">
-        <Label fx:id="quizTitleLabel" text="Quiz Title" style="-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: bold;"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Label fx:id="timerLabel" text="Temps: --:--" style="-fx-text-fill: #e94560; -fx-font-size: 16px; -fx-font-weight: bold;"/>
-    </HBox>
+    <!-- Main Content (Quiz Mode) -->
+    <VBox fx:id="mainQuizBox" spacing="15" style="-fx-padding: 20 50;" alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
+            
+            <!-- Sleek Header Section -->
+            <VBox spacing="12" maxWidth="900" style="-fx-background-color: white; -fx-padding: 18 28; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 15, 0, 0, 5);">
+                <HBox alignment="CENTER_LEFT">
+                    <VBox spacing="5">
+                        <Label text="Mode Évaluation" style="-fx-text-fill: #3b82f6; -fx-font-size: 12px; -fx-font-weight: bold; -fx-background-color: #eff6ff; -fx-padding: 4 10; -fx-background-radius: 8;"/>
+                        <Label fx:id="quizTitleLabel" text="Titre du Quiz" style="-fx-font-size: 28px; -fx-font-weight: 900; -fx-text-fill: #0f172a;"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <HBox alignment="CENTER" style="-fx-background-color: #f8fafc; -fx-padding: 10 20; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;">
+                        <Label fx:id="timerLabel" text="⏱ 30:00" style="-fx-font-size: 18px; -fx-font-weight: 900; -fx-text-fill: #ef4444;"/>
+                    </HBox>
+                </HBox>
+                
+                <Separator style="-fx-opacity: 0.3;"/>
+                
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <Label fx:id="progressLabel" text="Question 1 sur 5" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px; min-width: 120px;"/>
+                    <ProgressBar fx:id="progressBar" progress="0.2" prefHeight="8" HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                                 style="-fx-accent: #3b82f6; -fx-control-inner-background: #e2e8f0;"/>
+                </HBox>
+            </VBox>
 
-    <Label fx:id="progressLabel" text="Question 1/X" style="-fx-text-fill: #a8a8b3;"/>
-
-    <VBox style="-fx-background-color: #16213e; -fx-padding: 20; -fx-border-color: #0f3460; -fx-border-radius: 8; -fx-background-radius: 8;" spacing="15" VBox.vgrow="ALWAYS">
-        <Label fx:id="questionEnonceLabel" text="Énoncé de la question..." wrapText="true" style="-fx-text-fill: white; -fx-font-size: 16px;"/>
-        
-        <VBox fx:id="reponsesContainer" spacing="10" VBox.vgrow="ALWAYS">
-            <!-- RadioButtons for answers will go here -->
+        <VBox maxWidth="900" style="-fx-background-color: white; -fx-padding: 25 30; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 20, 0, 0, 5);" spacing="15" VBox.vgrow="ALWAYS">
+            <Label fx:id="questionEnonceLabel" text="Énoncé de la question..." wrapText="true" minHeight="-Infinity" style="-fx-text-fill: #0f172a; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+            <Separator style="-fx-opacity: 0.5;"/>
+            
+            <VBox fx:id="reponsesContainer" spacing="15" VBox.vgrow="ALWAYS">
+                <!-- RadioButtons for answers will go here -->
+            </VBox>
         </VBox>
-    </VBox>
 
-    <!-- Error/warning label -->
-    <Label fx:id="errorLabel" text="" style="-fx-text-fill: #e94560; -fx-font-size: 14px;" wrapText="true"/>
+        <Label fx:id="errorLabel" text="" style="-fx-text-fill: #ef4444; -fx-font-size: 14px;" wrapText="true"/>
+
+        <HBox spacing="20" alignment="CENTER_RIGHT" style="-fx-padding: 5 0 0 0;">
+            <Button text="Quitter" onAction="#fermer"
+                    style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-padding: 12 25; -fx-font-weight: bold; -fx-cursor: hand; -fx-font-size: 14px;"/>
+            
+            <Region HBox.hgrow="ALWAYS"/>
+            
+            <Button fx:id="btnVoice" text="🎙️ Vocale" onAction="#dicterReponse"
+                    style="-fx-background-color: #f5f3ff; -fx-text-fill: #7c3aed; -fx-padding: 12 25; -fx-background-radius: 12; -fx-font-weight: 900; -fx-cursor: hand; -fx-font-size: 14px; -fx-border-color: #ddd6fe; -fx-border-radius: 12; -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.15), 10, 0, 0, 3);"/>
+
+            <Button fx:id="btnPrecedent" text="← Précédent" onAction="#questionPrecedente" visible="false" managed="false"
+                    style="-fx-background-color: white; -fx-text-fill: #475569; -fx-padding: 12 25; -fx-background-radius: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-font-size: 14px; -fx-border-color: #e2e8f0; -fx-border-radius: 12;"/>
+                    
+            <Button fx:id="btnSuivant" text="Suivant →" onAction="#questionSuivante"
+                    style="-fx-background-color: #1e293b; -fx-text-fill: white; -fx-padding: 12 30; -fx-background-radius: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(30,41,59,0.3), 15, 0, 0, 4);"/>
+
+            <Button fx:id="btnSoumettre" text="Terminer 🎉" onAction="#soumettreQuiz" visible="false" managed="false"
+                    style="-fx-background-color: linear-gradient(to right, #10b981, #059669); -fx-text-fill: white; -fx-font-weight: 900; -fx-padding: 12 30; -fx-background-radius: 12; -fx-cursor: hand; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.4), 15, 0, 0, 4);"/>
+        </HBox>
+    </VBox>
 
     <!-- Results panel (hidden by default) -->
-    <VBox fx:id="resultBox" spacing="10" visible="false" managed="false" style="-fx-background-color: #0f3460; -fx-padding: 20; -fx-background-radius: 8;">
-        <Label fx:id="resultTitleLabel" text="Résultat" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
-        <Label fx:id="resultNoteLabel" text="Note: 0%" style="-fx-text-fill: #e94560; -fx-font-size: 16px;"/>
-        <Label fx:id="resultBonnesLabel" text="Bonnes réponses : 0/0" style="-fx-text-fill: white;"/>
+    <ScrollPane fx:id="resultBox" fitToWidth="true" visible="false" managed="false" style="-fx-background: transparent; -fx-background-color: transparent;">
+        <VBox spacing="30" style="-fx-padding: 40 60;" alignment="TOP_CENTER">
+            
+            <!-- Modern Header Banner -->
+            <VBox fx:id="resultHeaderBox" alignment="CENTER" spacing="15" maxWidth="900"
+                  style="-fx-background-color: linear-gradient(to bottom right, #0f172a, #1e293b); -fx-padding: 40 30; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 20, 0, 0, 10);">
+                
+                <Label fx:id="resultTitleLabel" text="Évaluation Terminée" style="-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: 900;"/>
+                <Label text="Voici le résumé de vos performances pour ce quiz." style="-fx-text-fill: #94a3b8; -fx-font-size: 15px;"/>
+                
+                <HBox alignment="CENTER" spacing="40" style="-fx-padding: 20 0 0 0;">
+                    <!-- Score Circle -->
+                    <VBox alignment="CENTER" style="-fx-background-color: rgba(255,255,255,0.05); -fx-padding: 25; -fx-background-radius: 50%; -fx-min-width: 140; -fx-min-height: 140; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 50%; -fx-border-width: 2;">
+                        <Label fx:id="resultNoteLabel" text="100%" style="-fx-text-fill: #38bdf8; -fx-font-size: 38px; -fx-font-weight: 900;"/>
+                        <Label text="Score final" style="-fx-text-fill: #cbd5e1; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                    </VBox>
+                    
+                    <VBox alignment="CENTER_LEFT" spacing="10">
+                        <Label fx:id="resultBonnesLabel" text="Vous avez obtenu X% (Seuil : 50%)" style="-fx-text-fill: #f8fafc; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                        <Label text="L'assistant IA a préparé un rapport sur mesure." style="-fx-text-fill: #34d399; -fx-font-size: 14px;"/>
+                        <Button text="Ouvrir l'assistant IA →" onAction="#afficherAssistant"
+                                style="-fx-background-color: #6366f1; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-margin: 10 0 0 0;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Details Section -->
+            <VBox style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 15, 0, 0, 5); -fx-border-color: #e2e8f0; -fx-border-radius: 16; -fx-padding: 30;" maxWidth="900" spacing="25">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="📝" style="-fx-font-size: 20px;"/>
+                    <Label text="Correction Détaillée" style="-fx-text-fill: #1e293b; -fx-font-size: 20px; -fx-font-weight: 900;"/>
+                </HBox>
+                <Separator style="-fx-opacity: 0.5;"/>
+                <VBox fx:id="detailsContainer" spacing="20">
+                    <!-- Dynamic question details will go here -->
+                </VBox>
+            </VBox>
+
+            <!-- Bottom Buttons -->
+            <HBox spacing="15" alignment="CENTER" maxWidth="900">
+                <Button text="← Retour aux quiz" onAction="#fermer" style="-fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-padding: 12 25; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold; -fx-font-size: 14px;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Continuer la formation" style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-padding: 12 25; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.3), 10, 0, 0, 3);"/>
+            </HBox>
+            
+        </VBox>
+    </ScrollPane>
+
+    <!-- Floating Assistant Panel (Hidden by default) -->
+    <VBox fx:id="assistantBox" visible="false" managed="false" StackPane.alignment="BOTTOM_RIGHT" 
+          maxWidth="420" maxHeight="580" pickOnBounds="false"
+          style="-fx-background-color: #ffffff; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 30, 0, 0, 10); -fx-border-color: #e2e8f0; -fx-border-radius: 20; -fx-border-width: 1;">
+        <StackPane.margin>
+            <Insets bottom="30" right="30" top="30" left="30"/>
+        </StackPane.margin>
+
+        <!-- Header -->
+        <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-background-color: linear-gradient(to right, #4A00E0, #8E2DE2); -fx-padding: 20; -fx-background-radius: 19 19 0 0;">
+            <Label text="✨" style="-fx-font-size: 24px; -fx-background-color: rgba(255,255,255,0.2); -fx-background-radius: 50%; -fx-padding: 6 8;"/>
+            <VBox spacing="2">
+                <Label text="IA Gemini Assistant" style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: 900;"/>
+                <Label text="Analyse personnalisée de vos résultats" style="-fx-text-fill: rgba(255,255,255,0.85); -fx-font-size: 12px;"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="✕" onAction="#cacherAssistant" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 16px; -fx-cursor: hand; -fx-font-weight: bold;"/>
+        </HBox>
+
+        <!-- Content Area -->
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
+            <VBox spacing="15" style="-fx-padding: 20;">
+                
+                <!-- Score Card -->
+                <VBox alignment="CENTER" spacing="5" style="-fx-background-color: linear-gradient(to bottom right, #f8fafc, #f1f5f9); -fx-padding: 25; -fx-background-radius: 15; -fx-border-color: #e2e8f0; -fx-border-radius: 15;">
+                    <Label text="Score final" style="-fx-text-fill: #64748b; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                    <Label fx:id="assistantScoreLabel" text="100.00%" style="-fx-text-fill: #4A00E0; -fx-font-size: 34px; -fx-font-weight: 900; -fx-effect: dropshadow(gaussian, rgba(74,0,224,0.2), 10, 0, 0, 4);"/>
+                    <Label fx:id="assistantScoreDetailLabel" text="X/Y bonnes réponses" style="-fx-text-fill: #94a3b8; -fx-font-size: 13px;"/>
+                </VBox>
+
+                <!-- Bonjour / Summary Content -->
+                <VBox spacing="8" style="-fx-background-color: #fffbeb; -fx-padding: 18; -fx-background-radius: 12; -fx-border-color: #fcd34d; -fx-border-width: 0 0 0 5; -fx-border-radius: 12;">
+                    <Label text="👋 Bonjour !" style="-fx-text-fill: #d97706; -fx-font-size: 14px; -fx-font-weight: 900;"/>
+                    <Label fx:id="assistantSummaryLabel" text="J'ai analysé votre quiz en détail. Voici mon rapport personnalisé pour vous aider à progresser." wrapText="true" style="-fx-text-fill: #475569; -fx-font-size: 13px; -fx-line-spacing: 5px;"/>
+                </VBox>
+
+                <!-- Main Analysis Content -->
+                <VBox spacing="8" style="-fx-background-color: #f0fdf4; -fx-padding: 18; -fx-background-radius: 12; -fx-border-color: #4ade80; -fx-border-width: 0 0 0 5; -fx-border-radius: 12;">
+                    <Label fx:id="assistantAnalysisTitleLabel" text="✨ Analyse en cours..." style="-fx-text-fill: #16a34a; -fx-font-size: 14px; -fx-font-weight: 900;"/>
+                    <Label fx:id="assistantTextLabel" text="Génération du rapport..." wrapText="true" style="-fx-text-fill: #334155; -fx-font-size: 13px; -fx-line-spacing: 5px;"/>
+                </VBox>
+
+                <Region prefHeight="5"/>
+                <Button text="📄 Télécharger le rapport IA" maxWidth="Infinity" style="-fx-background-color: linear-gradient(to right, #4A00E0, #8E2DE2); -fx-text-fill: white; -fx-font-weight: 900; -fx-padding: 14; -fx-background-radius: 10; -fx-cursor: hand; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(74,0,224,0.3), 10, 0, 0, 4);"/>
+            </VBox>
+        </ScrollPane>
     </VBox>
 
-    <HBox spacing="15" alignment="CENTER_RIGHT">
-        <Button text="Fermer" onAction="#fermer"
-                style="-fx-background-color: #2d2d44; -fx-text-fill: #a8a8b3; -fx-padding: 10 25; -fx-background-radius: 8; -fx-cursor: hand;"/>
-        
-        <Button fx:id="btnPrecedent" text="Précédent" onAction="#questionPrecedente" visible="false" managed="false"
-                style="-fx-background-color: #0f3460; -fx-text-fill: white; -fx-padding: 10 25; -fx-background-radius: 8; -fx-cursor: hand;"/>
-                
-        <Button fx:id="btnSuivant" text="Suivant" onAction="#questionSuivante"
-                style="-fx-background-color: #0f3460; -fx-text-fill: white; -fx-padding: 10 25; -fx-background-radius: 8; -fx-cursor: hand;"/>
+    <!-- Floating Assistant Icon Button (Hidden by default, shown on results) -->
+    <Button fx:id="btnAssistantIcon" text="✨ IA" onAction="#afficherAssistant" visible="false" managed="false"
+            StackPane.alignment="BOTTOM_RIGHT"
+            style="-fx-background-color: linear-gradient(to bottom right, #6366f1, #8b5cf6); -fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: 900; -fx-background-radius: 50em; -fx-min-width: 65; -fx-min-height: 65; -fx-max-width: 65; -fx-max-height: 65; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(99,102,241,0.5), 15, 0, 0, 8);">
+        <StackPane.margin>
+            <Insets bottom="40" right="40"/>
+        </StackPane.margin>
+    </Button>
 
-        <Button fx:id="btnSoumettre" text="Soumettre" onAction="#soumettreQuiz" visible="false" managed="false"
-                style="-fx-background-color: #e94560; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 25; -fx-background-radius: 8; -fx-cursor: hand;"/>
-    </HBox>
-
-</VBox>
+</StackPane>

@@ -6,60 +6,67 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="tn.formini.controllers.QuestionFormController"
-      spacing="20" style="-fx-background-color: white; -fx-padding: 30;" prefWidth="480">
+      spacing="0" style="-fx-background-color: white;" prefWidth="520">
 
-    <Label fx:id="titreLabel" text="Nouvelle Question"
-           style="-fx-text-fill: #1e293b; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+    <!-- Decorative Top Gradient -->
+    <Region style="-fx-background-color: linear-gradient(to right, #4facfe 0%, #00f2fe 100%); -fx-min-height: 8; -fx-max-height: 8;"/>
 
-    <VBox spacing="8">
-        <Label text="Quiz *" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
-        <ComboBox fx:id="quizCombo" maxWidth="Infinity"
-                  style="-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
-    </VBox>
-
-    <VBox spacing="8">
-        <Label text="Énoncé *" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
-        <TextArea fx:id="enonceField" promptText="Écrivez la question..." prefRowCount="3"
-                  style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
-    </VBox>
-
-    <HBox spacing="15">
-        <VBox spacing="8" HBox.hgrow="ALWAYS">
-            <Label text="Type *" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
-            <ComboBox fx:id="typeCombo" maxWidth="Infinity"
-                      style="-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
+    <VBox spacing="25" style="-fx-padding: 35 40 40 40;">
+        <VBox spacing="5">
+            <Label fx:id="titreLabel" text="Nouvelle Question"
+                   style="-fx-text-fill: #1e293b; -fx-font-size: 24px; -fx-font-weight: 900;"/>
+            <Label text="Ajoutez une nouvelle question à votre banque" style="-fx-text-fill: #94a3b8; -fx-font-size: 13px;"/>
         </VBox>
-        <VBox spacing="8" HBox.hgrow="ALWAYS">
-            <Label text="Points *" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
-            <TextField fx:id="pointsField" promptText="Ex: 10"
-                       style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
+
+        <VBox fx:id="quizBox" spacing="8">
+            <Label text="QUIZ RATTACHÉ *" style="-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-transform: uppercase;"/>
+            <ComboBox fx:id="quizCombo" maxWidth="Infinity"
+                      style="-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-padding: 5; -fx-font-size: 14px;"/>
         </VBox>
-        <VBox spacing="8" HBox.hgrow="ALWAYS">
-            <Label text="Ordre" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
-            <TextField fx:id="ordreField" promptText="Ex: 1"
-                       style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
+
+        <VBox spacing="8">
+            <Label text="ÉNONCÉ DE LA QUESTION *" style="-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-transform: uppercase;"/>
+            <TextArea fx:id="enonceField" promptText="Posez votre question ici..." prefRowCount="3"
+                      style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 10 16; -fx-background-radius: 12; -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-font-size: 14px;"/>
         </VBox>
-    </HBox>
 
-    <VBox spacing="8">
-        <Label text="Explication" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
-        <TextField fx:id="explicationField" promptText="Courte explication"
-                   style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
+        <HBox spacing="15">
+            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                <Label text="TYPE *" style="-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-transform: uppercase;"/>
+                <ComboBox fx:id="typeCombo" maxWidth="Infinity"
+                          style="-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-padding: 5;"/>
+            </VBox>
+            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                <Label text="POINTS *" style="-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-transform: uppercase;"/>
+                <TextField fx:id="pointsField" promptText="Ex: 10"
+                           style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 12 16; -fx-background-radius: 12; -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-font-size: 14px;"/>
+            </VBox>
+            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                <Label text="ORDRE" style="-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-transform: uppercase;"/>
+                <TextField fx:id="ordreField" promptText="Ex: 1"
+                           style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 12 16; -fx-background-radius: 12; -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-font-size: 14px;"/>
+            </VBox>
+        </HBox>
+
+        <VBox spacing="8">
+            <Label text="EXPLICATION (FEEDBACK COURT)" style="-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-transform: uppercase;"/>
+            <TextField fx:id="explicationField" promptText="Apparaîtra lors de la correction"
+                       style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 12 16; -fx-background-radius: 12; -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-font-size: 14px;"/>
+        </VBox>
+
+        <VBox spacing="8">
+            <Label text="EXPLICATION DÉTAILLÉE" style="-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-transform: uppercase;"/>
+            <TextArea fx:id="explicationDetailField" promptText="Optionnel : Explication longue pour l'assistant IA..." prefRowCount="2"
+                      style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 10 16; -fx-background-radius: 12; -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-font-size: 14px;"/>
+        </VBox>
+
+        <Label fx:id="errorLabel" text="" style="-fx-text-fill: #ef4444; -fx-font-size: 13px; -fx-font-weight: bold;" wrapText="true"/>
+
+        <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+            <Button text="Annuler" onAction="#annuler"
+                    style="-fx-background-color: white; -fx-text-fill: #64748b; -fx-font-weight: 900; -fx-padding: 12 30; -fx-background-radius: 25; -fx-border-color: #e2e8f0; -fx-border-radius: 25; -fx-cursor: hand; -fx-font-size: 14px;"/>
+            <Button fx:id="btnSauvegarder" text="Enregistrer" onAction="#sauvegarder"
+                    style="-fx-background-color: linear-gradient(to right, #4facfe, #00f2fe); -fx-text-fill: white; -fx-font-weight: 900; -fx-padding: 12 30; -fx-background-radius: 25; -fx-cursor: hand; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(0,242,254,0.3), 10, 0, 0, 3);"/>
+        </HBox>
     </VBox>
-
-    <VBox spacing="8">
-        <Label text="Explication détaillée" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
-        <TextArea fx:id="explicationDetailField" promptText="Explication détaillée..." prefRowCount="2"
-                  style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
-    </VBox>
-
-    <Label fx:id="errorLabel" text="" style="-fx-text-fill: #e94560; -fx-font-size: 12px;" wrapText="true"/>
-
-    <HBox spacing="15" alignment="CENTER_RIGHT">
-        <Button text="Annuler" onAction="#annuler"
-                style="-fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-padding: 10 25; -fx-background-radius: 8; -fx-cursor: hand;"/>
-        <Button fx:id="btnSauvegarder" text="Sauvegarder" onAction="#sauvegarder"
-                style="-fx-background-color: #4f46e5; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 25; -fx-background-radius: 8; -fx-cursor: hand;"/>
-    </HBox>
-
 </VBox>

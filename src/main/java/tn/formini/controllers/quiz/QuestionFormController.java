@@ -9,11 +9,13 @@ import tn.formini.entities.Quiz;
 import tn.formini.services.QuestionService;
 import tn.formini.services.QuizService;
 
+import javafx.scene.layout.VBox;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class QuestionFormController implements Initializable {
 
+    @FXML private VBox quizBox;
     @FXML private Label titreLabel;
     @FXML private ComboBox<Quiz> quizCombo;
     @FXML private TextArea enonceField;
@@ -51,6 +53,12 @@ public class QuestionFormController implements Initializable {
             quizCombo.getItems().stream()
                     .filter(quiz -> quiz.getId() == q.getQuiz().getId())
                     .findFirst().ifPresent(quizCombo::setValue);
+        }
+        
+        // Hide the quiz box completely when modifying
+        if (quizBox != null) {
+            quizBox.setVisible(false);
+            quizBox.setManaged(false);
         }
     }
 

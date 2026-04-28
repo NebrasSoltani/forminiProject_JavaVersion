@@ -54,6 +54,14 @@ public class QuizFormController implements Initializable {
             quiz.setNote_minimale(noteMin);
             quiz.setMelanger(melangerCheck.isSelected());
             quiz.setAfficher_correction(afficherCorrectionCheck.isSelected());
+
+            // Assign a default formation if missing to prevent DB null error
+            if (quiz.getFormation() == null) {
+                tn.formini.entities.formations.Formation f = new tn.formini.entities.formations.Formation();
+                f.setId(1);
+                quiz.setFormation(f);
+            }
+
             quiz.valider();
 
             if (quizExistant == null) {

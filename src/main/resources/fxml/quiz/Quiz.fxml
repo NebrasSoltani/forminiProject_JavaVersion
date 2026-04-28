@@ -6,25 +6,57 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="tn.formini.controllers.quiz.QuizController"
-      spacing="25" VBox.vgrow="ALWAYS" style="-fx-background-color: #f8fafc; -fx-padding: 30;">
+      spacing="20" VBox.vgrow="ALWAYS"
+      style="-fx-background-color: #0f172a; -fx-padding: 28 30;">
 
-    <!-- Header Area -->
-    <HBox alignment="CENTER_LEFT">
-        <VBox spacing="5">
-            <Label text="Gestion des Quiz" style="-fx-font-size: 26px; -fx-font-weight: 900; -fx-text-fill: #1e293b;"/>
-            <Label text="Administrez les quiz et l'évaluation des apprenants" style="-fx-font-size: 14px; -fx-text-fill: #64748b;"/>
+    <!-- HEADER -->
+    <HBox alignment="CENTER_LEFT" spacing="16">
+
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="Gestion des Quiz"
+                   style="-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: white;"/>
+            <Label text="Créez et gérez vos quiz d'évaluation"
+                   style="-fx-font-size: 13px; -fx-text-fill: #64748b;"/>
         </VBox>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button text="+ Nouveau Quiz" onAction="#ouvrirFormAjout"
-                    style="-fx-background-color: #4f46e5; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 14 24; -fx-cursor: hand;"/>
-            <TextField fx:id="searchField" promptText="🔍 Rechercher un quiz..."
-                       onKeyReleased="#filtrerQuiz"
-                       prefWidth="350"
-                       style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-prompt-text-fill: #94a3b8; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
-        </HBox>
 
-        <!-- Card Container -->
-        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
-            <FlowPane fx:id="quizContainer" hgap="20" vgap="20" prefWrapLength="1080" style="-fx-background-color: transparent; -fx-padding: 5;"/>
-        </ScrollPane>
-    </VBox>
+        <!-- Search -->
+        <TextField fx:id="searchField"
+                   promptText="🔍 Rechercher un quiz..."
+                   onKeyReleased="#filtrerQuiz"
+                   prefWidth="280"
+                   style="-fx-background-color: #1e293b;
+                          -fx-text-fill: white;
+                          -fx-prompt-text-fill: #475569;
+                          -fx-padding: 11 16;
+                          -fx-background-radius: 10;
+                          -fx-border-color: #334155;
+                          -fx-border-radius: 10;
+                          -fx-font-size: 13px;"/>
+
+        <!-- Add button -->
+        <Button text="+ Nouveau Quiz"
+                onAction="#ouvrirFormAjout"
+                style="-fx-background-color: #0369a1;
+                       -fx-text-fill: white;
+                       -fx-font-weight: 800;
+                       -fx-font-size: 13px;
+                       -fx-background-radius: 10;
+                       -fx-padding: 11 22;
+                       -fx-cursor: hand;"/>
+    </HBox>
+
+    <!-- Divider -->
+    <Region style="-fx-background-color: #1e293b; -fx-min-height: 1; -fx-max-height: 1;"/>
+
+    <!-- CARD GRID -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent;
+                       -fx-background: #0f172a;
+                       -fx-border-color: transparent;">
+        <FlowPane fx:id="quizContainer"
+                  hgap="20" vgap="20"
+                  prefWrapLength="1080"
+                  style="-fx-background-color: transparent; -fx-padding: 4 0;"/>
+    </ScrollPane>
+
+</VBox>

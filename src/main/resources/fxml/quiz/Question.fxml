@@ -6,42 +6,73 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="tn.formini.controllers.QuestionController"
-      spacing="25" VBox.vgrow="ALWAYS" style="-fx-background-color: #f8fafc; -fx-padding: 30;">
+      spacing="20" VBox.vgrow="ALWAYS"
+      style="-fx-background-color: #0f172a; -fx-padding: 28 30;">
 
-    <HBox alignment="CENTER_LEFT">
-        <VBox spacing="5">
-            <Label text="Banque de Questions" style="-fx-font-size: 26px; -fx-font-weight: 900; -fx-text-fill: #1e293b;"/>
-            <Label text="Gérez les questions affectées aux différents quiz" style="-fx-font-size: 14px; -fx-text-fill: #64748b;"/>
+    <!-- HEADER -->
+    <HBox alignment="CENTER_LEFT" spacing="16">
+
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="Banque de Questions"
+                   style="-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: white;"/>
+            <Label text="Gérez les questions affectées aux différents quiz"
+                   style="-fx-font-size: 13px; -fx-text-fill: #64748b;"/>
         </VBox>
-        <Region HBox.hgrow="ALWAYS"/>
+
+        <!-- Search -->
+        <TextField fx:id="searchField"
+                   promptText="🔍 Rechercher une question..."
+                   onKeyReleased="#filtrerQuestions"
+                   prefWidth="280"
+                   style="-fx-background-color: #1e293b;
+                          -fx-text-fill: white;
+                          -fx-prompt-text-fill: #475569;
+                          -fx-padding: 11 16;
+                          -fx-background-radius: 10;
+                          -fx-border-color: #334155;
+                          -fx-border-radius: 10;
+                          -fx-font-size: 13px;"/>
+
+        <!-- Quiz filter -->
+        <ComboBox fx:id="filtreQuiz" promptText="Tous les Quiz"
+                  onAction="#filtrerQuestions" prefWidth="200"
+                  style="-fx-background-color: #1e293b;
+                         -fx-border-color: #334155;
+                         -fx-border-radius: 10;
+                         -fx-background-radius: 10;
+                         -fx-padding: 5;"/>
+
+        <!-- Add buttons -->
         <Button text="+ Nouvelle Question" onAction="#ouvrirFormAjout"
-                styleClass="main-button-onix"/>
+                style="-fx-background-color: #0369a1;
+                       -fx-text-fill: white;
+                       -fx-font-weight: 800;
+                       -fx-font-size: 13px;
+                       -fx-background-radius: 10;
+                       -fx-padding: 11 22;
+                       -fx-cursor: hand;"/>
+        <Button text="✨ Générer avec IA" onAction="#ouvrirFormIA"
+                style="-fx-background-color: #1e293b;
+                       -fx-text-fill: #38bdf8;
+                       -fx-font-weight: 800;
+                       -fx-font-size: 13px;
+                       -fx-background-radius: 10;
+                       -fx-padding: 11 22;
+                       -fx-cursor: hand;
+                       -fx-border-color: #334155;
+                       -fx-border-radius: 10;"/>
     </HBox>
 
-    <VBox VBox.vgrow="ALWAYS" maxHeight="Infinity" style="-fx-background-color: white; -fx-background-radius: 20px; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 15, 0, 0, 5);">
-        
-        <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 0 0 20 0;">
-            <TextField fx:id="searchField" promptText="🔍 Rechercher dans les questions..."
-                       onKeyReleased="#filtrerQuestions" prefWidth="450"
-                       style="-fx-background-color: #ffffff; -fx-text-fill: #1e293b; -fx-prompt-text-fill: #94a3b8; -fx-padding: 14 16; -fx-background-radius: 16; -fx-border-color: #dbe4f0; -fx-border-radius: 16;"/>
-            <ComboBox fx:id="filtreQuiz" promptText="Tous les Quiz" onAction="#filtrerQuestions" prefWidth="240"
-                      style="-fx-background-color: #ffffff; -fx-border-color: #dbe4f0; -fx-border-radius: 16; -fx-padding: 10;"/>
-        </HBox>
+    <!-- Divider -->
+    <Region style="-fx-background-color: #1e293b; -fx-min-height: 1; -fx-max-height: 1;"/>
 
-        <TableView fx:id="tableQuestion" VBox.vgrow="ALWAYS" maxHeight="Infinity" styleClass="modern-table">
-            <columns>
-                <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
-                <TableColumn fx:id="colEnonce" text="Énoncé de la question" prefWidth="350"/>
-                <TableColumn fx:id="colType" text="Type" prefWidth="120"/>
-                <TableColumn fx:id="colPoints" text="Points" prefWidth="80"/>
-                <TableColumn fx:id="colOrdre" text="Ordre" prefWidth="80"/>
-                <TableColumn fx:id="colQuiz" text="Quiz Rattaché" prefWidth="150"/>
-                <TableColumn fx:id="colActions" text="Actions" prefWidth="150"/>
-            </columns>
-            <placeholder>
-                <Label text="Aucune question trouvée dans la base." style="-fx-text-fill: #94a3b8; -fx-font-size: 14px;"/>
-            </placeholder>
-        </TableView>
+    <!-- QUESTIONS LIST -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent;
+                       -fx-background: #0f172a;
+                       -fx-border-color: transparent;">
+        <VBox fx:id="questionsContainer" spacing="15"
+              style="-fx-padding: 4 0; -fx-background-color: transparent;"/>
+    </ScrollPane>
 
-    </VBox>
 </VBox>

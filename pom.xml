@@ -23,6 +23,13 @@
             <version>8.4.0</version> <!-- Updated to fix CVE vulnerabilities -->
         </dependency>
 
+        <!-- OpenPDF for PDF Generation -->
+        <dependency>
+            <groupId>com.github.librepdf</groupId>
+            <artifactId>openpdf</artifactId>
+            <version>1.3.30</version>
+        </dependency>
+
         <!-- JavaFX Dependencies (sans classifier win) -->
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -48,6 +55,12 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
             <version>${javafx.version}</version>
+        </dependency>
+        <!-- JSON parsing for Gemini API -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20240303</version>
         </dependency>
     </dependencies>
 

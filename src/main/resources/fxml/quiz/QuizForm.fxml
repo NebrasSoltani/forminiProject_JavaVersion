@@ -6,50 +6,60 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="tn.formini.controllers.QuizFormController"
-      spacing="20" style="-fx-background-color: white; -fx-padding: 30;" prefWidth="450">
+      spacing="0" style="-fx-background-color: white;" prefWidth="480">
 
-    <Label fx:id="titreLabel" text="Nouveau Quiz"
-           style="-fx-text-fill: #1e293b; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+    <!-- Decorative Top Gradient -->
+    <Region style="-fx-background-color: linear-gradient(to right, #f6d365 0%, #fda085 100%); -fx-min-height: 8; -fx-max-height: 8;"/>
 
-    <VBox spacing="8">
-        <Label text="Titre *" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
-        <TextField fx:id="titreField" promptText="Titre du quiz"
-                   style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
-    </VBox>
-
-    <VBox spacing="8">
-        <Label text="Description" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
-        <TextArea fx:id="descriptionField" promptText="Description du quiz" prefRowCount="3"
-                  style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
-    </VBox>
-
-    <HBox spacing="15">
-        <VBox spacing="8" HBox.hgrow="ALWAYS">
-            <Label text="Durée (minutes) *" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
-            <TextField fx:id="dureeField" promptText="Ex: 30"
-                       style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
+    <VBox spacing="25" style="-fx-padding: 35 40 40 40;">
+        <VBox spacing="5">
+            <Label fx:id="titreLabel" text="Nouveau Quiz"
+                   style="-fx-text-fill: #1e293b; -fx-font-size: 24px; -fx-font-weight: 900;"/>
+            <Label text="Configurez les paramètres de l'évaluation" style="-fx-text-fill: #94a3b8; -fx-font-size: 13px;"/>
         </VBox>
-        <VBox spacing="8" HBox.hgrow="ALWAYS">
-            <Label text="Note minimale (0-100) *" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
-            <TextField fx:id="noteMinField" promptText="Ex: 50"
-                       style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
+
+        <VBox spacing="8">
+            <Label text="TITRE *" style="-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-transform: uppercase;"/>
+            <TextField fx:id="titreField" promptText="Ex: Quiz de mi-parcours Java"
+                       style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 12 16; -fx-background-radius: 12; -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-font-size: 14px;"/>
         </VBox>
-    </HBox>
 
-    <HBox spacing="20">
-        <CheckBox fx:id="melangerCheck" text="Mélanger les questions"
-                  style="-fx-text-fill: #1e293b;"/>
-        <CheckBox fx:id="afficherCorrectionCheck" text="Afficher la correction"
-                  style="-fx-text-fill: #1e293b;"/>
-    </HBox>
+        <VBox spacing="8">
+            <Label text="DESCRIPTION" style="-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-transform: uppercase;"/>
+            <TextArea fx:id="descriptionField" promptText="Décrivez l'objectif de ce quiz..." prefRowCount="3"
+                      style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 10 16; -fx-background-radius: 12; -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-font-size: 14px;"/>
+        </VBox>
 
-    <Label fx:id="errorLabel" text="" style="-fx-text-fill: #e94560; -fx-font-size: 12px;" wrapText="true"/>
+        <HBox spacing="20">
+            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                <Label text="DURÉE (MIN) *" style="-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-transform: uppercase;"/>
+                <TextField fx:id="dureeField" promptText="Ex: 30"
+                           style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 12 16; -fx-background-radius: 12; -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-font-size: 14px;"/>
+            </VBox>
+            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                <Label text="NOTE MINIMALE *" style="-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-weight: bold; -fx-text-transform: uppercase;"/>
+                <TextField fx:id="noteMinField" promptText="Ex: 50"
+                           style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-padding: 12 16; -fx-background-radius: 12; -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-font-size: 14px;"/>
+            </VBox>
+        </HBox>
 
-    <HBox spacing="15" alignment="CENTER_RIGHT">
-        <Button text="Annuler" onAction="#annuler"
-                style="-fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-padding: 10 25; -fx-background-radius: 8; -fx-cursor: hand;"/>
-        <Button fx:id="btnSauvegarder" text="Sauvegarder" onAction="#sauvegarder"
-                style="-fx-background-color: #4f46e5; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 25; -fx-background-radius: 8; -fx-cursor: hand;"/>
-    </HBox>
+        <VBox spacing="12" style="-fx-background-color: #fffbeb; -fx-padding: 15; -fx-background-radius: 12; -fx-border-color: #fde68a; -fx-border-width: 1; -fx-border-radius: 12;">
+            <Label text="OPTIONS AVANCÉES" style="-fx-text-fill: #d97706; -fx-font-size: 11px; -fx-font-weight: 900;"/>
+            <HBox spacing="20">
+                <CheckBox fx:id="melangerCheck" text="Mélanger questions"
+                          style="-fx-text-fill: #b45309; -fx-font-weight: bold;"/>
+                <CheckBox fx:id="afficherCorrectionCheck" text="Afficher correction"
+                          style="-fx-text-fill: #b45309; -fx-font-weight: bold;"/>
+            </HBox>
+        </VBox>
 
+        <Label fx:id="errorLabel" text="" style="-fx-text-fill: #ef4444; -fx-font-size: 13px; -fx-font-weight: bold;" wrapText="true"/>
+
+        <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+            <Button text="Annuler" onAction="#annuler"
+                    style="-fx-background-color: white; -fx-text-fill: #64748b; -fx-font-weight: 900; -fx-padding: 12 30; -fx-background-radius: 25; -fx-border-color: #e2e8f0; -fx-border-radius: 25; -fx-cursor: hand; -fx-font-size: 14px;"/>
+            <Button fx:id="btnSauvegarder" text="Enregistrer" onAction="#sauvegarder"
+                    style="-fx-background-color: linear-gradient(to right, #f6d365, #fda085); -fx-text-fill: white; -fx-font-weight: 900; -fx-padding: 12 30; -fx-background-radius: 25; -fx-cursor: hand; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(253,160,133,0.3), 10, 0, 0, 3);"/>
+        </HBox>
+    </VBox>
 </VBox>

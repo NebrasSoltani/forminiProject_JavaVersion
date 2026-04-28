@@ -40,6 +40,12 @@ public class ApprenantQuizListController implements Initializable {
         // Simuler un apprenant connecté (ID 1)
         currentApprenant = new Apprenant();
         currentApprenant.setId(1);
+        
+        // IMPORTANT: Un apprenant a besoin d'un objet User associé pour la soumission
+        tn.formini.entities.Users.User mockUser = new tn.formini.entities.Users.User();
+        mockUser.setId(1);
+        mockUser.setNom("ApprenantTest");
+        currentApprenant.setUser(mockUser);
     }
 
     @FXML
@@ -61,9 +67,9 @@ public class ApprenantQuizListController implements Initializable {
             int totalLecons = (int) data.getOrDefault("totalLecons", 0);
             boolean toutesTerminees = (boolean) data.getOrDefault("toutesLeconsTerminees", false);
 
-            progressLabel.setText(String.format("Leçons terminées : %d / %d", leconsTerminees, totalLecons));
+            progressLabel.setText(String.format("%d / %d", leconsTerminees, totalLecons));
             if (totalLecons > 0 && !toutesTerminees) {
-                statusLabel.setText("⚠️ Vous devez terminer toutes les leçons avant de passer les quiz.");
+                statusLabel.setText("⚠️ Vous devez terminer toutes les leçons");
             }
 
             List<Quiz> quizzes = (List<Quiz>) data.get("quizzes");
@@ -84,39 +90,56 @@ public class ApprenantQuizListController implements Initializable {
     }
 
     private VBox createQuizCard(Quiz quiz, int formationId, boolean peutPasser) {
-        VBox card = new VBox(16);
-        card.setPadding(new Insets(24));
-        card.setMaxWidth(340);
-        card.setPrefWidth(340);
+        VBox card = new VBox();
+        card.setMaxWidth(320);
+        card.setPrefWidth(320);
+        card.setMinHeight(280);
         
-        // Effet de base (carte blanche)
-        String styleNormale = "-fx-background-color: white; -fx-background-radius: 22; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 18, 0, 0, 10);";
-        String styleHover = "-fx-background-color: white; -fx-background-radius: 22; -fx-effect: dropshadow(gaussian, rgba(105, 116, 232, 0.22), 28, 0, 0, 16);";
+        String styleNormale = "-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 15, 0, 0, 5);";
+        String styleHover = "-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(99,102,241,0.25), 25, 0, 0, 10);";
         
         card.setStyle(styleNormale);
 
         // Animation de soulèvement au survol
         card.setOnMouseEntered(e -> {
             card.setStyle(styleHover);
-            card.setTranslateY(-3);
+            card.setTranslateY(-4);
         });
         card.setOnMouseExited(e -> {
             card.setStyle(styleNormale);
             card.setTranslateY(0);
         });
 
-        Label lblTitre = new Label("📋 " + quiz.getTitre());
+        // Banner Header
+        javafx.scene.layout.VBox banner = new javafx.scene.layout.VBox();
+        banner.setPrefHeight(110);
+        // Randomize banner colors slightly based on ID for variety
+        String[] colors = {"#6366f1, #8b5cf6", "#3b82f6, #2dd4bf", "#ec4899, #f43f5e", "#f59e0b, #ef4444"};
+        String colorGradient = colors[quiz.getId() % colors.length];
+        banner.setStyle("-fx-background-color: linear-gradient(to bottom right, " + colorGradient + "); -fx-background-radius: 16 16 0 0; -fx-alignment: center;");
+        Label iconLabel = new Label("📝");
+        iconLabel.setStyle("-fx-font-size: 40px; -fx-text-fill: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);");
+        banner.getChildren().add(iconLabel);
+
+        // Body
+        VBox body = new VBox(15);
+        body.setPadding(new Insets(20));
+        VBox.setVgrow(body, javafx.scene.layout.Priority.ALWAYS);
+
+        Label lblTitre = new Label(quiz.getTitre());
         lblTitre.setStyle("-fx-text-fill: #0f172a; -fx-font-weight: 900; -fx-font-size: 18px;");
         lblTitre.setWrapText(true);
-        lblTitre.setMaxWidth(292);
+        lblTitre.setMaxWidth(280);
 
-        Label lblDuree = new Label("⏳ Durée : " + quiz.getDuree() + " min");
-        lblDuree.setStyle("-fx-text-fill: #475569; -fx-font-size: 14px;");
+        javafx.scene.layout.HBox badges = new javafx.scene.layout.HBox(10);
+        Label lblDuree = new Label("⏳ " + quiz.getDuree() + " min");
+        lblDuree.setStyle("-fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-font-size: 12px; -fx-padding: 5 10; -fx-background-radius: 8; -fx-font-weight: bold;");
 
-        Label lblNote = new Label("🎯 Score requis : " + quiz.getNote_minimale() + "%");
-        lblNote.setStyle("-fx-text-fill: #475569; -fx-font-size: 14px;");
+        Label lblNote = new Label("🎯 " + quiz.getNote_minimale() + "% requis");
+        lblNote.setStyle("-fx-background-color: #f0fdf4; -fx-text-fill: #16a34a; -fx-font-size: 12px; -fx-padding: 5 10; -fx-background-radius: 8; -fx-font-weight: bold;");
+        badges.getChildren().addAll(lblDuree, lblNote);
 
-        // Pousser le bouton tout en bas
+        // Spacer
         javafx.scene.layout.Region spacer = new javafx.scene.layout.Region();
         VBox.setVgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
 
@@ -124,8 +147,8 @@ public class ApprenantQuizListController implements Initializable {
         btnPasser.setMaxWidth(Double.MAX_VALUE);
         
         if (peutPasser) {
-            String btnNorm = "-fx-background-color: linear-gradient(to right, #6974e8, #8b93f0); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px; -fx-background-radius: 8; -fx-padding: 10px; -fx-cursor: hand;";
-            String btnHov  = "-fx-background-color: linear-gradient(to right, #515ec8, #6974e8); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px; -fx-background-radius: 8; -fx-padding: 10px; -fx-cursor: hand;";
+            String btnNorm = "-fx-background-color: #1e293b; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 12px; -fx-cursor: hand;";
+            String btnHov  = "-fx-background-color: #334155; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 12px; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 3);";
 
             btnPasser.setStyle(btnNorm);
             btnPasser.setOnAction(e -> ouvrirQuizPasser(quiz.getId(), formationId));
@@ -133,17 +156,18 @@ public class ApprenantQuizListController implements Initializable {
             btnPasser.setOnMouseEntered(e -> btnPasser.setStyle(btnHov));
             btnPasser.setOnMouseExited(e -> btnPasser.setStyle(btnNorm));
         } else {
-            btnPasser.setStyle("-fx-background-color: #e2e8f0; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10px;");
+            btnPasser.setStyle("-fx-background-color: #e2e8f0; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 12px;");
             btnPasser.setDisable(true);
         }
 
-        card.getChildren().addAll(lblTitre, lblDuree, lblNote, spacer, btnPasser);
+        body.getChildren().addAll(lblTitre, badges, spacer, btnPasser);
+        card.getChildren().addAll(banner, body);
         return card;
     }
 
     private void ouvrirQuizPasser(int quizId, int formationId) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/formini/views/ApprenantQuizPasser.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/ApprenantQuizPasser.fxml"));
             Parent root = loader.load();
             
             ApprenantQuizPasserController ctrl = loader.getController();

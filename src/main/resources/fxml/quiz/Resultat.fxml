@@ -5,38 +5,76 @@
 <?import javafx.geometry.Insets?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="tn.formini.controllers.ResultatController"
-      spacing="25" VBox.vgrow="ALWAYS" style="-fx-background-color: #f8fafc; -fx-padding: 30;">
+      fx:controller="tn.formini.controllers.quiz.ResultatController"
+      spacing="20" VBox.vgrow="ALWAYS"
+      style="-fx-background-color: #0f172a; -fx-padding: 28 30;">
 
-    <HBox alignment="CENTER_LEFT">
-        <VBox spacing="5">
-            <Label text="Résultats Globaux" style="-fx-font-size: 26px; -fx-font-weight: 900; -fx-text-fill: #1e293b;"/>
-            <Label text="Suivez les performances des apprenants aux évaluations" style="-fx-font-size: 14px; -fx-text-fill: #64748b;"/>
+    <!-- HEADER -->
+    <HBox alignment="CENTER_LEFT" spacing="16">
+
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="Résultats des Participants"
+                   style="-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: white;"/>
+            <Label text="Suivez les performances par quiz"
+                   style="-fx-font-size: 13px; -fx-text-fill: #64748b;"/>
         </VBox>
-        <Region HBox.hgrow="ALWAYS"/>
+
+        <!-- Quiz selector -->
+        <ComboBox fx:id="filtreQuiz" promptText="Sélectionner un quiz..."
+                  prefWidth="260"
+                  style="-fx-background-color: #1e293b;
+                         -fx-border-color: #334155;
+                         -fx-border-radius: 10;
+                         -fx-background-radius: 10;
+                         -fx-padding: 5;"/>
+
+        <!-- Search -->
+        <TextField fx:id="searchField"
+                   promptText="🔍 Rechercher un apprenant..."
+                   onKeyReleased="#filtrer"
+                   prefWidth="260"
+                   style="-fx-background-color: #1e293b;
+                          -fx-text-fill: white;
+                          -fx-prompt-text-fill: #475569;
+                          -fx-padding: 11 16;
+                          -fx-background-radius: 10;
+                          -fx-border-color: #334155;
+                          -fx-border-radius: 10;
+                          -fx-font-size: 13px;"/>
+
+        <!-- Status filter toggles -->
+        <HBox spacing="0" style="-fx-background-radius: 10; -fx-border-radius: 10;">
+            <ToggleButton fx:id="btnTous" text="Tous" onAction="#filtrer" selected="true"
+                          style="-fx-background-color: #0369a1; -fx-text-fill: white;
+                                 -fx-font-weight: bold; -fx-padding: 10 18;
+                                 -fx-background-radius: 10 0 0 10; -fx-cursor: hand;"/>
+            <ToggleButton fx:id="btnReussis" text="✅" onAction="#filtrer"
+                          style="-fx-background-color: #1e293b; -fx-text-fill: #34d399;
+                                 -fx-font-weight: bold; -fx-padding: 10 14;
+                                 -fx-border-color: #334155; -fx-border-width: 1 1 1 0;
+                                 -fx-cursor: hand;"/>
+            <ToggleButton fx:id="btnNonReussis" text="❌" onAction="#filtrer"
+                          style="-fx-background-color: #1e293b; -fx-text-fill: #f87171;
+                                 -fx-font-weight: bold; -fx-padding: 10 14;
+                                 -fx-background-radius: 0 10 10 0;
+                                 -fx-border-color: #334155; -fx-border-width: 1 1 1 0;
+                                 -fx-cursor: hand;"/>
+        </HBox>
     </HBox>
 
-    <VBox VBox.vgrow="ALWAYS" maxHeight="Infinity" style="-fx-background-color: white; -fx-background-radius: 20px; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 15, 0, 0, 5);">
-        
-        <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 0 0 20 0;">
-            <TextField fx:id="searchField" promptText="🔍 Rechercher par score..."
-                       onKeyReleased="#filtrer" prefWidth="350"
-                       style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-prompt-text-fill: #94a3b8; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
-        </HBox>
+    <!-- Divider -->
+    <Region style="-fx-background-color: #1e293b; -fx-min-height: 1; -fx-max-height: 1;"/>
 
-        <TableView fx:id="tableResultat" VBox.vgrow="ALWAYS" maxHeight="Infinity" styleClass="modern-table">
-            <columns>
-                <TableColumn fx:id="colId" text="ID" prefWidth="80"/>
-                <TableColumn fx:id="colNote" text="Score (%)" prefWidth="120"/>
-                <TableColumn fx:id="colBonnes" text="Bonnes réponses" prefWidth="150"/>
-                <TableColumn fx:id="colTotal" text="Total Questions" prefWidth="150"/>
-                <TableColumn fx:id="colReussi" text="Statut (Réussi)" prefWidth="120"/>
-                <TableColumn fx:id="colDate" text="Date de passage" prefWidth="300"/>
-            </columns>
-            <placeholder>
-                <Label text="Aucun résultat n'est enregistré pour le moment." style="-fx-text-fill: #94a3b8; -fx-font-size: 14px;"/>
-            </placeholder>
-        </TableView>
-
+    <!-- Participants scroll list -->
+    <VBox VBox.vgrow="ALWAYS"
+          style="-fx-background-color: #1e293b; -fx-background-radius: 12;
+                 -fx-border-color: #334155; -fx-border-radius: 12;">
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                    style="-fx-background-color: transparent;
+                           -fx-background: #1e293b;
+                           -fx-border-color: transparent;">
+            <VBox fx:id="participantsContainer" spacing="0"/>
+        </ScrollPane>
     </VBox>
+
 </VBox>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.GenererQuestionIAController"
+      spacing="20" style="-fx-background-color: #f8fafc; -fx-padding: 30;" prefWidth="700">
+
+    <Label text="← Retour aux questions / Génération IA" textFill="#6974e8" style="-fx-font-weight: bold; -fx-cursor: hand;" onMouseClicked="#fermer"/>
+
+    <VBox style="-fx-background-radius: 20; -fx-padding: 25; -fx-background-color: linear-gradient(to right, #4A00E0, #8E2DE2); -fx-effect: dropshadow(gaussian, rgba(74,0,224,0.3), 15, 0, 0, 5);">
+        <HBox alignment="CENTER_LEFT" spacing="15">
+            <Label text="✨" style="-fx-font-size: 28px; -fx-background-color: rgba(255,255,255,0.2); -fx-background-radius: 50%; -fx-padding: 8 10;"/>
+            <VBox spacing="2">
+                <Label text="Génération automatique de questions" style="-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: white;"/>
+                <Label fx:id="quizInfoLabel" text="Quiz : Aucun quiz sélectionné" style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.85);"/>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <VBox spacing="25" style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 35; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 25, 0, 0, 8); -fx-border-color: #f1f5f9; -fx-border-radius: 20; -fx-border-width: 1;">
+        
+        <Label text="⚙ Configuration de la génération" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+        
+        <VBox spacing="8">
+            <Label text="📚 QUIZ CIBLE" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #64748b;"/>
+            <ComboBox fx:id="comboQuiz" prefWidth="Infinity" promptText="Sélectionnez un quiz"
+                      style="-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-padding: 5;"/>
+        </VBox>
+
+        <VBox spacing="8">
+            <Label text="✍ SUJET / CONTEXTE" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #64748b;"/>
+            <TextArea fx:id="contextArea" prefRowCount="4" promptText="Exemple: Introduction au HTML et CSS, les balises de base, le style inline vs externe..."
+                      style="-fx-background-color: #ffffff; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
+            <Label text="Plus le sujet est détaillé, meilleure sera la qualité des questions." style="-fx-font-size: 11px; -fx-text-fill: #94a3b8;"/>
+        </VBox>
+
+        <HBox spacing="20">
+            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                <Label text="🔢 NOMBRE DE QUESTIONS" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #64748b;"/>
+                <TextField fx:id="nbQuestionsField" text="5"
+                           style="-fx-background-color: #ffffff; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-padding: 10;"/>
+            </VBox>
+            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                <Label text="⭐ POINTS PAR QUESTION" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #64748b;"/>
+                <TextField fx:id="pointsField" text="1"
+                           style="-fx-background-color: #ffffff; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-padding: 10;"/>
+            </VBox>
+        </HBox>
+
+        <VBox spacing="8">
+            <Label text="📄 TYPES DE QUESTIONS" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #64748b;"/>
+            <HBox spacing="15">
+                <CheckBox fx:id="typeQCM" text="QCM" selected="true" style="-fx-text-fill: #1e293b;"/>
+                <CheckBox fx:id="typeVraiFaux" text="Vrai / Faux" selected="true" style="-fx-text-fill: #1e293b;"/>
+                <CheckBox fx:id="typeTexteLibre" text="Texte libre" style="-fx-text-fill: #1e293b;"/>
+            </HBox>
+        </VBox>
+
+        <HBox alignment="CENTER" style="-fx-padding: 25 0 0 0;">
+            <Button text="✨ Générer avec Gemini AI" onAction="#genererQuestions"
+                    style="-fx-background-color: linear-gradient(to right, #4A00E0, #8E2DE2); -fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: 900; -fx-padding: 14 35; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(74,0,224,0.3), 12, 0, 0, 5);"/>
+        </HBox>
+
+        <Label fx:id="statusLabel" alignment="CENTER" prefWidth="Infinity" textFill="#64748b" wrapText="true" visible="false" managed="false"/>
+    </VBox>
+</VBox>

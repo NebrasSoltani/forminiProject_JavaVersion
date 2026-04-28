@@ -7,28 +7,68 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="tn.formini.controllers.DashboardController"
-      spacing="24"
-      style="-fx-padding: 32; -fx-background-color: #f8fafc;">
+      spacing="0"
+      style="-fx-background-color: #0f172a;">
 
-    <VBox spacing="8">
-        <Label text="Gestion des Quiz" style="-fx-font-size: 34px; -fx-font-weight: 900; -fx-text-fill: #0f172a;" />
-        <Label text="Retrouvez vos quiz, questions, réponses et résultats dans une interface claire et fluide." style="-fx-font-size: 14px; -fx-text-fill: #475569;" />
-    </VBox>
+    <!-- NAVBAR -->
+    <HBox alignment="CENTER_LEFT" spacing="6"
+          style="-fx-background-color: #1e293b;
+                 -fx-padding: 14 28;
+                 -fx-border-color: transparent transparent #334155 transparent;
+                 -fx-border-width: 0 0 1 0;
+                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0, 0, 3);">
 
-    <HBox spacing="12" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-background-radius: 24; -fx-padding: 18; -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.08), 16, 0, 0, 12);">
-        <Button fx:id="btnQuiz" text="Quiz" onAction="#ouvrirQuiz" style="-fx-background-color: #4f46e5; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 14 26; -fx-cursor: hand;" />
-        <Button fx:id="btnQuestion" text="Questions" onAction="#ouvrirQuestion" style="-fx-background-color: #eef2ff; -fx-text-fill: #0f172a; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 14 26; -fx-cursor: hand;" />
-        <Button fx:id="btnReponse" text="Réponses" onAction="#ouvrirReponse" style="-fx-background-color: #eef2ff; -fx-text-fill: #0f172a; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 14 26; -fx-cursor: hand;" />
-        <Button fx:id="btnResultat" text="Résultats" onAction="#ouvrirResultat" style="-fx-background-color: #eef2ff; -fx-text-fill: #0f172a; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 14 26; -fx-cursor: hand;" />
-        <Button fx:id="btnApprenantQuiz" text="Passer un quiz" onAction="#ouvrirApprenantQuiz" style="-fx-background-color: #eef2ff; -fx-text-fill: #0f172a; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 14 26; -fx-cursor: hand;" />
+        <!-- Logo -->
+        <Label text="⚡ Formini"
+               style="-fx-font-size: 17px;
+                      -fx-font-weight: 900;
+                      -fx-text-fill: #38bdf8;"/>
+
+        <Region style="-fx-min-width: 30;"/>
+
+        <!-- Nav links -->
+        <Button fx:id="btnStatistiques" text="Stats" onAction="#ouvrirStatistiques"
+                style="-fx-background-color: transparent; -fx-text-fill: #94a3b8;
+                       -fx-font-weight: 700; -fx-font-size: 13px; -fx-padding: 10 18;
+                       -fx-background-radius: 8; -fx-cursor: hand;"/>
+
+        <Button fx:id="btnQuiz" text="Quiz" onAction="#ouvrirQuiz"
+                style="-fx-background-color: #0369a1; -fx-text-fill: white;
+                       -fx-font-weight: 700; -fx-font-size: 13px; -fx-padding: 10 18;
+                       -fx-background-radius: 8; -fx-cursor: hand;"/>
+
+        <Button fx:id="btnQuestion" text="Questions" onAction="#ouvrirQuestion"
+                style="-fx-background-color: transparent; -fx-text-fill: #94a3b8;
+                       -fx-font-weight: 700; -fx-font-size: 13px; -fx-padding: 10 18;
+                       -fx-background-radius: 8; -fx-cursor: hand;"/>
+
+        <Button fx:id="btnReponse" text="Réponses" onAction="#ouvrirReponse"
+                style="-fx-background-color: transparent; -fx-text-fill: #94a3b8;
+                       -fx-font-weight: 700; -fx-font-size: 13px; -fx-padding: 10 18;
+                       -fx-background-radius: 8; -fx-cursor: hand;"/>
+
+        <Button fx:id="btnResultat" text="Résultats" onAction="#ouvrirResultat"
+                style="-fx-background-color: transparent; -fx-text-fill: #94a3b8;
+                       -fx-font-weight: 700; -fx-font-size: 13px; -fx-padding: 10 18;
+                       -fx-background-radius: 8; -fx-cursor: hand;"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button fx:id="btnApprenantQuiz" text="🎓 Mode Apprenant" onAction="#ouvrirApprenantQuiz"
+                style="-fx-background-color: transparent;
+                       -fx-border-color: #334155; -fx-border-width: 1; -fx-border-radius: 8;
+                       -fx-text-fill: #e2e8f0; -fx-font-weight: 700; -fx-font-size: 13px;
+                       -fx-padding: 10 18; -fx-background-radius: 8; -fx-cursor: hand;"/>
     </HBox>
 
-
-
-    <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS" style="-fx-background-color: #f8fafc; -fx-border-radius: 18; -fx-background-radius: 18; -fx-padding: 5; -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.04), 20, 0, 0, 10);">
+    <!-- CONTENT AREA -->
+    <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS"
+               style="-fx-background-color: #0f172a;">
         <VBox alignment="CENTER" spacing="12">
-            <Label text="Tout est prêt pour votre gestion des quiz" style="-fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: #0f172a;" />
-            <Label text="Cliquez sur un onglet pour afficher ou éditer des quiz, questions, réponses ou résultats." style="-fx-font-size: 14px; -fx-text-fill: #475569;" />
+            <Label text="Sélectionnez un module"
+                   style="-fx-font-size: 20px; -fx-font-weight: 800; -fx-text-fill: #e2e8f0;"/>
+            <Label text="Utilisez la barre de navigation ci-dessus."
+                   style="-fx-font-size: 13px; -fx-text-fill: #475569;"/>
         </VBox>
     </StackPane>
 

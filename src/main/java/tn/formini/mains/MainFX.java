@@ -11,11 +11,12 @@ public class MainFX extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/quiz/Dashboard.fxml"));
-        Scene scene = new Scene(root, 900, 600);
-        primaryStage.setTitle("Formini - Gestion des Formations");
+        Scene scene = new Scene(root, 1280, 760);
+        primaryStage.setTitle("Formini — Quiz Platform");
         primaryStage.setScene(scene);
-        primaryStage.setMinWidth(750);
-        primaryStage.setMinHeight(500);
+        primaryStage.setMinWidth(1000);
+        primaryStage.setMinHeight(650);
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 

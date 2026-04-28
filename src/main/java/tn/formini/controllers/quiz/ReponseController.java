@@ -1,5 +1,6 @@
 package tn.formini.controllers;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,7 +26,6 @@ import java.util.stream.Collectors;
 public class ReponseController implements Initializable {
 
     @FXML private TableView<Reponse> tableReponse;
-    @FXML private TableColumn<Reponse, Integer> colId;
     @FXML private TableColumn<Reponse, String> colTexte;
     @FXML private TableColumn<Reponse, Boolean> colCorrecte;
     @FXML private TableColumn<Reponse, String> colExplication;
@@ -33,17 +33,22 @@ public class ReponseController implements Initializable {
     @FXML private TableColumn<Reponse, Void> colActions;
     @FXML private TextField searchField;
     @FXML private ComboBox<Question> filtreQuestion;
+    @FXML private Label reponseCountLabel;
 
     private final ReponseService service = new ReponseService();
     private final QuestionService questionService = new QuestionService();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colTexte.setCellValueFactory(new PropertyValueFactory<>("texte"));
         colCorrecte.setCellValueFactory(new PropertyValueFactory<>("est_correcte"));
         colExplication.setCellValueFactory(new PropertyValueFactory<>("explication_reponse"));
+        colQuestion.setCellValueFactory(data -> {
+            tn.formini.entities.Quizs.Question q = data.getValue().getQuestion();
+            return new SimpleStringProperty(q != null ? q.getEnonce() : "-");
+        });
         ajouterColonneActions();
+        styleTableDark();
         chargerQuestionCombo();
         chargerDonnees();
     }
@@ -59,6 +64,12 @@ public class ReponseController implements Initializable {
 
     private void chargerDonnees() {
         tableReponse.setItems(FXCollections.observableArrayList(service.getAll()));
+        updateCount(tableReponse.getItems().size());
+    }
+
+    private void updateCount(int count) {
+        if (reponseCountLabel != null)
+            reponseCountLabel.setText(count + " réponse" + (count > 1 ? "s" : ""));
     }
 
     @FXML
@@ -70,6 +81,7 @@ public class ReponseController implements Initializable {
                 .filter(r -> qFiltre == null || (r.getQuestion() != null && r.getQuestion().getId() == qFiltre.getId()))
                 .collect(Collectors.toList());
         tableReponse.setItems(FXCollections.observableArrayList(filtres));
+        updateCount(filtres.size());
     }
 
     public void filtrerParQuestion(Question question) {
@@ -112,8 +124,8 @@ public class ReponseController implements Initializable {
             final HBox box = new HBox(8, btnEdit, btnDel);
 
             {
-                btnEdit.setStyle("-fx-background-color: #0f3460; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;");
-                btnDel.setStyle("-fx-background-color: #e94560; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;");
+                btnEdit.setStyle("-fx-background-color: #0369a1; -fx-text-fill: white; -fx-background-radius: 6; -fx-cursor: hand; -fx-padding: 4 10;");
+                btnDel.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-background-radius: 6; -fx-cursor: hand; -fx-padding: 4 10;");
                 btnEdit.setOnAction(e -> ouvrirFormulaire(getTableView().getItems().get(getIndex())));
                 btnDel.setOnAction(e -> supprimer(getTableView().getItems().get(getIndex())));
             }
@@ -121,7 +133,40 @@ public class ReponseController implements Initializable {
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
+                setStyle("-fx-background-color: " + (getIndex() % 2 == 0 ? "#1e293b" : "#0f172a") + ";");
                 setGraphic(empty ? null : box);
+            }
+        });
+    }
+
+    private void styleTableDark() {
+        tableReponse.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-table-cell-border-color: #334155;");
+
+        // Callback typed as String to match colTexte, colExplication, colQuestion (all TableColumn<Reponse, String>)
+        javafx.util.Callback<TableColumn<Reponse, String>, TableCell<Reponse, String>> darkCell = col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setStyle("-fx-background-color: " + (getIndex() % 2 == 0 ? "#1e293b" : "#0f172a") + "; -fx-text-fill: " + (empty || item == null ? "#64748b" : "#e2e8f0") + "; -fx-padding: 10 16;");
+                setText(empty || item == null ? null : item);
+            }
+        };
+        colTexte.setCellFactory(darkCell);
+        colExplication.setCellFactory(darkCell);
+        colQuestion.setCellFactory(darkCell);
+
+        // colCorrecte is Boolean — separate factory
+        colCorrecte.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("-fx-background-color: " + (getIndex() % 2 == 0 ? "#1e293b" : "#0f172a") + ";");
+                } else {
+                    setText(item ? "✅ Oui" : "❌ Non");
+                    setStyle("-fx-background-color: " + (getIndex() % 2 == 0 ? "#1e293b" : "#0f172a") + "; -fx-text-fill: " + (item ? "#34d399" : "#f87171") + "; -fx-font-weight: bold; -fx-padding: 10 16;");
+                }
             }
         });
     }
