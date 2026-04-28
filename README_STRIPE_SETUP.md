@@ -9,15 +9,15 @@
 
 ### Option 2 : Manuel (terminal)
 ```cmd
-set STRIPE_SECRET_KEY=sk_test_YOUR_STRIPE_SECRET_KEY
-set STRIPE_PUBLIC_KEY=pk_test_YOUR_STRIPE_PUBLIC_KEY
+set STRIPE_SECRET_KEY=sk_test_51YOUR_STRIPE_SECRET_KEY_HERE
+set STRIPE_PUBLIC_KEY=pk_test_51YOUR_STRIPE_PUBLIC_KEY_HERE
 ```
 
 ### Option 3 : Variables d'environnement Windows (permanent)
 1. Panneau de configuration > Système > Variables d'environnement
 2. Ajouter les variables :
-   - `STRIPE_SECRET_KEY` = `sk_test_YOUR_STRIPE_SECRET_KEY`
-   - `STRIPE_PUBLIC_KEY` = `pk_test_YOUR_STRIPE_PUBLIC_KEY`
+   - `STRIPE_SECRET_KEY` = `sk_test_51YOUR_STRIPE_SECRET_KEY_HERE`
+   - `STRIPE_PUBLIC_KEY` = `pk_test_51YOUR_STRIPE_PUBLIC_KEY_HERE`
 
 ## 🔒 Sécurité Git
 
