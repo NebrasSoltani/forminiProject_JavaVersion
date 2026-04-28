@@ -6,6 +6,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
@@ -14,14 +16,23 @@ import java.util.regex.Pattern;
 import tn.formini.entities.Users.Apprenant;
 import tn.formini.entities.Users.Formateur;
 import tn.formini.entities.Users.User;
+import tn.formini.entities.Users.Gouvernorat;
 import tn.formini.services.UsersService.SignupService;
+import tn.formini.services.FileUploadService;
+import tn.formini.services.face.CameraCaptureService;
+import tn.formini.services.face.FaceRecognitionService;
+import tn.formini.utils.TunisiaGovernorates;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.ResourceBundle;
+import tn.formini.services.auth.OAuthCallbackHandler;
+import tn.formini.services.auth.OAuthService;
 
 public class SignupController implements Initializable {
 
@@ -43,25 +54,38 @@ public class SignupController implements Initializable {
     @FXML private Button btnTogglePasswordConfirm;
     @FXML private Button btnGoToLogin;
     @FXML private Button btnUploadCv;
+    @FXML private Button btnUploadPhoto;
     @FXML private Label lblCvFileName;
+    @FXML private Label lblPhotoFileName;
+    @FXML private ImageView imageViewPhoto;
     @FXML private Label eyeIcon;
     @FXML private Label eyeSlashIcon;
     @FXML private Label eyeIconConfirm;
     @FXML private Label eyeSlashIconConfirm;
     @FXML private TextField fieldNom;
     @FXML private TextField fieldPrenom;
-    @FXML private TextField fieldGouvernorat;
+    @FXML private ComboBox<String> fieldGouvernorat;
     @FXML private DatePicker fieldDateNaissance;
     @FXML private ComboBox<String> comboGenre;
     @FXML private ComboBox<String> comboEtatCivil;
     @FXML private TextField fieldObjectif;
-    @FXML private TextField fieldDomainesInteret;
+    @FXML private TextField fieldDomaineInput;
+    @FXML private Button btnAddDomaine;
+    @FXML private HBox flowPaneDomaines;
     @FXML private TextField fieldSpecialite;
     @FXML private TextArea fieldBio;
     @FXML private Spinner<Integer> spinnerExperience;
     @FXML private TextField fieldLinkedin;
     @FXML private TextField fieldPortfolio;
     @FXML private TextField fieldCv;
+    @FXML private TextField fieldPhoto;
+    
+    @FXML private Button btnCaptureFace;
+    @FXML private ImageView cameraView;
+    @FXML private VBox cameraPanel;
+    @FXML private Button btnStartCamera;
+    @FXML private Button btnStopCamera;
+    @FXML private CheckBox cbEnableFaceAuth;
     
     // Error labels
     @FXML private Label errorEmail;
@@ -74,8 +98,15 @@ public class SignupController implements Initializable {
     @FXML private Label errorSpecialite;
 
     private final SignupService signupService = new SignupService();
+    private final FileUploadService fileUploadService = new FileUploadService();
+    private final CameraCaptureService cameraService = CameraCaptureService.getInstance();
+    private final FaceRecognitionService faceService = FaceRecognitionService.getInstance();
     private ToggleGroup roleGroup;
     private java.io.File uploadedCvFile;
+    private java.io.File uploadedPhotoFile;
+    private final List<String> domainesList = new ArrayList<>();
+    private byte[] capturedFaceEncoding;
+    private boolean cameraActive = false;
 
     public void setOnBack(Runnable onBack) {
         this.onBack = onBack;
@@ -87,8 +118,9 @@ public class SignupController implements Initializable {
         rbApprenant.setToggleGroup(roleGroup);
         rbFormateur.setToggleGroup(roleGroup);
 
-        comboGenre.getItems().addAll("homme", "femme", "autre");
+        comboGenre.getItems().addAll("homme", "femme");
         comboEtatCivil.getItems().addAll("celibataire", "marie", "divorce", "veuf");
+        fieldGouvernorat.setItems(TunisiaGovernorates.asObservableList());
 
         spinnerExperience.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 70, 0));
 
@@ -103,6 +135,12 @@ public class SignupController implements Initializable {
         updateRolePanels();
         updateRoleTileStyles();
         setupValidationListeners();
+        
+        // Hide camera panel initially
+        if (cameraPanel != null) {
+            cameraPanel.setVisible(false);
+            cameraPanel.setManaged(false);
+        }
     }
 
     private void updateRolePanels() {
@@ -147,9 +185,29 @@ public class SignupController implements Initializable {
             user.setNom(trimToNull(fieldNom.getText()));
             user.setPrenom(trimToNull(fieldPrenom.getText()));
             user.setTelephone(normalizePhone(fieldTelephone.getText()));
-            String gouv = fieldGouvernorat.getText();
-            user.setGouvernorat(gouv != null && !gouv.isBlank() ? gouv.trim() : null);
+            user.setGouvernorat(fieldGouvernorat.getValue());
             user.setDate_naissance(dateNaissance);
+
+            // Handle photo upload
+            String photoPath = null;
+            if (uploadedPhotoFile != null) {
+                photoPath = fileUploadService.uploadPhoto(uploadedPhotoFile);
+            } else {
+                String photoUrl = fieldPhoto.getText();
+                if (photoUrl != null && !photoUrl.trim().isEmpty()) {
+                    photoPath = photoUrl.trim();
+                }
+            }
+            user.setPhoto(photoPath);
+            
+            // Handle face encoding if face auth is enabled
+            if (cbEnableFaceAuth.isSelected() && capturedFaceEncoding != null) {
+                user.setFace_encoding(capturedFaceEncoding);
+                user.setFace_auth_enabled(true);
+            } else if (cbEnableFaceAuth.isSelected()) {
+                showMessage("Veuillez capturer votre visage pour activer l'authentification faciale.");
+                return;
+            }
 
             if (rbApprenant.isSelected()) {
                 Apprenant a = new Apprenant();
@@ -162,9 +220,8 @@ public class SignupController implements Initializable {
                 }
                 String obj = fieldObjectif.getText();
                 a.setObjectif(obj != null && !obj.isBlank() ? obj.trim() : null);
-                String dom = fieldDomainesInteret.getText();
-                if (dom != null && !dom.isBlank()) {
-                    a.setDomaines_interet(dom.trim());
+                if (!domainesList.isEmpty()) {
+                    a.setDomaines_interet(convertDomainesToJson(domainesList));
                 }
                 signupService.signupApprenant(a);
             } else {
@@ -298,27 +355,107 @@ public class SignupController implements Initializable {
     private void onUploadCv() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choisir un fichier CV");
-        
+
         // Set extension filters
         FileChooser.ExtensionFilter pdfFilter = new FileChooser.ExtensionFilter("Fichiers PDF", "*.pdf");
         FileChooser.ExtensionFilter docFilter = new FileChooser.ExtensionFilter("Documents Word", "*.doc", "*.docx");
         FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("Tous les fichiers", "*.*");
-        
+
         fileChooser.getExtensionFilters().addAll(pdfFilter, docFilter, allFilter);
         fileChooser.setSelectedExtensionFilter(pdfFilter);
-        
+
         // Show open dialog
         Stage stage = (Stage) btnUploadCv.getScene().getWindow();
         java.io.File selectedFile = fileChooser.showOpenDialog(stage);
-        
+
         if (selectedFile != null) {
             uploadedCvFile = selectedFile;
             lblCvFileName.setText(selectedFile.getName());
             fieldCv.setText(selectedFile.getAbsolutePath());
-            
+
             // Optional: You could copy the file to a specific uploads directory
             // For now, we'll just store the reference
         }
+    }
+
+    @FXML
+    private void onUploadPhoto() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choisir une photo de profil");
+
+        // Set extension filters for images
+        FileChooser.ExtensionFilter imageFilter = new FileChooser.ExtensionFilter("Images", "*.jpg", "*.jpeg", "*.png", "*.gif", "*.bmp");
+        FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("Tous les fichiers", "*.*");
+
+        fileChooser.getExtensionFilters().addAll(imageFilter, allFilter);
+        fileChooser.setSelectedExtensionFilter(imageFilter);
+
+        // Show open dialog
+        Stage stage = (Stage) btnUploadPhoto.getScene().getWindow();
+        java.io.File selectedFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedFile != null) {
+            uploadedPhotoFile = selectedFile;
+            lblPhotoFileName.setText(selectedFile.getName());
+            fieldPhoto.setText(selectedFile.getAbsolutePath());
+
+            // Load and display the image
+            try {
+                Image image = new Image(selectedFile.toURI().toString());
+                imageViewPhoto.setImage(image);
+            } catch (Exception e) {
+                System.err.println("Failed to load image: " + e.getMessage());
+            }
+        }
+    }
+
+    @FXML
+    private void onAddDomaine() {
+        String domaine = fieldDomaineInput.getText().trim();
+        if (domaine != null && !domaine.isEmpty() && !domainesList.contains(domaine)) {
+            domainesList.add(domaine);
+            fieldDomaineInput.clear();
+            displayDomainesTags();
+        }
+    }
+
+    private void displayDomainesTags() {
+        flowPaneDomaines.getChildren().clear();
+        for (String domaine : domainesList) {
+            HBox tag = createDomaineTag(domaine);
+            flowPaneDomaines.getChildren().add(tag);
+        }
+    }
+
+    private HBox createDomaineTag(String domaine) {
+        HBox tag = new HBox();
+        tag.getStyleClass().add("domaine-tag");
+        tag.setSpacing(4);
+
+        Label label = new Label(domaine);
+        label.getStyleClass().add("domaine-tag-label");
+
+        Button removeBtn = new Button("×");
+        removeBtn.getStyleClass().add("domaine-tag-remove");
+        removeBtn.setOnAction(e -> {
+            domainesList.remove(domaine);
+            displayDomainesTags();
+        });
+
+        tag.getChildren().addAll(label, removeBtn);
+        return tag;
+    }
+
+    private String convertDomainesToJson(List<String> domaines) {
+        StringBuilder json = new StringBuilder("[");
+        for (int i = 0; i < domaines.size(); i++) {
+            json.append("\"").append(domaines.get(i)).append("\"");
+            if (i < domaines.size() - 1) {
+                json.append(", ");
+            }
+        }
+        json.append("]");
+        return json.toString();
     }
 
     
@@ -598,12 +735,37 @@ public class SignupController implements Initializable {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
         errorLabel.setManaged(true);
+        
+        // Add error styling to the associated input field
+        javafx.scene.control.TextInputControl inputField = getAssociatedInputField(errorLabel);
+        if (inputField != null) {
+            if (!inputField.getStyleClass().contains("error")) {
+                inputField.getStyleClass().add("error");
+            }
+        }
     }
     
     private void hideError(Label errorLabel) {
         errorLabel.setText("");
         errorLabel.setVisible(false);
         errorLabel.setManaged(false);
+        
+        // Remove error styling from the associated input field
+        javafx.scene.control.TextInputControl inputField = getAssociatedInputField(errorLabel);
+        if (inputField != null) {
+            inputField.getStyleClass().remove("error");
+        }
+    }
+    
+    private javafx.scene.control.TextInputControl getAssociatedInputField(Label errorLabel) {
+        if (errorLabel == errorEmail) return fieldEmail;
+        if (errorLabel == errorTelephone) return fieldTelephone;
+        if (errorLabel == errorPassword) return fieldPassword;
+        if (errorLabel == errorPasswordConfirm) return fieldPasswordConfirm;
+        if (errorLabel == errorNom) return fieldNom;
+        if (errorLabel == errorPrenom) return fieldPrenom;
+        if (errorLabel == errorSpecialite) return fieldSpecialite;
+        return null;
     }
     
     private void clearAllErrors() {
@@ -615,6 +777,21 @@ public class SignupController implements Initializable {
         hideError(errorPrenom);
         hideError(errorDateNaissance);
         hideError(errorSpecialite);
+        
+        // Also clear error styling from all input fields
+        clearErrorStyling(fieldEmail);
+        clearErrorStyling(fieldTelephone);
+        clearErrorStyling(fieldPassword);
+        clearErrorStyling(fieldPasswordConfirm);
+        clearErrorStyling(fieldNom);
+        clearErrorStyling(fieldPrenom);
+        clearErrorStyling(fieldSpecialite);
+    }
+    
+    private void clearErrorStyling(javafx.scene.control.TextInputControl field) {
+        if (field != null) {
+            field.getStyleClass().remove("error");
+        }
     }
     
     private boolean validateAllFields() {
@@ -635,5 +812,149 @@ public class SignupController implements Initializable {
         }
         
         return isValid;
+    }
+    
+    @FXML
+    private void onCaptureFace() {
+        if (!faceService.isInitialized()) {
+            showMessage("Service de reconnaissance faciale non initialisé. Veuillez vérifier l'installation d'OpenCV.");
+            return;
+        }
+        
+        // Show camera panel
+        if (cameraPanel != null) {
+            cameraPanel.setVisible(true);
+            cameraPanel.setManaged(true);
+        }
+        
+        showMessage("Cliquez sur 'Démarrer la caméra' pour capturer votre visage.");
+    }
+    
+    @FXML
+    private void onStartCamera() {
+        if (cameraActive) {
+            showMessage("La caméra est déjà active.");
+            return;
+        }
+        
+        if (!cameraService.isCameraAvailable()) {
+            showMessage("Aucune caméra détectée.");
+            return;
+        }
+        
+        boolean started = cameraService.startCamera(0, cameraView);
+        if (started) {
+            cameraActive = true;
+            showMessage("Caméra démarrée. Positionnez votre visage devant la caméra.");
+        } else {
+            showMessage("Impossible de démarrer la caméra.");
+        }
+    }
+    
+    @FXML
+    private void onStopCamera() {
+        if (!cameraActive) {
+            return;
+        }
+        
+        cameraService.stopCamera();
+        cameraActive = false;
+        showMessage("Caméra arrêtée.");
+    }
+    
+    @FXML
+    private void onCaptureFaceForAuth() {
+        if (!cameraActive) {
+            showMessage("Veuillez d'abord démarrer la caméra.");
+            return;
+        }
+        
+        // Capture frame
+        java.io.File capturedImage = cameraService.captureFrame();
+        if (capturedImage == null) {
+            showMessage("Échec de la capture de l'image.");
+            return;
+        }
+        
+        // Extract face encoding
+        byte[] faceEncoding = faceService.extractFaceEncoding(capturedImage.getAbsolutePath());
+        if (faceEncoding == null) {
+            showMessage("Aucun visage détecté dans l'image. Veuillez réessayer.");
+            capturedImage.delete();
+            return;
+        }
+        
+        // Store the captured encoding
+        capturedFaceEncoding = faceEncoding;
+        
+        // Stop camera
+        cameraService.stopCamera();
+        cameraActive = false;
+        
+        // Hide camera panel
+        if (cameraPanel != null) {
+            cameraPanel.setVisible(false);
+            cameraPanel.setManaged(false);
+        }
+        
+        showMessage("Visage capturé avec succès ! L'authentification faciale sera activée lors de l'inscription.");
+        
+        capturedImage.delete();
+    }
+
+    @FXML
+    private void onSignupWithGoogle() {
+        if (!OAuthService.isConfigured("google")) {
+            showMessage("OAuth Google n'est pas configuré. Veuillez contacter l'administrateur.");
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                OAuthCallbackHandler handler = new OAuthCallbackHandler();
+                User user = handler.authenticateWithGoogle();
+
+                Platform.runLater(() -> {
+                    if (user != null) {
+                        new Alert(Alert.AlertType.INFORMATION, "Inscription réussie avec Google ! Vous pouvez maintenant vous connecter.", ButtonType.OK).showAndWait();
+                        redirectToLogin();
+                    } else {
+                        showMessage("L'inscription avec Google a échoué. Veuillez réessayer.");
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    showMessage("Erreur lors de l'inscription avec Google: " + e.getMessage());
+                });
+            }
+        }).start();
+    }
+
+    @FXML
+    private void onSignupWithGithub() {
+        if (!OAuthService.isConfigured("github")) {
+            showMessage("OAuth GitHub n'est pas configuré. Veuillez contacter l'administrateur.");
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                OAuthCallbackHandler handler = new OAuthCallbackHandler();
+                User user = handler.authenticateWithGithub();
+
+                Platform.runLater(() -> {
+                    if (user != null) {
+                        new Alert(Alert.AlertType.INFORMATION, "Inscription réussie avec GitHub ! Vous pouvez maintenant vous connecter.", ButtonType.OK).showAndWait();
+                        redirectToLogin();
+                    } else {
+                        showMessage("L'inscription avec GitHub a échoué. Veuillez réessayer.");
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    showMessage("Erreur lors de l'inscription avec GitHub: " + e.getMessage());
+                });
+            }
+        }).start();
     }
 }

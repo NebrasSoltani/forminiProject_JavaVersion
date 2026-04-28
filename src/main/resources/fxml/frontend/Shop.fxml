@@ -7,31 +7,35 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="tn.formini.controllers.frontend.ShopController"
-      spacing="8" styleClass="content-area"
-      prefWidth="800" prefHeight="600">
+      spacing="6" styleClass="content-area"
+      prefWidth="740" prefHeight="550">
 
-    <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 10 20 0 20;">
-        <Label text="Boutique" styleClass="page-title" style="-fx-font-size: 18px;"/>
+    <HBox alignment="CENTER_LEFT" spacing="6" style="-fx-padding: 8 15 0 15;">
+        <Label text="Boutique" styleClass="page-title" style="-fx-font-size: 16px;"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <Label fx:id="labelCartHint" text="Panier vide" style="-fx-text-fill: #334155; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+        <Label fx:id="labelCartHint" text="Panier vide" style="-fx-text-fill: #334155; -fx-font-weight: bold; -fx-font-size: 11px;"/>
+        <Button fx:id="btnViewCart" text="🛒 Voir Panier" onAction="#viewCart" 
+                style="-fx-background-color: #e8f5e8; -fx-border-color: #4caf50; -fx-border-width: 2px; 
+                       -fx-text-fill: #2e7d32; -fx-font-weight: bold; -fx-font-size: 12px; 
+                       -fx-background-radius: 6px; -fx-border-radius: 6px; -fx-padding: 6px 12px; -fx-cursor: hand;"/>
     </HBox>
 
     <!-- Search and Filter Section -->
-    <VBox spacing="8" style="-fx-padding: 0 20 8 20;">
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <TextField fx:id="fieldSearch" promptText="Rechercher un produit..." styleClass="search-field" HBox.hgrow="ALWAYS" prefHeight="30"/>
-            <Button text="&#128269;" onAction="#searchProducts" styleClass="icon-btn" prefWidth="35" prefHeight="30"/>
+    <VBox spacing="6" style="-fx-padding: 0 15 6 15;">
+        <HBox spacing="8" alignment="CENTER_LEFT">
+            <TextField fx:id="fieldSearch" promptText="Rechercher..." styleClass="search-field" HBox.hgrow="ALWAYS" prefHeight="28"/>
+            <Button text="🔍" onAction="#searchProducts" styleClass="icon-btn" prefWidth="30" prefHeight="28"/>
         </HBox>
         
         <!-- Category Filter Buttons -->
-        <HBox spacing="8" alignment="CENTER_LEFT">
-            <Label text="Filtrer par catégorie:" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 12px;"/>
-            <HBox spacing="6" HBox.hgrow="ALWAYS">
-                <Button text="Tous" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Tous" style="-fx-font-size: 11px; -fx-padding: 4 8;"/>
-                <Button text="Informatique" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Informatique" style="-fx-font-size: 11px; -fx-padding: 4 8;"/>
-                <Button text="Scientifique" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Scientifique" style="-fx-font-size: 11px; -fx-padding: 4 8;"/>
-                <Button text="Outils intelligents" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Outils intelligents" style="-fx-font-size: 11px; -fx-padding: 4 8;"/>
-                <Button text="Accessoires" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Accessoires" style="-fx-font-size: 11px; -fx-padding: 4 8;"/>
+        <HBox spacing="6" alignment="CENTER_LEFT">
+            <Label text="Catégories:" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 11px;"/>
+            <HBox spacing="4" HBox.hgrow="ALWAYS">
+                <Button text="Tous" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Tous" style="-fx-font-size: 10px; -fx-padding: 3 6;"/>
+                <Button text="Info..." onAction="#filterByCategory" styleClass="category-filter-btn" userData="Informatique" style="-fx-font-size: 10px; -fx-padding: 3 6;"/>
+                <Button text="Science..." onAction="#filterByCategory" styleClass="category-filter-btn" userData="Scientifique" style="-fx-font-size: 10px; -fx-padding: 3 6;"/>
+                <Button text="Outils..." onAction="#filterByCategory" styleClass="category-filter-btn" userData="Outils intelligents" style="-fx-font-size: 10px; -fx-padding: 3 6;"/>
+                <Button text="Access..." onAction="#filterByCategory" styleClass="category-filter-btn" userData="Accessoires" style="-fx-font-size: 10px; -fx-padding: 3 6;"/>
             </HBox>
         </HBox>
     </VBox>
@@ -45,9 +49,9 @@
                 </FlowPane>
                 
                 <!-- Pagination Controls - Always Visible -->
-                <HBox alignment="CENTER" spacing="8" style="-fx-padding: 10 20 15 20; -fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-width: 1 0 0 0;">
-                    <Button fx:id="btnFirstPage" text="&#171;" onAction="#firstPage" style="-fx-background-color: white; -fx-border-color: #d1d5db; -fx-border-radius: 4; -fx-background-radius: 4; -fx-padding: 6 10; -fx-font-weight: bold; -fx-cursor: hand;" prefWidth="35" prefHeight="28"/>
-                    <Button fx:id="btnPreviousPage" text="&#8592;" onAction="#previousPage" style="-fx-background-color: white; -fx-border-color: #d1d5db; -fx-border-radius: 4; -fx-background-radius: 4; -fx-padding: 6 10; -fx-font-weight: bold; -fx-cursor: hand;" prefWidth="35" prefHeight="28"/>
+                <HBox alignment="CENTER" spacing="6" style="-fx-padding: 8 15 12 15; -fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-width: 1 0 0 0;">
+                    <Button fx:id="btnFirstPage" text="&lt;&lt;" onAction="#firstPage" style="-fx-background-color: white; -fx-border-color: #d1d5db; -fx-border-radius: 4; -fx-background-radius: 4; -fx-padding: 4 8; -fx-font-weight: bold; -fx-cursor: hand;" prefWidth="30" prefHeight="25"/>
+                    <Button fx:id="btnPreviousPage" text="&lt;" onAction="#previousPage" style="-fx-background-color: white; -fx-border-color: #d1d5db; -fx-border-radius: 4; -fx-background-radius: 4; -fx-padding: 4 8; -fx-font-weight: bold; -fx-cursor: hand;" prefWidth="30" prefHeight="25"/>
                     
                     <Region HBox.hgrow="ALWAYS"/>
                     
@@ -55,8 +59,8 @@
                     
                     <Region HBox.hgrow="ALWAYS"/>
                     
-                    <Button fx:id="btnNextPage" text="&#8594;" onAction="#nextPage" style="-fx-background-color: white; -fx-border-color: #d1d5db; -fx-border-radius: 4; -fx-background-radius: 4; -fx-padding: 6 10; -fx-font-weight: bold; -fx-cursor: hand;" prefWidth="35" prefHeight="28"/>
-                    <Button fx:id="btnLastPage" text="&#187;" onAction="#lastPage" style="-fx-background-color: white; -fx-border-color: #d1d5db; -fx-border-radius: 4; -fx-background-radius: 4; -fx-padding: 6 10; -fx-font-weight: bold; -fx-cursor: hand;" prefWidth="35" prefHeight="28"/>
+                    <Button fx:id="btnNextPage" text="&gt;" onAction="#nextPage" style="-fx-background-color: white; -fx-border-color: #d1d5db; -fx-border-radius: 4; -fx-background-radius: 4; -fx-padding: 4 8; -fx-font-weight: bold; -fx-cursor: hand;" prefWidth="30" prefHeight="25"/>
+                    <Button fx:id="btnLastPage" text="&gt;&gt;" onAction="#lastPage" style="-fx-background-color: white; -fx-border-color: #d1d5db; -fx-border-radius: 4; -fx-background-radius: 4; -fx-padding: 4 8; -fx-font-weight: bold; -fx-cursor: hand;" prefWidth="30" prefHeight="25"/>
                 </HBox>
             </VBox>
         </ScrollPane>

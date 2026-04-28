@@ -15,7 +15,7 @@ import java.sql.ResultSet;
 public class AdminInitializer {
     
     private static final String DEFAULT_ADMIN_EMAIL = "admin@formini.com";
-    private static final String DEFAULT_ADMIN_PASSWORD = "Admin123!@#";
+    private static final String DEFAULT_ADMIN_PASSWORD = "Admin#123";
     private static final String DEFAULT_ADMIN_FIRST_NAME = "Admin";
     private static final String DEFAULT_ADMIN_LAST_NAME = "System";
     
@@ -180,6 +180,7 @@ public class AdminInitializer {
                 admin.setDate_naissance(rs.getTimestamp("date_naissance"));
                 admin.setProfession(rs.getString("profession"));
                 admin.setNiveau_etude(rs.getString("niveau_etude"));
+                admin.setIs_email_verified(true);
                 
                 rs.close();
                 ps.close();

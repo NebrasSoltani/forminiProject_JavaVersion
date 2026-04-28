@@ -36,3 +36,8 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Environment and configuration files ###
+config.properties.local
+.env
+*.env

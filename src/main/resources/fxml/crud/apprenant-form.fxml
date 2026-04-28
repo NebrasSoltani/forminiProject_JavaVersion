@@ -9,23 +9,32 @@
         
         <GridPane hgap="10" vgap="10">
             <children>
-                <Label text="Genre:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                <ComboBox fx:id="genreComboBox" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="200"/>
+                <Label text="Nom*:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <TextField fx:id="nomTextField" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="300"/>
                 
-                <Label text="État Civil:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                <ComboBox fx:id="etatCivilComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="200"/>
+                <Label text="Prénom*:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <TextField fx:id="prenomTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="300"/>
                 
-                <Label text="Utilisateur:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                <ComboBox fx:id="userComboBox" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="200"/>
+                <Label text="Email*:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <TextField fx:id="emailTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="300"/>
                 
-                <Label text="Domaine:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                <ComboBox fx:id="domaineComboBox" GridPane.columnIndex="1" GridPane.rowIndex="3" prefWidth="200"/>
+                <Label text="Téléphone*:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <TextField fx:id="telephoneTextField" GridPane.columnIndex="1" GridPane.rowIndex="3" prefWidth="300"/>
                 
-                <Label text="Objectif:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                <TextArea fx:id="objectifTextArea" GridPane.columnIndex="1" GridPane.rowIndex="4" prefWidth="300" prefHeight="80" promptText="Objectif de l'apprenant..."/>
+                <Label text="Date de naissance*:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                <DatePicker fx:id="dateNaissanceField" GridPane.columnIndex="1" GridPane.rowIndex="4" prefWidth="300"/>
                 
-                <Label text="Domaines d'intérêt:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                <TextArea fx:id="domainesInteretTextArea" GridPane.columnIndex="1" GridPane.rowIndex="5" prefWidth="300" prefHeight="80" promptText="[&quot;domaine1&quot;, &quot;domaine2&quot;]"/>
+                <Label text="Genre:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                <ComboBox fx:id="genreComboBox" GridPane.columnIndex="1" GridPane.rowIndex="5" prefWidth="300"/>
+                
+                <Label text="État civil:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                <ComboBox fx:id="etatCivilComboBox" GridPane.columnIndex="1" GridPane.rowIndex="6" prefWidth="300"/>
+                
+                <Label text="Objectif:" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                <TextField fx:id="objectifTextField" GridPane.columnIndex="1" GridPane.rowIndex="7" prefWidth="300"/>
+                
+                <Label text="Domaines d'intérêt:" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                <TextArea fx:id="domainesInteretTextArea" GridPane.columnIndex="1" GridPane.rowIndex="8" prefWidth="300" prefHeight="100"/>
             </children>
         </GridPane>
         

@@ -15,7 +15,7 @@ public class Apprenant {
 
     private Domaine domaine;
 
-    private static final String[] GENRES_VALIDES = {"homme", "femme", "autre"};
+    private static final String[] GENRES_VALIDES = {"homme", "femme"};
     private static final String[] ETATS_CIVILS_VALIDES = {"celibataire", "marie", "divorce", "veuf"};
 
     public Apprenant() {}
@@ -25,7 +25,7 @@ public class Apprenant {
         if (genre != null && !genre.trim().isEmpty()) {
             boolean ok = false;
             for (String g : GENRES_VALIDES) if (g.equalsIgnoreCase(genre.trim())) { ok = true; break; }
-            if (!ok) throw new IllegalArgumentException("Genre invalide. Valeurs : homme, femme, autre.");
+            if (!ok) throw new IllegalArgumentException("Genre invalide. Valeurs : homme, femme.");
         }
 
         // Validation de l'état civil
@@ -72,7 +72,7 @@ public class Apprenant {
         if (genre != null && !genre.trim().isEmpty()) {
             boolean ok = false;
             for (String g : GENRES_VALIDES) if (g.equalsIgnoreCase(genre.trim())) { ok = true; break; }
-            if (!ok) throw new IllegalArgumentException("Genre invalide. Valeurs : homme, femme, autre.");
+            if (!ok) throw new IllegalArgumentException("Genre invalide. Valeurs : homme, femme.");
         }
         this.genre = genre;
     }
@@ -93,12 +93,8 @@ public class Apprenant {
     }
     public String getDomaines_interet() { return domaines_interet; }
     public void setDomaines_interet(String domaines_interet) {
-        if (domaines_interet != null && !domaines_interet.trim().isEmpty()) {
-            if (domaines_interet.length() > 1000)
-                throw new IllegalArgumentException("Les domaines d'intérêt ne doivent pas dépasser 1000 caractères.");
-            if (!domaines_interet.startsWith("[") || !domaines_interet.endsWith("]"))
-                throw new IllegalArgumentException("Les domaines d'intérêt doivent être au format JSON array.");
-        }
+        if (domaines_interet != null && domaines_interet.length() > 1000)
+            throw new IllegalArgumentException("Les domaines d'intérêt ne doivent pas dépasser 1000 caractères.");
         this.domaines_interet = domaines_interet;
     }
 

@@ -8,23 +8,22 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="tn.formini.controllers.produit.ProduitListController"
-      spacing="24" styleClass="content-area">
+      spacing="10" styleClass="content-area">
 
-    <HBox alignment="CENTER_LEFT" spacing="20">
-        <Button text="⬅" onAction="#goBack" styleClass="icon-btn"/>
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Button text="⬅" onAction="#goBack" styleClass="icon-btn" style="-fx-pref-width: 30; -fx-pref-height: 30;"/>
         <Label fx:id="labelFormTitle" text="Gestion des Produits" styleClass="page-title"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <HBox spacing="10">
+        <HBox spacing="8">
             <TextField fx:id="fieldSearch" promptText="Rechercher un produit..." styleClass="search-field" HBox.hgrow="ALWAYS"/>
             <ComboBox fx:id="fieldFilterCategorie" promptText="Toutes les catégories" styleClass="filter-combo"/>
-            <Button text="🔍" onAction="#searchProducts" styleClass="icon-btn"/>
-
-            <Button text="➕ Ajouter" onAction="#addProduct" styleClass="btn-primary"/>
+            <Button text="🔍" onAction="#searchProducts" styleClass="icon-btn" style="-fx-pref-width: 30; -fx-pref-height: 30;"/>
+            <Button text="➕ Ajouter" onAction="#addProduct" styleClass="btn-primary" style="-fx-pref-width: 80; -fx-pref-height: 30;"/>
         </HBox>
     </HBox>
 
     <!-- Category Filter Section -->
-    <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 0 20 10 20;">
+    <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 0 20 10 20;">
         <Label text="Filtrer par catégorie:" styleClass="filter-label"/>
         <HBox spacing="10" HBox.hgrow="ALWAYS">
             <Button text="Tous" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Tous"/>
@@ -44,6 +43,24 @@
                 </FlowPane>
             </VBox>
         </ScrollPane>
+        
+        <!-- Pagination Controls -->
+        <HBox fx:id="paginationContainer" alignment="CENTER" spacing="15" style="-fx-padding: 20 20 20 20; -fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-width: 1 0 0 0;">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Button fx:id="firstPageBtn" styleClass="pagination-btn" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-pref-width: 35; -fx-pref-height: 35; -fx-font-size: 14px;"/>
+                <Button fx:id="prevPageBtn" styleClass="pagination-btn" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-pref-width: 35; -fx-pref-height: 35; -fx-font-size: 14px;"/>
+            </HBox>
+            
+            <VBox alignment="CENTER" spacing="5">
+                <Label fx:id="currentPageLabel" text="Page 1 sur 1" styleClass="pagination-info" style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #1e293b;"/>
+                <Label fx:id="totalItemsLabel" text="0 produits" styleClass="pagination-info" style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+            </VBox>
+            
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <Button fx:id="nextPageBtn" styleClass="pagination-btn" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-pref-width: 35; -fx-pref-height: 35; -fx-font-size: 14px;"/>
+                <Button fx:id="lastPageBtn" styleClass="pagination-btn" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-pref-width: 35; -fx-pref-height: 35; -fx-font-size: 14px;"/>
+            </HBox>
+        </HBox>
     </VBox>
 
     <!-- Empty State -->
