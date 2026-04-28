@@ -1975,7 +1975,7 @@
 
 .btn-save:hover {
     -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.4), 12, 0, 0, 0) !important;
-+    -fx-background-color: linear-gradient(to bottom right, #5a67d8, #6b46c1) !important;
+    -fx-background-color: linear-gradient(to bottom right, #5a67d8, #6b46c1) !important;
 }
 
 .btn-save:pressed {
@@ -2015,7 +2015,6 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 25, 0, 0, 12);
 }
 
-<<<<<<< HEAD
 /* ── Mes formations (formateur) ────────────────────────────── */
 .formation-card {
     -fx-background-color: white;

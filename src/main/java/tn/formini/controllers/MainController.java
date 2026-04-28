@@ -16,6 +16,7 @@ import tn.formini.controllers.blog.BlogListController;
 import tn.formini.controllers.evenement.EvenementFormController;
 import tn.formini.controllers.evenement.EvenementListController;
 import tn.formini.controllers.order.OrderListController;
+import tn.formini.controllers.produit.ProduitListController;
 import tn.formini.controllers.produits.ProduitFormController;
 
 import java.io.IOException;
