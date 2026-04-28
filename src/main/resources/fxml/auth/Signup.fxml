@@ -116,7 +116,7 @@
 
                                 <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="3">
                                     <Label text="Gouvernorat" styleClass="form-label"/>
-                                    <TextField fx:id="fieldGouvernorat" styleClass="form-control signup-field" promptText="ex. Tunis"/>
+                                    <ComboBox fx:id="fieldGouvernorat" styleClass="form-control signup-field" maxWidth="Infinity" promptText="Choisir"/>
                                 </VBox>
                                 <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                     <Label text="Date de naissance *" styleClass="form-label"/>

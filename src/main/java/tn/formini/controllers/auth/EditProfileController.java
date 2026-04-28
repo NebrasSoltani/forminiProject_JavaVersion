@@ -7,6 +7,7 @@ import javafx.scene.layout.VBox;
 import tn.formini.entities.Users.Apprenant;
 import tn.formini.entities.Users.Formateur;
 import tn.formini.entities.Users.User;
+import tn.formini.entities.Users.Gouvernorat;
 import tn.formini.services.UsersService.ApprenantService;
 import tn.formini.services.UsersService.FormateurService;
 import tn.formini.services.UsersService.SessionManager;
@@ -26,7 +27,7 @@ public class EditProfileController implements Initializable {
     @FXML private TextField fieldNom;
     @FXML private TextField fieldPrenom;
     @FXML private TextField fieldTelephone;
-    @FXML private TextField fieldGouvernorat;
+    @FXML private ComboBox<Gouvernorat> fieldGouvernorat;
     @FXML private DatePicker fieldDateNaissance;
 
     @FXML private VBox apprenantSection;
@@ -59,8 +60,9 @@ public class EditProfileController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        comboGenre.getItems().addAll("homme", "femme", "autre");
+        comboGenre.getItems().addAll("homme", "femme");
         comboEtatCivil.getItems().addAll("celibataire", "marie", "divorce", "veuf");
+        fieldGouvernorat.getItems().addAll(Gouvernorat.values());
         spinnerExperience.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 70, 0));
         hideMessage();
         loadConnectedUser();
@@ -89,7 +91,10 @@ public class EditProfileController implements Initializable {
         fieldNom.setText(safe(user.getNom()));
         fieldPrenom.setText(safe(user.getPrenom()));
         fieldTelephone.setText(safe(user.getTelephone()));
-        fieldGouvernorat.setText(safe(user.getGouvernorat()));
+        if (user.getGouvernorat() != null) {
+                Gouvernorat gouvernorat = Gouvernorat.fromDisplayName(user.getGouvernorat());
+                fieldGouvernorat.setValue(gouvernorat);
+            }
         if (user.getDate_naissance() != null) {
             fieldDateNaissance.setValue(user.getDate_naissance().toInstant()
                 .atZone(ZoneId.systemDefault())
@@ -176,7 +181,8 @@ public class EditProfileController implements Initializable {
         user.setNom(trim(fieldNom.getText()));
         user.setPrenom(trim(fieldPrenom.getText()));
         user.setTelephone(trim(fieldTelephone.getText()));
-        user.setGouvernorat(trim(fieldGouvernorat.getText()));
+        Gouvernorat selectedGouvernorat = fieldGouvernorat.getValue();
+        user.setGouvernorat(selectedGouvernorat != null ? selectedGouvernorat.getDisplayName() : null);
 
         LocalDate birthDate = fieldDateNaissance.getValue();
         if (birthDate != null) {

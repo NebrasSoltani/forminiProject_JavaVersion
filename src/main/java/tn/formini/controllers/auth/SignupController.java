@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import tn.formini.entities.Users.Apprenant;
 import tn.formini.entities.Users.Formateur;
 import tn.formini.entities.Users.User;
+import tn.formini.entities.Users.Gouvernorat;
 import tn.formini.services.UsersService.SignupService;
 
 import java.io.IOException;
@@ -50,7 +51,7 @@ public class SignupController implements Initializable {
     @FXML private Label eyeSlashIconConfirm;
     @FXML private TextField fieldNom;
     @FXML private TextField fieldPrenom;
-    @FXML private TextField fieldGouvernorat;
+    @FXML private ComboBox<Gouvernorat> fieldGouvernorat;
     @FXML private DatePicker fieldDateNaissance;
     @FXML private ComboBox<String> comboGenre;
     @FXML private ComboBox<String> comboEtatCivil;
@@ -87,8 +88,9 @@ public class SignupController implements Initializable {
         rbApprenant.setToggleGroup(roleGroup);
         rbFormateur.setToggleGroup(roleGroup);
 
-        comboGenre.getItems().addAll("homme", "femme", "autre");
+        comboGenre.getItems().addAll("homme", "femme");
         comboEtatCivil.getItems().addAll("celibataire", "marie", "divorce", "veuf");
+        fieldGouvernorat.getItems().addAll(Gouvernorat.values());
 
         spinnerExperience.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 70, 0));
 
@@ -147,8 +149,8 @@ public class SignupController implements Initializable {
             user.setNom(trimToNull(fieldNom.getText()));
             user.setPrenom(trimToNull(fieldPrenom.getText()));
             user.setTelephone(normalizePhone(fieldTelephone.getText()));
-            String gouv = fieldGouvernorat.getText();
-            user.setGouvernorat(gouv != null && !gouv.isBlank() ? gouv.trim() : null);
+            Gouvernorat selectedGouvernorat = fieldGouvernorat.getValue();
+            user.setGouvernorat(selectedGouvernorat != null ? selectedGouvernorat.getDisplayName() : null);
             user.setDate_naissance(dateNaissance);
 
             if (rbApprenant.isSelected()) {
@@ -598,12 +600,37 @@ public class SignupController implements Initializable {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
         errorLabel.setManaged(true);
+        
+        // Add error styling to the associated input field
+        javafx.scene.control.TextInputControl inputField = getAssociatedInputField(errorLabel);
+        if (inputField != null) {
+            if (!inputField.getStyleClass().contains("error")) {
+                inputField.getStyleClass().add("error");
+            }
+        }
     }
     
     private void hideError(Label errorLabel) {
         errorLabel.setText("");
         errorLabel.setVisible(false);
         errorLabel.setManaged(false);
+        
+        // Remove error styling from the associated input field
+        javafx.scene.control.TextInputControl inputField = getAssociatedInputField(errorLabel);
+        if (inputField != null) {
+            inputField.getStyleClass().remove("error");
+        }
+    }
+    
+    private javafx.scene.control.TextInputControl getAssociatedInputField(Label errorLabel) {
+        if (errorLabel == errorEmail) return fieldEmail;
+        if (errorLabel == errorTelephone) return fieldTelephone;
+        if (errorLabel == errorPassword) return fieldPassword;
+        if (errorLabel == errorPasswordConfirm) return fieldPasswordConfirm;
+        if (errorLabel == errorNom) return fieldNom;
+        if (errorLabel == errorPrenom) return fieldPrenom;
+        if (errorLabel == errorSpecialite) return fieldSpecialite;
+        return null;
     }
     
     private void clearAllErrors() {
@@ -615,6 +642,21 @@ public class SignupController implements Initializable {
         hideError(errorPrenom);
         hideError(errorDateNaissance);
         hideError(errorSpecialite);
+        
+        // Also clear error styling from all input fields
+        clearErrorStyling(fieldEmail);
+        clearErrorStyling(fieldTelephone);
+        clearErrorStyling(fieldPassword);
+        clearErrorStyling(fieldPasswordConfirm);
+        clearErrorStyling(fieldNom);
+        clearErrorStyling(fieldPrenom);
+        clearErrorStyling(fieldSpecialite);
+    }
+    
+    private void clearErrorStyling(javafx.scene.control.TextInputControl field) {
+        if (field != null) {
+            field.getStyleClass().remove("error");
+        }
     }
     
     private boolean validateAllFields() {

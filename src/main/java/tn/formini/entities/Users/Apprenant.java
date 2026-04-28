@@ -15,7 +15,7 @@ public class Apprenant {
 
     private Domaine domaine;
 
-    private static final String[] GENRES_VALIDES = {"homme", "femme", "autre"};
+    private static final String[] GENRES_VALIDES = {"homme", "femme"};
     private static final String[] ETATS_CIVILS_VALIDES = {"celibataire", "marie", "divorce", "veuf"};
 
     public Apprenant() {}
@@ -25,7 +25,7 @@ public class Apprenant {
         if (genre != null && !genre.trim().isEmpty()) {
             boolean ok = false;
             for (String g : GENRES_VALIDES) if (g.equalsIgnoreCase(genre.trim())) { ok = true; break; }
-            if (!ok) throw new IllegalArgumentException("Genre invalide. Valeurs : homme, femme, autre.");
+            if (!ok) throw new IllegalArgumentException("Genre invalide. Valeurs : homme, femme.");
         }
 
         // Validation de l'état civil
@@ -72,7 +72,7 @@ public class Apprenant {
         if (genre != null && !genre.trim().isEmpty()) {
             boolean ok = false;
             for (String g : GENRES_VALIDES) if (g.equalsIgnoreCase(genre.trim())) { ok = true; break; }
-            if (!ok) throw new IllegalArgumentException("Genre invalide. Valeurs : homme, femme, autre.");
+            if (!ok) throw new IllegalArgumentException("Genre invalide. Valeurs : homme, femme.");
         }
         this.genre = genre;
     }

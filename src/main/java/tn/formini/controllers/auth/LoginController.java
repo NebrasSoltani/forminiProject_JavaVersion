@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import tn.formini.controllers.frontend.FrontMainController;
 import tn.formini.entities.Users.User;
 import tn.formini.services.UsersService.LoginService;
+import tn.formini.services.UsersService.RememberMeService;
 import tn.formini.services.UsersService.SessionManager;
 
 
@@ -53,12 +54,17 @@ public class LoginController {
 
     private LoginService loginService;
     private SessionManager sessionManager;
+    private RememberMeService rememberMeService;
     private Runnable onBack;
 
     @FXML
     public void initialize() {
         loginService = new LoginService();
         sessionManager = SessionManager.getInstance();
+        rememberMeService = new RememberMeService();
+        
+        // Load saved credentials if remember me was checked
+        loadSavedCredentials();
         
         // Clear errors on input change
         fieldEmail.textProperty().addListener((obs, oldVal, newVal) -> {
@@ -73,6 +79,13 @@ public class LoginController {
             errorPassword.setManaged(false);
             lblMessage.setVisible(false);
             lblMessage.setManaged(false);
+        });
+        
+        // Handle remember me checkbox changes
+        cbRememberMe.selectedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                rememberMeService.clearCredentials();
+            }
         });
     }
 
@@ -106,6 +119,13 @@ public class LoginController {
             
             // Create session
             sessionManager.login(user);
+            
+            // Handle remember me functionality
+            if (cbRememberMe.isSelected()) {
+                rememberMeService.saveCredentials(email, password);
+            } else {
+                rememberMeService.clearCredentials();
+            }
             
             // TODO: Update last login when database column is available
             // loginService.updateLastLogin(user.getId());
@@ -290,5 +310,26 @@ public class LoginController {
 
     public void setOnBack(Runnable onBack) {
         this.onBack = onBack;
+    }
+    
+    /**
+     * Load saved credentials if remember me was previously checked
+     */
+    private void loadSavedCredentials() {
+        if (rememberMeService.hasSavedCredentials()) {
+            String savedEmail = rememberMeService.getSavedEmail();
+            String savedPassword = rememberMeService.getSavedPassword();
+            
+            if (savedEmail != null && !savedEmail.isEmpty()) {
+                fieldEmail.setText(savedEmail);
+                cbRememberMe.setSelected(true);
+            }
+            
+            if (savedPassword != null && !savedPassword.isEmpty()) {
+                fieldPassword.setText(savedPassword);
+            }
+            
+            System.out.println("Identifiants sauvegardés chargés pour la connexion automatique");
+        }
     }
 }

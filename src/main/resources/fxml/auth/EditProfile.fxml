@@ -50,7 +50,7 @@
 
             <VBox GridPane.columnIndex="0" GridPane.rowIndex="2" spacing="4">
                 <Label text="Gouvernorat" styleClass="form-label"/>
-                <TextField fx:id="fieldGouvernorat" styleClass="form-control signup-field"/>
+                <ComboBox fx:id="fieldGouvernorat" styleClass="form-control signup-field" maxWidth="Infinity" promptText="Choisir"/>
             </VBox>
             <VBox GridPane.columnIndex="1" GridPane.rowIndex="2" spacing="4">
                 <Label text="Date de naissance" styleClass="form-label"/>

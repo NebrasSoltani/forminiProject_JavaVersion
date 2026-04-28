@@ -15,7 +15,7 @@ import java.sql.ResultSet;
 public class AdminInitializer {
     
     private static final String DEFAULT_ADMIN_EMAIL = "admin@formini.com";
-    private static final String DEFAULT_ADMIN_PASSWORD = "Admin123!@#";
+    private static final String DEFAULT_ADMIN_PASSWORD = "Admin#123";
     private static final String DEFAULT_ADMIN_FIRST_NAME = "Admin";
     private static final String DEFAULT_ADMIN_LAST_NAME = "System";
     
