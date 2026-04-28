@@ -18,6 +18,8 @@ import tn.formini.entities.Users.Formateur;
 import tn.formini.entities.Users.User;
 import tn.formini.services.UsersService.SignupService;
 import tn.formini.services.FileUploadService;
+import tn.formini.services.face.CameraCaptureService;
+import tn.formini.services.face.FaceRecognitionService;
 import tn.formini.utils.TunisiaGovernorates;
 
 import java.io.IOException;
@@ -28,6 +30,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.ResourceBundle;
+import tn.formini.services.auth.OAuthCallbackHandler;
+import tn.formini.services.auth.OAuthService;
 
 public class SignupController implements Initializable {
 
@@ -75,6 +79,13 @@ public class SignupController implements Initializable {
     @FXML private TextField fieldCv;
     @FXML private TextField fieldPhoto;
     
+    @FXML private Button btnCaptureFace;
+    @FXML private ImageView cameraView;
+    @FXML private VBox cameraPanel;
+    @FXML private Button btnStartCamera;
+    @FXML private Button btnStopCamera;
+    @FXML private CheckBox cbEnableFaceAuth;
+    
     // Error labels
     @FXML private Label errorEmail;
     @FXML private Label errorTelephone;
@@ -87,10 +98,14 @@ public class SignupController implements Initializable {
 
     private final SignupService signupService = new SignupService();
     private final FileUploadService fileUploadService = new FileUploadService();
+    private final CameraCaptureService cameraService = CameraCaptureService.getInstance();
+    private final FaceRecognitionService faceService = FaceRecognitionService.getInstance();
     private ToggleGroup roleGroup;
     private java.io.File uploadedCvFile;
     private java.io.File uploadedPhotoFile;
     private final List<String> domainesList = new ArrayList<>();
+    private byte[] capturedFaceEncoding;
+    private boolean cameraActive = false;
 
     public void setOnBack(Runnable onBack) {
         this.onBack = onBack;
@@ -119,6 +134,12 @@ public class SignupController implements Initializable {
         updateRolePanels();
         updateRoleTileStyles();
         setupValidationListeners();
+        
+        // Hide camera panel initially
+        if (cameraPanel != null) {
+            cameraPanel.setVisible(false);
+            cameraPanel.setManaged(false);
+        }
     }
 
     private void updateRolePanels() {
@@ -177,6 +198,15 @@ public class SignupController implements Initializable {
                 }
             }
             user.setPhoto(photoPath);
+            
+            // Handle face encoding if face auth is enabled
+            if (cbEnableFaceAuth.isSelected() && capturedFaceEncoding != null) {
+                user.setFace_encoding(capturedFaceEncoding);
+                user.setFace_auth_enabled(true);
+            } else if (cbEnableFaceAuth.isSelected()) {
+                showMessage("Veuillez capturer votre visage pour activer l'authentification faciale.");
+                return;
+            }
 
             if (rbApprenant.isSelected()) {
                 Apprenant a = new Apprenant();
@@ -741,5 +771,149 @@ public class SignupController implements Initializable {
         }
         
         return isValid;
+    }
+    
+    @FXML
+    private void onCaptureFace() {
+        if (!faceService.isInitialized()) {
+            showMessage("Service de reconnaissance faciale non initialisé. Veuillez vérifier l'installation d'OpenCV.");
+            return;
+        }
+        
+        // Show camera panel
+        if (cameraPanel != null) {
+            cameraPanel.setVisible(true);
+            cameraPanel.setManaged(true);
+        }
+        
+        showMessage("Cliquez sur 'Démarrer la caméra' pour capturer votre visage.");
+    }
+    
+    @FXML
+    private void onStartCamera() {
+        if (cameraActive) {
+            showMessage("La caméra est déjà active.");
+            return;
+        }
+        
+        if (!cameraService.isCameraAvailable()) {
+            showMessage("Aucune caméra détectée.");
+            return;
+        }
+        
+        boolean started = cameraService.startCamera(0, cameraView);
+        if (started) {
+            cameraActive = true;
+            showMessage("Caméra démarrée. Positionnez votre visage devant la caméra.");
+        } else {
+            showMessage("Impossible de démarrer la caméra.");
+        }
+    }
+    
+    @FXML
+    private void onStopCamera() {
+        if (!cameraActive) {
+            return;
+        }
+        
+        cameraService.stopCamera();
+        cameraActive = false;
+        showMessage("Caméra arrêtée.");
+    }
+    
+    @FXML
+    private void onCaptureFaceForAuth() {
+        if (!cameraActive) {
+            showMessage("Veuillez d'abord démarrer la caméra.");
+            return;
+        }
+        
+        // Capture frame
+        java.io.File capturedImage = cameraService.captureFrame();
+        if (capturedImage == null) {
+            showMessage("Échec de la capture de l'image.");
+            return;
+        }
+        
+        // Extract face encoding
+        byte[] faceEncoding = faceService.extractFaceEncoding(capturedImage.getAbsolutePath());
+        if (faceEncoding == null) {
+            showMessage("Aucun visage détecté dans l'image. Veuillez réessayer.");
+            capturedImage.delete();
+            return;
+        }
+        
+        // Store the captured encoding
+        capturedFaceEncoding = faceEncoding;
+        
+        // Stop camera
+        cameraService.stopCamera();
+        cameraActive = false;
+        
+        // Hide camera panel
+        if (cameraPanel != null) {
+            cameraPanel.setVisible(false);
+            cameraPanel.setManaged(false);
+        }
+        
+        showMessage("Visage capturé avec succès ! L'authentification faciale sera activée lors de l'inscription.");
+        
+        capturedImage.delete();
+    }
+
+    @FXML
+    private void onSignupWithGoogle() {
+        if (!OAuthService.isConfigured("google")) {
+            showMessage("OAuth Google n'est pas configuré. Veuillez contacter l'administrateur.");
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                OAuthCallbackHandler handler = new OAuthCallbackHandler();
+                User user = handler.authenticateWithGoogle();
+
+                Platform.runLater(() -> {
+                    if (user != null) {
+                        new Alert(Alert.AlertType.INFORMATION, "Inscription réussie avec Google ! Vous pouvez maintenant vous connecter.", ButtonType.OK).showAndWait();
+                        redirectToLogin();
+                    } else {
+                        showMessage("L'inscription avec Google a échoué. Veuillez réessayer.");
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    showMessage("Erreur lors de l'inscription avec Google: " + e.getMessage());
+                });
+            }
+        }).start();
+    }
+
+    @FXML
+    private void onSignupWithGithub() {
+        if (!OAuthService.isConfigured("github")) {
+            showMessage("OAuth GitHub n'est pas configuré. Veuillez contacter l'administrateur.");
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                OAuthCallbackHandler handler = new OAuthCallbackHandler();
+                User user = handler.authenticateWithGithub();
+
+                Platform.runLater(() -> {
+                    if (user != null) {
+                        new Alert(Alert.AlertType.INFORMATION, "Inscription réussie avec GitHub ! Vous pouvez maintenant vous connecter.", ButtonType.OK).showAndWait();
+                        redirectToLogin();
+                    } else {
+                        showMessage("L'inscription avec GitHub a échoué. Veuillez réessayer.");
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    showMessage("Erreur lors de l'inscription avec GitHub: " + e.getMessage());
+                });
+            }
+        }).start();
     }
 }

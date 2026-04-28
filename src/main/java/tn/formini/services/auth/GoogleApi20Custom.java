@@ -4,24 +4,27 @@ import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.extractors.OAuth2AccessTokenExtractor;
 import com.github.scribejava.core.model.Verb;
 
-public class CloudflareApi extends DefaultApi20 {
-    private static final CloudflareApi INSTANCE = new CloudflareApi();
+/**
+ * Custom GoogleApi20 with required scopes for email and profile access
+ */
+public class GoogleApi20Custom extends DefaultApi20 {
+    private static final GoogleApi20Custom INSTANCE = new GoogleApi20Custom();
 
-    private CloudflareApi() {
+    private GoogleApi20Custom() {
     }
 
-    public static CloudflareApi instance() {
+    public static GoogleApi20Custom instance() {
         return INSTANCE;
     }
 
     @Override
     public String getAccessTokenEndpoint() {
-        return "https://dash.cloudflare.com/oauth2/token";
+        return "https://oauth2.googleapis.com/token";
     }
 
     @Override
     protected String getAuthorizationBaseUrl() {
-        return "https://dash.cloudflare.com/oauth2/authorize";
+        return "https://accounts.google.com/o/oauth2/v2/auth";
     }
 
     @Override
@@ -35,7 +38,7 @@ public class CloudflareApi extends DefaultApi20 {
     }
 
     protected String getScope() {
-        // Required scope for Cloudflare OAuth to read account info
-        return "account:read";
+        // Required scopes for Google OAuth to get email and profile
+        return "openid email profile";
     }
 }

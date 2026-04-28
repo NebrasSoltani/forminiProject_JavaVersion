@@ -50,6 +50,20 @@
 
                         <Separator styleClass="signup-sep"/>
 
+                        <!-- OAuth Signup -->
+                        <VBox spacing="14">
+                            <VBox spacing="4">
+                                <Label text="Ou inscrivez-vous avec" styleClass="signup-section-kicker"/>
+                                <Label text="Connexion rapide" styleClass="signup-section-title"/>
+                            </VBox>
+                            <HBox spacing="12" alignment="CENTER">
+                                <Button text="🔵 Google" onAction="#onSignupWithGoogle" styleClass="btn-oauth btn-google" HBox.hgrow="ALWAYS"/>
+                                <Button text="⚫ GitHub" onAction="#onSignupWithGithub" styleClass="btn-oauth btn-github" HBox.hgrow="ALWAYS"/>
+                            </HBox>
+                        </VBox>
+
+                        <Separator styleClass="signup-sep"/>
+
                         <!-- Identité -->
                         <VBox spacing="16">
                             <VBox spacing="4">

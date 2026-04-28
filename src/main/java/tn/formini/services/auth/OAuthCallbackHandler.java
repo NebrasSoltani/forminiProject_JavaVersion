@@ -15,6 +15,8 @@ public class OAuthCallbackHandler {
     private CountDownLatch latch;
     private User authenticatedUser;
     private String errorMessage;
+    private String oauthCode;
+    private String oauthState;
     
     public User authenticateWithGoogle() {
         return authenticate("google");
@@ -106,25 +108,31 @@ public class OAuthCallbackHandler {
         try {
             String query = exchange.getRequestURI().getQuery();
             System.out.println("Received callback: " + query);
-            
+
+            // Check if this is a role selection submission
+            if (query != null && query.contains("role=")) {
+                handleRoleSelection(exchange, provider, query);
+                return;
+            }
+
             if (query == null || query.isEmpty()) {
                 sendResponse(exchange, "Error: No callback parameters", 400);
                 errorMessage = "No callback parameters received";
                 latch.countDown();
                 return;
             }
-            
+
             // Parse query parameters
             String code = null;
             String state = null;
             String error = null;
-            
+
             for (String param : query.split("&")) {
                 String[] pair = param.split("=");
                 if (pair.length == 2) {
                     String key = pair[0];
                     String value = java.net.URLDecoder.decode(pair[1], "UTF-8");
-                    
+
                     if (key.equals("code")) {
                         code = value;
                     } else if (key.equals("state")) {
@@ -134,49 +142,129 @@ public class OAuthCallbackHandler {
                     }
                 }
             }
-            
+
             if (error != null) {
                 sendResponse(exchange, "Authentication cancelled or failed", 400);
                 errorMessage = "OAuth error: " + error;
                 latch.countDown();
                 return;
             }
-            
+
             if (code == null) {
                 sendResponse(exchange, "Error: No authorization code received", 400);
                 errorMessage = "No authorization code received";
                 latch.countDown();
                 return;
             }
-            
-            // Process the callback
-            try {
-                if (provider.equals("google")) {
-                    authenticatedUser = OAuthService.handleGoogleCallback(code, state);
-                } else if (provider.equals("github")) {
-                    authenticatedUser = OAuthService.handleGithubCallback(code, state);
-                } else {
-                    authenticatedUser = OAuthService.handleCloudflareCallback(code, state);
-                }
-                
-                if (authenticatedUser != null) {
-                    sendResponse(exchange, "Authentication successful! You can close this window.", 200);
-                    System.out.println("OAuth authentication successful for user: " + authenticatedUser.getEmail());
-                } else {
-                    sendResponse(exchange, "Authentication failed. Please try again.", 400);
-                    errorMessage = "Failed to create/update user";
-                }
-            } catch (Exception e) {
-                sendResponse(exchange, "Error processing authentication: " + e.getMessage(), 500);
-                errorMessage = "Error processing authentication: " + e.getMessage();
-                e.printStackTrace();
+
+            // Store the code and state for role selection
+            this.oauthCode = code;
+            this.oauthState = state;
+
+            // For Google and GitHub, always show role selection page
+            // We can't check user existence without consuming the OAuth code (single-use)
+            if (provider.equals("google") || provider.equals("github")) {
+                sendRoleSelectionPage(exchange, provider, code, state);
+            } else {
+                // Cloudflare doesn't require role selection, proceed directly
+                processAuthentication(provider, code, state, "apprenant");
             }
-            
+
         } catch (Exception e) {
             System.err.println("Error handling callback: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private void handleRoleSelection(com.sun.net.httpserver.HttpExchange exchange, String provider, String query) {
+        try {
+            String role = null;
+            for (String param : query.split("&")) {
+                String[] pair = param.split("=");
+                if (pair.length == 2 && pair[0].equals("role")) {
+                    role = java.net.URLDecoder.decode(pair[1], "UTF-8");
+                    break;
+                }
+            }
+
+            if (role == null || (!role.equals("apprenant") && !role.equals("formateur"))) {
+                sendResponse(exchange, "Invalid role selection", 400);
+                errorMessage = "Invalid role selected";
+                latch.countDown();
+                return;
+            }
+
+            processAuthentication(provider, oauthCode, oauthState, role);
+
+        } catch (Exception e) {
+            System.err.println("Error handling role selection: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void processAuthentication(String provider, String code, String state, String role) {
+        try {
+            if (provider.equals("google")) {
+                authenticatedUser = OAuthService.handleGoogleCallback(code, state, role);
+            } else if (provider.equals("github")) {
+                authenticatedUser = OAuthService.handleGithubCallback(code, state, role);
+            } else {
+                authenticatedUser = OAuthService.handleCloudflareCallback(code, state);
+            }
+
+            if (authenticatedUser != null) {
+                System.out.println("OAuth authentication successful for user: " + authenticatedUser.getEmail());
+            } else {
+                errorMessage = "Failed to create/update user";
+            }
+        } catch (Exception e) {
+            errorMessage = "Error processing authentication: " + e.getMessage();
+            e.printStackTrace();
         } finally {
             latch.countDown();
+        }
+    }
+
+    private void sendRoleSelectionPage(com.sun.net.httpserver.HttpExchange exchange, String provider, String code, String state) throws IOException {
+        String html = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "    <meta charset='UTF-8'>\n" +
+                "    <title>Choose Your Role - Formini</title>\n" +
+                "    <style>\n" +
+                "        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0; }\n" +
+                "        .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; max-width: 400px; }\n" +
+                "        h1 { color: #333; margin-bottom: 10px; }\n" +
+                "        p { color: #666; margin-bottom: 30px; }\n" +
+                "        .role-buttons { display: flex; flex-direction: column; gap: 15px; }\n" +
+                "        .role-btn { padding: 15px 30px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }\n" +
+                "        .role-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }\n" +
+                "        .btn-apprenant { background: #4CAF50; color: white; }\n" +
+                "        .btn-formateur { background: #2196F3; color: white; }\n" +
+                "    </style>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "    <div class='container'>\n" +
+                "        <h1>Choose Your Role</h1>\n" +
+                "        <p>Select how you want to use Formini:</p>\n" +
+                "        <div class='role-buttons'>\n" +
+                "            <button class='role-btn btn-apprenant' onclick='selectRole(\"apprenant\")'>📚 Apprenant (Learner)</button>\n" +
+                "            <button class='role-btn btn-formateur' onclick='selectRole(\"formateur\")'>👨‍🏫 Formateur (Instructor)</button>\n" +
+                "        </div>\n" +
+                "    </div>\n" +
+                "    <script>\n" +
+                "        function selectRole(role) {\n" +
+                "            const url = window.location.pathname + '?code=" + code + "&state=" + state + "&role=' + role;\n" +
+                "            window.location.href = url;\n" +
+                "        }\n" +
+                "    </script>\n" +
+                "</body>\n" +
+                "</html>";
+
+        exchange.getResponseHeaders().set("Content-Type", "text/html; charset=UTF-8");
+        exchange.sendResponseHeaders(200, html.getBytes().length);
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(html.getBytes());
         }
     }
     
