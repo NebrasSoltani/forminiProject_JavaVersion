@@ -259,65 +259,9 @@ public class CartController implements Initializable {
             showError("Commande refusée", ex.getMessage());
         } catch (SQLException ex) {
             showError("Erreur base de données", ex.getMessage());
-
-                CartItem row = (CartItem) getTableRow().getItem();
-                if (row == null || row.getProduit() == null) {
-                    setGraphic(null);
-                    return;
-                }
-
-                var p = row.getProduit();
-                name.setText(p.getNom());
-
-                badgeCat.setText(p.getCategorie() == null ? "—" : p.getCategorie());
-                badgeStock.setText(p.getStock() <= 0 ? "Rupture" : "Disponible");
-                badgeStock.getStyleClass().removeAll("shop-badge-success", "shop-badge-danger");
-                badgeStock.getStyleClass().add(p.getStock() <= 0 ? "shop-badge-danger" : "shop-badge-success");
-
-                img.setImage(null);
-                if (p.getImage() != null && !p.getImage().trim().isEmpty()) {
-                    try {
-                        img.setImage(new Image(p.getImage().trim(), true));
-                    } catch (Exception ignored) {}
-                }
-
-                setGraphic(root);
-            }
-        };
-    }
-
-    private Callback<TableColumn<CartItem, Void>, TableCell<CartItem, Void>> makeActionsCell() {
-        return column -> new TableCell<>() {
-            private final Button details = new Button("Détails");
-            private final Button remove = new Button("Retirer");
-            private final HBox box = new HBox(8);
-            {
-                details.setStyle("-fx-background-color: #e3f2fd; -fx-border-color: #2196f3; -fx-border-width: 2px; " +
-                                "-fx-text-fill: #1976d2; -fx-font-weight: bold; -fx-font-size: 12px; " +
-                                "-fx-background-radius: 6px; -fx-border-radius: 6px; -fx-padding: 6px 12px; -fx-cursor: hand;");
-
-                remove.setStyle("-fx-background-color: #ffebee; -fx-border-color: #f44336; -fx-border-width: 2px; " +
-                               "-fx-text-fill: #d32f2f; -fx-font-weight: bold; -fx-font-size: 12px; " +
-                               "-fx-background-radius: 6px; -fx-border-radius: 6px; -fx-padding: 6px 12px; -fx-cursor: hand;");
-                remove.setOnAction(e -> {
-                    CartItem item = getTableView().getItems().get(getIndex());
-                    cart.remove(item);
-                });
-
-                box.getStyleClass().add("cart-actions");
-                box.getChildren().addAll(details, remove);
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    setGraphic(box);
-                }
-            }
-        };
+        } catch (Exception ex) {
+            showError("Erreur", ex.getMessage());
+        }
     }
 
     private void showProductDetails(CartItem item) {
@@ -577,22 +521,7 @@ public class CartController implements Initializable {
         return invoice;
     }
 
-    private void showInfo(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
-    private void showError(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-    
+        
     private void showSuggestionsLoading(boolean show) {
         if (suggestionsLoading != null) {
             suggestionsLoading.setVisible(show);
@@ -970,14 +899,6 @@ public class CartController implements Initializable {
         System.out.println("Cart refreshed - items: " + cart.getItemsCountTotal());
     }
     
-    private void showSuccess(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
     private void displaySuggestions(List<Produit> produits) {
         if (suggestionsContainer == null) {
             return;
