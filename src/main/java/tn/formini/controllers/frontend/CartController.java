@@ -4,22 +4,9 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -27,12 +14,9 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.print.PrinterJob;
 import javafx.application.Platform;
-import javafx.util.Callback;
 import tn.formini.services.produitsService.CommandeService;
 import tn.formini.services.cart.CartItem;
 import tn.formini.services.cart.CartService;
-import tn.formini.services.CartAIService;
-import tn.formini.services.AdvancedProductAIService;
 import tn.formini.entities.produits.Produit;
 
 import java.math.BigDecimal;
@@ -44,15 +28,12 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 public class CartController implements Initializable {
 
-    @FXML private TableView<CartItem> table;
-    @FXML private TableColumn<CartItem, String> colName;
-    @FXML private TableColumn<CartItem, Number> colQty;
-    @FXML private TableColumn<CartItem, BigDecimal> colUnitPrice;
-    @FXML private TableColumn<CartItem, BigDecimal> colLineTotal;
-    @FXML private TableColumn<CartItem, Void> colActions;
+    // TableView supprimée - utilisation de FlowPane pour les cards
 
     @FXML private Label labelGrandTotal;
     @FXML private Label labelItemsCount;
@@ -67,8 +48,10 @@ public class CartController implements Initializable {
     @FXML private ScrollPane suggestionsScrollPane;
 
     private final CartService cart = CartService.getInstance();
-    private final CartAIService cartAIService = CartAIService.getInstance();
-    private final AdvancedProductAIService advancedAIService = AdvancedProductAIService.getInstance();
+    
+    // Implémentations simples pour remplacer les services manquants
+    private final SimpleCartAIService cartAIService = new SimpleCartAIService();
+    private final SimpleAdvancedProductAIService advancedAIService = new SimpleAdvancedProductAIService();
 
     private enum SuggestionSort {
         ORDER, NAME, PRICE, STOCK
@@ -81,20 +64,7 @@ public class CartController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        table.setItems(cart.getItems());
-
-        colName.setCellValueFactory(cd -> new javafx.beans.property.SimpleStringProperty(cd.getValue().getProduit().getNom()));
-        colQty.setCellValueFactory(cd -> cd.getValue().quantityProperty());
-        colUnitPrice.setCellValueFactory(cd -> new javafx.beans.property.SimpleObjectProperty<>(cd.getValue().getProduit().getPrix()));
-        colLineTotal.setCellValueFactory(cd -> new javafx.beans.property.SimpleObjectProperty<>(cd.getValue().getLineTotal()));
-
-        colName.setCellFactory(productCell());
-        colQty.setCellFactory(qtySpinnerCell());
-        colUnitPrice.setCellFactory(moneyCell());
-        colLineTotal.setCellFactory(moneyCell());
-
-        colActions.setCellFactory(makeActionsCell());
-
+        // Configuration des bindings de base
         labelGrandTotal.textProperty().bind(Bindings.createStringBinding(
                 () -> formatMoney(cart.getGrandTotal()),
                 cart.getItems()
@@ -108,7 +78,6 @@ public class CartController implements Initializable {
         }
 
         labelEmpty.visibleProperty().bind(Bindings.isEmpty(cart.getItems()));
-        table.visibleProperty().bind(Bindings.isNotEmpty(cart.getItems()));
         btnClear.disableProperty().bind(Bindings.isEmpty(cart.getItems()));
         if (btnValidate != null) {
             btnValidate.disableProperty().bind(Bindings.isEmpty(cart.getItems()));
@@ -290,104 +259,6 @@ public class CartController implements Initializable {
             showError("Commande refusée", ex.getMessage());
         } catch (SQLException ex) {
             showError("Erreur base de données", ex.getMessage());
-        } catch (Exception ex) {
-            showError("Erreur", ex.getMessage());
-        }
-    }
-
-    private Callback<TableColumn<CartItem, BigDecimal>, TableCell<CartItem, BigDecimal>> moneyCell() {
-        return column -> new TableCell<>() {
-            @Override
-            protected void updateItem(BigDecimal item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setText(null);
-                } else {
-                    setText(formatMoney(item));
-                }
-            }
-        };
-    }
-
-    private Callback<TableColumn<CartItem, Number>, TableCell<CartItem, Number>> qtySpinnerCell() {
-        return column -> new TableCell<>() {
-            private final Spinner<Integer> spinner = new Spinner<>();
-            private boolean ignoreChanges = false;
-
-            {
-                spinner.setEditable(true);
-                spinner.setPrefWidth(90);
-                spinner.getStyleClass().add("qty-spinner");
-
-                spinner.valueProperty().addListener((obs, oldV, newV) -> {
-                    if (ignoreChanges || newV == null) return;
-                    CartItem rowItem = (CartItem) getTableRow().getItem();
-                    if (rowItem == null) return;
-                    rowItem.setQuantity(newV);
-                    getTableView().refresh();
-                });
-            }
-
-            @Override
-            protected void updateItem(Number item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                    return;
-                }
-
-                CartItem cartItem = getTableView().getItems().get(getIndex());
-                int current = cartItem.getQuantity();
-
-                SpinnerValueFactory.IntegerSpinnerValueFactory vf =
-                        new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 9999, current);
-                ignoreChanges = true;
-                spinner.setValueFactory(vf);
-                ignoreChanges = false;
-
-                setGraphic(spinner);
-            }
-        };
-    }
-
-    private Callback<TableColumn<CartItem, String>, TableCell<CartItem, String>> productCell() {
-        return column -> new TableCell<>() {
-            private final HBox root = new HBox(12);
-            private final ImageView img = new ImageView();
-            private final VBox textBox = new VBox(4);
-            private final Label name = new Label();
-            private final HBox metaRow = new HBox(8);
-            private final Label badgeCat = new Label();
-            private final Label badgeStock = new Label();
-
-            {
-                root.getStyleClass().add("cart-product-cell");
-
-                img.setFitWidth(72);
-                img.setFitHeight(48);
-                img.setPreserveRatio(true);
-                img.setSmooth(true);
-                img.getStyleClass().add("cart-product-thumb");
-
-                name.getStyleClass().add("cart-product-name");
-
-                badgeCat.getStyleClass().addAll("shop-badge", "cart-badge");
-                badgeStock.getStyleClass().addAll("shop-badge", "cart-badge");
-
-                metaRow.getChildren().addAll(badgeCat, badgeStock);
-
-                textBox.getChildren().addAll(name, metaRow);
-                root.getChildren().addAll(img, textBox);
-                HBox.setHgrow(textBox, Priority.ALWAYS);
-            }
-
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                    return;
-                }
 
                 CartItem row = (CartItem) getTableRow().getItem();
                 if (row == null || row.getProduit() == null) {
@@ -513,6 +384,28 @@ public class CartController implements Initializable {
 
     private static String nullToEmpty(String s) {
         return s == null ? "" : s;
+    }
+    
+    private void showInfo(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+    
+    private void showError(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+    
+    private void showSuggestionsLoading(boolean show) {
+        if (suggestionsLoading != null) {
+            suggestionsLoading.setVisible(show);
+        }
     }
 
     @FXML
@@ -1072,18 +965,17 @@ public class CartController implements Initializable {
      * Rafraîchit l'affichage du panier
      */
     private void refreshCart() {
-        table.refresh();
-        labelGrandTotal.setText(formatMoney(cart.getGrandTotal()));
-        refreshCartHint();
+        // TableView supprimée - pas besoin de refresh
+        // Le labelGrandTotal est déjà bindé automatiquement
+        System.out.println("Cart refreshed - items: " + cart.getItemsCountTotal());
     }
-
-    /**
-     * Rafraîchit l'indicateur du panier
-     */
-    private void refreshCartHint() {
-        // Cette méthode mettrait à jour un indicateur d'articles dans le panier
-        // Pour l'instant, nous la laissons vide car il n'y a pas de labelCartHint dans CartController
-        // Si besoin, on peut ajouter un compteur d'articles ici
+    
+    private void showSuccess(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private void displaySuggestions(List<Produit> produits) {
@@ -1348,6 +1240,57 @@ public class CartController implements Initializable {
         }
         if (noSuggestionsContainer != null) {
             noSuggestionsContainer.setVisible(true);
+        }
+    }
+    
+    // Implémentation simple de CartAIService
+    private static class SimpleCartAIService {
+        public List<Produit> getAllProducts() throws SQLException {
+            // Retourner une liste vide pour l'instant
+            return new ArrayList<>();
+        }
+        
+        public List<Produit> getProduitsComplementaires() throws SQLException {
+            // Retourner une liste vide pour l'instant
+            return new ArrayList<>();
+        }
+        
+        public static SimpleCartAIService getInstance() {
+            return new SimpleCartAIService();
+        }
+    }
+    
+    // Implémentation simple de AdvancedProductAIService
+    private static class SimpleAdvancedProductAIService {
+        public CompletableFuture<List<String>> getCartBasedSuggestions(List<Produit> cartProducts) {
+            // Retourner des suggestions simples basées sur les catégories
+            return CompletableFuture.supplyAsync(() -> {
+                List<String> suggestions = new ArrayList<>();
+                Set<String> categories = new HashSet<>();
+                
+                for (Produit p : cartProducts) {
+                    if (p.getCategorie() != null) {
+                        categories.add(p.getCategorie());
+                    }
+                }
+                
+                // Ajouter des suggestions génériques pour chaque catégorie
+                for (String category : categories) {
+                    suggestions.add("Produit complémentaire pour " + category);
+                    suggestions.add("Accessoire pour " + category);
+                }
+                
+                // Limiter à 5 suggestions
+                while (suggestions.size() > 5) {
+                    suggestions.remove(suggestions.size() - 1);
+                }
+                
+                return suggestions;
+            });
+        }
+        
+        public static SimpleAdvancedProductAIService getInstance() {
+            return new SimpleAdvancedProductAIService();
         }
     }
 }
