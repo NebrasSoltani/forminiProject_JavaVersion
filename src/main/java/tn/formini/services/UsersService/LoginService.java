@@ -89,13 +89,8 @@ public class LoginService {
         if (user == null) {
             return false;
         }
-        // Tant que le workflow de vérification email n'est pas en place,
-        // on autorise les comptes sans token de vérification actif.
-        if (user.isIs_email_verified()) {
-            return true;
-        }
-        String token = user.getEmail_verification_token();
-        return token == null || token.isBlank();
+        // Check if email is verified
+        return user.isIs_email_verified();
     }
     
     /**

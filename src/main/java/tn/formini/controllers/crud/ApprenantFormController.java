@@ -6,72 +6,45 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
 import tn.formini.entities.Users.Apprenant;
-import tn.formini.entities.Users.User;
 import tn.formini.entities.Users.Domaine;
-import tn.formini.entities.Users.Gouvernorat;
 import tn.formini.services.UsersService.ApprenantService;
 import tn.formini.services.UsersService.DomaineService;
-import tn.formini.services.UsersService.SignupService;
 
-import java.net.URL;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
-import java.util.ResourceBundle;
-import java.util.regex.Pattern;
 
-public class ApprenantFormController implements Initializable {
+public class ApprenantFormController {
 
-    @FXML private Label lblMessage;
-    @FXML private Label formTitle;
-    @FXML private Label formSubtitle;
-    @FXML private ComboBox<String> genreComboBox;
-    @FXML private ComboBox<String> etatCivilComboBox;
-    @FXML private TextArea objectifTextArea;
-    @FXML private TextArea domainesInteretTextArea;
-    @FXML private ComboBox<Domaine> domaineComboBox;
-    @FXML private Button saveButton;
-    @FXML private Button cancelButton;
+    @FXML
+    private ComboBox<String> genreComboBox;
     
-    // User creation fields
-    @FXML private TextField fieldEmail;
-    @FXML private TextField fieldTelephone;
-    @FXML private PasswordField fieldPassword;
-    @FXML private PasswordField fieldPasswordConfirm;
-    @FXML private Button btnTogglePassword;
-    @FXML private Button btnTogglePasswordConfirm;
-    @FXML private Label eyeIcon;
-    @FXML private Label eyeSlashIcon;
-    @FXML private Label eyeIconConfirm;
-    @FXML private Label eyeSlashIconConfirm;
-    @FXML private TextField fieldNom;
-    @FXML private TextField fieldPrenom;
-    @FXML private ComboBox<Gouvernorat> fieldGouvernorat;
-    @FXML private DatePicker fieldDateNaissance;
-
-    @FXML private Label errorGenre;
-    @FXML private Label errorEtatCivil;
-    @FXML private Label errorDomaine;
-    @FXML private Label errorObjectif;
-    @FXML private Label errorDomainesInteret;
-    @FXML private Label errorEmail;
-    @FXML private Label errorTelephone;
-    @FXML private Label errorPassword;
-    @FXML private Label errorPasswordConfirm;
-    @FXML private Label errorNom;
-    @FXML private Label errorPrenom;
-    @FXML private Label errorDateNaissance;
-
+    @FXML
+    private ComboBox<String> etatCivilComboBox;
+    
+    @FXML
+    private TextArea objectifTextArea;
+    
+    @FXML
+    private TextArea domainesInteretTextArea;
+    
+    @FXML
+    private ComboBox<User> userComboBox;
+    
+    @FXML
+    private ComboBox<Domaine> domaineComboBox;
+    
+    @FXML
+    private Button saveButton;
+    
+    @FXML
+    private Button cancelButton;
+    
     private ApprenantService apprenantService;
     private DomaineService domaineService;
-    private SignupService signupService;
-
+    
     private Apprenant apprenant;
     private Mode mode;
-
+    
     public enum Mode {
         ADD, EDIT
     }
@@ -80,8 +53,7 @@ public class ApprenantFormController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         apprenantService = new ApprenantService();
         domaineService = new DomaineService();
-        signupService = new SignupService();
-
+        
         setupComboBoxes();
         setupValidationListeners();
     }
@@ -89,7 +61,9 @@ public class ApprenantFormController implements Initializable {
     private void setupComboBoxes() {
         genreComboBox.setItems(FXCollections.observableArrayList("homme", "femme", "autre"));
         etatCivilComboBox.setItems(FXCollections.observableArrayList("celibataire", "marie", "divorce", "veuf"));
-        fieldGouvernorat.setItems(FXCollections.observableArrayList(Gouvernorat.values()));
+        
+        List<User> users = userService.afficher();
+        userComboBox.setItems(FXCollections.observableArrayList(users));
         
         List<Domaine> domaines = domaineService.afficher();
         domaineComboBox.setItems(FXCollections.observableArrayList(domaines));
@@ -100,6 +74,34 @@ public class ApprenantFormController implements Initializable {
         updateFormForMode(mode);
         if (mode == Mode.ADD) {
             clearForm();
+            setPasswordSectionVisible(true);
+            if (heroSubLabel != null) {
+                heroSubLabel.setText(
+                    "Même présentation que l'inscription : identité, connexion, puis profil apprenant. Les champs * sont obligatoires pour la création.");
+            }
+        } else {
+            passwordField.clear();
+            passwordConfirmField.clear();
+            setPasswordSectionVisible(false);
+            if (heroSubLabel != null) {
+                heroSubLabel.setText(
+                    "Même formulaire qu'à l'ajout : vous pouvez modifier le profil et le compte, sauf le mot de passe (inchangé depuis cet écran).");
+            }
+        }
+    }
+
+    private void setPasswordSectionVisible(boolean visible) {
+        if (passwordGroup != null) {
+            passwordGroup.setVisible(visible);
+            passwordGroup.setManaged(visible);
+        }
+        if (passwordConfirmGroup != null) {
+            passwordConfirmGroup.setVisible(visible);
+            passwordConfirmGroup.setManaged(visible);
+        }
+        if (passwordHintLabel != null) {
+            passwordHintLabel.setVisible(visible);
+            passwordHintLabel.setManaged(visible);
         }
     }
 
@@ -127,22 +129,11 @@ public class ApprenantFormController implements Initializable {
         if (apprenant != null) {
             genreComboBox.setValue(apprenant.getGenre());
             etatCivilComboBox.setValue(apprenant.getEtat_civil());
-            objectifTextArea.setText(apprenant.getObjectif() != null ? apprenant.getObjectif() : "");
-            domainesInteretTextArea.setText(apprenant.getDomaines_interet() != null ? apprenant.getDomaines_interet() : "");
-            
+            objectifField.setText(apprenant.getObjectif() != null ? apprenant.getObjectif() : "");
+            setDomainesFromRaw(apprenant.getDomaines_interet());
+
             if (apprenant.getUser() != null) {
-                User user = apprenant.getUser();
-                fieldEmail.setText(user.getEmail());
-                fieldTelephone.setText(user.getTelephone());
-                fieldNom.setText(user.getNom());
-                fieldPrenom.setText(user.getPrenom());
-                if (user.getGouvernorat() != null) {
-                    Gouvernorat gouvernorat = Gouvernorat.fromDisplayName(user.getGouvernorat());
-                    fieldGouvernorat.setValue(gouvernorat);
-                }
-                if (user.getDate_naissance() != null) {
-                    fieldDateNaissance.setValue(user.getDate_naissance().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                }
+                userComboBox.setValue(apprenant.getUser());
             }
             
             if (apprenant.getDomaine() != null) {
@@ -151,25 +142,33 @@ public class ApprenantFormController implements Initializable {
         }
     }
 
+    private static String stripToFileName(String path) {
+        if (path == null || path.isEmpty()) {
+            return "Aucune photo sélectionnée";
+        }
+        int slash = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
+        return slash >= 0 ? path.substring(slash + 1) : path;
+    }
+
     private void clearForm() {
+        emailField.clear();
+        passwordField.clear();
+        passwordConfirmField.clear();
+        nomField.clear();
+        prenomField.clear();
+        telephoneField.clear();
+        gouvernoratField.setValue(null);
+        dateNaissanceField.setValue(null);
+        photoField.clear();
+        lblPhotoFileName.setText("Aucune photo sélectionnée");
+        imageViewPhoto.setImage(null);
+        uploadedPhotoFile = null;
         genreComboBox.setValue(null);
         etatCivilComboBox.setValue(null);
         objectifTextArea.clear();
         domainesInteretTextArea.clear();
+        userComboBox.setValue(null);
         domaineComboBox.setValue(null);
-        
-        // Clear user fields
-        fieldEmail.clear();
-        fieldTelephone.clear();
-        fieldPassword.clear();
-        fieldPasswordConfirm.clear();
-        fieldNom.clear();
-        fieldPrenom.clear();
-        fieldGouvernorat.setValue(null);
-        fieldDateNaissance.setValue(null);
-        
-        clearAllErrors();
-        hideMessage();
     }
 
     @FXML
@@ -181,6 +180,83 @@ public class ApprenantFormController implements Initializable {
         }
 
         try {
+            String email = emailField.getText().trim();
+            String password = passwordField.getText();
+            String phoneNorm = SignupFieldValidation.normalizePhone(telephoneField.getText());
+
+            User userToUse;
+
+            if (mode == Mode.EDIT && apprenant != null && apprenant.getUser() != null) {
+                User dbUser = userService.getUserByEmail(apprenant.getUser().getEmail());
+                if (dbUser == null) {
+                    dbUser = userService.findById(apprenant.getUser().getId());
+                }
+                if (dbUser == null) {
+                    showAlert("Erreur", "Utilisateur introuvable.", Alert.AlertType.ERROR);
+                    return;
+                }
+                if (email.isEmpty()) {
+                    showAlert("Erreur de validation", "L'email est obligatoire", Alert.AlertType.ERROR);
+                    return;
+                }
+                if (userService.emailExists(email) && !email.equalsIgnoreCase(dbUser.getEmail())) {
+                    showAlert("Erreur de validation", "Cet email existe déjà", Alert.AlertType.ERROR);
+                    return;
+                }
+                dbUser.setEmail(email);
+                dbUser.setNom(nomField.getText().trim());
+                dbUser.setPrenom(prenomField.getText().trim());
+                dbUser.setTelephone(phoneNorm);
+                dbUser.setGouvernorat(gouvernoratField.getValue());
+                LocalDate localDateEdit = dateNaissanceField.getValue();
+                if (localDateEdit != null) {
+                    dbUser.setDate_naissance(java.sql.Date.valueOf(localDateEdit));
+                }
+                String photoPathEdit = photoField.getText().trim();
+                if (uploadedPhotoFile != null) {
+                    photoPathEdit = fileUploadService.uploadPhoto(uploadedPhotoFile);
+                }
+                dbUser.setPhoto(photoPathEdit.isEmpty() ? null : photoPathEdit);
+                userService.modifier(dbUser);
+                userToUse = dbUser;
+            } else if (!email.isEmpty() && password != null && !password.isEmpty()) {
+                if (userService.emailExists(email)) {
+                    showAlert("Erreur de validation", "Cet email existe déjà", Alert.AlertType.ERROR);
+                    return;
+                }
+
+                User newUser = new User();
+                newUser.setEmail(email);
+                newUser.setPassword(password);
+                newUser.setNom(nomField.getText().trim());
+                newUser.setPrenom(prenomField.getText().trim());
+                newUser.setTelephone(phoneNorm);
+                newUser.setGouvernorat(gouvernoratField.getValue());
+                newUser.setRole_utilisateur("apprenant");
+                newUser.setIs_email_verified(true);
+
+                LocalDate localDate = dateNaissanceField.getValue();
+                if (localDate != null) {
+                    newUser.setDate_naissance(java.sql.Date.valueOf(localDate));
+                }
+
+                String photoPath = photoField.getText().trim();
+                if (uploadedPhotoFile != null) {
+                    photoPath = fileUploadService.uploadPhoto(uploadedPhotoFile);
+                }
+                newUser.setPhoto(photoPath.isEmpty() ? null : photoPath);
+
+                userService.ajouter(newUser);
+                userToUse = newUser;
+            } else if (userComboBox != null && userComboBox.getValue() != null) {
+                userToUse = userComboBox.getValue();
+            } else {
+                showAlert("Erreur de validation",
+                    "Veuillez remplir l'email et le mot de passe pour créer un compte, ou sélectionner un utilisateur.",
+                    Alert.AlertType.ERROR);
+                return;
+            }
+
             if (mode == Mode.ADD) {
                 // Create user first
                 LocalDate birth = fieldDateNaissance.getValue();
@@ -198,40 +274,14 @@ public class ApprenantFormController implements Initializable {
 
                 // Create apprenant
                 apprenant = new Apprenant();
-                apprenant.setUser(user);
-                
-                apprenant.setGenre(genreComboBox.getValue());
-                apprenant.setEtat_civil(etatCivilComboBox.getValue());
-                apprenant.setObjectif(objectifTextArea.getText().trim().isEmpty() ? null : objectifTextArea.getText().trim());
-                apprenant.setDomaines_interet(domainesInteretTextArea.getText().trim().isEmpty() ? null : domainesInteretTextArea.getText().trim());
-                apprenant.setDomaine(domaineComboBox.getValue());
+            }
 
-                signupService.signupApprenant(apprenant);
-                showMessage("Apprenant ajouté avec succès.");
-            } else {
-                // Update existing apprenant
-                if (apprenant.getUser() != null) {
-                    User user = apprenant.getUser();
-                    user.setEmail(trimToNull(fieldEmail.getText()));
-                    if (!fieldPassword.getText().isEmpty()) {
-                        user.setPassword(fieldPassword.getText());
-                    }
-                    user.setNom(trimToNull(fieldNom.getText()));
-                    user.setPrenom(trimToNull(fieldPrenom.getText()));
-                    user.setTelephone(normalizePhone(fieldTelephone.getText()));
-                    Gouvernorat selectedGouvernorat = fieldGouvernorat.getValue();
-                    user.setGouvernorat(selectedGouvernorat != null ? selectedGouvernorat.getDisplayName() : null);
-                    if (fieldDateNaissance.getValue() != null) {
-                        Date dateNaissance = Date.from(fieldDateNaissance.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
-                        user.setDate_naissance(dateNaissance);
-                    }
-                }
-                
-                apprenant.setGenre(genreComboBox.getValue());
-                apprenant.setEtat_civil(etatCivilComboBox.getValue());
-                apprenant.setObjectif(objectifTextArea.getText().trim().isEmpty() ? null : objectifTextArea.getText().trim());
-                apprenant.setDomaines_interet(domainesInteretTextArea.getText().trim().isEmpty() ? null : domainesInteretTextArea.getText().trim());
-                apprenant.setDomaine(domaineComboBox.getValue());
+            apprenant.setGenre(genreComboBox.getValue());
+            apprenant.setEtat_civil(etatCivilComboBox.getValue());
+            apprenant.setObjectif(objectifTextArea.getText().trim().isEmpty() ? null : objectifTextArea.getText().trim());
+            apprenant.setDomaines_interet(domainesInteretTextArea.getText().trim().isEmpty() ? null : domainesInteretTextArea.getText().trim());
+            apprenant.setUser(userComboBox.getValue());
+            apprenant.setDomaine(domaineComboBox.getValue());
 
                 apprenantService.modifier(apprenant);
                 showMessage("Apprenant modifié avec succès.");
@@ -249,43 +299,130 @@ public class ApprenantFormController implements Initializable {
     }
 
     private boolean validateForm() {
-        clearAllErrors();
-        boolean isValid = true;
-
-        // Validate user fields - email and phone are always required, password only for ADD mode
-        isValid &= validateEmail();
-        isValid &= validateTelephone();
-        
-        if (mode == Mode.ADD) {
-            isValid &= validatePassword();
-            isValid &= validatePasswordConfirm();
-        } else {
-            // For EDIT mode, only validate password if it's provided
-            String password = fieldPassword.getText();
-            if (!password.isEmpty()) {
-                isValid &= validatePassword();
-                isValid &= validatePasswordConfirm();
-            }
+        if (userComboBox.getValue() == null) {
+            showAlert("Erreur de validation", "Veuillez sélectionner un utilisateur", Alert.AlertType.ERROR);
+            return false;
         }
-        
-        isValid &= validateNom();
-        isValid &= validatePrenom();
-        isValid &= validateDateNaissance();
 
         String domainesInteret = domainesInteretTextArea.getText().trim();
         if (!domainesInteret.isEmpty()) {
             if (!domainesInteret.startsWith("[") || !domainesInteret.endsWith("]")) {
-                showError(errorDomainesInteret, "Les domaines d'intérêt doivent être au format JSON array (ex: [\"domaine1\", \"domaine2\"])" );
-                isValid = false;
+                showAlert("Erreur de validation", "Les domaines d'intérêt doivent être au format JSON array (ex: [\"domaine1\", \"domaine2\"])", Alert.AlertType.ERROR);
+                return false;
             }
         }
 
-        if (objectifTextArea.getText() != null && objectifTextArea.getText().trim().length() > 2000) {
-            showError(errorObjectif, "L'objectif ne doit pas dépasser 2000 caractères");
-            isValid = false;
+        return true;
+    }
+
+    private void clearEditErrors() {
+        hideError(errorEmail);
+        hideError(errorTelephone);
+        hideError(errorNom);
+        hideError(errorPrenom);
+        hideError(errorDateNaissance);
+    }
+
+    private void showError(Label label, String msg) {
+        if (label == null) {
+            return;
+        }
+        label.setText(msg);
+        label.setVisible(true);
+        label.setManaged(true);
+    }
+
+    private void hideError(Label label) {
+        if (label == null) {
+            return;
+        }
+        label.setText("");
+        label.setVisible(false);
+        label.setManaged(false);
+    }
+
+    @FXML
+    private void onAddDomaine() {
+        if (fieldDomaineInput == null) {
+            return;
+        }
+        String domaine = fieldDomaineInput.getText() != null ? fieldDomaineInput.getText().trim() : "";
+        if (domaine.isEmpty()) {
+            return;
         }
 
-        return isValid;
+        boolean alreadyExists = domainesList.stream().anyMatch(existing -> existing.equalsIgnoreCase(domaine));
+        if (!alreadyExists) {
+            domainesList.add(domaine);
+            displayDomainesTags();
+        }
+        fieldDomaineInput.clear();
+    }
+
+    private void displayDomainesTags() {
+        if (flowPaneDomaines == null) {
+            return;
+        }
+        flowPaneDomaines.getChildren().clear();
+        for (String domaine : domainesList) {
+            flowPaneDomaines.getChildren().add(createDomaineTag(domaine));
+        }
+    }
+
+    private HBox createDomaineTag(String domaine) {
+        HBox tag = new HBox();
+        tag.getStyleClass().add("domaine-tag");
+        tag.setSpacing(4);
+
+        Label label = new Label(domaine);
+        label.getStyleClass().add("domaine-tag-label");
+
+        Button removeBtn = new Button("x");
+        removeBtn.getStyleClass().add("domaine-tag-remove");
+        removeBtn.setOnAction(e -> {
+            domainesList.remove(domaine);
+            displayDomainesTags();
+        });
+
+        tag.getChildren().addAll(label, removeBtn);
+        return tag;
+    }
+
+    private void setDomainesFromRaw(String rawDomaines) {
+        domainesList.clear();
+        if (rawDomaines == null || rawDomaines.trim().isEmpty() || "[]".equals(rawDomaines.trim())) {
+            displayDomainesTags();
+            return;
+        }
+
+        String cleaned = rawDomaines.trim()
+                .replace("[", "")
+                .replace("]", "")
+                .replace("\"", "");
+        if (!cleaned.isBlank()) {
+            for (String part : cleaned.split(",")) {
+                String domaine = part.trim();
+                if (!domaine.isEmpty()) {
+                    domainesList.add(domaine);
+                }
+            }
+        }
+        displayDomainesTags();
+    }
+
+    private String convertDomainesToJson(List<String> domaines) {
+        if (domaines == null || domaines.isEmpty()) {
+            return "[]";
+        }
+        StringBuilder json = new StringBuilder("[");
+        for (int i = 0; i < domaines.size(); i++) {
+            json.append("\"").append(domaines.get(i).replace("\"", "\\\"")).append("\"");
+            if (i < domaines.size() - 1) {
+                json.append(", ");
+            }
+        }
+        json.append("]");
+        return json.toString();
     }
 
     private void setupValidationListeners() {
@@ -633,3 +770,4 @@ public class ApprenantFormController implements Initializable {
         return t.isEmpty() ? null : t;
     }
 }
+

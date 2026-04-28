@@ -5,13 +5,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import tn.formini.controllers.frontend.FrontMainController;
 import tn.formini.entities.Users.User;
 import tn.formini.services.UsersService.LoginService;
 import tn.formini.services.UsersService.RememberMeService;
 import tn.formini.services.UsersService.SessionManager;
+import tn.formini.services.auth.OAuthCallbackHandler;
+import tn.formini.services.face.CameraCaptureService;
+import tn.formini.services.face.FaceRecognitionService;
+import java.util.prefs.Preferences;
 
 
 public class LoginController {
@@ -35,6 +41,15 @@ public class LoginController {
     private Button btnSignup;
     
     @FXML
+    private Button btnGoogleLogin;
+    
+    @FXML
+    private Button btnGithubLogin;
+    
+    @FXML
+    private Button btnCloudflareLogin;
+    
+    @FXML
     private Button btnTogglePassword;
     
     @FXML
@@ -51,17 +66,42 @@ public class LoginController {
     
     @FXML
     private Label errorPassword;
+    
+    @FXML
+    private Button btnFaceLogin;
+    
+    @FXML
+    private ImageView cameraView;
+    
+    @FXML
+    private VBox cameraPanel;
+    
+    @FXML
+    private Button btnStartCamera;
+    
+    @FXML
+    private Button btnStopCamera;
+    
+    @FXML
+    private Button btnCaptureFace;
 
     private LoginService loginService;
     private SessionManager sessionManager;
     private RememberMeService rememberMeService;
     private Runnable onBack;
+    private Preferences prefs;
+    private CameraCaptureService cameraService;
+    private FaceRecognitionService faceService;
+    private boolean cameraActive = false;
 
     @FXML
     public void initialize() {
         loginService = new LoginService();
         sessionManager = SessionManager.getInstance();
         rememberMeService = new RememberMeService();
+        prefs = Preferences.userNodeForPackage(LoginController.class);
+        cameraService = CameraCaptureService.getInstance();
+        faceService = FaceRecognitionService.getInstance();
         
         // Load saved credentials if remember me was checked
         loadSavedCredentials();
@@ -87,52 +127,67 @@ public class LoginController {
                 rememberMeService.clearCredentials();
             }
         });
+        
+        // Hide camera panel initially
+        if (cameraPanel != null) {
+            cameraPanel.setVisible(false);
+            cameraPanel.setManaged(false);
+        }
     }
 
     @FXML
     public void onLogin(ActionEvent event) {
         clearErrors();
-        
+
         String email = fieldEmail.getText().trim();
         String password = getPasswordText();
-        
+
         // Validate input
         if (!validateInput(email, password)) {
             return;
         }
-        
+
         // Authenticate user
         User user = loginService.authenticate(email, password);
-        
+
         if (user != null) {
             // Check if account is verified
             if (!loginService.isAccountVerified(user)) {
-                showError("Veuillez vérifier votre adresse email avant de vous connecter.");
+                // Create session temporarily for verification
+                sessionManager.login(user);
+                showInfo("Veuillez vérifier votre adresse email.");
+                navigateToEmailVerification(user.getEmail());
                 return;
             }
-            
+
             // Check if account is active
             if (!loginService.isAccountActive(user)) {
                 showError("Votre compte a été désactivé. Veuillez contacter l'administrateur.");
                 return;
             }
-            
+
             // Create session
             sessionManager.login(user);
-            
             // Handle remember me functionality
             if (cbRememberMe.isSelected()) {
-                rememberMeService.saveCredentials(email, password);
+                rememberMeService.saveCredentials(user.getEmail(), "");
             } else {
                 rememberMeService.clearCredentials();
             }
             
+            // Save remember me preference
+            if (cbRememberMe.isSelected()) {
+                prefs.putBoolean("rememberMe", true);
+                prefs.put("rememberedEmail", user.getEmail());
+            } else {
+                clearRememberedCredentials();
+            }
             // TODO: Update last login when database column is available
             // loginService.updateLastLogin(user.getId());
-            
+
             showSuccess("Connexion réussie ! Redirection...");
             navigateToEditProfile();
-            
+
         } else {
             showError("Email ou mot de passe incorrect.");
         }
@@ -140,8 +195,21 @@ public class LoginController {
 
     @FXML
     public void onForgotPassword(ActionEvent event) {
-        // TODO: Implement password recovery
-        showInfo("Fonctionnalité de récupération de mot de passe bientôt disponible.");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth/PasswordResetRequest.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) btnForgotPassword.getScene().getWindow();
+            if (stage.getScene() != null) {
+                stage.getScene().setRoot(root);
+            } else {
+                stage.setScene(new javafx.scene.Scene(root));
+            }
+            stage.setTitle("Formini - Reset Password");
+        } catch (Exception e) {
+            showError("Erreur lors de l'ouverture de la page de réinitialisation.");
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -218,6 +286,57 @@ public class LoginController {
         } catch (Exception e) {
             System.err.println("Erreur lors de l'ouverture de la page d'inscription: " + e.getMessage());
         }
+    }
+
+    @FXML
+    public void onGoogleLogin(ActionEvent event) {
+        handleOAuthLogin("google");
+    }
+
+    @FXML
+    public void onGithubLogin(ActionEvent event) {
+        handleOAuthLogin("github");
+    }
+
+    @FXML
+    public void onCloudflareLogin(ActionEvent event) {
+        handleOAuthLogin("cloudflare");
+    }
+
+    private void handleOAuthLogin(String provider) {
+        // Run OAuth in a separate thread to avoid blocking UI
+        new Thread(() -> {
+            try {
+                OAuthCallbackHandler handler = new OAuthCallbackHandler();
+                User user;
+                
+                if (provider.equals("google")) {
+                    user = handler.authenticateWithGoogle();
+                } else if (provider.equals("github")) {
+                    user = handler.authenticateWithGithub();
+                } else {
+                    user = handler.authenticateWithCloudflare();
+                }
+                
+                if (user != null) {
+                    // Update UI on JavaFX Application Thread
+                    javafx.application.Platform.runLater(() -> {
+                        sessionManager.login(user);
+                        showSuccess("Connexion via " + provider + " réussie !");
+                        navigateToEditProfile();
+                    });
+                } else {
+                    javafx.application.Platform.runLater(() -> {
+                        showError("Échec de l'authentification " + provider + ". Veuillez réessayer.");
+                    });
+                }
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> {
+                    showError("Erreur lors de l'authentification: " + e.getMessage());
+                });
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private String getPasswordText() {
@@ -308,6 +427,27 @@ public class LoginController {
         }
     }
 
+    private void navigateToEmailVerification(String email) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth/EmailVerification.fxml"));
+            Parent root = loader.load();
+
+            EmailVerificationController controller = loader.getController();
+            controller.setUserEmail(email);
+
+            Stage stage = (Stage) btnLogin.getScene().getWindow();
+            if (stage.getScene() != null) {
+                stage.getScene().setRoot(root);
+            } else {
+                stage.setScene(new javafx.scene.Scene(root));
+            }
+            stage.setTitle("Formini - Vérification Email");
+        } catch (Exception e) {
+            showError("Erreur lors de l'ouverture de la page de vérification.");
+            e.printStackTrace();
+        }
+    }
+
     public void setOnBack(Runnable onBack) {
         this.onBack = onBack;
     }
@@ -316,20 +456,168 @@ public class LoginController {
      * Load saved credentials if remember me was previously checked
      */
     private void loadSavedCredentials() {
+        // Load from RememberMeService
         if (rememberMeService.hasSavedCredentials()) {
             String savedEmail = rememberMeService.getSavedEmail();
-            String savedPassword = rememberMeService.getSavedPassword();
-            
             if (savedEmail != null && !savedEmail.isEmpty()) {
                 fieldEmail.setText(savedEmail);
                 cbRememberMe.setSelected(true);
+                System.out.println("Identifiants sauvegardés chargés pour la connexion automatique");
             }
-            
-            if (savedPassword != null && !savedPassword.isEmpty()) {
-                fieldPassword.setText(savedPassword);
+        }
+        
+        // Also load from preferences
+        boolean rememberMe = prefs.getBoolean("rememberMe", false);
+        if (rememberMe) {
+            String rememberedEmail = prefs.get("rememberedEmail", "");
+            if (!rememberedEmail.isEmpty()) {
+                fieldEmail.setText(rememberedEmail);
+                cbRememberMe.setSelected(true);
             }
-            
-            System.out.println("Identifiants sauvegardés chargés pour la connexion automatique");
         }
     }
+
+    private void saveRememberedCredentials(String email, String password) {
+        prefs.putBoolean("rememberMe", true);
+        prefs.put("rememberedEmail", email);
+        prefs.put("password", password);
+    }
+
+    private void clearRememberedCredentials() {
+        prefs.putBoolean("rememberMe", false);
+        prefs.remove("email");
+        prefs.remove("password");
+    }
+    
+    @FXML
+    public void onFaceLogin(ActionEvent event) {
+        if (!faceService.isInitialized()) {
+            showError("Service de reconnaissance faciale non initialisé. Veuillez vérifier l'installation d'OpenCV.");
+            return;
+        }
+        
+        // Show camera panel
+        if (cameraPanel != null) {
+            cameraPanel.setVisible(true);
+            cameraPanel.setManaged(true);
+        }
+        
+        showInfo("Cliquez sur 'Démarrer la caméra' pour commencer la reconnaissance faciale.");
+    }
+    
+    @FXML
+    public void onStartCamera(ActionEvent event) {
+        if (cameraActive) {
+            showInfo("La caméra est déjà active.");
+            return;
+        }
+        
+        if (!cameraService.isCameraAvailable()) {
+            showError("Aucune caméra détectée.");
+            return;
+        }
+        
+        boolean started = cameraService.startCamera(0, cameraView);
+        if (started) {
+            cameraActive = true;
+            showInfo("Caméra démarrée. Positionnez votre visage devant la caméra.");
+        } else {
+            showError("Impossible de démarrer la caméra.");
+        }
+    }
+    
+    @FXML
+    public void onStopCamera(ActionEvent event) {
+        if (!cameraActive) {
+            return;
+        }
+        
+        cameraService.stopCamera();
+        cameraActive = false;
+        showInfo("Caméra arrêtée.");
+    }
+    
+    @FXML
+    public void onCaptureFace(ActionEvent event) {
+        if (!cameraActive) {
+            showError("Veuillez d'abord démarrer la caméra.");
+            return;
+        }
+        
+        // Capture frame
+        java.io.File capturedImage = cameraService.captureFrame();
+        if (capturedImage == null) {
+            showError("Échec de la capture de l'image.");
+            return;
+        }
+        
+        // Extract face encoding
+        byte[] faceEncoding = faceService.extractFaceEncoding(capturedImage.getAbsolutePath());
+        if (faceEncoding == null) {
+            showError("Aucun visage détecté dans l'image. Veuillez réessayer.");
+            capturedImage.delete();
+            return;
+        }
+        
+        // Try to find matching user
+        User matchedUser = findUserByFaceEncoding(faceEncoding);
+        
+        if (matchedUser != null) {
+            // Check if face auth is enabled for this user
+            if (!matchedUser.isFace_auth_enabled()) {
+                showError("L'authentification faciale n'est pas activée pour ce compte.");
+                capturedImage.delete();
+                return;
+            }
+            
+            // Check if account is verified and active
+            if (!loginService.isAccountVerified(matchedUser)) {
+                showError("Veuillez vérifier votre adresse email.");
+                capturedImage.delete();
+                return;
+            }
+            
+            if (!loginService.isAccountActive(matchedUser)) {
+                showError("Votre compte a été désactivé.");
+                capturedImage.delete();
+                return;
+            }
+            
+            // Create session
+            sessionManager.login(matchedUser);
+            
+            // Stop camera
+            cameraService.stopCamera();
+            cameraActive = false;
+            
+            // Hide camera panel
+            if (cameraPanel != null) {
+                cameraPanel.setVisible(false);
+                cameraPanel.setManaged(false);
+            }
+            
+            showSuccess("Connexion par reconnaissance faciale réussie !");
+            navigateToEditProfile();
+            
+        } else {
+            showError("Aucun compte correspondant trouvé. Veuillez vous inscrire ou utiliser votre email/mot de passe.");
+        }
+        
+        capturedImage.delete();
+    }
+    
+    private User findUserByFaceEncoding(byte[] encoding) {
+        // This is a simplified implementation
+        // In a real application, you would query the database for all users with face encodings
+        // and compare them using the face service
+        
+        // For now, return null - this needs to be implemented with database integration
+        // You would need to:
+        // 1. Query database for users with face_auth_enabled = true
+        // 2. For each user, compare their face_encoding with the captured encoding
+        // 3. Return the user if similarity threshold is met
+        
+        return null;
+    }
+>>>>>>> 656ce1ce6c3c84b62cfe8b6e8c5d92b43cbcfb21
 }

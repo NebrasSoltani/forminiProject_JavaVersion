@@ -93,12 +93,8 @@ public class Apprenant {
     }
     public String getDomaines_interet() { return domaines_interet; }
     public void setDomaines_interet(String domaines_interet) {
-        if (domaines_interet != null && !domaines_interet.trim().isEmpty()) {
-            if (domaines_interet.length() > 1000)
-                throw new IllegalArgumentException("Les domaines d'intérêt ne doivent pas dépasser 1000 caractères.");
-            if (!domaines_interet.startsWith("[") || !domaines_interet.endsWith("]"))
-                throw new IllegalArgumentException("Les domaines d'intérêt doivent être au format JSON array.");
-        }
+        if (domaines_interet != null && domaines_interet.length() > 1000)
+            throw new IllegalArgumentException("Les domaines d'intérêt ne doivent pas dépasser 1000 caractères.");
         this.domaines_interet = domaines_interet;
     }
 

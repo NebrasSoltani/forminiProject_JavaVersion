@@ -180,6 +180,7 @@ public class AdminInitializer {
                 admin.setDate_naissance(rs.getTimestamp("date_naissance"));
                 admin.setProfession(rs.getString("profession"));
                 admin.setNiveau_etude(rs.getString("niveau_etude"));
+                admin.setIs_email_verified(true);
                 
                 rs.close();
                 ps.close();
