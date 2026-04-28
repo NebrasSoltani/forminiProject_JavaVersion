@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.ReponseFormController"
+      spacing="20" style="-fx-background-color: #1a1a2e; -fx-padding: 30;" prefWidth="450">
+
+    <Label fx:id="titreLabel" text="Nouvelle Réponse"
+           style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+    <VBox spacing="8">
+        <Label text="Question *" style="-fx-text-fill: #a8a8b3; -fx-font-size: 12px;"/>
+        <ComboBox fx:id="questionCombo" maxWidth="Infinity"
+                  style="-fx-background-color: #16213e; -fx-border-color: #0f3460; -fx-border-radius: 8;"/>
+    </VBox>
+
+    <VBox spacing="8">
+        <Label text="Texte de la réponse *" style="-fx-text-fill: #a8a8b3; -fx-font-size: 12px;"/>
+        <TextArea fx:id="texteField" promptText="Texte de la réponse..." prefRowCount="3"
+                  style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #0f3460; -fx-border-radius: 8;"/>
+    </VBox>
+
+    <VBox spacing="8">
+        <Label text="Explication" style="-fx-text-fill: #a8a8b3; -fx-font-size: 12px;"/>
+        <TextField fx:id="explicationField" promptText="Explication de la réponse"
+                   style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #0f3460; -fx-border-radius: 8;"/>
+    </VBox>
+
+    <CheckBox fx:id="correcteCheck" text="Cette réponse est correcte"
+              style="-fx-text-fill: white; -fx-font-size: 14px;"/>
+
+    <Label fx:id="errorLabel" text="" style="-fx-text-fill: #e94560; -fx-font-size: 12px;" wrapText="true"/>
+
+    <HBox spacing="15" alignment="CENTER_RIGHT">
+        <Button text="Annuler" onAction="#annuler"
+                style="-fx-background-color: #2d2d44; -fx-text-fill: #a8a8b3; -fx-padding: 10 25; -fx-background-radius: 8; -fx-cursor: hand;"/>
+        <Button fx:id="btnSauvegarder" text="Sauvegarder" onAction="#sauvegarder"
+                style="-fx-background-color: #e94560; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 25; -fx-background-radius: 8; -fx-cursor: hand;"/>
+    </HBox>
+
+</VBox>

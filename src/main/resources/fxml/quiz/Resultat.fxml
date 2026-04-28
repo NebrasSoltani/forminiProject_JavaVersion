@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.ResultatController"
+      spacing="25" style="-fx-background-color: #f8fafc; -fx-padding: 30;">
+
+    <HBox alignment="CENTER_LEFT">
+        <VBox spacing="5">
+            <Label text="Résultats Globaux" style="-fx-font-size: 26px; -fx-font-weight: 900; -fx-text-fill: #1e293b;"/>
+            <Label text="Suivez les performances des apprenants aux évaluations" style="-fx-font-size: 14px; -fx-text-fill: #64748b;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+    </HBox>
+
+    <VBox VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 20px; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 15, 0, 0, 5);">
+        
+        <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 0 0 20 0;">
+            <TextField fx:id="searchField" promptText="🔍 Rechercher par score..."
+                       onKeyReleased="#filtrer" prefWidth="350"
+                       style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-prompt-text-fill: #94a3b8; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
+        </HBox>
+
+        <TableView fx:id="tableResultat" VBox.vgrow="ALWAYS" styleClass="modern-table">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="80"/>
+                <TableColumn fx:id="colNote" text="Score (%)" prefWidth="120"/>
+                <TableColumn fx:id="colBonnes" text="Bonnes réponses" prefWidth="150"/>
+                <TableColumn fx:id="colTotal" text="Total Questions" prefWidth="150"/>
+                <TableColumn fx:id="colReussi" text="Statut (Réussi)" prefWidth="120"/>
+                <TableColumn fx:id="colDate" text="Date de passage" prefWidth="300"/>
+            </columns>
+            <placeholder>
+                <Label text="Aucun résultat n'est enregistré pour le moment." style="-fx-text-fill: #94a3b8; -fx-font-size: 14px;"/>
+            </placeholder>
+        </TableView>
+
+    </VBox>
+</VBox>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.QuestionController"
+      spacing="25" style="-fx-background-color: #f8fafc; -fx-padding: 30;">
+
+    <HBox alignment="CENTER_LEFT">
+        <VBox spacing="5">
+            <Label text="Banque de Questions" style="-fx-font-size: 26px; -fx-font-weight: 900; -fx-text-fill: #1e293b;"/>
+            <Label text="Gérez les questions affectées aux différents quiz" style="-fx-font-size: 14px; -fx-text-fill: #64748b;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="+ Nouvelle Question" onAction="#ouvrirFormAjout"
+                styleClass="main-button-onix"/>
+    </HBox>
+
+    <VBox VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 20px; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 15, 0, 0, 5);">
+        
+        <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 0 0 20 0;">
+            <TextField fx:id="searchField" promptText="🔍 Rechercher dans les questions..."
+                       onKeyReleased="#filtrerQuestions" prefWidth="350"
+                       style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-prompt-text-fill: #94a3b8; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
+            <ComboBox fx:id="filtreQuiz" promptText="Tous les Quiz" onAction="#filtrerQuestions"
+                      style="-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-padding: 5;"/>
+        </HBox>
+
+        <TableView fx:id="tableQuestion" VBox.vgrow="ALWAYS" styleClass="modern-table">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+                <TableColumn fx:id="colEnonce" text="Énoncé de la question" prefWidth="350"/>
+                <TableColumn fx:id="colType" text="Type" prefWidth="120"/>
+                <TableColumn fx:id="colPoints" text="Points" prefWidth="80"/>
+                <TableColumn fx:id="colOrdre" text="Ordre" prefWidth="80"/>
+                <TableColumn fx:id="colQuiz" text="Quiz Rattaché" prefWidth="150"/>
+                <TableColumn fx:id="colActions" text="Actions" prefWidth="150"/>
+            </columns>
+            <placeholder>
+                <Label text="Aucune question trouvée dans la base." style="-fx-text-fill: #94a3b8; -fx-font-size: 14px;"/>
+            </placeholder>
+        </TableView>
+
+    </VBox>
+</VBox>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.ApprenantQuizListController"
+      spacing="25" style="-fx-background-color: #f8fafc; -fx-padding: 30;">
+
+    <HBox alignment="CENTER_LEFT">
+        <VBox spacing="5">
+            <Label text="Mes Évaluations" style="-fx-font-size: 26px; -fx-font-weight: 900; -fx-text-fill: #1e293b;"/>
+            <Label text="Consultez et passez les quiz liés à vos formations" style="-fx-font-size: 14px; -fx-text-fill: #64748b;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+    </HBox>
+
+    <VBox style="-fx-background-color: white; -fx-background-radius: 12px; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.03), 10, 0, 0, 3);">
+        <HBox spacing="15" alignment="CENTER_LEFT">
+            <Label text="Identifiant Formation :" style="-fx-text-fill: #64748b; -fx-font-weight: bold;"/>
+            <TextField fx:id="formationIdField" promptText="Ex: 1" text="1" prefWidth="80"
+                       style="-fx-background-color: #f8fafc; -fx-text-fill: #1e293b; -fx-border-color: #e2e8f0; -fx-border-radius: 5;"/>
+            <Button text="Charger les Quiz" onAction="#chargerQuiz"
+                    style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-cursor: hand; -fx-padding: 8 16;"/>
+            <Label fx:id="statusLabel" text="" style="-fx-text-fill: #e94560;"/>
+        </HBox>
+    </VBox>
+
+    <HBox alignment="CENTER_LEFT">
+        <Label fx:id="progressLabel" text="Progression: --" style="-fx-text-fill: #6974e8; -fx-font-size: 16px; -fx-font-weight: 900; -fx-padding: 0 0 10 0;"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" styleClass="scroll-pane" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+        <FlowPane fx:id="quizContainer" hgap="25" vgap="25" style="-fx-background-color: transparent; -fx-padding: 5;">
+            <!-- Quiz cards dynamiques injectées par le contrôleur -->
+        </FlowPane>
+    </ScrollPane>
+
+</VBox>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.QuizController"
+      spacing="20" style="-fx-background-color: #1a1a2e; -fx-padding: 30;">
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Label text="📋 Gestion des Quiz" style="-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="+ Nouveau Quiz" onAction="#ouvrirFormAjout"
+                style="-fx-background-color: #e94560; -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;"/>
+    </HBox>
+
+    <!-- Search bar -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <TextField fx:id="searchField" promptText="🔍 Rechercher un quiz..."
+                   onKeyReleased="#filtrerQuiz"
+                   prefWidth="300"
+                   style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-prompt-text-fill: #a8a8b3; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #0f3460; -fx-border-radius: 8;"/>
+    </HBox>
+
+    <!-- Table -->
+    <TableView fx:id="tableQuiz" VBox.vgrow="ALWAYS"
+               style="-fx-background-color: #16213e; -fx-border-color: #0f3460; -fx-border-radius: 10;">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colTitre" text="Titre" prefWidth="220"/>
+            <TableColumn fx:id="colDescription" text="Description" prefWidth="220"/>
+            <TableColumn fx:id="colDuree" text="Durée (min)" prefWidth="100"/>
+            <TableColumn fx:id="colNote" text="Note min" prefWidth="80"/>
+            <TableColumn fx:id="colMelanger" text="Mélanger" prefWidth="80"/>
+            <TableColumn fx:id="colActions" text="Actions" prefWidth="150"/>
+        </columns>
+        <placeholder>
+            <Label text="Aucun quiz trouvé" style="-fx-text-fill: #a8a8b3;"/>
+        </placeholder>
+    </TableView>
+
+</VBox>
