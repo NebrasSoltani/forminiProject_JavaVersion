@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.image.ImageView?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="tn.formini.controllers.auth.TwoFactorSetupController"
+           styleClass="login-page"
+           minHeight="600">
+
+    <!-- Decorative Background Elements -->
+    <StackPane StackPane.alignment="TOP_LEFT">
+        <Circle radius="200" fill="linear-gradient(from 0% 0% to 100% 100%, #6974e8 0%, #8f94f6 100%)"
+                opacity="0.08" StackPane.alignment="TOP_LEFT"
+                translateX="-100" translateY="-100"/>
+    </StackPane>
+    
+    <StackPane StackPane.alignment="BOTTOM_RIGHT">
+        <Circle radius="250" fill="linear-gradient(from 0% 0% to 100% 100%, #ff4b5c 0%, #ff7b8c 100%)"
+                opacity="0.06" StackPane.alignment="BOTTOM_RIGHT"
+                translateX="150" translateY="150"/>
+    </StackPane>
+
+    <VBox alignment="CENTER" spacing="0" StackPane.alignment="CENTER">
+        <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+
+        <VBox maxWidth="520" spacing="24" alignment="CENTER">
+
+            <!-- Logo & Branding -->
+            <VBox spacing="16" alignment="CENTER" styleClass="login-branding">
+                <HBox spacing="12" alignment="CENTER" styleClass="logo-container">
+                    <StackPane styleClass="logo-bg">
+                        <Label text="F" styleClass="logo-letter"/>
+                    </StackPane>
+                    <VBox spacing="2">
+                        <Label text="Formini" styleClass="brand-name"/>
+                        <Label text="فورميني" styleClass="brand-arabic"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Header -->
+            <VBox spacing="12" alignment="CENTER" styleClass="login-hero">
+                <Label text="Configuration 2FA" styleClass="login-hero-kicker"/>
+                <Label text="Authentification à deux facteurs" styleClass="login-hero-title"/>
+                <Label text="Activez la sécurité supplémentaire pour protéger votre compte"
+                       wrapText="true" styleClass="login-hero-sub" maxWidth="450" alignment="CENTER"/>
+            </VBox>
+
+            <Label fx:id="lblMessage" styleClass="login-alert" wrapText="true" maxWidth="480" visible="false" managed="false"/>
+
+            <!-- Setup Card -->
+            <VBox styleClass="login-card" spacing="0">
+                <VBox spacing="24" styleClass="login-card-inner">
+                    <padding><Insets top="32" right="32" bottom="32" left="32"/></padding>
+
+                    <!-- Step 1: QR Code -->
+                    <VBox spacing="16" fx:id="step1Box">
+                        <VBox spacing="8">
+                            <Label text="Étape 1 : Scannez le code QR" styleClass="form-label" style="-fx-font-weight: bold;"/>
+                            <Label text="Utilisez Google Authenticator ou une application compatible"
+                                   wrapText="true" styleClass="login-hero-sub" maxWidth="450"/>
+                        </VBox>
+
+                        <VBox alignment="CENTER" spacing="12" styleClass="qr-container">
+                            <StackPane styleClass="qr-code-wrapper">
+                                <ImageView fx:id="qrCodeImage" fitWidth="200" fitHeight="200" preserveRatio="true"/>
+                            </StackPane>
+                            <Label fx:id="secretKeyLabel" styleClass="secret-key-label" visible="false" managed="false"/>
+                        </VBox>
+
+                        <Button fx:id="btnShowSecret" text="Afficher la clé secrète" styleClass="btn-secondary" maxWidth="Infinity" onAction="#onShowSecret"/>
+                    </VBox>
+
+                    <!-- Step 2: Verification -->
+                    <VBox spacing="16" fx:id="step2Box">
+                        <VBox spacing="8">
+                            <Label text="Étape 2 : Entrez le code de vérification" styleClass="form-label" style="-fx-font-weight: bold;"/>
+                            <Label text="Entrez le code à 6 chiffres de votre application d'authentification"
+                                   wrapText="true" styleClass="login-hero-sub" maxWidth="450"/>
+                        </VBox>
+
+                        <VBox spacing="6">
+                            <Label text="Code de vérification" styleClass="form-label"/>
+                            <TextField fx:id="fieldVerificationCode" styleClass="form-control login-field" promptText="123456" maxWidth="300" alignment="CENTER"/>
+                            <Label fx:id="errorCode" styleClass="error-label" text="" visible="false" managed="false"/>
+                        </VBox>
+
+                        <Button fx:id="btnVerify" text="Vérifier et activer" styleClass="btn-primary login-btn-primary" maxWidth="Infinity" onAction="#onVerify"/>
+                    </VBox>
+
+                    <!-- Backup Codes -->
+                    <VBox spacing="16" fx:id="backupCodesBox" visible="false" managed="false">
+                        <VBox spacing="8">
+                            <Label text="Codes de récupération" styleClass="form-label" style="-fx-font-weight: bold;"/>
+                            <Label text="Sauvegardez ces codes. Ils vous permettront de récupérer votre compte si vous perdez accès à votre application d'authentification."
+                                   wrapText="true" styleClass="login-hero-sub" maxWidth="450"/>
+                        </VBox>
+
+                        <VBox spacing="8" styleClass="backup-codes-container">
+                            <TextArea fx:id="backupCodesArea" styleClass="backup-codes-text" editable="false" wrapText="true" prefRowCount="5"/>
+                            <Button fx:id="btnCopyCodes" text="Copier les codes" styleClass="btn-secondary" maxWidth="Infinity" onAction="#onCopyBackupCodes"/>
+                        </VBox>
+
+                        <Button fx:id="btnFinish" text="J'ai sauvegardé les codes - Terminer" styleClass="btn-primary login-btn-primary" maxWidth="Infinity" onAction="#onFinish"/>
+                    </VBox>
+
+                    <!-- Cancel Button -->
+                    <Button fx:id="btnCancel" text="Annuler" styleClass="btn-secondary" maxWidth="Infinity" onAction="#onCancel"/>
+                </VBox>
+            </VBox>
+        </VBox>
+    </VBox>
+</StackPane>

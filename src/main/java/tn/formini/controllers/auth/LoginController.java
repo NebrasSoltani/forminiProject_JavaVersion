@@ -8,15 +8,19 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import netscape.javascript.JSObject;
 import tn.formini.controllers.frontend.FrontMainController;
 import tn.formini.entities.Users.User;
 import tn.formini.services.UsersService.LoginService;
 import tn.formini.services.UsersService.RememberMeService;
 import tn.formini.services.UsersService.SessionManager;
 import tn.formini.services.auth.OAuthCallbackHandler;
+import tn.formini.services.auth.TurnstileService;
 import tn.formini.services.face.CameraCaptureService;
 import tn.formini.services.face.FaceRecognitionService;
+import tn.formini.utils.OAuthConfig;
 import java.util.prefs.Preferences;
 
 
@@ -85,6 +89,15 @@ public class LoginController {
     @FXML
     private Button btnCaptureFace;
 
+    @FXML
+    private WebView turnstileWebView;
+
+    @FXML
+    private VBox turnstileContainer;
+
+    @FXML
+    private Label turnstileError;
+
     private LoginService loginService;
     private SessionManager sessionManager;
     private RememberMeService rememberMeService;
@@ -93,6 +106,8 @@ public class LoginController {
     private CameraCaptureService cameraService;
     private FaceRecognitionService faceService;
     private boolean cameraActive = false;
+    private String turnstileToken = null;
+    private boolean turnstileVerified = false;
 
     @FXML
     public void initialize() {
@@ -133,6 +148,9 @@ public class LoginController {
             cameraPanel.setVisible(false);
             cameraPanel.setManaged(false);
         }
+
+        // Initialize Turnstile widget
+        initializeTurnstile();
     }
 
     @FXML
@@ -144,6 +162,21 @@ public class LoginController {
 
         // Validate input
         if (!validateInput(email, password)) {
+            return;
+        }
+
+        // Verify Turnstile before authentication
+        if (!turnstileVerified || turnstileToken == null) {
+            showTurnstileError("Veuillez compléter la vérification de sécurité Cloudflare.");
+            return;
+        }
+
+        // Verify Turnstile token with Cloudflare
+        if (!TurnstileService.verifyToken(turnstileToken)) {
+            showTurnstileError("La vérification de sécurité a échoué. Veuillez réessayer.");
+            turnstileToken = null;
+            turnstileVerified = false;
+            initializeTurnstile(); // Reload the widget
             return;
         }
 
@@ -163,6 +196,13 @@ public class LoginController {
             // Check if account is active
             if (!loginService.isAccountActive(user)) {
                 showError("Votre compte a été désactivé. Veuillez contacter l'administrateur.");
+                return;
+            }
+
+            // Check if 2FA is enabled
+            if (user.isGoogle_auth_enabled()) {
+                // Navigate to 2FA verification
+                navigateToTwoFactorVerification(user, cbRememberMe.isSelected());
                 return;
             }
 
@@ -448,6 +488,28 @@ public class LoginController {
         }
     }
 
+    private void navigateToTwoFactorVerification(User user, boolean rememberMe) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth/TwoFactorVerification.fxml"));
+            Parent root = loader.load();
+
+            TwoFactorVerificationController controller = loader.getController();
+            controller.setUser(user);
+            controller.setRememberMe(rememberMe);
+
+            Stage stage = (Stage) btnLogin.getScene().getWindow();
+            if (stage.getScene() != null) {
+                stage.getScene().setRoot(root);
+            } else {
+                stage.setScene(new javafx.scene.Scene(root));
+            }
+            stage.setTitle("Formini - Vérification 2FA");
+        } catch (Exception e) {
+            showError("Erreur lors de l'ouverture de la page de vérification 2FA.");
+            e.printStackTrace();
+        }
+    }
+
     public void setOnBack(Runnable onBack) {
         this.onBack = onBack;
     }
@@ -487,6 +549,69 @@ public class LoginController {
         prefs.putBoolean("rememberMe", false);
         prefs.remove("email");
         prefs.remove("password");
+    }
+
+    private void initializeTurnstile() {
+        if (turnstileWebView == null) {
+            return;
+        }
+
+        String siteKey = OAuthConfig.getTurnstileSiteKey();
+        if (siteKey == null || siteKey.isEmpty() || siteKey.equals("YOUR_TURNSTILE_SITE_KEY")) {
+            System.err.println("Turnstile site key not configured");
+            return;
+        }
+
+        String htmlContent = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "    <meta charset='UTF-8'>\n" +
+                "    <title>Turnstile Verification</title>\n" +
+                "    <script src='https://challenges.cloudflare.com/turnstile/v0/api.js' async defer></script>\n" +
+                "    <style>\n" +
+                "        body { margin: 0; padding: 0; overflow: hidden; }\n" +
+                "        .cf-turnstile { margin: 0 auto; }\n" +
+                "    </style>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "    <div class='cf-turnstile' data-sitekey='" + siteKey + "' data-callback='turnstileCallback' data-theme='light'></div>\n" +
+                "    <script>\n" +
+                "        function turnstileCallback(token) {\n" +
+                "            // Send token to JavaFX application\n" +
+                "            window.javaBridge.setTurnstileToken(token);\n" +
+                "        }\n" +
+                "    </script>\n" +
+                "</body>\n" +
+                "</html>";
+
+        turnstileWebView.getEngine().loadContent(htmlContent);
+
+        // Set up Java-JavaScript bridge
+        turnstileWebView.getEngine().getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+            if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                JSObject jsObject = (JSObject) turnstileWebView.getEngine().executeScript("window");
+                jsObject.setMember("javaBridge", new TurnstileBridge());
+            }
+        });
+    }
+
+    private void showTurnstileError(String message) {
+        turnstileError.setText(message);
+        turnstileError.setVisible(true);
+        turnstileError.setManaged(true);
+    }
+
+    // Bridge class to communicate between JavaScript and Java
+    public class TurnstileBridge {
+        public void setTurnstileToken(String token) {
+            turnstileToken = token;
+            turnstileVerified = true;
+            javafx.application.Platform.runLater(() -> {
+                turnstileError.setVisible(false);
+                turnstileError.setManaged(false);
+                System.out.println("Turnstile verification completed successfully");
+            });
+        }
     }
     
     @FXML
@@ -619,5 +744,4 @@ public class LoginController {
         
         return null;
     }
->>>>>>> 656ce1ce6c3c84b62cfe8b6e8c5d92b43cbcfb21
 }

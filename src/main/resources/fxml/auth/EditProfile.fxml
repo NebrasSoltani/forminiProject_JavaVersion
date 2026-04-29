@@ -31,6 +31,7 @@
         
         <HBox spacing="10" alignment="CENTER_RIGHT">
             <children>
+                <Button fx:id="btnTwoFactor" text="Configuration 2FA" onAction="#handleTwoFactor"/>
                 <Button fx:id="saveButton" text="Enregistrer" onAction="#handleSaveButton"/>
                 <Button fx:id="cancelButton" text="Annuler" onAction="#handleCancelButton"/>
             </children>

@@ -1,7 +1,9 @@
 package tn.formini.controllers.auth;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -11,7 +13,6 @@ import javafx.stage.Stage;
 import tn.formini.entities.Users.Apprenant;
 import tn.formini.entities.Users.Formateur;
 import tn.formini.entities.Users.User;
-import tn.formini.entities.Users.Gouvernorat;
 import tn.formini.services.UsersService.ApprenantService;
 import tn.formini.services.UsersService.FormateurService;
 import tn.formini.services.UsersService.SessionManager;
@@ -63,6 +64,7 @@ public class EditProfileController implements Initializable {
     @FXML private VBox newPasswordSection;
     @FXML private PasswordField fieldNewPassword;
     @FXML private PasswordField fieldNewPasswordConfirm;
+    @FXML private Button btnTwoFactor;
 
     private final SessionManager sessionManager = SessionManager.getInstance();
     private final UserService userService = new UserService();
@@ -115,13 +117,9 @@ public class EditProfileController implements Initializable {
         fieldNom.setText(safe(user.getNom()));
         fieldPrenom.setText(safe(user.getPrenom()));
         fieldTelephone.setText(safe(user.getTelephone()));
-<<<<<<< HEAD
         if (user.getGouvernorat() != null) {
-                Gouvernorat gouvernorat = Gouvernorat.fromDisplayName(user.getGouvernorat());
-                fieldGouvernorat.setValue(gouvernorat);
-            }
-=======
-        fieldGouvernorat.setValue(user.getGouvernorat());
+            fieldGouvernorat.setValue(user.getGouvernorat());
+        }
         fieldPhoto.setText(safe(user.getPhoto()));
 
         // Load and display user photo
@@ -145,7 +143,6 @@ public class EditProfileController implements Initializable {
             }
         }
 
->>>>>>> 656ce1ce6c3c84b62cfe8b6e8c5d92b43cbcfb21
         if (user.getDate_naissance() != null) {
             fieldDateNaissance.setValue(user.getDate_naissance().toInstant()
                 .atZone(ZoneId.systemDefault())
@@ -208,11 +205,8 @@ public class EditProfileController implements Initializable {
         user.setNom(trim(fieldNom.getText()));
         user.setPrenom(trim(fieldPrenom.getText()));
         user.setTelephone(trim(fieldTelephone.getText()));
-<<<<<<< HEAD
-        Gouvernorat selectedGouvernorat = fieldGouvernorat.getValue();
-        user.setGouvernorat(selectedGouvernorat != null ? selectedGouvernorat.getDisplayName() : null);
-=======
-        user.setGouvernorat(fieldGouvernorat.getValue());
+        String selectedGouvernorat = fieldGouvernorat.getValue();
+        user.setGouvernorat(selectedGouvernorat);
 
         // Handle photo upload
         String photoPath = null;
@@ -223,7 +217,6 @@ public class EditProfileController implements Initializable {
             photoPath = trim(fieldPhoto.getText());
         }
         user.setPhoto(photoPath);
->>>>>>> 656ce1ce6c3c84b62cfe8b6e8c5d92b43cbcfb21
 
         LocalDate birthDate = fieldDateNaissance.getValue();
         if (birthDate != null) {
@@ -446,5 +439,21 @@ public class EditProfileController implements Initializable {
         passwordChangeSection.setManaged(false);
         btnChangePassword.setVisible(true);
         btnChangePassword.setManaged(true);
+    }
+
+    @FXML
+    private void handleTwoFactor() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth/TwoFactorSetup.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Formini - Configuration 2FA");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            showMessage("Erreur lors de l'ouverture de la configuration 2FA.");
+            e.printStackTrace();
+        }
     }
 }

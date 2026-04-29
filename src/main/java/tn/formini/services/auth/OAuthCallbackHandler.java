@@ -81,27 +81,44 @@ public class OAuthCallbackHandler {
         latch = new CountDownLatch(1);
         authenticatedUser = null;
         errorMessage = null;
-        
-        server = HttpServer.create(new InetSocketAddress(8080), 0);
-        
+
+        // Try to find an available port starting from 8080
+        int port = 8080;
+        int maxAttempts = 10;
+        IOException lastException = null;
+
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+            try {
+                server = HttpServer.create(new InetSocketAddress(port), 0);
+                break;
+            } catch (IOException e) {
+                lastException = e;
+                port++;
+            }
+        }
+
+        if (server == null) {
+            throw new IOException("Could not find an available port after " + maxAttempts + " attempts", lastException);
+        }
+
         // Google callback endpoint
         server.createContext("/callback/google", exchange -> {
             handleCallback(exchange, "google");
         });
-        
+
         // GitHub callback endpoint
         server.createContext("/callback/github", exchange -> {
             handleCallback(exchange, "github");
         });
-        
+
         // Cloudflare callback endpoint
         server.createContext("/callback/cloudflare", exchange -> {
             handleCallback(exchange, "cloudflare");
         });
-        
+
         server.setExecutor(null);
         server.start();
-        System.out.println("OAuth callback server started on port 8080");
+        System.out.println("OAuth callback server started on port " + port);
     }
     
     private void handleCallback(com.sun.net.httpserver.HttpExchange exchange, String provider) {
@@ -161,10 +178,32 @@ public class OAuthCallbackHandler {
             this.oauthCode = code;
             this.oauthState = state;
 
-            // For Google and GitHub, always show role selection page
-            // We can't check user existence without consuming the OAuth code (single-use)
+            // For Google and GitHub, check if user exists before showing role selection
             if (provider.equals("google") || provider.equals("github")) {
-                sendRoleSelectionPage(exchange, provider, code, state);
+                try {
+                    // Get user info to check if user exists
+                    String email = null;
+                    if (provider.equals("google")) {
+                        com.google.gson.JsonObject userInfo = OAuthService.getGoogleUserInfo(code);
+                        email = userInfo.has("email") ? userInfo.get("email").getAsString() : null;
+                    } else {
+                        com.google.gson.JsonObject userInfo = OAuthService.getGitHubUserInfo(code);
+                        email = userInfo.has("email") && !userInfo.get("email").isJsonNull() ? 
+                                userInfo.get("email").getAsString() : null;
+                    }
+
+                    // If user exists, skip role selection and proceed with existing role
+                    if (email != null && OAuthService.userExists(email)) {
+                        processAuthentication(provider, code, state, null); // null role = use existing
+                    } else {
+                        // New user, show role selection page
+                        sendRoleSelectionPage(exchange, provider, code, state);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error checking user existence: " + e.getMessage());
+                    // If check fails, show role selection as fallback
+                    sendRoleSelectionPage(exchange, provider, code, state);
+                }
             } else {
                 // Cloudflare doesn't require role selection, proceed directly
                 processAuthentication(provider, code, state, "apprenant");
@@ -196,9 +235,25 @@ public class OAuthCallbackHandler {
 
             processAuthentication(provider, oauthCode, oauthState, role);
 
+            // Send success response after authentication
+            if (authenticatedUser != null) {
+                sendSuccessPage(exchange);
+            } else {
+                sendResponse(exchange, "Authentication failed: " + errorMessage, 500);
+            }
+
+            // Count down latch AFTER sending response
+            latch.countDown();
+
         } catch (Exception e) {
             System.err.println("Error handling role selection: " + e.getMessage());
             e.printStackTrace();
+            try {
+                sendResponse(exchange, "Error: " + e.getMessage(), 500);
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            latch.countDown();
         }
     }
 
@@ -220,8 +275,6 @@ public class OAuthCallbackHandler {
         } catch (Exception e) {
             errorMessage = "Error processing authentication: " + e.getMessage();
             e.printStackTrace();
-        } finally {
-            latch.countDown();
         }
     }
 
@@ -273,6 +326,36 @@ public class OAuthCallbackHandler {
         exchange.sendResponseHeaders(statusCode, response.getBytes().length);
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(response.getBytes());
+        }
+    }
+
+    private void sendSuccessPage(com.sun.net.httpserver.HttpExchange exchange) throws IOException {
+        String html = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "    <meta charset='UTF-8'>\n" +
+                "    <title>Authentication Successful - Formini</title>\n" +
+                "    <style>\n" +
+                "        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0; }\n" +
+                "        .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; max-width: 400px; }\n" +
+                "        h1 { color: #4CAF50; margin-bottom: 10px; }\n" +
+                "        p { color: #666; margin-bottom: 20px; }\n" +
+                "        .success-icon { font-size: 60px; margin-bottom: 20px; }\n" +
+                "    </style>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "    <div class='container'>\n" +
+                "        <div class='success-icon'>✅</div>\n" +
+                "        <h1>Authentication Successful!</h1>\n" +
+                "        <p>You have been successfully authenticated. You can now close this window and return to the application.</p>\n" +
+                "    </div>\n" +
+                "</body>\n" +
+                "</html>";
+
+        exchange.getResponseHeaders().set("Content-Type", "text/html; charset=UTF-8");
+        exchange.sendResponseHeaders(200, html.getBytes().length);
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(html.getBytes());
         }
     }
     

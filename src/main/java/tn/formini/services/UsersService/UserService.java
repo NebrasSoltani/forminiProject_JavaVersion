@@ -4,6 +4,7 @@ import tn.formini.entities.Users.User;
 import tn.formini.services.service;
 import tn.formini.tools.MyDataBase;
 import tn.formini.utils.PasswordUtil;
+import tn.formini.utils.TOTPService;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -62,10 +63,10 @@ public class UserService implements service<User> {
         String req;
         if (isPasswordHashed) {
             // Password already hashed, don't update it
-            req = "UPDATE user SET email=?, roles=?, nom=?, prenom=?, telephone=?, gouvernorat=?, date_naissance=?, role_utilisateur=?, photo=?, is_email_verified=?, email_verification_token=?, email_verification_token_expires_at=?, email_verified_at=?, password_reset_token=?, password_reset_token_expires_at=? WHERE id=?";
+            req = "UPDATE user SET email=?, roles=?, nom=?, prenom=?, telephone=?, gouvernorat=?, date_naissance=?, role_utilisateur=?, photo=?, is_email_verified=?, email_verification_token=?, email_verification_token_expires_at=?, email_verified_at=?, password_reset_token=?, password_reset_token_expires_at=?, google_authenticator_secret=?, backup_codes=?, email_auth_enabled=?, google_auth_enabled=?, phone_verified=?, phone_verified_at=?, face_auth_enabled=? WHERE id=?";
         } else {
             // New password, hash and update it
-            req = "UPDATE user SET email=?, roles=?, password=?, nom=?, prenom=?, telephone=?, gouvernorat=?, date_naissance=?, role_utilisateur=?, photo=?, is_email_verified=?, email_verification_token=?, email_verification_token_expires_at=?, email_verified_at=?, password_reset_token=?, password_reset_token_expires_at=? WHERE id=?";
+            req = "UPDATE user SET email=?, roles=?, password=?, nom=?, prenom=?, telephone=?, gouvernorat=?, date_naissance=?, role_utilisateur=?, photo=?, is_email_verified=?, email_verification_token=?, email_verification_token_expires_at=?, email_verified_at=?, password_reset_token=?, password_reset_token_expires_at=?, google_authenticator_secret=?, backup_codes=?, email_auth_enabled=?, google_auth_enabled=?, phone_verified=?, phone_verified_at=?, face_auth_enabled=? WHERE id=?";
         }
 
         try {
@@ -92,7 +93,14 @@ public class UserService implements service<User> {
             ps.setTimestamp(offset + 11, u.getEmail_verified_at() != null ? new Timestamp(u.getEmail_verified_at().getTime()) : null);
             ps.setString(offset + 12, u.getPassword_reset_token());
             ps.setTimestamp(offset + 13, u.getPassword_reset_token_expires_at() != null ? new Timestamp(u.getPassword_reset_token_expires_at().getTime()) : null);
-            ps.setInt(offset + 14, u.getId());
+            ps.setString(offset + 14, u.getGoogle_authenticator_secret());
+            ps.setString(offset + 15, u.getBackup_codes());
+            ps.setBoolean(offset + 16, u.isEmail_auth_enabled());
+            ps.setBoolean(offset + 17, u.isGoogle_auth_enabled());
+            ps.setBoolean(offset + 18, u.isPhone_verified());
+            ps.setTimestamp(offset + 19, u.getPhone_verified_at() != null ? new Timestamp(u.getPhone_verified_at().getTime()) : null);
+            ps.setBoolean(offset + 20, u.isFace_auth_enabled());
+            ps.setInt(offset + 21, u.getId());
 
             ps.executeUpdate();
             System.out.println("Utilisateur modifié avec succès !");
@@ -188,6 +196,16 @@ public class UserService implements service<User> {
                 u.setRole_utilisateur(rs.getString("role_utilisateur"));
                 u.setPhoto(rs.getString("photo"));
                 u.setIs_email_verified(rs.getBoolean("is_email_verified"));
+                u.setGoogle_authenticator_secret(rs.getString("google_authenticator_secret"));
+                u.setBackup_codes(rs.getString("backup_codes"));
+                u.setEmail_auth_enabled(rs.getBoolean("email_auth_enabled"));
+                u.setGoogle_auth_enabled(rs.getBoolean("google_auth_enabled"));
+                u.setPhone_verified(rs.getBoolean("phone_verified"));
+                Timestamp phoneVerifiedAt = rs.getTimestamp("phone_verified_at");
+                if (phoneVerifiedAt != null) {
+                    u.setPhone_verified_at(new java.util.Date(phoneVerifiedAt.getTime()));
+                }
+                u.setFace_auth_enabled(rs.getBoolean("face_auth_enabled"));
                 return u;
             }
         } catch (SQLException ex) {
@@ -236,6 +254,16 @@ public class UserService implements service<User> {
                 if (passwordTokenExpiry != null) {
                     u.setPassword_reset_token_expires_at(new java.util.Date(passwordTokenExpiry.getTime()));
                 }
+                u.setGoogle_authenticator_secret(rs.getString("google_authenticator_secret"));
+                u.setBackup_codes(rs.getString("backup_codes"));
+                u.setEmail_auth_enabled(rs.getBoolean("email_auth_enabled"));
+                u.setGoogle_auth_enabled(rs.getBoolean("google_auth_enabled"));
+                u.setPhone_verified(rs.getBoolean("phone_verified"));
+                Timestamp phoneVerifiedAt = rs.getTimestamp("phone_verified_at");
+                if (phoneVerifiedAt != null) {
+                    u.setPhone_verified_at(new java.util.Date(phoneVerifiedAt.getTime()));
+                }
+                u.setFace_auth_enabled(rs.getBoolean("face_auth_enabled"));
                 return u;
             }
         } catch (SQLException ex) {
@@ -275,11 +303,103 @@ public class UserService implements service<User> {
                 if (passwordTokenExpiry != null) {
                     u.setPassword_reset_token_expires_at(new java.util.Date(passwordTokenExpiry.getTime()));
                 }
+                u.setGoogle_authenticator_secret(rs.getString("google_authenticator_secret"));
+                u.setBackup_codes(rs.getString("backup_codes"));
+                u.setEmail_auth_enabled(rs.getBoolean("email_auth_enabled"));
+                u.setGoogle_auth_enabled(rs.getBoolean("google_auth_enabled"));
+                u.setPhone_verified(rs.getBoolean("phone_verified"));
+                Timestamp phoneVerifiedAt = rs.getTimestamp("phone_verified_at");
+                if (phoneVerifiedAt != null) {
+                    u.setPhone_verified_at(new java.util.Date(phoneVerifiedAt.getTime()));
+                }
+                u.setFace_auth_enabled(rs.getBoolean("face_auth_enabled"));
                 return u;
             }
         } catch (SQLException ex) {
             System.out.println("Erreur getUserByResetToken : " + ex.getMessage());
         }
         return null;
+    }
+
+    /**
+     * Enable Google Authenticator 2FA for a user
+     * @param userId the user ID
+     * @param secret the TOTP secret
+     * @param backupCodes JSON string of backup codes
+     * @return true if successful
+     */
+    public boolean enableGoogleAuth(int userId, String secret, String backupCodes) {
+        String req = "UPDATE user SET google_authenticator_secret=?, backup_codes=?, google_auth_enabled=? WHERE id=?";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(req);
+            ps.setString(1, secret);
+            ps.setString(2, backupCodes);
+            ps.setBoolean(3, true);
+            ps.setInt(4, userId);
+            ps.executeUpdate();
+            System.out.println("Google Authenticator 2FA enabled for user ID: " + userId);
+            return true;
+        } catch (SQLException ex) {
+            System.out.println("Erreur enableGoogleAuth : " + ex.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Disable Google Authenticator 2FA for a user
+     * @param userId the user ID
+     * @return true if successful
+     */
+    public boolean disableGoogleAuth(int userId) {
+        String req = "UPDATE user SET google_authenticator_secret=?, backup_codes=?, google_auth_enabled=? WHERE id=?";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(req);
+            ps.setString(1, null);
+            ps.setString(2, null);
+            ps.setBoolean(3, false);
+            ps.setInt(4, userId);
+            ps.executeUpdate();
+            System.out.println("Google Authenticator 2FA disabled for user ID: " + userId);
+            return true;
+        } catch (SQLException ex) {
+            System.out.println("Erreur disableGoogleAuth : " + ex.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Use a backup code and remove it from the list
+     * @param userId the user ID
+     * @param backupCode the backup code to use
+     * @return true if code was valid and used
+     */
+    public boolean useBackupCode(int userId, String backupCode) {
+        User user = findById(userId);
+        if (user == null || user.getBackup_codes() == null) {
+            return false;
+        }
+
+        TOTPService totpService = new TOTPService();
+        List<String> codes = totpService.parseBackupCodesFromJson(user.getBackup_codes());
+        
+        if (codes.contains(backupCode)) {
+            codes.remove(backupCode);
+            String newJson = totpService.backupCodesToJson(codes);
+            
+            String req = "UPDATE user SET backup_codes=? WHERE id=?";
+            try {
+                PreparedStatement ps = cnx.prepareStatement(req);
+                ps.setString(1, newJson);
+                ps.setInt(2, userId);
+                ps.executeUpdate();
+                System.out.println("Backup code used and removed for user ID: " + userId);
+                return true;
+            } catch (SQLException ex) {
+                System.out.println("Erreur useBackupCode : " + ex.getMessage());
+                return false;
+            }
+        }
+        
+        return false;
     }
 }

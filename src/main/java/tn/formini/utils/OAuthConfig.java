@@ -33,6 +33,8 @@ public class OAuthConfig {
         properties.setProperty("cloudflare.client.id", "YOUR_CLOUDFLARE_CLIENT_ID");
         properties.setProperty("cloudflare.client.secret", "YOUR_CLOUDFLARE_CLIENT_SECRET");
         properties.setProperty("cloudflare.redirect.uri", "http://localhost:8080/callback/cloudflare");
+        properties.setProperty("turnstile.site.key", "YOUR_TURNSTILE_SITE_KEY");
+        properties.setProperty("turnstile.secret.key", "YOUR_TURNSTILE_SECRET_KEY");
     }
     
     public static String getGoogleClientId() {
@@ -69,5 +71,13 @@ public class OAuthConfig {
     
     public static String getCloudflareRedirectUri() {
         return properties.getProperty("cloudflare.redirect.uri");
+    }
+    
+    public static String getTurnstileSiteKey() {
+        return properties.getProperty("turnstile.site.key");
+    }
+    
+    public static String getTurnstileSecretKey() {
+        return properties.getProperty("turnstile.secret.key");
     }
 }

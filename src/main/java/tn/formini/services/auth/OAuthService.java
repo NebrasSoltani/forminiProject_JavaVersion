@@ -249,7 +249,7 @@ public class OAuthService {
             userService.modifier(existingUser);
             return existingUser;
         }
-        
+
         // Create new user
         User newUser = new User();
         newUser.setEmail(email);
@@ -310,7 +310,7 @@ public class OAuthService {
         }
 
         // If still no email, try to get from user info
-        if (email.isEmpty() && userInfo.has("email")) {
+        if (email.isEmpty() && userInfo.has("email") && !userInfo.get("email").isJsonNull()) {
             email = userInfo.get("email").getAsString();
         }
 

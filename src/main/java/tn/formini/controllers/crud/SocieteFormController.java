@@ -4,17 +4,13 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
-import tn.formini.entities.Users.Societe;
-import tn.formini.entities.Users.User;
-import tn.formini.entities.Users.Gouvernorat;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import tn.formini.entities.Users.Gouvernorat;
 import tn.formini.entities.Users.Societe;
 import tn.formini.entities.Users.User;
 import tn.formini.services.FileUploadService;
@@ -31,8 +27,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.io.File;
-import java.time.LocalDate;
-import java.time.ZoneId;
 
 public class SocieteFormController implements Initializable {
 
@@ -138,9 +132,6 @@ public class SocieteFormController implements Initializable {
     private Label errorDateNaissance;
 
     @FXML
-    private Label errorNomSociete;
-
-    @FXML
     private TextField nomField;
 
     @FXML
@@ -188,8 +179,6 @@ public class SocieteFormController implements Initializable {
     @FXML
     private Button cancelButton;
 
-    private SocieteService societeService;
-    private UserService userService;
     private FileUploadService fileUploadService;
 
     private Societe societe;
@@ -210,7 +199,6 @@ public class SocieteFormController implements Initializable {
         userService = new UserService();
         
         fieldUserGouvernorat.getItems().addAll(Gouvernorat.values());
-        setupValidationListeners();
         
         // Always show new user panel
         panelNewUser.setVisible(true);
@@ -221,6 +209,7 @@ public class SocieteFormController implements Initializable {
     }
 
     private void setupValidationListeners() {
+        // Edit mode validation listeners
         emailField.textProperty().addListener((obs, o, n) -> {
             if (mode == Mode.EDIT) {
                 validateEditEmail();
@@ -247,6 +236,63 @@ public class SocieteFormController implements Initializable {
             }
         });
         nomSocieteField.textProperty().addListener((obs, o, n) -> validateSocieteName());
+        
+        // Nom société validation
+        fieldNomSociete.textProperty().addListener((obs, oldVal, newVal) -> {
+            validateNomSociete();
+        });
+        
+        // Secteur validation
+        fieldSecteur.textProperty().addListener((obs, oldVal, newVal) -> {
+            validateSecteur();
+        });
+        
+        // Description validation
+        fieldDescription.textProperty().addListener((obs, oldVal, newVal) -> {
+            validateDescription();
+        });
+        
+        // Adresse validation
+        fieldAdresse.textProperty().addListener((obs, oldVal, newVal) -> {
+            validateAdresse();
+        });
+        
+        // Site web validation
+        fieldSiteWeb.textProperty().addListener((obs, oldVal, newVal) -> {
+            validateSiteWeb();
+        });
+        
+        // New user validation
+        fieldUserEmail.textProperty().addListener((obs, oldVal, newVal) -> {
+            validateUserEmail();
+        });
+        
+        fieldUserTelephone.textProperty().addListener((obs, oldVal, newVal) -> {
+            validateUserTelephone();
+        });
+        
+        fieldUserPassword.textProperty().addListener((obs, oldVal, newVal) -> {
+            validateUserPassword();
+            if (!fieldUserPasswordConfirm.getText().isEmpty()) {
+                validateUserPasswordConfirm();
+            }
+        });
+        
+        fieldUserPasswordConfirm.textProperty().addListener((obs, oldVal, newVal) -> {
+            validateUserPasswordConfirm();
+        });
+        
+        fieldUserNom.textProperty().addListener((obs, oldVal, newVal) -> {
+            validateUserNom();
+        });
+        
+        fieldUserPrenom.textProperty().addListener((obs, oldVal, newVal) -> {
+            validateUserPrenom();
+        });
+        
+        fieldUserDateNaissance.valueProperty().addListener((obs, oldVal, newVal) -> {
+            validateUserDateNaissance();
+        });
     }
 
     @FXML
@@ -372,14 +418,6 @@ public class SocieteFormController implements Initializable {
                 heroSubLabel.setText(
                     "Comme à l'inscription : d'abord le compte du contact (rôle société), puis les informations de l'entreprise.");
             }
-        } else {
-            passwordField.clear();
-            passwordConfirmField.clear();
-            setPasswordSectionVisible(false);
-            if (heroSubLabel != null) {
-                heroSubLabel.setText(
-                    "Même formulaire qu'à l'ajout : vous pouvez modifier la fiche société et le compte contact, sauf le mot de passe (inchangé depuis cet écran).");
-            }
         }
     }
 
@@ -432,6 +470,8 @@ public class SocieteFormController implements Initializable {
                 // Clear password fields in edit mode (optional update)
                 fieldUserPassword.clear();
                 fieldUserPasswordConfirm.clear();
+            }
+            
             nomSocieteField.setText(societe.getNom_societe() != null ? societe.getNom_societe() : "");
             secteurTextField.setText(societe.getSecteur() != null ? societe.getSecteur() : "");
             descriptionTextArea.setText(societe.getDescription() != null ? societe.getDescription() : "");
@@ -607,16 +647,6 @@ public class SocieteFormController implements Initializable {
             societe.setDescription(trimToNull(fieldDescription.getText()));
             societe.setAdresse(trimToNull(fieldAdresse.getText()));
             societe.setSite_web(trimToNull(fieldSiteWeb.getText()));
-            
-            // Create or update user
-            User user = createOrUpdateUser();
-            
-            // Update password only if provided in EDIT mode
-            if (mode == Mode.EDIT && !fieldUserPassword.getText().isEmpty()) {
-                user.setPassword(fieldUserPassword.getText());
-            }
-            
-            societe.setUser(user);
 
             // Validate entity
             societe.valider();
@@ -712,77 +742,17 @@ public class SocieteFormController implements Initializable {
         }
     }
 
-    // Validation methods
-    private void setupValidationListeners() {
-        // Nom société validation
-        fieldNomSociete.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateNomSociete();
-        });
-        
-        // Secteur validation
-        fieldSecteur.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateSecteur();
-        });
-        
-        // Description validation
-        fieldDescription.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateDescription();
-        });
-        
-        // Adresse validation
-        fieldAdresse.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateAdresse();
-        });
-        
-        // Site web validation
-        fieldSiteWeb.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateSiteWeb();
-        });
-        
-        // New user validation
-        fieldUserEmail.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateUserEmail();
-        });
-        
-        fieldUserTelephone.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateUserTelephone();
-        });
-        
-        fieldUserPassword.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateUserPassword();
-            if (!fieldUserPasswordConfirm.getText().isEmpty()) {
-                validateUserPasswordConfirm();
-            }
-        });
-        
-        fieldUserPasswordConfirm.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateUserPasswordConfirm();
-        });
-        
-        fieldUserNom.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateUserNom();
-        });
-        
-        fieldUserPrenom.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateUserPrenom();
-        });
-        
-        fieldUserDateNaissance.valueProperty().addListener((obs, oldVal, newVal) -> {
-            validateUserDateNaissance();
-        });
-    }
-
     @FXML
     private void onToggleUserPassword() {
-        togglePasswordField(fieldUserPassword, btnToggleUserPassword);
+        toggleUserPasswordField(fieldUserPassword, btnToggleUserPassword);
     }
 
     @FXML
     private void onToggleUserPasswordConfirm() {
-        togglePasswordField(fieldUserPasswordConfirm, btnToggleUserPasswordConfirm);
+        toggleUserPasswordField(fieldUserPasswordConfirm, btnToggleUserPasswordConfirm);
     }
 
-    private void togglePasswordField(javafx.scene.control.PasswordField passwordField, Button toggleButton) {
+    private void toggleUserPasswordField(javafx.scene.control.PasswordField passwordField, Button toggleButton) {
         HBox parent = (HBox) toggleButton.getParent();
         
         // Find current password field (either PasswordField or TextField)
@@ -928,20 +898,6 @@ public class SocieteFormController implements Initializable {
     }
     
         
-    private void showError(Label errorLabel, String message) {
-        errorLabel.setText(message);
-        errorLabel.setStyle("-fx-text-fill: #dc2626;");
-        errorLabel.setVisible(true);
-        errorLabel.setManaged(true);
-    }
-    
-    private void hideError(Label errorLabel) {
-        errorLabel.setText("");
-        errorLabel.setStyle("");
-        errorLabel.setVisible(false);
-        errorLabel.setManaged(false);
-    }
-    
     private void clearAllErrors() {
         hideError(errorNomSociete);
         hideError(errorSecteur);
@@ -983,35 +939,6 @@ public class SocieteFormController implements Initializable {
         }
         
         return isValid;
-    }
-    
-    private User createOrUpdateUser() {
-        User user;
-        
-        if (mode == Mode.EDIT && societe.getUser() != null) {
-            // Update existing user
-            user = societe.getUser();
-        } else {
-            // Create new user
-            user = new User();
-            user.setPassword(fieldUserPassword.getText());
-        }
-        
-        user.setEmail(trimToNull(fieldUserEmail.getText()));
-        user.setNom(trimToNull(fieldUserNom.getText()));
-        user.setPrenom(trimToNull(fieldUserPrenom.getText()));
-        user.setTelephone(normalizePhone(fieldUserTelephone.getText()));
-        
-        Gouvernorat selectedGouvernorat = fieldUserGouvernorat.getValue();
-        user.setGouvernorat(selectedGouvernorat != null ? selectedGouvernorat.getDisplayName() : null);
-        
-        LocalDate birth = fieldUserDateNaissance.getValue();
-        if (birth != null) {
-            Date dateNaissance = Date.from(birth.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            user.setDate_naissance(dateNaissance);
-        }
-        
-        return user;
     }
     
     /** Retire espaces / séparateurs ; conserve un + initial. Doit matcher ^\\+?[0-9]{8,12}$ après nettoyage. */
@@ -1180,70 +1107,6 @@ public class SocieteFormController implements Initializable {
         return true;
     }
 
-    private boolean validateForm() {
-        boolean societeNameOk = validateSocieteName();
-
-        if (mode == Mode.EDIT) {
-            return societeNameOk && validateEditForm();
-        }
-
-        String email = emailField.getText().trim();
-        String password = passwordField.getText();
-
-        if (!SignupFieldValidation.isValidEmail(email)) {
-            showAlert("Erreur de validation", "Email invalide ou manquant.", Alert.AlertType.ERROR);
-            return false;
-        }
-        String phoneNorm = SignupFieldValidation.normalizePhone(telephoneField.getText());
-        if (!SignupFieldValidation.isValidPhoneNormalized(phoneNorm)) {
-            showAlert("Erreur de validation", "Téléphone invalide (8–12 chiffres).", Alert.AlertType.ERROR);
-            return false;
-        }
-        String pwdErr = SignupFieldValidation.validatePasswordStrength(password != null ? password : "");
-        if (pwdErr != null) {
-            showAlert("Erreur de validation", pwdErr, Alert.AlertType.ERROR);
-            return false;
-        }
-        String passwordConfirm = passwordConfirmField.getText();
-        if (passwordConfirm == null || passwordConfirm.isEmpty()) {
-            showAlert("Erreur de validation", "Confirmez le mot de passe.", Alert.AlertType.ERROR);
-            return false;
-        }
-        if (!password.equals(passwordConfirm)) {
-            showAlert("Erreur de validation", "Les mots de passe ne correspondent pas.", Alert.AlertType.ERROR);
-            return false;
-        }
-        if (!SignupFieldValidation.isValidNomPrenom(nomField.getText())) {
-            showAlert("Erreur de validation", "Le nom du contact est obligatoire (min. 2 caractères).", Alert.AlertType.ERROR);
-            return false;
-        }
-        if (!SignupFieldValidation.isValidNomPrenom(prenomField.getText())) {
-            showAlert("Erreur de validation", "Le prénom est obligatoire (min. 2 caractères).", Alert.AlertType.ERROR);
-            return false;
-        }
-        if (dateNaissanceField.getValue() == null) {
-            showAlert("Erreur de validation", "La date de naissance est obligatoire", Alert.AlertType.ERROR);
-            return false;
-        }
-        LocalDate birth = dateNaissanceField.getValue();
-        if (birth.isAfter(LocalDate.now().minusYears(13))) {
-            showAlert("Erreur de validation", "Le représentant doit avoir au moins 13 ans.", Alert.AlertType.ERROR);
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validateEditForm() {
-        clearEditErrors();
-        boolean valid = true;
-        valid &= validateEditEmail();
-        valid &= validateEditPhone();
-        valid &= validateEditNom();
-        valid &= validateEditPrenom();
-        valid &= validateEditBirthDate();
-        return valid;
-    }
-
     private boolean validateSocieteName() {
         if (nomSocieteField.getText().trim().isEmpty()) {
             showError(errorNomSociete, "Le nom de la société est obligatoire.");
@@ -1312,6 +1175,7 @@ public class SocieteFormController implements Initializable {
             return;
         }
         label.setText(msg);
+        label.setStyle("-fx-text-fill: #dc2626;");
         label.setVisible(true);
         label.setManaged(true);
     }
