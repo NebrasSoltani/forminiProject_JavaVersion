@@ -28,7 +28,6 @@ public class OAuthService {
         OAuth20Service service = new ServiceBuilder(OAuthConfig.getGoogleClientId())
                 .apiSecret(OAuthConfig.getGoogleClientSecret())
                 .callback(OAuthConfig.getGoogleRedirectUri())
-                .state(state)
                 .build(GoogleApi20.instance());
         
         return service.getAuthorizationUrl();
@@ -58,8 +57,6 @@ public class OAuthService {
         OAuth20Service service = new ServiceBuilder(OAuthConfig.getGithubClientId())
                 .apiSecret(OAuthConfig.getGithubClientSecret())
                 .callback(OAuthConfig.getGithubRedirectUri())
-                .state(state)
-                .scope("user:email")
                 .build(GitHubApi.instance());
         
         return service.getAuthorizationUrl();
@@ -94,8 +91,6 @@ public class OAuthService {
         OAuth20Service service = new ServiceBuilder(OAuthConfig.getCloudflareClientId())
                 .apiSecret(OAuthConfig.getCloudflareClientSecret())
                 .callback(OAuthConfig.getCloudflareRedirectUri())
-                .state(state)
-                .defaultScope("account:read")
                 .build(CloudflareApi.instance());
         
         return service.getAuthorizationUrl();
