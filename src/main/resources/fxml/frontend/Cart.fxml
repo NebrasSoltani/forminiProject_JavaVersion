@@ -3,6 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
 <ScrollPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
@@ -10,78 +12,93 @@
             fitToWidth="true"
             hbarPolicy="NEVER"
             vbarPolicy="AS_NEEDED"
-            styleClass="cart-page-scroll">
+            style="-fx-background-color: linear-gradient(to bottom right, #667eea, #764ba2);">
 
-    <VBox spacing="20" style="-fx-background-color: #f8f9fa;" fillWidth="true">
+    <VBox spacing="25" style="-fx-background-color: transparent;" fillWidth="true">
         <padding>
-            <Insets top="24" right="28" bottom="28" left="28"/>
+            <Insets top="20" right="20" bottom="20" left="20"/>
         </padding>
 
-        <!-- En-tête -->
-        <HBox alignment="CENTER_LEFT" spacing="16" style="-fx-background-color: white; -fx-border-radius: 8px; -fx-padding: 15px;">
-            <Label text="Mon Panier" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Button fx:id="btnGetSuggestions" text="Suggestions" onAction="#handleGetSuggestions" 
-                    style="-fx-background-color: #e3f2fd; -fx-border-color: #2196f3; -fx-border-width: 2px; 
-                           -fx-text-fill: #1976d2; -fx-font-weight: bold; -fx-font-size: 14px; 
-                           -fx-background-radius: 8px; -fx-border-radius: 8px; -fx-padding: 10px 20px; -fx-cursor: hand;"/>
-            <Button fx:id="btnPrintInvoice" text="Imprimer" onAction="#printInvoice" 
-                    style="-fx-background-color: #fff3e0; -fx-border-color: #ff9800; -fx-border-width: 2px; 
-                           -fx-text-fill: #e65100; -fx-font-weight: bold; -fx-font-size: 14px; 
-                           -fx-background-radius: 8px; -fx-border-radius: 8px; -fx-padding: 10px 20px; -fx-cursor: hand;"/>
-            <Button fx:id="btnClear" text="Vider" onAction="#clearCart" 
-                    style="-fx-background-color: #ffebee; -fx-border-color: #f44336; -fx-border-width: 2px; 
-                           -fx-text-fill: #d32f2f; -fx-font-weight: bold; -fx-font-size: 14px; 
-                           -fx-background-radius: 8px; -fx-border-radius: 8px; -fx-padding: 10px 20px; -fx-cursor: hand;"/>
-            <Button fx:id="btnValidate" text="Valider" onAction="#validateOrder" 
-                    style="-fx-background-color: #e8f5e8; -fx-border-color: #4caf50; -fx-border-width: 2px; 
-                           -fx-text-fill: #2e7d32; -fx-font-weight: bold; -fx-font-size: 14px; 
-                           -fx-background-radius: 8px; -fx-border-radius: 8px; -fx-padding: 10px 20px; -fx-cursor: hand;"/>
-        </HBox>
+        <!-- Header moderne -->
+        <VBox spacing="15" style="-fx-background-color: white; -fx-background-radius: 20px; -fx-padding: 25px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <VBox spacing="5">
+                    <Label text="🛒 Mon Panier" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #667eea;"/>
+                    <Label text="Découvrez vos articles sélectionnés" style="-fx-font-size: 14px; -fx-text-fill: #6c757d;"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <HBox spacing="10">
+                    <Button fx:id="btnGetSuggestions" text="✨ Suggestions" onAction="#handleGetSuggestions" 
+                            style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; 
+                           -fx-background-radius: 12px; -fx-padding: 12px 20px; -fx-cursor: hand; -fx-border-radius: 12px; -fx-border-color: transparent;"/>
+                    <Button fx:id="btnPrintInvoice" text="📄 Imprimer" onAction="#printInvoice" 
+                            style="-fx-background-color: #ffa726; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; 
+                           -fx-background-radius: 12px; -fx-padding: 12px 20px; -fx-cursor: hand; -fx-border-radius: 12px; -fx-border-color: transparent;"/>
+                    <Button fx:id="btnClear" text="🗑️ Vider" onAction="#clearCart" 
+                            style="-fx-background-color: #ef5350; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; 
+                           -fx-background-radius: 12px; -fx-padding: 12px 20px; -fx-cursor: hand; -fx-border-radius: 12px; -fx-border-color: transparent;"/>
+                </HBox>
+            </HBox>
+        </VBox>
 
-        <!-- Panier -->
-        <VBox spacing="14" style="-fx-background-color: white; -fx-border-color: #e9ecef; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-padding: 20px;" fillWidth="true">
-            <Label fx:id="labelEmpty" text="Votre panier est vide"
-                   style="-fx-font-size: 16px; -fx-text-fill: #6c757d; -fx-font-style: italic;" visible="false"/>
+        <!-- Panier avec cards -->
+        <VBox spacing="20" style="-fx-background-color: white; -fx-background-radius: 20px; -fx-padding: 25px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);" fillWidth="true">
+            
+            <!-- Message panier vide -->
+            <Label fx:id="labelEmpty" text="🛍️ Votre panier est vide"
+                   style="-fx-font-size: 18px; -fx-text-fill: #6c757d; -fx-font-style: italic;" visible="false"/>
 
-            <TableView fx:id="table" VBox.vgrow="ALWAYS" style="-fx-background-color: white;"
-                       minHeight="220" prefHeight="280">
-                <columns>
-                    <TableColumn fx:id="colName" text="Produit" prefWidth="280" minWidth="180"/>
-                    <TableColumn fx:id="colQty" text="Quantité" prefWidth="88" minWidth="72"/>
-                    <TableColumn fx:id="colUnitPrice" text="Prix U." prefWidth="104" minWidth="88"/>
-                    <TableColumn fx:id="colLineTotal" text="Total" prefWidth="104" minWidth="88"/>
-                    <TableColumn fx:id="colActions" text="Actions" prefWidth="128" minWidth="108"/>
-                </columns>
-            </TableView>
+            <!-- Container pour les cards de produits -->
+            <ScrollPane fitToWidth="true" minHeight="300" prefHeight="400" style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                <FlowPane fx:id="cartItemsContainer" hgap="20" vgap="20" alignment="TOP_LEFT" style="-fx-background-color: transparent;">
+                    <padding>
+                        <Insets top="10" right="10" bottom="10" left="10"/>
+                    </padding>
+                </FlowPane>
+            </ScrollPane>
 
-            <HBox alignment="CENTER_RIGHT" style="-fx-background-color: #f8f9fa; -fx-border-radius: 6px; -fx-padding: 12px;">
-                <VBox alignment="CENTER_RIGHT" spacing="4">
-                    <Label fx:id="labelItemsCount" text="0 article(s)" style="-fx-font-size: 14px; -fx-text-fill: #6c757d;"/>
-                    <Label fx:id="labelGrandTotal" text="0.000 DT" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            <!-- Total moderne -->
+            <HBox alignment="CENTER_RIGHT" style="-fx-background-color: #f5f7fa; -fx-background-radius: 15px; -fx-padding: 20px;">
+                <VBox alignment="CENTER_RIGHT" spacing="8">
+                    <Label fx:id="labelItemsCount" text="0 article(s)" style="-fx-font-size: 16px; -fx-text-fill: #6c757d; -fx-font-weight: 500;"/>
+                    <Label fx:id="labelGrandTotal" text="0.000 DT" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #667eea;"/>
                 </VBox>
             </HBox>
         </VBox>
 
-        <!-- Suggestions -->
-        <VBox spacing="14" style="-fx-background-color: white; -fx-border-color: #e9ecef; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-padding: 20px;" fillWidth="true" VBox.vgrow="ALWAYS" minHeight="260">
-            <HBox alignment="CENTER_LEFT" spacing="12">
-                <Label text="Suggestions pour vous" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-                <ProgressIndicator fx:id="suggestionsLoading" prefWidth="20" prefHeight="20" visible="false"/>
+        <!-- Boutons d'action -->
+        <HBox spacing="15" alignment="CENTER" style="-fx-background-color: white; -fx-background-radius: 20px; -fx-padding: 25px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+            <Button fx:id="btnValidate" text="✅ Valider la commande" onAction="#validateOrder" 
+                    style="-fx-background-color: #4caf50; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; 
+                    -fx-background-radius: 15px; -fx-padding: 15px 30px; -fx-cursor: hand; -fx-border-radius: 15px; -fx-border-color: transparent;"/>
+            <Button fx:id="btnPayStripe" text="💳 Payer avec Stripe" onAction="#payWithStripe" 
+                    style="-fx-background-color: #635bff; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; 
+                    -fx-background-radius: 15px; -fx-padding: 15px 30px; -fx-cursor: hand; -fx-border-radius: 15px; -fx-border-color: transparent;"/>
+        </HBox>
+
+        <!-- Suggestions IA modernes -->
+        <VBox spacing="20" style="-fx-background-color: white; -fx-background-radius: 20px; -fx-padding: 25px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);" fillWidth="true" VBox.vgrow="ALWAYS" minHeight="300">
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <VBox spacing="5">
+                    <Label text="🤖 Suggestions IA pour vous" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #667eea;"/>
+                    <Label text="Des produits personnalisés basés sur vos préférences" style="-fx-font-size: 14px; -fx-text-fill: #6c757d;"/>
+                </VBox>
+                <ProgressIndicator fx:id="suggestionsLoading" prefWidth="25" prefHeight="25" visible="false" style="-fx-progress-color: #667eea;"/>
             </HBox>
 
-            <ScrollPane fx:id="suggestionsScrollPane" fitToWidth="true" minHeight="220" prefHeight="360"
-                        VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-border-color: #e9ecef; -fx-border-width: 1px; -fx-border-radius: 6px;">
-                <VBox fx:id="suggestionsContainer" spacing="14" fillWidth="true">
+            <ScrollPane fx:id="suggestionsScrollPane" fitToWidth="true" minHeight="250" prefHeight="350"
+                        VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                <FlowPane fx:id="suggestionsContainer" hgap="20" vgap="20" alignment="TOP_LEFT" style="-fx-background-color: transparent;">
                     <padding>
-                        <Insets top="16" right="16" bottom="16" left="16"/>
+                        <Insets top="10" right="10" bottom="10" left="10"/>
                     </padding>
-                </VBox>
+                </FlowPane>
             </ScrollPane>
 
-            <VBox fx:id="noSuggestionsContainer" alignment="CENTER" spacing="6" visible="true">
-                <Label text="Aucune suggestion affichée" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #6c757d;"/>
-                <Label text="Remplissez votre panier puis cliquez sur « Suggestions » pour voir des idées." style="-fx-font-size: 14px; -fx-text-fill: #6c757d; -fx-wrap-text: true;"/>
+            <VBox fx:id="noSuggestionsContainer" alignment="CENTER" spacing="15" visible="true" style="-fx-background-color: #f8f9fa; -fx-background-radius: 15px; -fx-padding: 30px;">
+                <Label text="🤖" style="-fx-font-size: 48px;"/>
+                <Label text="Aucune suggestion pour le moment" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #6c757d;"/>
+                <Label text="Remplissez votre panier puis cliquez sur « Suggestions » pour découvrir des produits adaptés à vos goûts !" style="-fx-font-size: 14px; -fx-text-fill: #6c757d; -fx-wrap-text: true; -fx-text-alignment: center;"/>
             </VBox>
         </VBox>
     </VBox>
