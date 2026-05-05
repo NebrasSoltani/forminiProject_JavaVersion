@@ -15,6 +15,11 @@ public class OAuthCallbackHandler {
     private CountDownLatch latch;
     private User authenticatedUser;
     private String errorMessage;
+    private String oauthCode;
+    private String oauthState;
+    private com.google.gson.JsonObject pendingUserInfo;
+    private String pendingGithubEmails;
+    private String lastProcessedCode;
     
     public User authenticateWithGoogle() {
         return authenticate("google");
@@ -23,11 +28,7 @@ public class OAuthCallbackHandler {
     public User authenticateWithGithub() {
         return authenticate("github");
     }
-    
-    public User authenticateWithCloudflare() {
-        return authenticate("cloudflare");
-    }
-    
+
     private User authenticate(String provider) {
         if (!OAuthService.isConfigured(provider)) {
             System.err.println("OAuth not configured for " + provider);
@@ -45,7 +46,7 @@ public class OAuthCallbackHandler {
             } else if (provider.equals("github")) {
                 authUrl = OAuthService.getGithubAuthorizationUrl();
             } else {
-                authUrl = OAuthService.getCloudflareAuthorizationUrl();
+                throw new IllegalArgumentException("Unsupported provider: " + provider);
             }
             
             // Open browser
@@ -79,52 +80,70 @@ public class OAuthCallbackHandler {
         latch = new CountDownLatch(1);
         authenticatedUser = null;
         errorMessage = null;
-        
-        server = HttpServer.create(new InetSocketAddress(8080), 0);
-        
+
+        // Try to find an available port starting from 8080
+        int port = 8080;
+        int maxAttempts = 10;
+        IOException lastException = null;
+
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+            try {
+                server = HttpServer.create(new InetSocketAddress(port), 0);
+                break;
+            } catch (IOException e) {
+                lastException = e;
+                port++;
+            }
+        }
+
+        if (server == null) {
+            throw new IOException("Could not find an available port after " + maxAttempts + " attempts", lastException);
+        }
+
         // Google callback endpoint
         server.createContext("/callback/google", exchange -> {
             handleCallback(exchange, "google");
         });
-        
+
         // GitHub callback endpoint
         server.createContext("/callback/github", exchange -> {
             handleCallback(exchange, "github");
         });
-        
-        // Cloudflare callback endpoint
-        server.createContext("/callback/cloudflare", exchange -> {
-            handleCallback(exchange, "cloudflare");
-        });
-        
+
         server.setExecutor(null);
         server.start();
-        System.out.println("OAuth callback server started on port 8080");
+        System.out.println("OAuth callback server started on port " + port);
     }
     
     private void handleCallback(com.sun.net.httpserver.HttpExchange exchange, String provider) {
         try {
             String query = exchange.getRequestURI().getQuery();
             System.out.println("Received callback: " + query);
-            
+
+            // Check if this is a role selection submission
+            if (query != null && query.contains("role=")) {
+                handleRoleSelection(exchange, provider, query);
+                return;
+            }
+
             if (query == null || query.isEmpty()) {
                 sendResponse(exchange, "Error: No callback parameters", 400);
                 errorMessage = "No callback parameters received";
                 latch.countDown();
                 return;
             }
-            
+
             // Parse query parameters
             String code = null;
             String state = null;
             String error = null;
-            
+
             for (String param : query.split("&")) {
                 String[] pair = param.split("=");
                 if (pair.length == 2) {
                     String key = pair[0];
                     String value = java.net.URLDecoder.decode(pair[1], "UTF-8");
-                    
+
                     if (key.equals("code")) {
                         code = value;
                     } else if (key.equals("state")) {
@@ -134,49 +153,188 @@ public class OAuthCallbackHandler {
                     }
                 }
             }
-            
+
             if (error != null) {
                 sendResponse(exchange, "Authentication cancelled or failed", 400);
                 errorMessage = "OAuth error: " + error;
                 latch.countDown();
                 return;
             }
-            
+
             if (code == null) {
                 sendResponse(exchange, "Error: No authorization code received", 400);
                 errorMessage = "No authorization code received";
                 latch.countDown();
                 return;
             }
-            
-            // Process the callback
-            try {
-                if (provider.equals("google")) {
-                    authenticatedUser = OAuthService.handleGoogleCallback(code, state);
-                } else if (provider.equals("github")) {
-                    authenticatedUser = OAuthService.handleGithubCallback(code, state);
-                } else {
-                    authenticatedUser = OAuthService.handleCloudflareCallback(code, state);
-                }
-                
-                if (authenticatedUser != null) {
-                    sendResponse(exchange, "Authentication successful! You can close this window.", 200);
-                    System.out.println("OAuth authentication successful for user: " + authenticatedUser.getEmail());
-                } else {
-                    sendResponse(exchange, "Authentication failed. Please try again.", 400);
-                    errorMessage = "Failed to create/update user";
-                }
-            } catch (Exception e) {
-                sendResponse(exchange, "Error processing authentication: " + e.getMessage(), 500);
-                errorMessage = "Error processing authentication: " + e.getMessage();
-                e.printStackTrace();
+
+            // Store the code and state for role selection
+            this.oauthCode = code;
+            this.oauthState = state;
+
+            // Check for duplicate requests (e.g., from browser pre-fetching or duplicate callbacks)
+            if (code.equals(this.lastProcessedCode)) {
+                System.out.println("Ignoring duplicate callback request for code: " + code);
+                return; // Ignore and do not send response or countdown, just let it be
             }
-            
+            this.lastProcessedCode = code;
+
+            // For Google and GitHub, check if user exists before showing role selection
+            if (provider.equals("google") || provider.equals("github")) {
+                try {
+                    // Get user info to check if user exists
+                    String email = null;
+                    if (provider.equals("google")) {
+                        this.pendingUserInfo = OAuthService.getGoogleUserInfo(code);
+                        email = this.pendingUserInfo.has("email") ? this.pendingUserInfo.get("email").getAsString() : null;
+                    } else {
+                        Object[] githubData = OAuthService.getGithubData(code);
+                        this.pendingUserInfo = (com.google.gson.JsonObject) githubData[0];
+                        this.pendingGithubEmails = (String) githubData[1];
+                        email = this.pendingUserInfo.has("email") && !this.pendingUserInfo.get("email").isJsonNull() ? 
+                                this.pendingUserInfo.get("email").getAsString() : null;
+                    }
+
+                    // If user exists, skip role selection and proceed with existing role
+                    if (email != null && OAuthService.userExists(email)) {
+                        processAuthentication(provider, code, state, null); // null role = use existing
+                        
+                        // Send success response after authentication
+                        if (authenticatedUser != null) {
+                            sendSuccessPage(exchange);
+                        } else {
+                            sendResponse(exchange, "Authentication failed: " + errorMessage, 500);
+                        }
+                        latch.countDown();
+                    } else {
+                        // New user, show role selection page
+                        sendRoleSelectionPage(exchange, provider, code, state);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error checking user existence: " + e.getMessage());
+                    // If check fails, show role selection as fallback
+                    sendRoleSelectionPage(exchange, provider, code, state);
+                }
+            } else {
+                // Should not reach here
+                sendResponse(exchange, "Invalid provider", 400);
+            }
+
         } catch (Exception e) {
             System.err.println("Error handling callback: " + e.getMessage());
             e.printStackTrace();
-        } finally {
+        }
+    }
+
+    private void handleRoleSelection(com.sun.net.httpserver.HttpExchange exchange, String provider, String query) {
+        try {
+            String role = null;
+            for (String param : query.split("&")) {
+                String[] pair = param.split("=");
+                if (pair.length == 2 && pair[0].equals("role")) {
+                    role = java.net.URLDecoder.decode(pair[1], "UTF-8");
+                    break;
+                }
+            }
+
+            if (role == null || (!role.equals("apprenant") && !role.equals("formateur"))) {
+                sendResponse(exchange, "Invalid role selection", 400);
+                errorMessage = "Invalid role selected";
+                latch.countDown();
+                return;
+            }
+
+            processAuthentication(provider, oauthCode, oauthState, role);
+
+            // Send success response after authentication
+            if (authenticatedUser != null) {
+                sendSuccessPage(exchange);
+            } else {
+                sendResponse(exchange, "Authentication failed: " + errorMessage, 500);
+            }
+
+            // Count down latch AFTER sending response
             latch.countDown();
+
+        } catch (Exception e) {
+            System.err.println("Error handling role selection: " + e.getMessage());
+            e.printStackTrace();
+            try {
+                sendResponse(exchange, "Error: " + e.getMessage(), 500);
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            latch.countDown();
+        }
+    }
+
+    private void processAuthentication(String provider, String code, String state, String role) {
+        try {
+            if (provider.equals("google")) {
+                if (this.pendingUserInfo != null) {
+                    authenticatedUser = OAuthService.createOrUpdateUserFromOAuth(this.pendingUserInfo, "google", role);
+                } else {
+                    authenticatedUser = OAuthService.handleGoogleCallback(code, state, role);
+                }
+            } else if (provider.equals("github")) {
+                if (this.pendingUserInfo != null && this.pendingGithubEmails != null) {
+                    authenticatedUser = OAuthService.createOrUpdateUserFromGitHub(this.pendingUserInfo, this.pendingGithubEmails, "github", role);
+                } else {
+                    authenticatedUser = OAuthService.handleGithubCallback(code, state, role);
+                }
+            }
+
+            if (authenticatedUser != null) {
+                System.out.println("OAuth authentication successful for user: " + authenticatedUser.getEmail());
+            } else {
+                errorMessage = "Failed to create/update user";
+            }
+        } catch (Exception e) {
+            errorMessage = "Error processing authentication: " + e.getMessage();
+            e.printStackTrace();
+        }
+    }
+
+    private void sendRoleSelectionPage(com.sun.net.httpserver.HttpExchange exchange, String provider, String code, String state) throws IOException {
+        String html = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "    <meta charset='UTF-8'>\n" +
+                "    <title>Choose Your Role - Formini</title>\n" +
+                "    <style>\n" +
+                "        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0; }\n" +
+                "        .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; max-width: 400px; }\n" +
+                "        h1 { color: #333; margin-bottom: 10px; }\n" +
+                "        p { color: #666; margin-bottom: 30px; }\n" +
+                "        .role-buttons { display: flex; flex-direction: column; gap: 15px; }\n" +
+                "        .role-btn { padding: 15px 30px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }\n" +
+                "        .role-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }\n" +
+                "        .btn-apprenant { background: #4CAF50; color: white; }\n" +
+                "        .btn-formateur { background: #2196F3; color: white; }\n" +
+                "    </style>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "    <div class='container'>\n" +
+                "        <h1>Choose Your Role</h1>\n" +
+                "        <p>Select how you want to use Formini:</p>\n" +
+                "        <div class='role-buttons'>\n" +
+                "            <button class='role-btn btn-apprenant' onclick='selectRole(\"apprenant\")'>📚 Apprenant (Learner)</button>\n" +
+                "            <button class='role-btn btn-formateur' onclick='selectRole(\"formateur\")'>👨‍🏫 Formateur (Instructor)</button>\n" +
+                "        </div>\n" +
+                "    </div>\n" +
+                "    <script>\n" +
+                "        function selectRole(role) {\n" +
+                "            const url = window.location.pathname + '?code=" + code + "&state=" + state + "&role=' + role;\n" +
+                "            window.location.href = url;\n" +
+                "        }\n" +
+                "    </script>\n" +
+                "</body>\n" +
+                "</html>";
+
+        exchange.getResponseHeaders().set("Content-Type", "text/html; charset=UTF-8");
+        exchange.sendResponseHeaders(200, html.getBytes().length);
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(html.getBytes());
         }
     }
     
@@ -185,6 +343,36 @@ public class OAuthCallbackHandler {
         exchange.sendResponseHeaders(statusCode, response.getBytes().length);
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(response.getBytes());
+        }
+    }
+
+    private void sendSuccessPage(com.sun.net.httpserver.HttpExchange exchange) throws IOException {
+        String html = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "    <meta charset='UTF-8'>\n" +
+                "    <title>Authentication Successful - Formini</title>\n" +
+                "    <style>\n" +
+                "        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0; }\n" +
+                "        .container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; max-width: 400px; }\n" +
+                "        h1 { color: #4CAF50; margin-bottom: 10px; }\n" +
+                "        p { color: #666; margin-bottom: 20px; }\n" +
+                "        .success-icon { font-size: 60px; margin-bottom: 20px; }\n" +
+                "    </style>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "    <div class='container'>\n" +
+                "        <div class='success-icon'>✅</div>\n" +
+                "        <h1>Authentication Successful!</h1>\n" +
+                "        <p>You have been successfully authenticated. You can now close this window and return to the application.</p>\n" +
+                "    </div>\n" +
+                "</body>\n" +
+                "</html>";
+
+        exchange.getResponseHeaders().set("Content-Type", "text/html; charset=UTF-8");
+        exchange.sendResponseHeaders(200, html.getBytes().length);
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(html.getBytes());
         }
     }
     

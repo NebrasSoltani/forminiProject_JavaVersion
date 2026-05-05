@@ -1,7 +1,9 @@
 package tn.formini.controllers.auth;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -62,6 +64,7 @@ public class EditProfileController implements Initializable {
     @FXML private VBox newPasswordSection;
     @FXML private PasswordField fieldNewPassword;
     @FXML private PasswordField fieldNewPasswordConfirm;
+    @FXML private Button btnTwoFactor;
 
     private final SessionManager sessionManager = SessionManager.getInstance();
     private final UserService userService = new UserService();
@@ -83,7 +86,7 @@ public class EditProfileController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        comboGenre.getItems().addAll("homme", "femme", "autre");
+        comboGenre.getItems().addAll("homme", "femme");
         comboEtatCivil.getItems().addAll("celibataire", "marie", "divorce", "veuf");
         fieldGouvernorat.setItems(TunisiaGovernorates.asObservableList());
         spinnerExperience.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 70, 0));
@@ -114,7 +117,9 @@ public class EditProfileController implements Initializable {
         fieldNom.setText(safe(user.getNom()));
         fieldPrenom.setText(safe(user.getPrenom()));
         fieldTelephone.setText(safe(user.getTelephone()));
-        fieldGouvernorat.setValue(user.getGouvernorat());
+        if (user.getGouvernorat() != null) {
+            fieldGouvernorat.setValue(user.getGouvernorat());
+        }
         fieldPhoto.setText(safe(user.getPhoto()));
 
         // Load and display user photo
@@ -200,7 +205,8 @@ public class EditProfileController implements Initializable {
         user.setNom(trim(fieldNom.getText()));
         user.setPrenom(trim(fieldPrenom.getText()));
         user.setTelephone(trim(fieldTelephone.getText()));
-        user.setGouvernorat(fieldGouvernorat.getValue());
+        String selectedGouvernorat = fieldGouvernorat.getValue();
+        user.setGouvernorat(selectedGouvernorat);
 
         // Handle photo upload
         String photoPath = null;
@@ -433,5 +439,21 @@ public class EditProfileController implements Initializable {
         passwordChangeSection.setManaged(false);
         btnChangePassword.setVisible(true);
         btnChangePassword.setManaged(true);
+    }
+
+    @FXML
+    private void handleTwoFactor() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth/TwoFactorSetup.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Formini - Configuration 2FA");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            showMessage("Erreur lors de l'ouverture de la configuration 2FA.");
+            e.printStackTrace();
+        }
     }
 }

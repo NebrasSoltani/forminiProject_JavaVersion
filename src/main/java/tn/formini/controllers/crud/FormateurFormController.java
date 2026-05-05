@@ -1,7 +1,9 @@
 package tn.formini.controllers.crud;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -12,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import tn.formini.entities.Users.Formateur;
 import tn.formini.entities.Users.User;
+import tn.formini.entities.Users.Gouvernorat;
 import tn.formini.services.FileUploadService;
 import tn.formini.services.UsersService.FormateurService;
 import tn.formini.services.UsersService.UserService;
@@ -19,12 +22,69 @@ import tn.formini.utils.SignupFieldValidation;
 import tn.formini.utils.TunisiaGovernorates;
 
 import java.io.File;
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
+import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 
-public class FormateurFormController {
+public class FormateurFormController implements Initializable {
 
+    @FXML private Label lblMessage;
+    @FXML private Label formTitle;
+    @FXML private Label formSubtitle;
+    
+    // User fields
+    @FXML private TextField emailTextField;
+    @FXML private TextField telephoneTextField;
+    @FXML private PasswordField passwordField;
+    @FXML private PasswordField passwordConfirmField;
+    @FXML private Button btnTogglePassword;
+    @FXML private Button btnTogglePasswordConfirm;
+    @FXML private Label eyeIcon;
+    @FXML private Label eyeSlashIcon;
+    @FXML private Label eyeIconConfirm;
+    @FXML private Label eyeSlashIconConfirm;
+    @FXML private TextField nomTextField;
+    @FXML private TextField prenomTextField;
+
+    // Formateur fields
+    @FXML private TextField specialiteTextField;
+    @FXML private TextArea bioTextArea;
+    @FXML private Spinner<Integer> experienceSpinner;
+    @FXML private TextField linkedinTextField;
+    @FXML private TextField portfolioTextField;
+    @FXML private TextField cvTextField;
+    @FXML private Button btnUploadCv;
+    @FXML private Label lblCvFileName;
+    @FXML private Button saveButton;
+    @FXML private Button cancelButton;
+
+    // Error labels
+    @FXML private Label errorEmail;
+    @FXML private Label errorTelephone;
+    @FXML private Label errorPassword;
+    @FXML private Label errorPasswordConfirm;
+    @FXML private Label errorNom;
+    @FXML private Label errorPrenom;
+    @FXML private Label errorDateNaissance;
+    @FXML private Label errorSpecialite;
+    @FXML private Label errorExperience;
+    @FXML private Label errorLinkedin;
+    @FXML private Label errorPortfolio;
+    @FXML private Label errorCv;
+    @FXML private Label errorBio;
+
+    private FormateurService formateurService;
+    private UserService userService;
+    private FileUploadService fileUploadService;
+    private File uploadedCvFile;
+    private File uploadedPhotoFile;
+
+    private Formateur formateur;
+    private Mode mode;
     @FXML
     private Label heroSubLabel;
 
@@ -38,64 +98,10 @@ public class FormateurFormController {
     private Label passwordHintLabel;
 
     @FXML
-    private TextField emailField;
-
-    @FXML
-    private PasswordField passwordField;
-
-    @FXML
-    private PasswordField passwordConfirmField;
-
-    @FXML
-    private Button btnTogglePassword;
-
-    @FXML
-    private Button btnTogglePasswordConfirm;
-
-    @FXML
-    private Label eyeIcon;
-
-    @FXML
-    private Label eyeSlashIcon;
-
-    @FXML
-    private Label eyeIconConfirm;
-
-    @FXML
-    private Label eyeSlashIconConfirm;
-
-    @FXML
-    private Label errorEmail;
-
-    @FXML
-    private Label errorTelephone;
-
-    @FXML
-    private Label errorNom;
-
-    @FXML
-    private Label errorPrenom;
-
-    @FXML
-    private Label errorDateNaissance;
-
-    @FXML
-    private Label errorSpecialite;
-
-    @FXML
-    private TextField nomField;
-
-    @FXML
-    private TextField prenomField;
-
-    @FXML
-    private TextField telephoneField;
-
-    @FXML
     private ComboBox<String> gouvernoratField;
 
     @FXML
-    private DatePicker dateNaissanceField;
+    private DatePicker dateNaissancePicker;
 
     @FXML
     private TextField photoField;
@@ -110,90 +116,51 @@ public class FormateurFormController {
     private ImageView imageViewPhoto;
 
     @FXML
-    private TextField specialiteTextField;
-
-    @FXML
-    private TextArea bioTextArea;
-
-    @FXML
-    private Spinner<Integer> spinnerExperience;
-
-    @FXML
-    private TextField linkedinTextField;
-
-    @FXML
-    private TextField portfolioTextField;
-
-    @FXML
-    private TextField cvTextField;
-
-    @FXML
-    private Button btnUploadCv;
-
-    @FXML
-    private Label lblCvFileName;
-
-    @FXML
     private TextField noteTextField;
 
     @FXML
     private ComboBox<User> userComboBox;
 
-    @FXML
-    private Button saveButton;
-
-    @FXML
-    private Button cancelButton;
-
-    private FormateurService formateurService;
-    private UserService userService;
-    private FileUploadService fileUploadService;
-
-    private Formateur formateur;
-    private Mode mode;
-    private File uploadedPhotoFile;
-    private File uploadedCvFile;
-
     public enum Mode {
         ADD, EDIT
     }
 
-    @FXML
-    public void initialize() {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
         formateurService = new FormateurService();
         userService = new UserService();
         fileUploadService = new FileUploadService();
 
-        spinnerExperience.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 70, 0));
-        spinnerExperience.setEditable(true);
         gouvernoratField.setItems(TunisiaGovernorates.asObservableList());
+        experienceSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 70, 0));
+        experienceSpinner.setEditable(true);
 
         setupUserComboBox();
         setupValidationListeners();
     }
 
     private void setupValidationListeners() {
-        emailField.textProperty().addListener((obs, o, n) -> {
+        emailTextField.textProperty().addListener((obs, o, n) -> {
             if (mode == Mode.EDIT) {
                 validateEditEmail();
             }
         });
-        telephoneField.textProperty().addListener((obs, o, n) -> {
+        telephoneTextField.textProperty().addListener((obs, o, n) -> {
             if (mode == Mode.EDIT) {
                 validateEditPhone();
             }
         });
-        nomField.textProperty().addListener((obs, o, n) -> {
+        nomTextField.textProperty().addListener((obs, o, n) -> {
             if (mode == Mode.EDIT) {
                 validateEditNom();
             }
         });
-        prenomField.textProperty().addListener((obs, o, n) -> {
+        prenomTextField.textProperty().addListener((obs, o, n) -> {
             if (mode == Mode.EDIT) {
                 validateEditPrenom();
             }
         });
-        dateNaissanceField.valueProperty().addListener((obs, o, n) -> {
+        dateNaissancePicker.valueProperty().addListener((obs, o, n) -> {
             if (mode == Mode.EDIT) {
                 validateEditBirthDate();
             }
@@ -357,8 +324,10 @@ public class FormateurFormController {
         }
     }
 
+
     public void setMode(Mode mode) {
         this.mode = mode;
+        updateFormForMode(mode);
         if (mode == Mode.ADD) {
             clearForm();
             setPasswordSectionVisible(true);
@@ -392,6 +361,21 @@ public class FormateurFormController {
         }
     }
 
+    private void updateFormForMode(Mode mode) {
+        // Keep ADD and EDIT visual presentation identical.
+        if (formTitle != null) {
+            formTitle.setText("Ajouter un formateur");
+        }
+        if (formSubtitle != null) {
+            formSubtitle.setText("Complétez les informations du formateur. Les champs marqués * sont obligatoires.");
+        }
+        passwordField.setPromptText("8+ caractères, maj., min., chiffre");
+        passwordConfirmField.setPromptText("Même mot de passe");
+        if (saveButton != null) {
+            saveButton.setText("Créer le compte");
+        }
+    }
+
     public void setFormateur(Formateur formateur) {
         this.formateur = formateur;
         populateForm();
@@ -401,15 +385,19 @@ public class FormateurFormController {
         if (formateur != null) {
             specialiteTextField.setText(formateur.getSpecialite() != null ? formateur.getSpecialite() : "");
             bioTextArea.setText(formateur.getBio() != null ? formateur.getBio() : "");
+
             int exp = formateur.getExperience_annees() != null ? formateur.getExperience_annees() : 0;
-            spinnerExperience.getValueFactory().setValue(Math.min(70, Math.max(0, exp)));
-            spinnerExperience.getEditor().setText(String.valueOf(exp));
+            experienceSpinner.getValueFactory().setValue(Math.min(70, Math.max(0, exp)));
+            experienceSpinner.getEditor().setText(String.valueOf(exp));
+
             linkedinTextField.setText(formateur.getLinkedin() != null ? formateur.getLinkedin() : "");
             portfolioTextField.setText(formateur.getPortfolio() != null ? formateur.getPortfolio() : "");
             cvTextField.setText(formateur.getCv() != null ? formateur.getCv() : "");
+
             if (formateur.getCv() != null && !formateur.getCv().isEmpty()) {
                 lblCvFileName.setText(stripToFileName(formateur.getCv()));
             }
+
             if (noteTextField != null) {
                 noteTextField.setText(formateur.getNote_moyenne() != null ? formateur.getNote_moyenne().toString() : "");
             }
@@ -419,18 +407,19 @@ public class FormateurFormController {
                     userComboBox.setValue(formateur.getUser());
                 }
                 User user = formateur.getUser();
-                emailField.setText(user.getEmail() != null ? user.getEmail() : "");
-                nomField.setText(user.getNom() != null ? user.getNom() : "");
-                prenomField.setText(user.getPrenom() != null ? user.getPrenom() : "");
-                telephoneField.setText(user.getTelephone() != null ? user.getTelephone() : "");
+                emailTextField.setText(user.getEmail() != null ? user.getEmail() : "");
+                nomTextField.setText(user.getNom() != null ? user.getNom() : "");
+                prenomTextField.setText(user.getPrenom() != null ? user.getPrenom() : "");
+                telephoneTextField.setText(user.getTelephone() != null ? user.getTelephone() : "");
                 gouvernoratField.setValue(user.getGouvernorat());
                 photoField.setText(user.getPhoto() != null ? user.getPhoto() : "");
+
                 if (user.getPhoto() != null && !user.getPhoto().isEmpty()) {
                     lblPhotoFileName.setText(stripToFileName(user.getPhoto()));
                 }
 
                 if (user.getDate_naissance() != null) {
-                    dateNaissanceField.setValue(user.getDate_naissance().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                    dateNaissancePicker.setValue(user.getDate_naissance().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                 }
 
                 if (user.getPhoto() != null && !user.getPhoto().isEmpty()) {
@@ -454,27 +443,33 @@ public class FormateurFormController {
     }
 
     private void clearForm() {
-        emailField.clear();
+        // Clear user fields
+        emailTextField.clear();
+        telephoneTextField.clear();
         passwordField.clear();
         passwordConfirmField.clear();
-        nomField.clear();
-        prenomField.clear();
-        telephoneField.clear();
+        nomTextField.clear();
+        prenomTextField.clear();
         gouvernoratField.setValue(null);
-        dateNaissanceField.setValue(null);
+        dateNaissancePicker.setValue(null);
         photoField.clear();
         lblPhotoFileName.setText("Aucune photo sélectionnée");
         imageViewPhoto.setImage(null);
         uploadedPhotoFile = null;
+
+        // Clear formateur fields
         specialiteTextField.clear();
         bioTextArea.clear();
-        spinnerExperience.getValueFactory().setValue(0);
-        spinnerExperience.getEditor().setText("0");
+        experienceSpinner.getValueFactory().setValue(0);
+        experienceSpinner.getEditor().setText("0");
         linkedinTextField.clear();
         portfolioTextField.clear();
         cvTextField.clear();
         lblCvFileName.setText("Aucun fichier sélectionné");
         uploadedCvFile = null;
+        
+        clearAllErrors();
+        hideMessage();
         if (noteTextField != null) {
             noteTextField.clear();
         }
@@ -485,29 +480,31 @@ public class FormateurFormController {
 
     private int readExperienceYears() {
         try {
-            String t = spinnerExperience.getEditor().getText();
+            String t = experienceSpinner.getEditor().getText();
             if (t == null || t.isBlank()) {
-                Integer v = spinnerExperience.getValue();
+                Integer v = experienceSpinner.getValue();
                 return v != null ? v : 0;
             }
             return Integer.parseInt(t.trim());
         } catch (NumberFormatException e) {
-            return spinnerExperience.getValue() != null ? spinnerExperience.getValue() : 0;
+            return experienceSpinner.getValue() != null ? experienceSpinner.getValue() : 0;
         }
     }
 
     @FXML
     private void handleSaveButton(ActionEvent event) {
+        hideMessage();
         if (!validateForm()) {
+            showMessage("Veuillez corriger les erreurs dans le formulaire.");
             return;
         }
 
         try {
-            String email = emailField.getText().trim();
-            String password = passwordField.getText();
-            String phoneNorm = SignupFieldValidation.normalizePhone(telephoneField.getText());
-
             User userToUse;
+
+            String email = emailTextField.getText().trim();
+            String password = passwordField.getText();
+            String phoneNorm = SignupFieldValidation.normalizePhone(telephoneTextField.getText());
 
             if (mode == Mode.EDIT && formateur != null && formateur.getUser() != null) {
                 User dbUser = userService.getUserByEmail(formateur.getUser().getEmail());
@@ -527,11 +524,11 @@ public class FormateurFormController {
                     return;
                 }
                 dbUser.setEmail(email);
-                dbUser.setNom(nomField.getText().trim());
-                dbUser.setPrenom(prenomField.getText().trim());
+                dbUser.setNom(nomTextField.getText().trim());
+                dbUser.setPrenom(prenomTextField.getText().trim());
                 dbUser.setTelephone(phoneNorm);
                 dbUser.setGouvernorat(gouvernoratField.getValue());
-                LocalDate localDateEdit = dateNaissanceField.getValue();
+                LocalDate localDateEdit = dateNaissancePicker.getValue();
                 if (localDateEdit != null) {
                     dbUser.setDate_naissance(java.sql.Date.valueOf(localDateEdit));
                 }
@@ -551,14 +548,14 @@ public class FormateurFormController {
                 User newUser = new User();
                 newUser.setEmail(email);
                 newUser.setPassword(password);
-                newUser.setNom(nomField.getText().trim());
-                newUser.setPrenom(prenomField.getText().trim());
+                newUser.setNom(nomTextField.getText().trim());
+                newUser.setPrenom(prenomTextField.getText().trim());
                 newUser.setTelephone(phoneNorm);
                 newUser.setGouvernorat(gouvernoratField.getValue());
                 newUser.setRole_utilisateur("formateur");
                 newUser.setIs_email_verified(true);
 
-                LocalDate localDate = dateNaissanceField.getValue();
+                LocalDate localDate = dateNaissancePicker.getValue();
                 if (localDate != null) {
                     newUser.setDate_naissance(java.sql.Date.valueOf(localDate));
                 }
@@ -584,34 +581,26 @@ public class FormateurFormController {
                 formateur = new Formateur();
             }
 
-            formateur.setSpecialite(specialiteTextField.getText().trim());
+            formateur.setSpecialite(specialiteTextField.getText().trim().isEmpty() ? null : specialiteTextField.getText().trim());
             formateur.setBio(bioTextArea.getText().trim().isEmpty() ? null : bioTextArea.getText().trim());
+            formateur.setExperience_annees(experienceSpinner.getValue() == 0 ? null : experienceSpinner.getValue());
+            formateur.setLinkedin(linkedinTextField.getText().trim().isEmpty() ? null : linkedinTextField.getText().trim());
+            formateur.setPortfolio(portfolioTextField.getText().trim().isEmpty() ? null : portfolioTextField.getText().trim());
 
-            int experienceYears = readExperienceYears();
-            if (experienceYears < 0 || experienceYears > 70) {
-                showAlert("Erreur de validation", "L'expérience doit être comprise entre 0 et 70 ans", Alert.AlertType.ERROR);
-                return;
-            }
-            formateur.setExperience_annees(experienceYears > 0 ? experienceYears : null);
-
-            String linkedinText = linkedinTextField.getText().trim();
-            formateur.setLinkedin(linkedinText.isEmpty() ? null : linkedinText);
-
-            String portfolioText = portfolioTextField.getText().trim();
-            formateur.setPortfolio(portfolioText.isEmpty() ? null : portfolioText);
-
-            String cvText = cvTextField.getText().trim();
+            String cvPath = cvTextField.getText().trim();
             if (uploadedCvFile != null) {
-                cvText = fileUploadService.uploadCv(uploadedCvFile);
+                cvPath = fileUploadService.uploadCv(uploadedCvFile);
             }
-            formateur.setCv(cvText.isEmpty() ? null : cvText);
+            formateur.setCv(cvPath.isEmpty() ? null : cvPath);
 
             if (noteTextField != null) {
                 String noteText = noteTextField.getText().trim();
                 if (!noteText.isEmpty()) {
-                    formateur.setNote_moyenne(Double.parseDouble(noteText));
-                } else {
-                    formateur.setNote_moyenne(null);
+                    try {
+                        formateur.setNote_moyenne(Double.parseDouble(noteText));
+                    } catch (NumberFormatException e) {
+                        // Ignore invalid note
+                    }
                 }
             }
 
@@ -619,17 +608,15 @@ public class FormateurFormController {
 
             if (mode == Mode.ADD) {
                 formateurService.ajouter(formateur);
-                showAlert("Succès", "Formateur ajouté avec succès", Alert.AlertType.INFORMATION);
+                showMessage("Formateur ajouté avec succès.");
             } else {
                 formateurService.modifier(formateur);
-                showAlert("Succès", "Formateur modifié avec succès", Alert.AlertType.INFORMATION);
+                showMessage("Formateur modifié avec succès.");
             }
 
-            closeForm();
-        } catch (NumberFormatException e) {
-            showAlert("Erreur de validation", "Vérifiez les valeurs numériques (expérience, note).", Alert.AlertType.ERROR);
+            Platform.runLater(this::closeForm);
         } catch (Exception e) {
-            showAlert("Erreur", "Erreur lors de l'enregistrement: " + e.getMessage(), Alert.AlertType.ERROR);
+            showMessage("Erreur lors de l'enregistrement: " + e.getMessage());
         }
     }
 
@@ -638,17 +625,63 @@ public class FormateurFormController {
         closeForm();
     }
 
-    private boolean validateForm() {
-        if (specialiteTextField.getText().trim().isEmpty()) {
-            showAlert("Erreur de validation", "La spécialité est obligatoire", Alert.AlertType.ERROR);
-            return false;
+    private void showMessage(String text) {
+        lblMessage.setText(text);
+        if (!lblMessage.getStyleClass().contains("signup-alert")) {
+            lblMessage.getStyleClass().add("signup-alert");
         }
+        lblMessage.setVisible(true);
+        lblMessage.setManaged(true);
+        Platform.runLater(() -> {
+            lblMessage.requestLayout();
+            scrollToMessageIfNeeded();
+        });
+    }
 
+    private void hideMessage() {
+        lblMessage.setText("");
+        lblMessage.setVisible(false);
+        lblMessage.setManaged(false);
+    }
+
+    private void scrollToMessageIfNeeded() {
+        javafx.scene.Parent parent = lblMessage.getParent();
+        while (parent != null) {
+            if (parent instanceof ScrollPane scrollPane) {
+                scrollPane.setVvalue(0);
+                return;
+            }
+            parent = parent.getParent();
+        }
+    }
+
+    private void showError(Label errorLabel, String message) {
+        errorLabel.setText(message);
+        errorLabel.setStyle("-fx-text-fill: #dc2626;");
+        errorLabel.setVisible(true);
+        errorLabel.setManaged(true);
+    }
+
+    private void hideError(Label errorLabel) {
+        errorLabel.setText("");
+        errorLabel.setStyle("");
+        errorLabel.setVisible(false);
+        errorLabel.setManaged(false);
+    }
+
+    private void clearAllErrors() {
+        hideError(errorEmail);
+        hideError(errorTelephone);
+        hideError(errorPassword);
+        hideError(errorPasswordConfirm);
+    }
+
+    private boolean validateForm() {
         if (mode == Mode.EDIT) {
             return validateEditForm();
         }
 
-        String email = emailField.getText().trim();
+        String email = emailTextField.getText().trim();
         String password = passwordField.getText();
 
         if (!email.isEmpty() || (password != null && !password.isEmpty())) {
@@ -656,7 +689,7 @@ public class FormateurFormController {
                 showAlert("Erreur de validation", "Email invalide ou manquant.", Alert.AlertType.ERROR);
                 return false;
             }
-            String phoneNorm = SignupFieldValidation.normalizePhone(telephoneField.getText());
+            String phoneNorm = SignupFieldValidation.normalizePhone(telephoneTextField.getText());
             if (!SignupFieldValidation.isValidPhoneNormalized(phoneNorm)) {
                 showAlert("Erreur de validation", "Téléphone invalide (8–12 chiffres).", Alert.AlertType.ERROR);
                 return false;
@@ -675,15 +708,15 @@ public class FormateurFormController {
                 showAlert("Erreur de validation", "Les mots de passe ne correspondent pas.", Alert.AlertType.ERROR);
                 return false;
             }
-            if (!SignupFieldValidation.isValidNomPrenom(nomField.getText())) {
+            if (!SignupFieldValidation.isValidNomPrenom(nomTextField.getText())) {
                 showAlert("Erreur de validation", "Le nom est obligatoire (min. 2 caractères).", Alert.AlertType.ERROR);
                 return false;
             }
-            if (!SignupFieldValidation.isValidNomPrenom(prenomField.getText())) {
+            if (!SignupFieldValidation.isValidNomPrenom(prenomTextField.getText())) {
                 showAlert("Erreur de validation", "Le prénom est obligatoire (min. 2 caractères).", Alert.AlertType.ERROR);
                 return false;
             }
-            if (dateNaissanceField.getValue() == null) {
+            if (dateNaissancePicker.getValue() == null) {
                 showAlert("Erreur de validation", "La date de naissance est obligatoire", Alert.AlertType.ERROR);
                 return false;
             }
@@ -735,7 +768,7 @@ public class FormateurFormController {
     }
 
     private boolean validateEditEmail() {
-        if (!SignupFieldValidation.isValidEmail(emailField.getText().trim())) {
+        if (!SignupFieldValidation.isValidEmail(emailTextField.getText().trim())) {
             showError(errorEmail, "Email invalide ou manquant.");
             return false;
         }
@@ -744,7 +777,7 @@ public class FormateurFormController {
     }
 
     private boolean validateEditPhone() {
-        String phoneNorm = SignupFieldValidation.normalizePhone(telephoneField.getText());
+        String phoneNorm = SignupFieldValidation.normalizePhone(telephoneTextField.getText());
         if (!SignupFieldValidation.isValidPhoneNormalized(phoneNorm)) {
             showError(errorTelephone, "Téléphone invalide (8-12 chiffres).");
             return false;
@@ -754,7 +787,7 @@ public class FormateurFormController {
     }
 
     private boolean validateEditNom() {
-        if (!SignupFieldValidation.isValidNomPrenom(nomField.getText())) {
+        if (!SignupFieldValidation.isValidNomPrenom(nomTextField.getText())) {
             showError(errorNom, "Le nom est obligatoire (min. 2 caractères).");
             return false;
         }
@@ -763,7 +796,7 @@ public class FormateurFormController {
     }
 
     private boolean validateEditPrenom() {
-        if (!SignupFieldValidation.isValidNomPrenom(prenomField.getText())) {
+        if (!SignupFieldValidation.isValidNomPrenom(prenomTextField.getText())) {
             showError(errorPrenom, "Le prénom est obligatoire (min. 2 caractères).");
             return false;
         }
@@ -772,7 +805,7 @@ public class FormateurFormController {
     }
 
     private boolean validateEditBirthDate() {
-        if (dateNaissanceField.getValue() == null) {
+        if (dateNaissancePicker.getValue() == null) {
             showError(errorDateNaissance, "La date de naissance est obligatoire.");
             return false;
         }
@@ -796,24 +829,11 @@ public class FormateurFormController {
         hideError(errorPrenom);
         hideError(errorDateNaissance);
         hideError(errorSpecialite);
-    }
-
-    private void showError(Label label, String msg) {
-        if (label == null) {
-            return;
-        }
-        label.setText(msg);
-        label.setVisible(true);
-        label.setManaged(true);
-    }
-
-    private void hideError(Label label) {
-        if (label == null) {
-            return;
-        }
-        label.setText("");
-        label.setVisible(false);
-        label.setManaged(false);
+        hideError(errorExperience);
+        hideError(errorLinkedin);
+        hideError(errorPortfolio);
+        hideError(errorCv);
+        hideError(errorBio);
     }
 
     private void showAlert(String title, String message, Alert.AlertType alertType) {
@@ -825,6 +845,186 @@ public class FormateurFormController {
     }
 
     private void closeForm() {
-        cancelButton.getScene().getWindow().hide();
+        if (cancelButton.getScene() != null && cancelButton.getScene().getWindow() != null) {
+            cancelButton.getScene().getWindow().hide();
+        }
+    }
+
+    // Validation methods
+    private boolean validateEmail() {
+        String email = emailTextField.getText().trim();
+        if (email.isEmpty()) {
+            showError(errorEmail, "L'email est obligatoire");
+            return false;
+        }
+        
+        String emailRegex = "^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$";
+        if (!Pattern.matches(emailRegex, email)) {
+            showError(errorEmail, "Format d'email invalide");
+            return false;
+        }
+        
+        hideError(errorEmail);
+        return true;
+    }
+    
+    private boolean validateTelephone() {
+        String telephone = telephoneTextField.getText().trim();
+        if (telephone.isEmpty()) {
+            showError(errorTelephone, "Le téléphone est obligatoire");
+            return false;
+        }
+        
+        String normalized = normalizePhone(telephone);
+        if (normalized == null || !normalized.matches("\\+?[0-9]{8,12}$")) {
+            showError(errorTelephone, "Format invalide: 8-12 chiffres");
+            return false;
+        }
+        
+        hideError(errorTelephone);
+        return true;
+    }
+    
+    private boolean validatePassword() {
+        String password = passwordField.getText();
+        
+        // For EDIT mode, password is optional
+        if (mode == Mode.EDIT && password.isEmpty()) {
+            hideError(errorPassword);
+            return true;
+        }
+        
+        // For ADD mode, password is required
+        if (password.isEmpty()) {
+            showError(errorPassword, "Le mot de passe est obligatoire");
+            return false;
+        }
+        
+        if (password.length() < 8) {
+            showError(errorPassword, "Minimum 8 caractères");
+            return false;
+        }
+        
+        if (!password.matches(".*[A-Z].*")) {
+            showError(errorPassword, "Une majuscule requise");
+            return false;
+        }
+        
+        if (!password.matches(".*[a-z].*")) {
+            showError(errorPassword, "Une minuscule requise");
+            return false;
+        }
+        
+        if (!password.matches(".*\\d.*")) {
+            showError(errorPassword, "Un chiffre requis");
+            return false;
+        }
+        
+        hideError(errorPassword);
+        return true;
+    }
+    
+    private boolean validatePasswordConfirm() {
+        String password = passwordField.getText();
+        String passwordConfirm = passwordConfirmField.getText();
+        
+        // For EDIT mode, password confirmation is optional if password is empty
+        if (mode == Mode.EDIT && password.isEmpty() && passwordConfirm.isEmpty()) {
+            hideError(errorPasswordConfirm);
+            return true;
+        }
+        
+        // If password is provided, confirmation is required
+        if (passwordConfirm.isEmpty()) {
+            showError(errorPasswordConfirm, "La confirmation est obligatoire");
+            return false;
+        }
+        
+        if (!password.equals(passwordConfirm)) {
+            showError(errorPasswordConfirm, "Les mots de passe ne correspondent pas");
+            return false;
+        }
+        
+        hideError(errorPasswordConfirm);
+        return true;
+    }
+    
+    private boolean validateNom() {
+        String nom = nomTextField.getText().trim();
+        if (nom.isEmpty()) {
+            showError(errorNom, "Le nom est obligatoire");
+            return false;
+        }
+        
+        if (nom.length() < 2) {
+            showError(errorNom, "Minimum 2 caractères");
+            return false;
+        }
+        
+        hideError(errorNom);
+        return true;
+    }
+    
+    private boolean validatePrenom() {
+        String prenom = prenomTextField.getText().trim();
+        if (prenom.isEmpty()) {
+            showError(errorPrenom, "Le prénom est obligatoire");
+            return false;
+        }
+        
+        if (prenom.length() < 2) {
+            showError(errorPrenom, "Minimum 2 caractères");
+            return false;
+        }
+        
+        hideError(errorPrenom);
+        return true;
+    }
+    
+    private boolean validateDateNaissance() {
+        LocalDate date = dateNaissancePicker.getValue();
+        if (date == null) {
+            showError(errorDateNaissance, "La date de naissance est obligatoire");
+            return false;
+        }
+        
+        if (date.isAfter(LocalDate.now())) {
+            showError(errorDateNaissance, "Date invalide");
+            return false;
+        }
+        
+        if (date.isBefore(LocalDate.now().minusYears(120))) {
+            showError(errorDateNaissance, "Date invalide");
+            return false;
+        }
+        
+        hideError(errorDateNaissance);
+        return true;
+    }
+
+    // Utility methods
+    /** Retire espaces / séparateurs ; conserve un + initial. Doit matcher ^\\+?[0-9]{8,12}$ après nettoyage. */
+    private static String normalizePhone(String raw) {
+        if (raw == null) {
+            return null;
+        }
+        String t = raw.trim();
+        if (t.isEmpty()) {
+            return null;
+        }
+        boolean plus = t.startsWith("+");
+        String digits = t.replaceAll("\\D", "");
+        if (digits.isEmpty()) {
+            return plus ? "+" : "";
+        }
+        return plus ? "+" + digits : digits;
+    }
+
+    private static String trimToNull(String s) {
+        if (s == null) {
+            return null;
+        }
+        String t = s.trim();
+        return t.isEmpty() ? null : t;
     }
 }

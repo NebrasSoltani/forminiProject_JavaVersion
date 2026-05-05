@@ -1,113 +1,82 @@
 package tn.formini.controllers.crud;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import tn.formini.entities.Users.Apprenant;
 import tn.formini.entities.Users.Domaine;
 import tn.formini.entities.Users.User;
-import tn.formini.services.FileUploadService;
+import tn.formini.entities.Users.Gouvernorat;
 import tn.formini.services.UsersService.ApprenantService;
 import tn.formini.services.UsersService.DomaineService;
 import tn.formini.services.UsersService.UserService;
+import tn.formini.services.FileUploadService;
 import tn.formini.utils.SignupFieldValidation;
 import tn.formini.utils.TunisiaGovernorates;
 
 import java.io.File;
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 
-public class ApprenantFormController {
+public class ApprenantFormController implements Initializable {
 
-    @FXML
-    private Label heroSubLabel;
-
-    @FXML
-    private VBox passwordGroup;
-
-    @FXML
-    private VBox passwordConfirmGroup;
-
-    @FXML
-    private Label passwordHintLabel;
-
-    @FXML
-    private TextField emailField;
-
-    @FXML
-    private PasswordField passwordField;
-
-    @FXML
-    private PasswordField passwordConfirmField;
-
-    @FXML
-    private Button btnTogglePassword;
-
-    @FXML
-    private Button btnTogglePasswordConfirm;
-
-    @FXML
-    private Label eyeIcon;
-
-    @FXML
-    private Label eyeSlashIcon;
-
-    @FXML
-    private Label eyeIconConfirm;
-
-    @FXML
-    private Label eyeSlashIconConfirm;
-
-    @FXML
-    private Label errorEmail;
-
-    @FXML
-    private Label errorTelephone;
-
-    @FXML
-    private Label errorNom;
-
-    @FXML
-    private Label errorPrenom;
-
-    @FXML
-    private Label errorDateNaissance;
-
-    @FXML
-    private TextField nomField;
-
-    @FXML
-    private TextField prenomField;
-
-    @FXML
-    private TextField telephoneField;
-
-    @FXML
-    private ComboBox<String> gouvernoratField;
-
-    @FXML
-    private DatePicker dateNaissanceField;
-
-    @FXML
-    private TextField photoField;
-
-    @FXML
-    private Label lblPhotoFileName;
-
-    @FXML
-    private Button btnUploadPhoto;
-
-    @FXML
-    private ImageView imageViewPhoto;
+    @FXML private Label lblMessage;
+    @FXML private Label lblTitle;
+    @FXML private Label lblSubtitle;
+    @FXML private Label heroSubLabel;
+    @FXML private TextField fieldEmail;
+    @FXML private PasswordField fieldPassword;
+    @FXML private PasswordField fieldPasswordConfirm;
+    @FXML private TextField fieldNom;
+    @FXML private TextField fieldPrenom;
+    @FXML private TextField fieldTelephone;
+    @FXML private ComboBox<String> fieldGouvernorat;
+    @FXML private DatePicker fieldDateNaissance;
+    @FXML private TextField photoField;
+    @FXML private Label lblPhotoFileName;
+    @FXML private Button btnUploadPhoto;
+    @FXML private ImageView imageViewPhoto;
+    @FXML private Button btnTogglePassword;
+    @FXML private Button btnTogglePasswordConfirm;
+    @FXML private Label eyeIcon;
+    @FXML private Label eyeSlashIcon;
+    @FXML private Label eyeIconConfirm;
+    @FXML private Label eyeSlashIconConfirm;
+    @FXML private Label errorEmail;
+    @FXML private Label errorTelephone;
+    @FXML private Label errorNom;
+    @FXML private Label errorPrenom;
+    @FXML private Label errorDateNaissance;
+    @FXML private Label errorPassword;
+    @FXML private Label errorPasswordConfirm;
+    @FXML private VBox passwordGroup;
+    @FXML private VBox passwordConfirmGroup;
+    @FXML private Label passwordHintLabel;
+    @FXML private Label formTitle;
+    @FXML private Label formSubtitle;
+    @FXML private TextField objectifField;
+    @FXML private TextField fieldDomaineInput;
+    @FXML private FlowPane flowPaneDomaines;
+    @FXML private Label errorGenre;
+    @FXML private Label errorEtatCivil;
+    @FXML private Label errorDomaine;
+    @FXML private Label errorObjectif;
+    @FXML private Label errorDomainesInteret;
 
     @FXML
     private ComboBox<String> genreComboBox;
@@ -116,16 +85,7 @@ public class ApprenantFormController {
     private ComboBox<String> etatCivilComboBox;
 
     @FXML
-    private TextField objectifField;
-
-    @FXML
-    private TextField fieldDomaineInput;
-
-    @FXML
-    private Button btnAddDomaine;
-
-    @FXML
-    private HBox flowPaneDomaines;
+    private TextArea domainesInteretTextArea;
 
     @FXML
     private ComboBox<User> userComboBox;
@@ -140,24 +100,24 @@ public class ApprenantFormController {
     private Button cancelButton;
 
     private ApprenantService apprenantService;
-    private UserService userService;
     private DomaineService domaineService;
+    private UserService userService;
     private FileUploadService fileUploadService;
-
+    private ObservableList<String> domainesList = FXCollections.observableArrayList();
+    private File uploadedPhotoFile;
+    
     private Apprenant apprenant;
     private Mode mode;
-    private File uploadedPhotoFile;
-    private final List<String> domainesList = new ArrayList<>();
-
+    
     public enum Mode {
         ADD, EDIT
     }
 
-    @FXML
-    public void initialize() {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
         apprenantService = new ApprenantService();
-        userService = new UserService();
         domaineService = new DomaineService();
+        userService = new UserService();
         fileUploadService = new FileUploadService();
 
         setupComboBoxes();
@@ -167,155 +127,18 @@ public class ApprenantFormController {
     private void setupComboBoxes() {
         genreComboBox.setItems(FXCollections.observableArrayList("homme", "femme", "autre"));
         etatCivilComboBox.setItems(FXCollections.observableArrayList("celibataire", "marie", "divorce", "veuf"));
-        gouvernoratField.setItems(TunisiaGovernorates.asObservableList());
+        fieldGouvernorat.setItems(TunisiaGovernorates.asObservableList());
 
-        if (userComboBox != null) {
-            List<User> users = userService.afficher();
-            userComboBox.setItems(FXCollections.observableArrayList(users));
-        }
-        if (domaineComboBox != null) {
-            List<Domaine> domaines = domaineService.afficher();
-            domaineComboBox.setItems(FXCollections.observableArrayList(domaines));
-        }
-    }
+        List<User> users = userService.afficher();
+        userComboBox.setItems(FXCollections.observableArrayList(users));
 
-    private void setupValidationListeners() {
-        emailField.textProperty().addListener((obs, o, n) -> {
-            if (mode == Mode.EDIT) {
-                validateEditEmail();
-            }
-        });
-        telephoneField.textProperty().addListener((obs, o, n) -> {
-            if (mode == Mode.EDIT) {
-                validateEditPhone();
-            }
-        });
-        nomField.textProperty().addListener((obs, o, n) -> {
-            if (mode == Mode.EDIT) {
-                validateEditNom();
-            }
-        });
-        prenomField.textProperty().addListener((obs, o, n) -> {
-            if (mode == Mode.EDIT) {
-                validateEditPrenom();
-            }
-        });
-        dateNaissanceField.valueProperty().addListener((obs, o, n) -> {
-            if (mode == Mode.EDIT) {
-                validateEditBirthDate();
-            }
-        });
-    }
-
-    @FXML
-    private void onTogglePassword() {
-        if (passwordGroup == null || !passwordGroup.isVisible()) {
-            return;
-        }
-        togglePasswordField(passwordField, btnTogglePassword, true);
-    }
-
-    @FXML
-    private void onTogglePasswordConfirm() {
-        if (passwordConfirmGroup == null || !passwordConfirmGroup.isVisible()) {
-            return;
-        }
-        togglePasswordField(passwordConfirmField, btnTogglePasswordConfirm, false);
-    }
-
-    private void togglePasswordField(PasswordField targetField, Button toggleButton, boolean primary) {
-        HBox parent = (HBox) toggleButton.getParent();
-        javafx.scene.control.TextInputControl currentField = null;
-        int fieldIndex = -1;
-
-        for (int i = 0; i < parent.getChildren().size(); i++) {
-            javafx.scene.Node node = parent.getChildren().get(i);
-            if ((node instanceof PasswordField || node instanceof TextField) && !node.equals(toggleButton)) {
-                currentField = (javafx.scene.control.TextInputControl) node;
-                fieldIndex = i;
-                break;
-            }
-        }
-
-        if (currentField == null) {
-            return;
-        }
-
-        if (currentField instanceof PasswordField currentPasswordField) {
-            TextField visiblePassword = new TextField();
-            visiblePassword.setPromptText(currentPasswordField.getPromptText());
-            visiblePassword.getStyleClass().addAll(currentPasswordField.getStyleClass());
-            visiblePassword.setStyle(currentPasswordField.getStyle());
-            visiblePassword.textProperty().bindBidirectional(currentPasswordField.textProperty());
-
-            parent.getChildren().set(fieldIndex, visiblePassword);
-
-            if (primary) {
-                eyeIcon.setVisible(false);
-                eyeIcon.setManaged(false);
-                eyeSlashIcon.setVisible(true);
-                eyeSlashIcon.setManaged(true);
-            } else {
-                eyeIconConfirm.setVisible(false);
-                eyeIconConfirm.setManaged(false);
-                eyeSlashIconConfirm.setVisible(true);
-                eyeSlashIconConfirm.setManaged(true);
-            }
-        } else if (currentField instanceof TextField visiblePasswordField) {
-            PasswordField restore = primary ? passwordField : passwordConfirmField;
-            if (restore == null) {
-                return;
-            }
-            visiblePasswordField.textProperty().unbindBidirectional(restore.textProperty());
-            restore.setPromptText(visiblePasswordField.getPromptText());
-            restore.getStyleClass().setAll(visiblePasswordField.getStyleClass());
-            restore.setStyle(visiblePasswordField.getStyle());
-            parent.getChildren().set(fieldIndex, restore);
-
-            if (primary) {
-                eyeIcon.setVisible(true);
-                eyeIcon.setManaged(true);
-                eyeSlashIcon.setVisible(false);
-                eyeSlashIcon.setManaged(false);
-            } else {
-                eyeIconConfirm.setVisible(true);
-                eyeIconConfirm.setManaged(true);
-                eyeSlashIconConfirm.setVisible(false);
-                eyeSlashIconConfirm.setManaged(false);
-            }
-        }
-    }
-
-    @FXML
-    private void onUploadPhoto() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choisir une photo de profil");
-
-        FileChooser.ExtensionFilter imageFilter = new FileChooser.ExtensionFilter("Images", "*.jpg", "*.jpeg", "*.png", "*.gif", "*.bmp");
-        FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("Tous les fichiers", "*.*");
-
-        fileChooser.getExtensionFilters().addAll(imageFilter, allFilter);
-        fileChooser.setSelectedExtensionFilter(imageFilter);
-
-        Stage stage = (Stage) btnUploadPhoto.getScene().getWindow();
-        File selectedFile = fileChooser.showOpenDialog(stage);
-
-        if (selectedFile != null) {
-            uploadedPhotoFile = selectedFile;
-            photoField.setText(selectedFile.getAbsolutePath());
-            lblPhotoFileName.setText(selectedFile.getName());
-
-            try {
-                Image image = new Image(selectedFile.toURI().toString());
-                imageViewPhoto.setImage(image);
-            } catch (Exception e) {
-                System.err.println("Failed to load image: " + e.getMessage());
-            }
-        }
+        List<Domaine> domaines = domaineService.afficher();
+        domaineComboBox.setItems(FXCollections.observableArrayList(domaines));
     }
 
     public void setMode(Mode mode) {
         this.mode = mode;
+        updateFormForMode(mode);
         if (mode == Mode.ADD) {
             clearForm();
             setPasswordSectionVisible(true);
@@ -324,8 +147,8 @@ public class ApprenantFormController {
                     "Même présentation que l'inscription : identité, connexion, puis profil apprenant. Les champs * sont obligatoires pour la création.");
             }
         } else {
-            passwordField.clear();
-            passwordConfirmField.clear();
+            fieldPassword.clear();
+            fieldPasswordConfirm.clear();
             setPasswordSectionVisible(false);
             if (heroSubLabel != null) {
                 heroSubLabel.setText(
@@ -354,6 +177,21 @@ public class ApprenantFormController {
         populateForm();
     }
 
+    private void updateFormForMode(Mode mode) {
+        // Keep ADD and EDIT visual presentation identical.
+        if (formTitle != null) {
+            formTitle.setText("Ajouter un apprenant");
+        }
+        if (formSubtitle != null) {
+            formSubtitle.setText("Créez un compte apprenant avec ses informations. Les champs marqués * sont obligatoires.");
+        }
+        fieldPassword.setPromptText("8+ caractères, maj., min., chiffre");
+        fieldPasswordConfirm.setPromptText("Même mot de passe");
+        if (saveButton != null) {
+            saveButton.setText("Enregistrer");
+        }
+    }
+
     private void populateForm() {
         if (apprenant != null) {
             genreComboBox.setValue(apprenant.getGenre());
@@ -362,35 +200,10 @@ public class ApprenantFormController {
             setDomainesFromRaw(apprenant.getDomaines_interet());
 
             if (apprenant.getUser() != null) {
-                if (userComboBox != null) {
-                    userComboBox.setValue(apprenant.getUser());
-                }
-                User user = apprenant.getUser();
-                emailField.setText(user.getEmail() != null ? user.getEmail() : "");
-                nomField.setText(user.getNom() != null ? user.getNom() : "");
-                prenomField.setText(user.getPrenom() != null ? user.getPrenom() : "");
-                telephoneField.setText(user.getTelephone() != null ? user.getTelephone() : "");
-                gouvernoratField.setValue(user.getGouvernorat());
-                photoField.setText(user.getPhoto() != null ? user.getPhoto() : "");
-                if (user.getPhoto() != null && !user.getPhoto().isEmpty()) {
-                    lblPhotoFileName.setText(stripToFileName(user.getPhoto()));
-                }
-
-                if (user.getDate_naissance() != null) {
-                    dateNaissanceField.setValue(user.getDate_naissance().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                }
-
-                if (user.getPhoto() != null && !user.getPhoto().isEmpty()) {
-                    try {
-                        Image image = new Image(user.getPhoto());
-                        imageViewPhoto.setImage(image);
-                    } catch (Exception e) {
-                        System.err.println("Failed to load image: " + e.getMessage());
-                    }
-                }
+                userComboBox.setValue(apprenant.getUser());
             }
-
-            if (apprenant.getDomaine() != null && domaineComboBox != null) {
+            
+            if (apprenant.getDomaine() != null) {
                 domaineComboBox.setValue(apprenant.getDomaine());
             }
         }
@@ -405,14 +218,14 @@ public class ApprenantFormController {
     }
 
     private void clearForm() {
-        emailField.clear();
-        passwordField.clear();
-        passwordConfirmField.clear();
-        nomField.clear();
-        prenomField.clear();
-        telephoneField.clear();
-        gouvernoratField.setValue(null);
-        dateNaissanceField.setValue(null);
+        fieldEmail.clear();
+        fieldPassword.clear();
+        fieldPasswordConfirm.clear();
+        fieldNom.clear();
+        fieldPrenom.clear();
+        fieldTelephone.clear();
+        fieldGouvernorat.setValue(null);
+        fieldDateNaissance.setValue(null);
         photoField.clear();
         lblPhotoFileName.setText("Aucune photo sélectionnée");
         imageViewPhoto.setImage(null);
@@ -420,29 +233,23 @@ public class ApprenantFormController {
         genreComboBox.setValue(null);
         etatCivilComboBox.setValue(null);
         objectifField.clear();
-        if (fieldDomaineInput != null) {
-            fieldDomaineInput.clear();
-        }
-        domainesList.clear();
-        displayDomainesTags();
-        if (userComboBox != null) {
-            userComboBox.setValue(null);
-        }
-        if (domaineComboBox != null) {
-            domaineComboBox.setValue(null);
-        }
+        domainesInteretTextArea.clear();
+        userComboBox.setValue(null);
+        domaineComboBox.setValue(null);
     }
 
     @FXML
     private void handleSaveButton(ActionEvent event) {
+        hideMessage();
         if (!validateForm()) {
+            showMessage("Veuillez corriger les erreurs dans le formulaire.");
             return;
         }
 
         try {
-            String email = emailField.getText().trim();
-            String password = passwordField.getText();
-            String phoneNorm = SignupFieldValidation.normalizePhone(telephoneField.getText());
+            String email = fieldEmail.getText().trim();
+            String password = fieldPassword.getText();
+            String phoneNorm = SignupFieldValidation.normalizePhone(fieldTelephone.getText());
 
             User userToUse;
 
@@ -464,11 +271,11 @@ public class ApprenantFormController {
                     return;
                 }
                 dbUser.setEmail(email);
-                dbUser.setNom(nomField.getText().trim());
-                dbUser.setPrenom(prenomField.getText().trim());
+                dbUser.setNom(fieldNom.getText().trim());
+                dbUser.setPrenom(fieldPrenom.getText().trim());
                 dbUser.setTelephone(phoneNorm);
-                dbUser.setGouvernorat(gouvernoratField.getValue());
-                LocalDate localDateEdit = dateNaissanceField.getValue();
+                dbUser.setGouvernorat(fieldGouvernorat.getValue());
+                LocalDate localDateEdit = fieldDateNaissance.getValue();
                 if (localDateEdit != null) {
                     dbUser.setDate_naissance(java.sql.Date.valueOf(localDateEdit));
                 }
@@ -488,14 +295,14 @@ public class ApprenantFormController {
                 User newUser = new User();
                 newUser.setEmail(email);
                 newUser.setPassword(password);
-                newUser.setNom(nomField.getText().trim());
-                newUser.setPrenom(prenomField.getText().trim());
+                newUser.setNom(fieldNom.getText().trim());
+                newUser.setPrenom(fieldPrenom.getText().trim());
                 newUser.setTelephone(phoneNorm);
-                newUser.setGouvernorat(gouvernoratField.getValue());
+                newUser.setGouvernorat(fieldGouvernorat.getValue());
                 newUser.setRole_utilisateur("apprenant");
                 newUser.setIs_email_verified(true);
 
-                LocalDate localDate = dateNaissanceField.getValue();
+                LocalDate localDate = fieldDateNaissance.getValue();
                 if (localDate != null) {
                     newUser.setDate_naissance(java.sql.Date.valueOf(localDate));
                 }
@@ -524,32 +331,21 @@ public class ApprenantFormController {
             apprenant.setGenre(genreComboBox.getValue());
             apprenant.setEtat_civil(etatCivilComboBox.getValue());
             apprenant.setObjectif(objectifField.getText().trim().isEmpty() ? null : objectifField.getText().trim());
-
-            String domainesInteret = convertDomainesToJson(domainesList);
-            if ("[]".equals(domainesInteret)) {
-                if (mode == Mode.EDIT && apprenant.getDomaines_interet() != null && !apprenant.getDomaines_interet().trim().isEmpty()) {
-                    apprenant.setDomaines_interet(apprenant.getDomaines_interet());
-                } else {
-                    apprenant.setDomaines_interet("[]");
-                }
-            } else {
-                apprenant.setDomaines_interet(domainesInteret);
-            }
-
+            apprenant.setDomaines_interet(convertDomainesToJson(domainesList));
             apprenant.setUser(userToUse);
-            apprenant.setDomaine(domaineComboBox != null ? domaineComboBox.getValue() : null);
+            apprenant.setDomaine(domaineComboBox.getValue());
 
             if (mode == Mode.ADD) {
                 apprenantService.ajouter(apprenant);
-                showAlert("Succès", "Apprenant ajouté avec succès", Alert.AlertType.INFORMATION);
+                showMessage("Apprenant ajouté avec succès.");
             } else {
                 apprenantService.modifier(apprenant);
-                showAlert("Succès", "Apprenant modifié avec succès", Alert.AlertType.INFORMATION);
+                showMessage("Apprenant modifié avec succès.");
             }
 
-            closeForm();
+            Platform.runLater(this::closeForm);
         } catch (Exception e) {
-            showAlert("Erreur", "Erreur lors de l'enregistrement: " + e.getMessage(), Alert.AlertType.ERROR);
+            showMessage("Erreur lors de l'enregistrement: " + e.getMessage());
         }
     }
 
@@ -559,127 +355,41 @@ public class ApprenantFormController {
     }
 
     private boolean validateForm() {
-        if (mode == Mode.EDIT) {
-            return validateEditForm();
-        }
-
-        String email = emailField.getText().trim();
-        String password = passwordField.getText();
-        String passwordConfirm = passwordConfirmField.getText();
-
-        if (!email.isEmpty() || (password != null && !password.isEmpty())) {
-            if (!SignupFieldValidation.isValidEmail(email)) {
-                showAlert("Erreur de validation", "Email invalide ou manquant.", Alert.AlertType.ERROR);
-                return false;
-            }
-            String phoneNorm = SignupFieldValidation.normalizePhone(telephoneField.getText());
-            if (!SignupFieldValidation.isValidPhoneNormalized(phoneNorm)) {
-                showAlert("Erreur de validation", "Téléphone invalide (8–12 chiffres).", Alert.AlertType.ERROR);
-                return false;
-            }
-            String pwdErr = SignupFieldValidation.validatePasswordStrength(password != null ? password : "");
-            if (pwdErr != null) {
-                showAlert("Erreur de validation", pwdErr, Alert.AlertType.ERROR);
-                return false;
-            }
-            if (passwordConfirm == null || passwordConfirm.isEmpty()) {
-                showAlert("Erreur de validation", "Confirmez le mot de passe.", Alert.AlertType.ERROR);
-                return false;
-            }
-            if (!password.equals(passwordConfirm)) {
-                showAlert("Erreur de validation", "Les mots de passe ne correspondent pas.", Alert.AlertType.ERROR);
-                return false;
-            }
-            if (!SignupFieldValidation.isValidNomPrenom(nomField.getText())) {
-                showAlert("Erreur de validation", "Le nom est obligatoire (min. 2 caractères).", Alert.AlertType.ERROR);
-                return false;
-            }
-            if (!SignupFieldValidation.isValidNomPrenom(prenomField.getText())) {
-                showAlert("Erreur de validation", "Le prénom est obligatoire (min. 2 caractères).", Alert.AlertType.ERROR);
-                return false;
-            }
-            if (dateNaissanceField.getValue() == null) {
-                showAlert("Erreur de validation", "La date de naissance est obligatoire", Alert.AlertType.ERROR);
-                return false;
-            }
-            return true;
-        }
-
-        if (userComboBox != null && userComboBox.getValue() != null) {
-            return true;
-        }
-        if (userComboBox == null) {
-            showAlert("Erreur de validation", "Renseignez l'email et le mot de passe pour créer un compte apprenant.", Alert.AlertType.ERROR);
+        if (userComboBox.getValue() == null && (fieldEmail.getText().trim().isEmpty() || fieldPassword.getText().isEmpty())) {
+            showAlert("Erreur de validation", "Veuillez sélectionner un utilisateur ou remplir les champs email/mot de passe", Alert.AlertType.ERROR);
             return false;
         }
-        showAlert("Erreur de validation", "Veuillez sélectionner un utilisateur ou remplir les informations de base", Alert.AlertType.ERROR);
-        return false;
-    }
-
-    private boolean validateEditForm() {
-        clearEditErrors();
-        boolean valid = true;
-        valid &= validateEditEmail();
-        valid &= validateEditPhone();
-        valid &= validateEditNom();
-        valid &= validateEditPrenom();
-        valid &= validateEditBirthDate();
-        return valid;
-    }
-
-    private boolean validateEditEmail() {
-        String email = emailField.getText().trim();
-        if (!SignupFieldValidation.isValidEmail(email)) {
-            showError(errorEmail, "Email invalide ou manquant.");
-            return false;
-        }
-        hideError(errorEmail);
         return true;
     }
 
-    private boolean validateEditPhone() {
-        String phoneNorm = SignupFieldValidation.normalizePhone(telephoneField.getText());
-        if (!SignupFieldValidation.isValidPhoneNormalized(phoneNorm)) {
-            showError(errorTelephone, "Téléphone invalide (8-12 chiffres).");
-            return false;
+    private void showMessage(String text) {
+        lblMessage.setText(text);
+        if (!lblMessage.getStyleClass().contains("signup-alert")) {
+            lblMessage.getStyleClass().add("signup-alert");
         }
-        hideError(errorTelephone);
-        return true;
+        lblMessage.setVisible(true);
+        lblMessage.setManaged(true);
+        Platform.runLater(() -> {
+            lblMessage.requestLayout();
+            scrollToMessageIfNeeded();
+        });
     }
 
-    private boolean validateEditNom() {
-        if (!SignupFieldValidation.isValidNomPrenom(nomField.getText())) {
-            showError(errorNom, "Le nom est obligatoire (min. 2 caractères).");
-            return false;
-        }
-        hideError(errorNom);
-        return true;
+    private void hideMessage() {
+        lblMessage.setText("");
+        lblMessage.setVisible(false);
+        lblMessage.setManaged(false);
     }
 
-    private boolean validateEditPrenom() {
-        if (!SignupFieldValidation.isValidNomPrenom(prenomField.getText())) {
-            showError(errorPrenom, "Le prénom est obligatoire (min. 2 caractères).");
-            return false;
+    private void scrollToMessageIfNeeded() {
+        javafx.scene.Parent parent = lblMessage.getParent();
+        while (parent != null) {
+            if (parent instanceof ScrollPane scrollPane) {
+                scrollPane.setVvalue(0);
+                return;
+            }
+            parent = parent.getParent();
         }
-        hideError(errorPrenom);
-        return true;
-    }
-
-    private boolean validateEditBirthDate() {
-        if (dateNaissanceField.getValue() == null) {
-            showError(errorDateNaissance, "La date de naissance est obligatoire.");
-            return false;
-        }
-        hideError(errorDateNaissance);
-        return true;
-    }
-
-    private void clearEditErrors() {
-        hideError(errorEmail);
-        hideError(errorTelephone);
-        hideError(errorNom);
-        hideError(errorPrenom);
-        hideError(errorDateNaissance);
     }
 
     private void showError(Label label, String msg) {
@@ -700,60 +410,25 @@ public class ApprenantFormController {
         label.setManaged(false);
     }
 
-    @FXML
-    private void onAddDomaine() {
-        if (fieldDomaineInput == null) {
-            return;
-        }
-        String domaine = fieldDomaineInput.getText() != null ? fieldDomaineInput.getText().trim() : "";
-        if (domaine.isEmpty()) {
-            return;
-        }
-
-        boolean alreadyExists = domainesList.stream().anyMatch(existing -> existing.equalsIgnoreCase(domaine));
-        if (!alreadyExists) {
-            domainesList.add(domaine);
-            displayDomainesTags();
-        }
-        fieldDomaineInput.clear();
-    }
-
-    private void displayDomainesTags() {
-        if (flowPaneDomaines == null) {
-            return;
-        }
-        flowPaneDomaines.getChildren().clear();
-        for (String domaine : domainesList) {
-            flowPaneDomaines.getChildren().add(createDomaineTag(domaine));
+    private void closeForm() {
+        if (cancelButton.getScene() != null && cancelButton.getScene().getWindow() != null) {
+            cancelButton.getScene().getWindow().hide();
         }
     }
 
-    private HBox createDomaineTag(String domaine) {
-        HBox tag = new HBox();
-        tag.getStyleClass().add("domaine-tag");
-        tag.setSpacing(4);
-
-        Label label = new Label(domaine);
-        label.getStyleClass().add("domaine-tag-label");
-
-        Button removeBtn = new Button("x");
-        removeBtn.getStyleClass().add("domaine-tag-remove");
-        removeBtn.setOnAction(e -> {
-            domainesList.remove(domaine);
-            displayDomainesTags();
-        });
-
-        tag.getChildren().addAll(label, removeBtn);
-        return tag;
+    private void showAlert(String title, String message, Alert.AlertType alertType) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private void setDomainesFromRaw(String rawDomaines) {
         domainesList.clear();
         if (rawDomaines == null || rawDomaines.trim().isEmpty() || "[]".equals(rawDomaines.trim())) {
-            displayDomainesTags();
             return;
         }
-
         String cleaned = rawDomaines.trim()
                 .replace("[", "")
                 .replace("]", "")
@@ -766,7 +441,6 @@ public class ApprenantFormController {
                 }
             }
         }
-        displayDomainesTags();
     }
 
     private String convertDomainesToJson(List<String> domaines) {
@@ -784,16 +458,11 @@ public class ApprenantFormController {
         return json.toString();
     }
 
-    private void showAlert(String title, String message, Alert.AlertType alertType) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void closeForm() {
-        cancelButton.getScene().getWindow().hide();
+    private void setupValidationListeners() {
+        genreComboBox.valueProperty().addListener((obs, oldV, newV) -> hideError(errorGenre));
+        etatCivilComboBox.valueProperty().addListener((obs, oldV, newV) -> hideError(errorEtatCivil));
+        domaineComboBox.valueProperty().addListener((obs, oldV, newV) -> hideError(errorDomaine));
+        objectifField.textProperty().addListener((obs, oldV, newV) -> hideError(errorObjectif));
+        domainesInteretTextArea.textProperty().addListener((obs, oldV, newV) -> hideError(errorDomainesInteret));
     }
 }
-

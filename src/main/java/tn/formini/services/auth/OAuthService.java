@@ -1,7 +1,5 @@
 package tn.formini.services.auth;
 
-import com.github.scribejava.apis.GoogleApi20;
-import com.github.scribejava.apis.GitHubApi;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequest;
@@ -24,141 +22,96 @@ public class OAuthService {
     
     // Google OAuth
     public static String getGoogleAuthorizationUrl() {
-        String state = generateState();
         OAuth20Service service = new ServiceBuilder(OAuthConfig.getGoogleClientId())
                 .apiSecret(OAuthConfig.getGoogleClientSecret())
                 .callback(OAuthConfig.getGoogleRedirectUri())
-                .build(GoogleApi20.instance());
-        
-        return service.getAuthorizationUrl();
+                .build(GoogleApi20Custom.instance());
+
+        String authUrl = service.getAuthorizationUrl();
+        // Manually add scope parameter since ScribeJava version doesn't support it
+        if (!authUrl.contains("scope=")) {
+            authUrl += "&scope=openid%20email%20profile";
+        }
+        return authUrl;
     }
-    
-    public static User handleGoogleCallback(String code, String state) throws Exception {
+
+    public static User handleGoogleCallback(String code, String state, String role) throws Exception {
+        JsonObject userInfo = getGoogleUserInfo(code);
+        return createOrUpdateUserFromOAuth(userInfo, "google", role);
+    }
+
+    // Check if user exists before showing role selection
+    public static boolean userExists(String email) {
+        UserService userService = new UserService();
+        return userService.getUserByEmail(email) != null;
+    }
+
+    // Get user info from Google code without creating user
+    public static JsonObject getGoogleUserInfo(String code) throws Exception {
         OAuth20Service service = new ServiceBuilder(OAuthConfig.getGoogleClientId())
                 .apiSecret(OAuthConfig.getGoogleClientSecret())
                 .callback(OAuthConfig.getGoogleRedirectUri())
-                .build(GoogleApi20.instance());
-        
+                .build(GoogleApi20Custom.instance());
+
         OAuth2AccessToken token = service.getAccessToken(code);
-        
-        // Get user info from Google
+
         OAuthRequest request = new OAuthRequest(Verb.GET, "https://www.googleapis.com/oauth2/v2/userinfo");
         service.signRequest(token, request);
         Response response = service.execute(request);
-        
-        JsonObject userInfo = gson.fromJson(response.getBody(), JsonObject.class);
-        
-        return createOrUpdateUserFromOAuth(userInfo, "google");
+        return gson.fromJson(response.getBody(), JsonObject.class);
     }
-    
-    // GitHub OAuth
-    public static String getGithubAuthorizationUrl() {
-        String state = generateState();
+
+    // Get user info from GitHub code without creating user
+    public static JsonObject getGitHubUserInfo(String code) throws Exception {
+        Object[] data = getGithubData(code);
+        return (JsonObject) data[0];
+    }
+
+    public static Object[] getGithubData(String code) throws Exception {
         OAuth20Service service = new ServiceBuilder(OAuthConfig.getGithubClientId())
                 .apiSecret(OAuthConfig.getGithubClientSecret())
                 .callback(OAuthConfig.getGithubRedirectUri())
-                .build(GitHubApi.instance());
-        
-        return service.getAuthorizationUrl();
-    }
-    
-    public static User handleGithubCallback(String code, String state) throws Exception {
-        OAuth20Service service = new ServiceBuilder(OAuthConfig.getGithubClientId())
-                .apiSecret(OAuthConfig.getGithubClientSecret())
-                .callback(OAuthConfig.getGithubRedirectUri())
-                .build(GitHubApi.instance());
-        
+                .build(GitHubApiCustom.instance());
+
         OAuth2AccessToken token = service.getAccessToken(code);
-        
+
         // Get user info from GitHub
         OAuthRequest request = new OAuthRequest(Verb.GET, "https://api.github.com/user");
         service.signRequest(token, request);
         Response response = service.execute(request);
-        
-        JsonObject userInfo = gson.fromJson(response.getBody(), JsonObject.class);
-        
+
         // Get email (might need separate call for private emails)
         OAuthRequest emailRequest = new OAuthRequest(Verb.GET, "https://api.github.com/user/emails");
         service.signRequest(token, emailRequest);
         Response emailResponse = service.execute(emailRequest);
-        
-        return createOrUpdateUserFromGitHub(userInfo, emailResponse.getBody(), "github");
+
+        return new Object[] { gson.fromJson(response.getBody(), JsonObject.class), emailResponse.getBody() };
     }
+
+
     
-    // Cloudflare OAuth
-    public static String getCloudflareAuthorizationUrl() {
-        String state = generateState();
-        OAuth20Service service = new ServiceBuilder(OAuthConfig.getCloudflareClientId())
-                .apiSecret(OAuthConfig.getCloudflareClientSecret())
-                .callback(OAuthConfig.getCloudflareRedirectUri())
-                .build(CloudflareApi.instance());
-        
-        return service.getAuthorizationUrl();
-    }
-    
-    public static User handleCloudflareCallback(String code, String state) throws Exception {
-        OAuth20Service service = new ServiceBuilder(OAuthConfig.getCloudflareClientId())
-                .apiSecret(OAuthConfig.getCloudflareClientSecret())
-                .callback(OAuthConfig.getCloudflareRedirectUri())
-                .build(CloudflareApi.instance());
-        
-        OAuth2AccessToken token = service.getAccessToken(code);
-        
-        // Get user info from Cloudflare
-        OAuthRequest request = new OAuthRequest(Verb.GET, "https://dash.cloudflare.com/oauth2/userinfo");
-        service.signRequest(token, request);
-        Response response = service.execute(request);
-        
-        JsonObject userInfo = gson.fromJson(response.getBody(), JsonObject.class);
-        
-        return createOrUpdateUserFromCloudflare(userInfo, "cloudflare");
-    }
-    
-    private static User createOrUpdateUserFromCloudflare(JsonObject userInfo, String provider) {
-        UserService userService = new UserService();
-        
-        String email = userInfo.has("email") ? userInfo.get("email").getAsString() : "";
-        String name = userInfo.has("name") ? userInfo.get("name").getAsString() : "";
-        String picture = userInfo.has("picture") ? userInfo.get("picture").getAsString() : "";
-        String providerId = userInfo.has("id") ? userInfo.get("id").getAsString() : "";
-        
-        if (email.isEmpty()) {
-            throw new RuntimeException("Unable to get email from Cloudflare.");
+    // GitHub OAuth
+    public static String getGithubAuthorizationUrl() {
+        OAuth20Service service = new ServiceBuilder(OAuthConfig.getGithubClientId())
+                .apiSecret(OAuthConfig.getGithubClientSecret())
+                .callback(OAuthConfig.getGithubRedirectUri())
+                .build(GitHubApiCustom.instance());
+
+        String authUrl = service.getAuthorizationUrl();
+        if (!authUrl.contains("scope=")) {
+            authUrl += "&scope=user:email";
         }
-        
-        // Check if user exists by email
-        User existingUser = userService.getUserByEmail(email);
-        
-        if (existingUser != null) {
-            // Update existing user with OAuth info
-            existingUser.setOauth_provider("cloudflare");
-            if (!picture.isEmpty()) {
-                existingUser.setAvatar_url(picture);
-            }
-            existingUser.setIs_email_verified(true);
-            userService.modifier(existingUser);
-            return existingUser;
-        }
-        
-        // Create new user
-        User newUser = new User();
-        newUser.setEmail(email);
-        newUser.setNom(name.contains(" ") ? name.split(" ")[0] : name);
-        newUser.setPrenom(name.contains(" ") ? name.substring(name.indexOf(" ") + 1) : "");
-        newUser.setRole_utilisateur("apprenant"); // Default role
-        newUser.setRoles("[\"ROLE_USER\"]");
-        newUser.setTelephone("00000000"); // Placeholder
-        newUser.setGouvernorat("");
-        newUser.setDate_naissance(new java.util.Date());
-        newUser.setPhoto(picture);
-        newUser.setIs_email_verified(true);
-        newUser.setOauth_provider("cloudflare");
-        
-        userService.ajouter(newUser);
-        return newUser;
+        return authUrl;
+    }
+
+    public static User handleGithubCallback(String code, String state, String role) throws Exception {
+        Object[] data = getGithubData(code);
+        return createOrUpdateUserFromGitHub((JsonObject) data[0], (String) data[1], "github", role);
     }
     
-    private static User createOrUpdateUserFromOAuth(JsonObject userInfo, String provider) {
+
+    
+    public static User createOrUpdateUserFromOAuth(JsonObject userInfo, String provider, String role) {
         UserService userService = new UserService();
         
         String email = userInfo.get("email").getAsString();
@@ -183,45 +136,47 @@ public class OAuthService {
             userService.modifier(existingUser);
             return existingUser;
         }
-        
+
         // Create new user
         User newUser = new User();
         newUser.setEmail(email);
         newUser.setNom(name.contains(" ") ? name.split(" ")[0] : name);
         newUser.setPrenom(name.contains(" ") ? name.substring(name.indexOf(" ") + 1) : "");
-        newUser.setRole_utilisateur("apprenant"); // Default role
+        newUser.setRole_utilisateur(role != null ? role : "apprenant"); // Use selected role or default
         newUser.setRoles("[\"ROLE_USER\"]");
         newUser.setTelephone("00000000"); // Placeholder
         newUser.setGouvernorat("");
         newUser.setDate_naissance(new java.util.Date());
         newUser.setPhoto(picture);
         newUser.setIs_email_verified(true);
-        
+        newUser.setPassword("OAuthUser123_" + System.currentTimeMillis()); // OAuth users don't have passwords
+
         if (provider.equals("google")) {
             newUser.setGoogle_id(providerId);
             newUser.setOauth_provider("google");
         }
-        
+
         userService.ajouter(newUser);
         return newUser;
     }
-    
-    private static User createOrUpdateUserFromGitHub(JsonObject userInfo, String emailsJson, String provider) {
+
+    public static User createOrUpdateUserFromGitHub(JsonObject userInfo, String emailsJson, String provider, String role) {
         UserService userService = new UserService();
-        
+
         String login = userInfo.has("login") ? userInfo.get("login").getAsString() : "";
         String name = userInfo.has("name") ? userInfo.get("name").getAsString() : login;
         String avatarUrl = userInfo.has("avatar_url") ? userInfo.get("avatar_url").getAsString() : "";
         String providerId = userInfo.has("id") ? userInfo.get("id").getAsString() : "";
-        
+
         // Parse emails to get primary email
         String email = "";
         try {
+            // Try to parse as array first
             com.google.gson.JsonArray emails = gson.fromJson(emailsJson, com.google.gson.JsonArray.class);
-            for (com.google.gson.JsonElement emailObj : emails) {
-                JsonObject emailJson = emailObj.getAsJsonObject();
-                if (emailJson.has("primary") && emailJson.get("primary").getAsBoolean()) {
-                    email = emailJson.get("email").getAsString();
+            for (com.google.gson.JsonElement emailElement : emails) {
+                com.google.gson.JsonObject emailObj = emailElement.getAsJsonObject();
+                if (emailObj.has("primary") && emailObj.get("primary").getAsBoolean()) {
+                    email = emailObj.get("email").getAsString();
                     break;
                 }
             }
@@ -229,16 +184,32 @@ public class OAuthService {
                 email = emails.get(0).getAsJsonObject().get("email").getAsString();
             }
         } catch (Exception e) {
-            System.err.println("Error parsing GitHub emails: " + e.getMessage());
+            System.err.println("Error parsing GitHub emails as array: " + e.getMessage());
+            // Try to parse as single object
+            try {
+                com.google.gson.JsonObject emailObj = gson.fromJson(emailsJson, com.google.gson.JsonObject.class);
+                if (emailObj.has("email")) {
+                    email = emailObj.get("email").getAsString();
+                }
+            } catch (Exception e2) {
+                System.err.println("Error parsing GitHub emails as object: " + e2.getMessage());
+            }
         }
-        
+
+        // If still no email, try to get from user info
+        if (email.isEmpty() && userInfo.has("email") && !userInfo.get("email").isJsonNull()) {
+            email = userInfo.get("email").getAsString();
+        }
+
+        // If still no email, use login as fallback
         if (email.isEmpty()) {
-            throw new RuntimeException("Unable to get email from GitHub. Please make your email public.");
+            email = login + "@github.local";
+            System.err.println("Using fallback email: " + email);
         }
-        
+
         // Check if user exists by email
         User existingUser = userService.getUserByEmail(email);
-        
+
         if (existingUser != null) {
             // Update existing user with OAuth info
             existingUser.setGithub_id(providerId);
@@ -250,22 +221,23 @@ public class OAuthService {
             userService.modifier(existingUser);
             return existingUser;
         }
-        
+
         // Create new user
         User newUser = new User();
         newUser.setEmail(email);
         newUser.setNom(name.contains(" ") ? name.split(" ")[0] : name);
         newUser.setPrenom(name.contains(" ") ? name.substring(name.indexOf(" ") + 1) : "");
-        newUser.setRole_utilisateur("apprenant"); // Default role
+        newUser.setRole_utilisateur(role != null ? role : "apprenant"); // Use selected role or default
         newUser.setRoles("[\"ROLE_USER\"]");
         newUser.setTelephone("00000000"); // Placeholder
         newUser.setGouvernorat("");
         newUser.setDate_naissance(new java.util.Date());
         newUser.setPhoto(avatarUrl);
         newUser.setIs_email_verified(true);
+        newUser.setPassword("OAuthUser123_" + System.currentTimeMillis()); // OAuth users don't have passwords
         newUser.setGithub_id(providerId);
         newUser.setOauth_provider("github");
-        
+
         userService.ajouter(newUser);
         return newUser;
     }
@@ -282,9 +254,6 @@ public class OAuthService {
         } else if (provider.equals("github")) {
             return !OAuthConfig.getGithubClientId().equals("YOUR_GITHUB_CLIENT_ID") &&
                    !OAuthConfig.getGithubClientSecret().equals("YOUR_GITHUB_CLIENT_SECRET");
-        } else if (provider.equals("cloudflare")) {
-            return !OAuthConfig.getCloudflareClientId().equals("YOUR_CLOUDFLARE_CLIENT_ID") &&
-                   !OAuthConfig.getCloudflareClientSecret().equals("YOUR_CLOUDFLARE_CLIENT_SECRET");
         }
         return false;
     }
