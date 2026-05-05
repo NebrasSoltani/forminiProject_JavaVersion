@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="tn.formini.controllers.DashboardController"
+            prefWidth="900" prefHeight="600"
+            style="-fx-background-color: #1a1a2e;">
+
+    <!-- Sidebar -->
+    <left>
+        <VBox spacing="0" prefWidth="200"
+              style="-fx-background-color: #16213e;">
+            <padding><Insets top="30" bottom="20" left="0" right="0"/></padding>
+
+            <Label text="🎓 Formini" style="-fx-text-fill: #e94560; -fx-font-size: 22px; -fx-font-weight: bold; -fx-padding: 0 0 20 20;"/>
+
+            <Button fx:id="btnQuiz" text="📋  Quiz" onAction="#ouvrirQuiz"
+                    maxWidth="Infinity"
+                    style="-fx-background-color: #0f3460; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 14 20; -fx-background-radius: 0; -fx-cursor: hand;"/>
+            <Button fx:id="btnQuestion" text="❓  Questions" onAction="#ouvrirQuestion"
+                    maxWidth="Infinity"
+                    style="-fx-background-color: transparent; -fx-text-fill: #a8a8b3; -fx-font-size: 14px; -fx-padding: 14 20; -fx-background-radius: 0; -fx-cursor: hand;"/>
+            <Button fx:id="btnReponse" text="✅  Réponses" onAction="#ouvrirReponse"
+                    maxWidth="Infinity"
+                    style="-fx-background-color: transparent; -fx-text-fill: #a8a8b3; -fx-font-size: 14px; -fx-padding: 14 20; -fx-background-radius: 0; -fx-cursor: hand;"/>
+            <Button fx:id="btnResultat" text="🏆  Résultats" onAction="#ouvrirResultat"
+                    maxWidth="Infinity"
+                    style="-fx-background-color: transparent; -fx-text-fill: #a8a8b3; -fx-font-size: 14px; -fx-padding: 14 20; -fx-background-radius: 0; -fx-cursor: hand;"/>
+            
+            <Label text="👤 Espace Apprenant" style="-fx-text-fill: #e94560; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 20 0 10 20;"/>
+            <Button fx:id="btnApprenantQuiz" text="📝  Passer Quiz" onAction="#ouvrirApprenantQuiz"
+                    maxWidth="Infinity"
+                    style="-fx-background-color: transparent; -fx-text-fill: #a8a8b3; -fx-font-size: 14px; -fx-padding: 14 20; -fx-background-radius: 0; -fx-cursor: hand;"/>
+        </VBox>
+    </left>
+
+    <!-- Main content area -->
+    <center>
+        <StackPane fx:id="contentArea" style="-fx-background-color: #1a1a2e;">
+            <VBox alignment="CENTER" spacing="20">
+                <Label text="Bienvenue sur Formini" style="-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                <Label text="Sélectionnez une section dans le menu" style="-fx-text-fill: #a8a8b3; -fx-font-size: 14px;"/>
+            </VBox>
+        </StackPane>
+    </center>
+
+</BorderPane>

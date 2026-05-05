@@ -15,7 +15,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.ResourceBundle;
 
-public class EvenementFormController implements Initializable {
+public class EvenementformController implements Initializable {
 
     @FXML private Label            labelFormTitle;
     @FXML private TextField        fieldTitre;

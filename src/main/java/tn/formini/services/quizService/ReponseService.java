@@ -16,6 +16,11 @@ public class ReponseService {
         cnx = MyDataBase.getInstance().getCnx();
     }
 
+    private Connection getCnx() {
+        cnx = MyDataBase.getInstance().getCnx();
+        return cnx;
+    }
+
     // ─── CREATE ───────────────────────────────────────────────
     public void ajouter(Reponse r) {
         r.valider();
@@ -36,6 +41,10 @@ public class ReponseService {
     // ─── READ ALL ─────────────────────────────────────────────
     public List<Reponse> getAll() {
         List<Reponse> list = new ArrayList<>();
+        if (getCnx() == null) {
+            System.out.println("[ReponseService] Connexion DB indisponible.");
+            return list;
+        }
         String req = "SELECT * FROM reponse";
         try {
             Statement st = cnx.createStatement();

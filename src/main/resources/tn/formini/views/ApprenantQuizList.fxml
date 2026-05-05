@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.ApprenantQuizListController"
+      spacing="20" style="-fx-background-color: #1a1a2e; -fx-padding: 30;">
+
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Label text="📝 Espace Apprenant - Liste des Quiz" style="-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Formation ID :" style="-fx-text-fill: #a8a8b3;"/>
+        <TextField fx:id="formationIdField" promptText="Ex: 1" text="1" prefWidth="50"
+                   style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-border-color: #0f3460; -fx-border-radius: 5;"/>
+        <Button text="Charger les Quiz" onAction="#chargerQuiz"
+                style="-fx-background-color: #0f3460; -fx-text-fill: white; -fx-cursor: hand;"/>
+        <Label fx:id="statusLabel" text="" style="-fx-text-fill: #e94560; -fx-padding: 0 0 0 10;"/>
+    </HBox>
+
+    <Label fx:id="progressLabel" text="Progression: --" style="-fx-text-fill: #e94560; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+
+    <!-- Grid to list the quizzes -->
+    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
+        <FlowPane fx:id="quizContainer" hgap="20" vgap="20" style="-fx-background-color: transparent; -fx-padding: 10;">
+            <!-- Quiz cards will be injected here dynamically -->
+        </FlowPane>
+    </ScrollPane>
+
+</VBox>

@@ -1,0 +1,61 @@
+/* Dark theme for Statistics charts */
+
+/* PieChart labels (the floating names around the chart) */
+.chart-pie-label {
+    -fx-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+/* PieChart line connecting label to slice */
+.chart-pie-label-line {
+    -fx-stroke: rgba(255,255,255,0.5);
+}
+
+/* Legend items */
+.chart-legend {
+    -fx-background-color: transparent;
+}
+
+.chart-legend-item {
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+}
+
+/* BarChart axis labels */
+.axis-label {
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+}
+
+.axis {
+    -fx-tick-label-fill: white;
+}
+
+.chart-title {
+    -fx-text-fill: white;
+}
+
+/* Remove chart plot background */
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.chart-vertical-grid-lines {
+    -fx-stroke: rgba(255,255,255,0.05);
+}
+
+.chart-horizontal-grid-lines {
+    -fx-stroke: rgba(255,255,255,0.08);
+}
+
+.chart-alternative-row-fill {
+    -fx-background-color: transparent;
+}
+
+/* Bar chart bars */
+.default-color0.chart-bar { -fx-bar-fill: #38bdf8; }
+.default-color1.chart-bar { -fx-bar-fill: #34d399; }
+.default-color2.chart-bar { -fx-bar-fill: #f472b6; }
+.default-color3.chart-bar { -fx-bar-fill: #fb923c; }
+.default-color4.chart-bar { -fx-bar-fill: #a78bfa; }

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.ReponseController"
+      spacing="20" style="-fx-background-color: #1a1a2e; -fx-padding: 30;">
+
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Label text="✅ Gestion des Réponses" style="-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="+ Nouvelle Réponse" onAction="#ouvrirFormAjout"
+                style="-fx-background-color: #e94560; -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <TextField fx:id="searchField" promptText="🔍 Rechercher..."
+                   onKeyReleased="#filtrerReponses" prefWidth="300"
+                   style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-prompt-text-fill: #a8a8b3; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #0f3460; -fx-border-radius: 8;"/>
+        <ComboBox fx:id="filtreQuestion" promptText="Filtrer par Question" onAction="#filtrerReponses"
+                  style="-fx-background-color: #16213e; -fx-border-color: #0f3460; -fx-border-radius: 8;"/>
+    </HBox>
+
+    <TableView fx:id="tableReponse" VBox.vgrow="ALWAYS"
+               style="-fx-background-color: #16213e; -fx-border-color: #0f3460; -fx-border-radius: 10;">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colTexte" text="Texte" prefWidth="280"/>
+            <TableColumn fx:id="colCorrecte" text="Correcte" prefWidth="80"/>
+            <TableColumn fx:id="colExplication" text="Explication" prefWidth="200"/>
+            <TableColumn fx:id="colQuestion" text="Question" prefWidth="140"/>
+            <TableColumn fx:id="colActions" text="Actions" prefWidth="150"/>
+        </columns>
+        <placeholder>
+            <Label text="Aucune réponse trouvée" style="-fx-text-fill: #a8a8b3;"/>
+        </placeholder>
+    </TableView>
+
+</VBox>

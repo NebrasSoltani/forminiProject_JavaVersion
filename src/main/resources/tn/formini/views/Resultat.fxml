@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.formini.controllers.ResultatController"
+      spacing="20" style="-fx-background-color: #1a1a2e; -fx-padding: 30;">
+
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Label text="🏆 Résultats des Quiz" style="-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <TextField fx:id="searchField" promptText="🔍 Rechercher par note..."
+                   onKeyReleased="#filtrer" prefWidth="300"
+                   style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-prompt-text-fill: #a8a8b3; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #0f3460; -fx-border-radius: 8;"/>
+    </HBox>
+
+    <TableView fx:id="tableResultat" VBox.vgrow="ALWAYS"
+               style="-fx-background-color: #16213e; -fx-border-color: #0f3460; -fx-border-radius: 10;">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colNote" text="Note" prefWidth="80"/>
+            <TableColumn fx:id="colBonnes" text="Bonnes rép." prefWidth="110"/>
+            <TableColumn fx:id="colTotal" text="Total" prefWidth="80"/>
+            <TableColumn fx:id="colReussi" text="Réussi" prefWidth="80"/>
+            <TableColumn fx:id="colDate" text="Date" prefWidth="150"/>
+        </columns>
+        <placeholder>
+            <Label text="Aucun résultat trouvé" style="-fx-text-fill: #a8a8b3;"/>
+        </placeholder>
+    </TableView>
+
+</VBox>
