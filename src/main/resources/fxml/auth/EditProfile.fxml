@@ -2,39 +2,149 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
 
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.formini.controllers.auth.EditProfileController" spacing="15" style="-fx-padding: 20;">
-    <children>
-        <Label text="Modifier le Profil" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
-        
-        <GridPane hgap="10" vgap="10">
-            <children>
-                <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                <TextField fx:id="emailTextField" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="300"/>
-                
-                <Label text="Nom:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                <TextField fx:id="nomTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="300"/>
-                
-                <Label text="Prénom:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                <TextField fx:id="prenomTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="300"/>
-                
-                <Label text="Téléphone:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                <TextField fx:id="telephoneTextField" GridPane.columnIndex="1" GridPane.rowIndex="3" prefWidth="300"/>
-                
-                <Label text="Gouvernorat:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                <ComboBox fx:id="gouvernoratComboBox" GridPane.columnIndex="1" GridPane.rowIndex="4" prefWidth="300"/>
-                
-                <Label text="Date de naissance:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                <DatePicker fx:id="dateNaissanceField" GridPane.columnIndex="1" GridPane.rowIndex="5" prefWidth="300"/>
-            </children>
-        </GridPane>
-        
-        <HBox spacing="10" alignment="CENTER_RIGHT">
-            <children>
-                <Button fx:id="btnTwoFactor" text="Configuration 2FA" onAction="#handleTwoFactor"/>
-                <Button fx:id="saveButton" text="Enregistrer" onAction="#handleSaveButton"/>
-                <Button fx:id="cancelButton" text="Annuler" onAction="#handleCancelButton"/>
-            </children>
-        </HBox>
-    </children>
-</VBox>
+<ScrollPane fitToWidth="true" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.formini.controllers.auth.EditProfileController">
+    <VBox spacing="15" style="-fx-padding: 20;">
+        <children>
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <Label text="Modifier le Profil" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+                <Label fx:id="lblRole" text="Rôle : " style="-fx-font-size: 14px; -fx-text-fill: #666666;"/>
+            </HBox>
+            
+            <Label fx:id="lblMessage" visible="false" managed="false" style="-fx-text-fill: #d32f2f; -fx-font-weight: bold;"/>
+            
+            <!-- General Info -->
+            <TitledPane text="Informations Générales" collapsible="false">
+                <GridPane hgap="15" vgap="15" style="-fx-padding: 10;">
+                    <columnConstraints>
+                        <ColumnConstraints minWidth="100"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                    </columnConstraints>
+                    <children>
+                        <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                        <TextField fx:id="fieldEmail" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="300"/>
+                        
+                        <Label text="Nom:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                        <TextField fx:id="fieldNom" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="300"/>
+                        
+                        <Label text="Prénom:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                        <TextField fx:id="fieldPrenom" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="300"/>
+                        
+                        <Label text="Téléphone:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                        <TextField fx:id="fieldTelephone" GridPane.columnIndex="1" GridPane.rowIndex="3" prefWidth="300"/>
+                        
+                        <Label text="Gouvernorat:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                        <ComboBox fx:id="fieldGouvernorat" GridPane.columnIndex="1" GridPane.rowIndex="4" prefWidth="300"/>
+                        
+                        <Label text="Date de naissance:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                        <DatePicker fx:id="fieldDateNaissance" GridPane.columnIndex="1" GridPane.rowIndex="5" prefWidth="300"/>
+                    </children>
+                </GridPane>
+            </TitledPane>
+
+            <!-- Photo Upload Section -->
+            <TitledPane text="Photo de Profil" collapsible="false">
+                <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 10;">
+                    <ImageView fx:id="imageViewPhoto" fitWidth="80" fitHeight="80" preserveRatio="true"/>
+                    <VBox spacing="10" alignment="CENTER_LEFT">
+                        <Button fx:id="btnUploadPhoto" text="Choisir une photo" onAction="#onUploadPhoto"/>
+                        <Label fx:id="lblPhotoFileName" text="Aucun fichier sélectionné" style="-fx-text-fill: #666666;"/>
+                        <TextField fx:id="fieldPhoto" visible="false" managed="false"/>
+                    </VBox>
+                </HBox>
+            </TitledPane>
+
+            <!-- Apprenant Specific Section -->
+            <VBox fx:id="apprenantSection" visible="false" managed="false" spacing="10">
+                <TitledPane text="Détails Apprenant" collapsible="false">
+                    <GridPane hgap="15" vgap="15" style="-fx-padding: 10;">
+                        <columnConstraints>
+                            <ColumnConstraints minWidth="100"/>
+                            <ColumnConstraints hgrow="ALWAYS"/>
+                        </columnConstraints>
+                        <children>
+                            <Label text="Genre:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                            <ComboBox fx:id="comboGenre" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="300"/>
+                            
+                            <Label text="Etat Civil:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                            <ComboBox fx:id="comboEtatCivil" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="300"/>
+                            
+                            <Label text="Objectif:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                            <TextField fx:id="fieldObjectif" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="300"/>
+                            
+                            <Label text="Domaines:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                            <TextField fx:id="fieldDomainesInteret" GridPane.columnIndex="1" GridPane.rowIndex="3" prefWidth="300"/>
+                        </children>
+                    </GridPane>
+                </TitledPane>
+            </VBox>
+
+            <!-- Formateur Specific Section -->
+            <VBox fx:id="formateurSection" visible="false" managed="false" spacing="10">
+                <TitledPane text="Détails Formateur" collapsible="false">
+                    <GridPane hgap="15" vgap="15" style="-fx-padding: 10;">
+                        <columnConstraints>
+                            <ColumnConstraints minWidth="100"/>
+                            <ColumnConstraints hgrow="ALWAYS"/>
+                        </columnConstraints>
+                        <children>
+                            <Label text="Spécialité:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                            <TextField fx:id="fieldSpecialite" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="300"/>
+                            
+                            <Label text="Expérience (années):" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                            <Spinner fx:id="spinnerExperience" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="100"/>
+                            
+                            <Label text="LinkedIn:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                            <TextField fx:id="fieldLinkedin" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="300"/>
+                            
+                            <Label text="Portfolio:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                            <TextField fx:id="fieldPortfolio" GridPane.columnIndex="1" GridPane.rowIndex="3" prefWidth="300"/>
+                            
+                            <Label text="Lien CV:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                            <TextField fx:id="fieldCv" GridPane.columnIndex="1" GridPane.rowIndex="4" prefWidth="300"/>
+
+                            <Label text="Bio:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                            <TextArea fx:id="fieldBio" GridPane.columnIndex="1" GridPane.rowIndex="5" prefWidth="300" prefHeight="80"/>
+                        </children>
+                    </GridPane>
+                </TitledPane>
+            </VBox>
+
+            <!-- Security Section -->
+            <TitledPane text="Sécurité" collapsible="false">
+                <VBox spacing="10" style="-fx-padding: 10;">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Button fx:id="btnChangePassword" text="Changer le mot de passe" onAction="#onChangePassword"/>
+                        <Button fx:id="btnTwoFactor" text="Configuration 2FA" onAction="#handleTwoFactor"/>
+                    </HBox>
+
+                    <VBox fx:id="passwordChangeSection" visible="false" managed="false" spacing="10" style="-fx-padding: 10 0 0 0;">
+                        <Label text="Vérification requise pour changer le mot de passe"/>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <TextField fx:id="fieldPasswordVerificationToken" promptText="Token reçu par email" prefWidth="200"/>
+                            <Button fx:id="btnVerifyToken" text="Vérifier le token" onAction="#onVerifyToken"/>
+                        </HBox>
+                    </VBox>
+
+                    <VBox fx:id="newPasswordSection" visible="false" managed="false" spacing="10" style="-fx-padding: 10 0 0 0;">
+                        <GridPane hgap="10" vgap="10">
+                            <Label text="Nouveau mot de passe:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                            <PasswordField fx:id="fieldNewPassword" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="200"/>
+                            
+                            <Label text="Confirmer:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                            <PasswordField fx:id="fieldNewPasswordConfirm" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="200"/>
+                        </GridPane>
+                    </VBox>
+                </VBox>
+            </TitledPane>
+            
+            <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+                <children>
+                    <Button fx:id="cancelButton" text="Annuler" onAction="#onBack" prefWidth="100"/>
+                    <Button fx:id="saveButton" text="Enregistrer" onAction="#onSave" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold;" prefWidth="150"/>
+                </children>
+            </HBox>
+        </children>
+    </VBox>
+</ScrollPane>

@@ -195,17 +195,14 @@ public class UserService implements service<User> {
                 }
                 u.setRole_utilisateur(rs.getString("role_utilisateur"));
                 u.setPhoto(rs.getString("photo"));
-                u.setIs_email_verified(rs.getBoolean("is_email_verified"));
-                u.setGoogle_authenticator_secret(rs.getString("google_authenticator_secret"));
-                u.setBackup_codes(rs.getString("backup_codes"));
-                u.setEmail_auth_enabled(rs.getBoolean("email_auth_enabled"));
-                u.setGoogle_auth_enabled(rs.getBoolean("google_auth_enabled"));
-                u.setPhone_verified(rs.getBoolean("phone_verified"));
-                Timestamp phoneVerifiedAt = rs.getTimestamp("phone_verified_at");
-                if (phoneVerifiedAt != null) {
-                    u.setPhone_verified_at(new java.util.Date(phoneVerifiedAt.getTime()));
-                }
-                u.setFace_auth_enabled(rs.getBoolean("face_auth_enabled"));
+                try { u.setIs_email_verified(rs.getBoolean("is_email_verified")); } catch (SQLException e) {}
+                try { u.setGoogle_authenticator_secret(rs.getString("google_authenticator_secret")); } catch (SQLException e) {}
+                try { u.setBackup_codes(rs.getString("backup_codes")); } catch (SQLException e) {}
+                try { u.setEmail_auth_enabled(rs.getBoolean("email_auth_enabled")); } catch (SQLException e) {}
+                try { u.setGoogle_auth_enabled(rs.getBoolean("google_auth_enabled")); } catch (SQLException e) {}
+                try { u.setPhone_verified(rs.getBoolean("phone_verified")); } catch (SQLException e) {}
+                try { Timestamp phoneVerifiedAt = rs.getTimestamp("phone_verified_at"); if (phoneVerifiedAt != null) { u.setPhone_verified_at(new java.util.Date(phoneVerifiedAt.getTime())); } } catch (SQLException e) {}
+                try { u.setFace_auth_enabled(rs.getBoolean("face_auth_enabled")); } catch (SQLException e) {}
                 return u;
             }
         } catch (SQLException ex) {
@@ -239,31 +236,19 @@ public class UserService implements service<User> {
                 }
                 u.setRole_utilisateur(rs.getString("role_utilisateur"));
                 u.setPhoto(rs.getString("photo"));
-                u.setIs_email_verified(rs.getBoolean("is_email_verified"));
-                u.setEmail_verification_token(rs.getString("email_verification_token"));
-                Timestamp emailTokenExpiry = rs.getTimestamp("email_verification_token_expires_at");
-                if (emailTokenExpiry != null) {
-                    u.setEmail_verification_token_expires_at(new java.util.Date(emailTokenExpiry.getTime()));
-                }
-                Timestamp emailVerifiedAt = rs.getTimestamp("email_verified_at");
-                if (emailVerifiedAt != null) {
-                    u.setEmail_verified_at(new java.util.Date(emailVerifiedAt.getTime()));
-                }
-                u.setPassword_reset_token(rs.getString("password_reset_token"));
-                Timestamp passwordTokenExpiry = rs.getTimestamp("password_reset_token_expires_at");
-                if (passwordTokenExpiry != null) {
-                    u.setPassword_reset_token_expires_at(new java.util.Date(passwordTokenExpiry.getTime()));
-                }
-                u.setGoogle_authenticator_secret(rs.getString("google_authenticator_secret"));
-                u.setBackup_codes(rs.getString("backup_codes"));
-                u.setEmail_auth_enabled(rs.getBoolean("email_auth_enabled"));
-                u.setGoogle_auth_enabled(rs.getBoolean("google_auth_enabled"));
-                u.setPhone_verified(rs.getBoolean("phone_verified"));
-                Timestamp phoneVerifiedAt = rs.getTimestamp("phone_verified_at");
-                if (phoneVerifiedAt != null) {
-                    u.setPhone_verified_at(new java.util.Date(phoneVerifiedAt.getTime()));
-                }
-                u.setFace_auth_enabled(rs.getBoolean("face_auth_enabled"));
+                try { u.setIs_email_verified(rs.getBoolean("is_email_verified")); } catch (SQLException e) {}
+                try { u.setEmail_verification_token(rs.getString("email_verification_token")); } catch (SQLException e) {}
+                try { Timestamp emailTokenExpiry = rs.getTimestamp("email_verification_token_expires_at"); if (emailTokenExpiry != null) u.setEmail_verification_token_expires_at(new java.util.Date(emailTokenExpiry.getTime())); } catch (SQLException e) {}
+                try { Timestamp emailVerifiedAt = rs.getTimestamp("email_verified_at"); if (emailVerifiedAt != null) u.setEmail_verified_at(new java.util.Date(emailVerifiedAt.getTime())); } catch (SQLException e) {}
+                try { u.setPassword_reset_token(rs.getString("password_reset_token")); } catch (SQLException e) {}
+                try { Timestamp passwordTokenExpiry = rs.getTimestamp("password_reset_token_expires_at"); if (passwordTokenExpiry != null) u.setPassword_reset_token_expires_at(new java.util.Date(passwordTokenExpiry.getTime())); } catch (SQLException e) {}
+                try { u.setGoogle_authenticator_secret(rs.getString("google_authenticator_secret")); } catch (SQLException e) {}
+                try { u.setBackup_codes(rs.getString("backup_codes")); } catch (SQLException e) {}
+                try { u.setEmail_auth_enabled(rs.getBoolean("email_auth_enabled")); } catch (SQLException e) {}
+                try { u.setGoogle_auth_enabled(rs.getBoolean("google_auth_enabled")); } catch (SQLException e) {}
+                try { u.setPhone_verified(rs.getBoolean("phone_verified")); } catch (SQLException e) {}
+                try { Timestamp phoneVerifiedAt = rs.getTimestamp("phone_verified_at"); if (phoneVerifiedAt != null) u.setPhone_verified_at(new java.util.Date(phoneVerifiedAt.getTime())); } catch (SQLException e) {}
+                try { u.setFace_auth_enabled(rs.getBoolean("face_auth_enabled")); } catch (SQLException e) {}
                 return u;
             }
         } catch (SQLException ex) {
@@ -297,22 +282,16 @@ public class UserService implements service<User> {
                 }
                 u.setRole_utilisateur(rs.getString("role_utilisateur"));
                 u.setPhoto(rs.getString("photo"));
-                u.setIs_email_verified(rs.getBoolean("is_email_verified"));
-                u.setPassword_reset_token(rs.getString("password_reset_token"));
-                Timestamp passwordTokenExpiry = rs.getTimestamp("password_reset_token_expires_at");
-                if (passwordTokenExpiry != null) {
-                    u.setPassword_reset_token_expires_at(new java.util.Date(passwordTokenExpiry.getTime()));
-                }
-                u.setGoogle_authenticator_secret(rs.getString("google_authenticator_secret"));
-                u.setBackup_codes(rs.getString("backup_codes"));
-                u.setEmail_auth_enabled(rs.getBoolean("email_auth_enabled"));
-                u.setGoogle_auth_enabled(rs.getBoolean("google_auth_enabled"));
-                u.setPhone_verified(rs.getBoolean("phone_verified"));
-                Timestamp phoneVerifiedAt = rs.getTimestamp("phone_verified_at");
-                if (phoneVerifiedAt != null) {
-                    u.setPhone_verified_at(new java.util.Date(phoneVerifiedAt.getTime()));
-                }
-                u.setFace_auth_enabled(rs.getBoolean("face_auth_enabled"));
+                try { u.setIs_email_verified(rs.getBoolean("is_email_verified")); } catch (SQLException e) {}
+                try { u.setPassword_reset_token(rs.getString("password_reset_token")); } catch (SQLException e) {}
+                try { Timestamp passwordTokenExpiry = rs.getTimestamp("password_reset_token_expires_at"); if (passwordTokenExpiry != null) u.setPassword_reset_token_expires_at(new java.util.Date(passwordTokenExpiry.getTime())); } catch (SQLException e) {}
+                try { u.setGoogle_authenticator_secret(rs.getString("google_authenticator_secret")); } catch (SQLException e) {}
+                try { u.setBackup_codes(rs.getString("backup_codes")); } catch (SQLException e) {}
+                try { u.setEmail_auth_enabled(rs.getBoolean("email_auth_enabled")); } catch (SQLException e) {}
+                try { u.setGoogle_auth_enabled(rs.getBoolean("google_auth_enabled")); } catch (SQLException e) {}
+                try { u.setPhone_verified(rs.getBoolean("phone_verified")); } catch (SQLException e) {}
+                try { Timestamp phoneVerifiedAt = rs.getTimestamp("phone_verified_at"); if (phoneVerifiedAt != null) u.setPhone_verified_at(new java.util.Date(phoneVerifiedAt.getTime())); } catch (SQLException e) {}
+                try { u.setFace_auth_enabled(rs.getBoolean("face_auth_enabled")); } catch (SQLException e) {}
                 return u;
             }
         } catch (SQLException ex) {

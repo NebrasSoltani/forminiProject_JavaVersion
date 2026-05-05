@@ -17,6 +17,9 @@ public class OAuthCallbackHandler {
     private String errorMessage;
     private String oauthCode;
     private String oauthState;
+    private com.google.gson.JsonObject pendingUserInfo;
+    private String pendingGithubEmails;
+    private String lastProcessedCode;
     
     public User authenticateWithGoogle() {
         return authenticate("google");
@@ -25,11 +28,7 @@ public class OAuthCallbackHandler {
     public User authenticateWithGithub() {
         return authenticate("github");
     }
-    
-    public User authenticateWithCloudflare() {
-        return authenticate("cloudflare");
-    }
-    
+
     private User authenticate(String provider) {
         if (!OAuthService.isConfigured(provider)) {
             System.err.println("OAuth not configured for " + provider);
@@ -47,7 +46,7 @@ public class OAuthCallbackHandler {
             } else if (provider.equals("github")) {
                 authUrl = OAuthService.getGithubAuthorizationUrl();
             } else {
-                authUrl = OAuthService.getCloudflareAuthorizationUrl();
+                throw new IllegalArgumentException("Unsupported provider: " + provider);
             }
             
             // Open browser
@@ -109,11 +108,6 @@ public class OAuthCallbackHandler {
         // GitHub callback endpoint
         server.createContext("/callback/github", exchange -> {
             handleCallback(exchange, "github");
-        });
-
-        // Cloudflare callback endpoint
-        server.createContext("/callback/cloudflare", exchange -> {
-            handleCallback(exchange, "cloudflare");
         });
 
         server.setExecutor(null);
@@ -178,23 +172,40 @@ public class OAuthCallbackHandler {
             this.oauthCode = code;
             this.oauthState = state;
 
+            // Check for duplicate requests (e.g., from browser pre-fetching or duplicate callbacks)
+            if (code.equals(this.lastProcessedCode)) {
+                System.out.println("Ignoring duplicate callback request for code: " + code);
+                return; // Ignore and do not send response or countdown, just let it be
+            }
+            this.lastProcessedCode = code;
+
             // For Google and GitHub, check if user exists before showing role selection
             if (provider.equals("google") || provider.equals("github")) {
                 try {
                     // Get user info to check if user exists
                     String email = null;
                     if (provider.equals("google")) {
-                        com.google.gson.JsonObject userInfo = OAuthService.getGoogleUserInfo(code);
-                        email = userInfo.has("email") ? userInfo.get("email").getAsString() : null;
+                        this.pendingUserInfo = OAuthService.getGoogleUserInfo(code);
+                        email = this.pendingUserInfo.has("email") ? this.pendingUserInfo.get("email").getAsString() : null;
                     } else {
-                        com.google.gson.JsonObject userInfo = OAuthService.getGitHubUserInfo(code);
-                        email = userInfo.has("email") && !userInfo.get("email").isJsonNull() ? 
-                                userInfo.get("email").getAsString() : null;
+                        Object[] githubData = OAuthService.getGithubData(code);
+                        this.pendingUserInfo = (com.google.gson.JsonObject) githubData[0];
+                        this.pendingGithubEmails = (String) githubData[1];
+                        email = this.pendingUserInfo.has("email") && !this.pendingUserInfo.get("email").isJsonNull() ? 
+                                this.pendingUserInfo.get("email").getAsString() : null;
                     }
 
                     // If user exists, skip role selection and proceed with existing role
                     if (email != null && OAuthService.userExists(email)) {
                         processAuthentication(provider, code, state, null); // null role = use existing
+                        
+                        // Send success response after authentication
+                        if (authenticatedUser != null) {
+                            sendSuccessPage(exchange);
+                        } else {
+                            sendResponse(exchange, "Authentication failed: " + errorMessage, 500);
+                        }
+                        latch.countDown();
                     } else {
                         // New user, show role selection page
                         sendRoleSelectionPage(exchange, provider, code, state);
@@ -205,8 +216,8 @@ public class OAuthCallbackHandler {
                     sendRoleSelectionPage(exchange, provider, code, state);
                 }
             } else {
-                // Cloudflare doesn't require role selection, proceed directly
-                processAuthentication(provider, code, state, "apprenant");
+                // Should not reach here
+                sendResponse(exchange, "Invalid provider", 400);
             }
 
         } catch (Exception e) {
@@ -260,11 +271,17 @@ public class OAuthCallbackHandler {
     private void processAuthentication(String provider, String code, String state, String role) {
         try {
             if (provider.equals("google")) {
-                authenticatedUser = OAuthService.handleGoogleCallback(code, state, role);
+                if (this.pendingUserInfo != null) {
+                    authenticatedUser = OAuthService.createOrUpdateUserFromOAuth(this.pendingUserInfo, "google", role);
+                } else {
+                    authenticatedUser = OAuthService.handleGoogleCallback(code, state, role);
+                }
             } else if (provider.equals("github")) {
-                authenticatedUser = OAuthService.handleGithubCallback(code, state, role);
-            } else {
-                authenticatedUser = OAuthService.handleCloudflareCallback(code, state);
+                if (this.pendingUserInfo != null && this.pendingGithubEmails != null) {
+                    authenticatedUser = OAuthService.createOrUpdateUserFromGitHub(this.pendingUserInfo, this.pendingGithubEmails, "github", role);
+                } else {
+                    authenticatedUser = OAuthService.handleGithubCallback(code, state, role);
+                }
             }
 
             if (authenticatedUser != null) {

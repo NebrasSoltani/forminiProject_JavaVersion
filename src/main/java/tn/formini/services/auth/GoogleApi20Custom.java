@@ -1,7 +1,7 @@
 package tn.formini.services.auth;
 
 import com.github.scribejava.core.builder.api.DefaultApi20;
-import com.github.scribejava.core.extractors.OAuth2AccessTokenExtractor;
+import com.github.scribejava.core.extractors.OAuth2AccessTokenJsonExtractor;
 import com.github.scribejava.core.model.Verb;
 
 /**
@@ -33,8 +33,8 @@ public class GoogleApi20Custom extends DefaultApi20 {
     }
 
     @Override
-    public OAuth2AccessTokenExtractor getAccessTokenExtractor() {
-        return OAuth2AccessTokenExtractor.instance();
+    public com.github.scribejava.core.extractors.TokenExtractor<com.github.scribejava.core.model.OAuth2AccessToken> getAccessTokenExtractor() {
+        return OAuth2AccessTokenJsonExtractor.instance();
     }
 
     protected String getScope() {

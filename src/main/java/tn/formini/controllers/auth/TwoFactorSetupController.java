@@ -61,6 +61,12 @@ public class TwoFactorSetupController {
     @FXML
     private Button btnCancel;
 
+    @FXML
+    private VBox alreadyEnabledBox;
+
+    @FXML
+    private Button btnDeactivate;
+
     private UserService userService;
     private TOTPService totpService;
     private User currentUser;
@@ -81,16 +87,20 @@ public class TwoFactorSetupController {
 
         // Check if 2FA is already enabled
         if (currentUser.isGoogle_auth_enabled()) {
-            showError("L'authentification à deux facteurs est déjà activée pour ce compte.");
+            showSuccess("L'authentification à deux facteurs est déjà activée pour ce compte.");
+            alreadyEnabledBox.setVisible(true);
+            alreadyEnabledBox.setManaged(true);
+            step1Box.setVisible(false);
+            step1Box.setManaged(false);
+            step2Box.setVisible(false);
+            step2Box.setManaged(false);
             return;
         }
 
         // Generate secret and QR code
         generateSecretAndQRCode();
 
-        // Hide step 2 and backup codes initially
-        step2Box.setVisible(false);
-        step2Box.setManaged(false);
+        // Hide backup codes initially
         backupCodesBox.setVisible(false);
         backupCodesBox.setManaged(false);
     }
@@ -134,6 +144,28 @@ public class TwoFactorSetupController {
         secretKeyLabel.setManaged(true);
         btnShowSecret.setVisible(false);
         btnShowSecret.setManaged(false);
+    }
+
+    @FXML
+    public void onDeactivate(ActionEvent event) {
+        boolean disabled = userService.disableGoogleAuth(currentUser.getId());
+        if (disabled) {
+            currentUser.setGoogle_auth_enabled(false);
+            currentUser.setGoogle_authenticator_secret(null);
+            currentUser.setBackup_codes(null);
+            showSuccess("L'authentification à deux facteurs a été désactivée avec succès.");
+            alreadyEnabledBox.setVisible(false);
+            alreadyEnabledBox.setManaged(false);
+            
+            // Generate new secret for re-activation
+            generateSecretAndQRCode();
+            step1Box.setVisible(true);
+            step1Box.setManaged(true);
+            step2Box.setVisible(true);
+            step2Box.setManaged(true);
+        } else {
+            showError("Erreur lors de la désactivation de l'authentification à deux facteurs.");
+        }
     }
 
     @FXML

@@ -36,16 +36,7 @@ public class OAuthService {
     }
 
     public static User handleGoogleCallback(String code, String state, String role) throws Exception {
-        // Manually exchange code for token since Google returns JSON format
-        String tokenResponse = exchangeCodeForToken(code);
-        JsonObject tokenJson = gson.fromJson(tokenResponse, JsonObject.class);
-        String accessToken = tokenJson.get("access_token").getAsString();
-
-        // Get user info from Google
-        String userInfoUrl = "https://www.googleapis.com/oauth2/v2/userinfo";
-        String userInfoResponse = makeAuthenticatedGetRequest(userInfoUrl, accessToken);
-        JsonObject userInfo = gson.fromJson(userInfoResponse, JsonObject.class);
-
+        JsonObject userInfo = getGoogleUserInfo(code);
         return createOrUpdateUserFromOAuth(userInfo, "google", role);
     }
 
@@ -57,17 +48,26 @@ public class OAuthService {
 
     // Get user info from Google code without creating user
     public static JsonObject getGoogleUserInfo(String code) throws Exception {
-        String tokenResponse = exchangeCodeForToken(code);
-        JsonObject tokenJson = gson.fromJson(tokenResponse, JsonObject.class);
-        String accessToken = tokenJson.get("access_token").getAsString();
+        OAuth20Service service = new ServiceBuilder(OAuthConfig.getGoogleClientId())
+                .apiSecret(OAuthConfig.getGoogleClientSecret())
+                .callback(OAuthConfig.getGoogleRedirectUri())
+                .build(GoogleApi20Custom.instance());
 
-        String userInfoUrl = "https://www.googleapis.com/oauth2/v2/userinfo";
-        String userInfoResponse = makeAuthenticatedGetRequest(userInfoUrl, accessToken);
-        return gson.fromJson(userInfoResponse, JsonObject.class);
+        OAuth2AccessToken token = service.getAccessToken(code);
+
+        OAuthRequest request = new OAuthRequest(Verb.GET, "https://www.googleapis.com/oauth2/v2/userinfo");
+        service.signRequest(token, request);
+        Response response = service.execute(request);
+        return gson.fromJson(response.getBody(), JsonObject.class);
     }
 
     // Get user info from GitHub code without creating user
     public static JsonObject getGitHubUserInfo(String code) throws Exception {
+        Object[] data = getGithubData(code);
+        return (JsonObject) data[0];
+    }
+
+    public static Object[] getGithubData(String code) throws Exception {
         OAuth20Service service = new ServiceBuilder(OAuthConfig.getGithubClientId())
                 .apiSecret(OAuthConfig.getGithubClientSecret())
                 .callback(OAuthConfig.getGithubRedirectUri())
@@ -80,43 +80,15 @@ public class OAuthService {
         service.signRequest(token, request);
         Response response = service.execute(request);
 
-        return gson.fromJson(response.getBody(), JsonObject.class);
+        // Get email (might need separate call for private emails)
+        OAuthRequest emailRequest = new OAuthRequest(Verb.GET, "https://api.github.com/user/emails");
+        service.signRequest(token, emailRequest);
+        Response emailResponse = service.execute(emailRequest);
+
+        return new Object[] { gson.fromJson(response.getBody(), JsonObject.class), emailResponse.getBody() };
     }
 
-    private static String exchangeCodeForToken(String code) throws Exception {
-        java.net.URI uri = java.net.URI.create("https://oauth2.googleapis.com/token");
-        java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
-        
-        StringBuilder formBody = new StringBuilder();
-        formBody.append("code=").append(java.net.URLEncoder.encode(code, "UTF-8"));
-        formBody.append("&client_id=").append(java.net.URLEncoder.encode(OAuthConfig.getGoogleClientId(), "UTF-8"));
-        formBody.append("&client_secret=").append(java.net.URLEncoder.encode(OAuthConfig.getGoogleClientSecret(), "UTF-8"));
-        formBody.append("&redirect_uri=").append(java.net.URLEncoder.encode(OAuthConfig.getGoogleRedirectUri(), "UTF-8"));
-        formBody.append("&grant_type=authorization_code");
 
-        java.net.http.HttpRequest request = java.net.http.HttpRequest.newBuilder()
-                .uri(uri)
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .POST(java.net.http.HttpRequest.BodyPublishers.ofString(formBody.toString()))
-                .build();
-
-        java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
-        return response.body();
-    }
-
-    private static String makeAuthenticatedGetRequest(String url, String accessToken) throws Exception {
-        java.net.URI uri = java.net.URI.create(url);
-        java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
-
-        java.net.http.HttpRequest request = java.net.http.HttpRequest.newBuilder()
-                .uri(uri)
-                .header("Authorization", "Bearer " + accessToken)
-                .GET()
-                .build();
-
-        java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
-        return response.body();
-    }
     
     // GitHub OAuth
     public static String getGithubAuthorizationUrl() {
@@ -125,106 +97,21 @@ public class OAuthService {
                 .callback(OAuthConfig.getGithubRedirectUri())
                 .build(GitHubApiCustom.instance());
 
-        return service.getAuthorizationUrl();
+        String authUrl = service.getAuthorizationUrl();
+        if (!authUrl.contains("scope=")) {
+            authUrl += "&scope=user:email";
+        }
+        return authUrl;
     }
 
     public static User handleGithubCallback(String code, String state, String role) throws Exception {
-        OAuth20Service service = new ServiceBuilder(OAuthConfig.getGithubClientId())
-                .apiSecret(OAuthConfig.getGithubClientSecret())
-                .callback(OAuthConfig.getGithubRedirectUri())
-                .build(GitHubApiCustom.instance());
-        
-        OAuth2AccessToken token = service.getAccessToken(code);
-        
-        // Get user info from GitHub
-        OAuthRequest request = new OAuthRequest(Verb.GET, "https://api.github.com/user");
-        service.signRequest(token, request);
-        Response response = service.execute(request);
-        
-        JsonObject userInfo = gson.fromJson(response.getBody(), JsonObject.class);
-        
-        // Get email (might need separate call for private emails)
-        OAuthRequest emailRequest = new OAuthRequest(Verb.GET, "https://api.github.com/user/emails");
-        service.signRequest(token, emailRequest);
-        Response emailResponse = service.execute(emailRequest);
-        
-        return createOrUpdateUserFromGitHub(userInfo, emailResponse.getBody(), "github", role);
+        Object[] data = getGithubData(code);
+        return createOrUpdateUserFromGitHub((JsonObject) data[0], (String) data[1], "github", role);
     }
     
-    // Cloudflare OAuth
-    public static String getCloudflareAuthorizationUrl() {
-        OAuth20Service service = new ServiceBuilder(OAuthConfig.getCloudflareClientId())
-                .apiSecret(OAuthConfig.getCloudflareClientSecret())
-                .callback(OAuthConfig.getCloudflareRedirectUri())
-                .build(CloudflareApi.instance());
 
-        return service.getAuthorizationUrl();
-    }
     
-    public static User handleCloudflareCallback(String code, String state) throws Exception {
-        OAuth20Service service = new ServiceBuilder(OAuthConfig.getCloudflareClientId())
-                .apiSecret(OAuthConfig.getCloudflareClientSecret())
-                .callback(OAuthConfig.getCloudflareRedirectUri())
-                .build(CloudflareApi.instance());
-        
-        OAuth2AccessToken token = service.getAccessToken(code);
-        
-        // Get user info from Cloudflare
-        OAuthRequest request = new OAuthRequest(Verb.GET, "https://dash.cloudflare.com/oauth2/userinfo");
-        service.signRequest(token, request);
-        Response response = service.execute(request);
-        
-        JsonObject userInfo = gson.fromJson(response.getBody(), JsonObject.class);
-        
-        return createOrUpdateUserFromCloudflare(userInfo, "cloudflare");
-    }
-    
-    private static User createOrUpdateUserFromCloudflare(JsonObject userInfo, String provider) {
-        UserService userService = new UserService();
-        
-        String email = userInfo.has("email") ? userInfo.get("email").getAsString() : "";
-        String name = userInfo.has("name") ? userInfo.get("name").getAsString() : "";
-        String picture = userInfo.has("picture") ? userInfo.get("picture").getAsString() : "";
-        String providerId = userInfo.has("id") ? userInfo.get("id").getAsString() : "";
-        
-        if (email.isEmpty()) {
-            throw new RuntimeException("Unable to get email from Cloudflare.");
-        }
-        
-        // Check if user exists by email
-        User existingUser = userService.getUserByEmail(email);
-        
-        if (existingUser != null) {
-            // Update existing user with OAuth info
-            existingUser.setOauth_provider("cloudflare");
-            if (!picture.isEmpty()) {
-                existingUser.setAvatar_url(picture);
-            }
-            existingUser.setIs_email_verified(true);
-            userService.modifier(existingUser);
-            return existingUser;
-        }
-        
-        // Create new user
-        User newUser = new User();
-        newUser.setEmail(email);
-        newUser.setNom(name.contains(" ") ? name.split(" ")[0] : name);
-        newUser.setPrenom(name.contains(" ") ? name.substring(name.indexOf(" ") + 1) : "");
-        newUser.setRole_utilisateur("apprenant"); // Default role
-        newUser.setRoles("[\"ROLE_USER\"]");
-        newUser.setTelephone("00000000"); // Placeholder
-        newUser.setGouvernorat("");
-        newUser.setDate_naissance(new java.util.Date());
-        newUser.setPhoto(picture);
-        newUser.setIs_email_verified(true);
-        newUser.setPassword("OAuthUser123_" + System.currentTimeMillis()); // OAuth users don't have passwords
-        newUser.setOauth_provider("cloudflare");
-
-        userService.ajouter(newUser);
-        return newUser;
-    }
-    
-    private static User createOrUpdateUserFromOAuth(JsonObject userInfo, String provider, String role) {
+    public static User createOrUpdateUserFromOAuth(JsonObject userInfo, String provider, String role) {
         UserService userService = new UserService();
         
         String email = userInfo.get("email").getAsString();
@@ -273,7 +160,7 @@ public class OAuthService {
         return newUser;
     }
 
-    private static User createOrUpdateUserFromGitHub(JsonObject userInfo, String emailsJson, String provider, String role) {
+    public static User createOrUpdateUserFromGitHub(JsonObject userInfo, String emailsJson, String provider, String role) {
         UserService userService = new UserService();
 
         String login = userInfo.has("login") ? userInfo.get("login").getAsString() : "";
@@ -367,9 +254,6 @@ public class OAuthService {
         } else if (provider.equals("github")) {
             return !OAuthConfig.getGithubClientId().equals("YOUR_GITHUB_CLIENT_ID") &&
                    !OAuthConfig.getGithubClientSecret().equals("YOUR_GITHUB_CLIENT_SECRET");
-        } else if (provider.equals("cloudflare")) {
-            return !OAuthConfig.getCloudflareClientId().equals("YOUR_CLOUDFLARE_CLIENT_ID") &&
-                   !OAuthConfig.getCloudflareClientSecret().equals("YOUR_CLOUDFLARE_CLIENT_SECRET");
         }
         return false;
     }

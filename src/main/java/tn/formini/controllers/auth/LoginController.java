@@ -18,13 +18,14 @@ import tn.formini.services.UsersService.RememberMeService;
 import tn.formini.services.UsersService.SessionManager;
 import tn.formini.services.auth.OAuthCallbackHandler;
 import tn.formini.services.auth.TurnstileService;
+import tn.formini.services.auth.TurnstileLocalServer;
 import tn.formini.services.face.CameraCaptureService;
 import tn.formini.services.face.FaceRecognitionService;
 import tn.formini.utils.OAuthConfig;
 import java.util.prefs.Preferences;
 
 
-public class LoginController {
+public class             LoginController {
 
     @FXML
     private TextField fieldEmail;
@@ -50,9 +51,7 @@ public class LoginController {
     @FXML
     private Button btnGithubLogin;
     
-    @FXML
-    private Button btnCloudflareLogin;
-    
+
     @FXML
     private Button btnTogglePassword;
     
@@ -338,10 +337,6 @@ public class LoginController {
         handleOAuthLogin("github");
     }
 
-    @FXML
-    public void onCloudflareLogin(ActionEvent event) {
-        handleOAuthLogin("cloudflare");
-    }
 
     private void handleOAuthLogin(String provider) {
         // Run OAuth in a separate thread to avoid blocking UI
@@ -355,7 +350,7 @@ public class LoginController {
                 } else if (provider.equals("github")) {
                     user = handler.authenticateWithGithub();
                 } else {
-                    user = handler.authenticateWithCloudflare();
+                    user = null;
                 }
                 
                 if (user != null) {
@@ -562,29 +557,9 @@ public class LoginController {
             return;
         }
 
-        String htmlContent = "<!DOCTYPE html>\n" +
-                "<html>\n" +
-                "<head>\n" +
-                "    <meta charset='UTF-8'>\n" +
-                "    <title>Turnstile Verification</title>\n" +
-                "    <script src='https://challenges.cloudflare.com/turnstile/v0/api.js' async defer></script>\n" +
-                "    <style>\n" +
-                "        body { margin: 0; padding: 0; overflow: hidden; }\n" +
-                "        .cf-turnstile { margin: 0 auto; }\n" +
-                "    </style>\n" +
-                "</head>\n" +
-                "<body>\n" +
-                "    <div class='cf-turnstile' data-sitekey='" + siteKey + "' data-callback='turnstileCallback' data-theme='light'></div>\n" +
-                "    <script>\n" +
-                "        function turnstileCallback(token) {\n" +
-                "            // Send token to JavaFX application\n" +
-                "            window.javaBridge.setTurnstileToken(token);\n" +
-                "        }\n" +
-                "    </script>\n" +
-                "</body>\n" +
-                "</html>";
-
-        turnstileWebView.getEngine().loadContent(htmlContent);
+        // Start local server and load the URL
+        TurnstileLocalServer.start(siteKey);
+        turnstileWebView.getEngine().load(TurnstileLocalServer.getUrl());
 
         // Set up Java-JavaScript bridge
         turnstileWebView.getEngine().getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {

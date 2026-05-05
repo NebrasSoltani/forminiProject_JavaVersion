@@ -92,7 +92,7 @@
                         <!-- Cloudflare Turnstile Verification -->
                         <VBox fx:id="turnstileContainer" spacing="8" alignment="CENTER">
                             <Label text="Vérification de sécurité" styleClass="form-label"/>
-                            <WebView fx:id="turnstileWebView" prefHeight="65" prefWidth="300"/>
+                            <WebView fx:id="turnstileWebView" prefHeight="80" prefWidth="320"/>
                             <Label fx:id="turnstileError" styleClass="error-label" text="" visible="false" managed="false"/>
                         </VBox>
                     </VBox>
@@ -131,14 +131,7 @@
                                 </HBox>
                             </graphic>
                         </Button>
-                        <Button fx:id="btnCloudflareLogin" onAction="#onCloudflareLogin" styleClass="btn-oauth btn-cloudflare" maxWidth="Infinity">
-                            <graphic>
-                                <HBox spacing="12" alignment="CENTER">
-                                    <Label text="☁" styleClass="oauth-icon-cloudflare"/>
-                                    <Label text="Continuer avec Cloudflare" styleClass="oauth-text"/>
-                                </HBox>
-                            </graphic>
-                        </Button>
+
                     </VBox>
 
                     <!-- Lien inscription -->
