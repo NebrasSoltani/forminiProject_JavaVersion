@@ -385,7 +385,7 @@ public class ApprenantQuizPasserController implements Initializable {
                 String base64Audio = java.util.Base64.getEncoder().encodeToString(wavOut.toByteArray());
 
                 // Send to Gemini 1.5 Flash (Multimodal Audio Input)
-                String apiKey = "AIzaSyD-CxH5LqUzN6Tj8NP16QuGws7wSBgGfkE";
+                String apiKey = "AIzaSyADwvT9_4yN_AHQ1O1oSd6OG_R9sqHVFCg";
                 String envKey = System.getenv("GEMINI_API_KEY");
                 if (envKey != null && !envKey.trim().isEmpty()) {
                     apiKey = envKey;
@@ -471,7 +471,11 @@ public class ApprenantQuizPasserController implements Initializable {
 
     @FXML
     public void fermer() {
-        ((Stage) btnSoumettre.getScene().getWindow()).close();
+        if (tn.formini.controllers.DashboardController.instance != null) {
+            tn.formini.controllers.DashboardController.instance.ouvrirApprenantQuiz();
+        } else {
+            ((Stage) btnSoumettre.getScene().getWindow()).close();
+        }
     }
 
     @FXML private Button btnAssistantIcon;
@@ -630,7 +634,7 @@ public class ApprenantQuizPasserController implements Initializable {
 
         new Thread(() -> {
             try {
-                String apiKey = "AIzaSyD-CxH5LqUzN6Tj8NP16QuGws7wSBgGfkE";
+                String apiKey = "AIzaSyADwvT9_4yN_AHQ1O1oSd6OG_R9sqHVFCg";
                 String envKey = System.getenv("GEMINI_API_KEY");
                 if (envKey != null && !envKey.trim().isEmpty()) {
                     apiKey = envKey;

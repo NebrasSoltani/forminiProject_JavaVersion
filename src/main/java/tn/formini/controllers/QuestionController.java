@@ -187,40 +187,31 @@ public class QuestionController implements Initializable {
 
     @FXML
     public void ouvrirFormIA() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/GenererQuestionIA.fxml"));
-            Parent root = loader.load();
-            GenererQuestionIAController ctrl = loader.getController();
-            ctrl.initData(filtreQuiz.getValue(), this::chargerDonnees);
-
-            Stage stage = new Stage();
-            stage.setTitle("Génération IA - Questions");
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-        } catch (IOException e) {
-            System.out.println("Erreur formulaire génération IA : " + e.getMessage());
-            e.printStackTrace();
+        if (tn.formini.controllers.DashboardController.instance != null) {
+            tn.formini.controllers.DashboardController.instance.ouvrirGenerateurIA(filtreQuiz.getValue(), this::chargerDonnees);
+        } else {
+            System.out.println("DashboardController.instance est null. Impossible d'ouvrir l'IA dans la même fenêtre.");
         }
     }
 
     private void ouvrirFormulaire(Question question) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/QuestionForm.fxml"));
-            Parent root = loader.load();
-            QuestionFormController ctrl = loader.getController();
-            if (question != null) {
-                ctrl.setQuestion(question);
-            }
+        if (tn.formini.controllers.DashboardController.instance != null) {
+            tn.formini.controllers.DashboardController.instance.ouvrirFormulaireQuestion(question, this::chargerDonnees);
+        } else {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/QuestionForm.fxml"));
+                Parent root = loader.load();
+                tn.formini.controllers.QuestionFormController ctrl = loader.getController();
+                ctrl.initData(question, this::chargerDonnees);
 
-            Stage stage = new Stage();
-            stage.setTitle(question == null ? "Nouvelle Question" : "Modifier Question");
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-            chargerDonnees();
-        } catch (IOException e) {
-            System.out.println("Erreur formulaire question : " + e.getMessage());
+                Stage stage = new Stage();
+                stage.setTitle(question == null ? "Nouvelle Question" : "Modifier Question");
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.setScene(new Scene(root));
+                stage.showAndWait();
+            } catch (IOException e) {
+                System.out.println("Erreur formulaire question : " + e.getMessage());
+            }
         }
     }
 

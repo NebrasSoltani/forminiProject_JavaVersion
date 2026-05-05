@@ -166,22 +166,26 @@ public class ApprenantQuizListController implements Initializable {
     }
 
     private void ouvrirQuizPasser(int quizId, int formationId) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/ApprenantQuizPasser.fxml"));
-            Parent root = loader.load();
-            
-            ApprenantQuizPasserController ctrl = loader.getController();
-            ctrl.initData(currentApprenant, formationId, quizId);
+        if (tn.formini.controllers.DashboardController.instance != null) {
+            tn.formini.controllers.DashboardController.instance.ouvrirApprenantQuizPasser(currentApprenant, formationId, quizId);
+        } else {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/ApprenantQuizPasser.fxml"));
+                Parent root = loader.load();
+                
+                ApprenantQuizPasserController ctrl = loader.getController();
+                ctrl.initData(currentApprenant, formationId, quizId);
 
-            Stage stage = new Stage();
-            stage.setTitle("Passer le Quiz");
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setScene(new Scene(root, 700, 500));
-            stage.showAndWait();
-            
-        } catch (IOException e) {
-            new Alert(Alert.AlertType.ERROR, "Erreur lors de l'ouverture du quiz : " + e.getMessage()).showAndWait();
-            e.printStackTrace();
+                Stage stage = new Stage();
+                stage.setTitle("Passer le Quiz");
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.setScene(new Scene(root, 700, 500));
+                stage.showAndWait();
+                
+            } catch (IOException e) {
+                new Alert(Alert.AlertType.ERROR, "Erreur lors de l'ouverture du quiz : " + e.getMessage()).showAndWait();
+                e.printStackTrace();
+            }
         }
     }
 }

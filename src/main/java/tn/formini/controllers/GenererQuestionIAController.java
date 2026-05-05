@@ -75,7 +75,17 @@ public class GenererQuestionIAController implements Initializable {
 
     @FXML
     public void fermer() {
-        ((Stage) contextArea.getScene().getWindow()).close();
+        if (tn.formini.controllers.DashboardController.instance != null) {
+            Quiz selected = comboQuiz.getValue();
+            if (selected != null) {
+                tn.formini.controllers.DashboardController.instance.ouvrirQuestionPourQuiz(selected);
+            } else {
+                tn.formini.controllers.DashboardController.instance.ouvrirQuestion();
+            }
+        } else {
+            // Fallback (if still opened in a separate window somehow)
+            ((Stage) contextArea.getScene().getWindow()).close();
+        }
     }
 
     @FXML
@@ -185,7 +195,7 @@ public class GenererQuestionIAController implements Initializable {
     }
 
     private String callGeminiAPI(String prompt) throws Exception {
-        String apiKey = "AIzaSyD-CxH5LqUzN6Tj8NP16QuGws7wSBgGfkE";
+        String apiKey = "AIzaSyADwvT9_4yN_AHQ1O1oSd6OG_R9sqHVFCg";
         String envKey = System.getenv("GEMINI_API_KEY");
         if (envKey != null && !envKey.trim().isEmpty()) {
             apiKey = envKey;

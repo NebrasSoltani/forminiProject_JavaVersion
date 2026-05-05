@@ -29,6 +29,7 @@ public class QuestionFormController implements Initializable {
     private final QuestionService service = new QuestionService();
     private final QuizService quizService = new QuizService();
     private Question questionExistante = null;
+    private Runnable onSuccess = null;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -62,6 +63,11 @@ public class QuestionFormController implements Initializable {
         }
     }
 
+    public void initData(Question q, Runnable onSuccess) {
+        this.onSuccess = onSuccess;
+        if (q != null) setQuestion(q);
+    }
+
     @FXML
     public void sauvegarder() {
         errorLabel.setText("");
@@ -81,7 +87,12 @@ public class QuestionFormController implements Initializable {
 
             if (questionExistante == null) service.ajouter(q);
             else service.modifier(q);
-            fermer();
+            
+            if (onSuccess != null) {
+                onSuccess.run();
+            } else {
+                fermer();
+            }
         } catch (NumberFormatException e) {
             errorLabel.setText("⚠ Points et Ordre doivent être des nombres.");
         } catch (IllegalArgumentException e) {
@@ -91,5 +102,11 @@ public class QuestionFormController implements Initializable {
 
     @FXML public void annuler() { fermer(); }
 
-    private void fermer() { ((Stage) enonceField.getScene().getWindow()).close(); }
+    private void fermer() { 
+        if (tn.formini.controllers.DashboardController.instance != null) {
+            tn.formini.controllers.DashboardController.instance.ouvrirQuestion();
+        } else {
+            ((Stage) enonceField.getScene().getWindow()).close(); 
+        }
+    }
 }

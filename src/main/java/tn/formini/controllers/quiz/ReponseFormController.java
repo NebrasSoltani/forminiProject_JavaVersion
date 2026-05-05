@@ -26,6 +26,7 @@ public class ReponseFormController implements Initializable {
     private final ReponseService service = new ReponseService();
     private final QuestionService questionService = new QuestionService();
     private Reponse reponseExistante = null;
+    private Runnable onSuccess = null;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -55,6 +56,11 @@ public class ReponseFormController implements Initializable {
         }
     }
 
+    public void initData(Reponse r, Runnable onSuccess) {
+        this.onSuccess = onSuccess;
+        if (r != null) setReponse(r);
+    }
+
     @FXML
     public void sauvegarder() {
         errorLabel.setText("");
@@ -71,7 +77,12 @@ public class ReponseFormController implements Initializable {
 
             if (reponseExistante == null) service.ajouter(r);
             else service.modifier(r);
-            fermer();
+            
+            if (onSuccess != null) {
+                onSuccess.run();
+            } else {
+                fermer();
+            }
         } catch (IllegalArgumentException e) {
             errorLabel.setText("⚠ " + e.getMessage());
         }
@@ -79,5 +90,11 @@ public class ReponseFormController implements Initializable {
 
     @FXML public void annuler() { fermer(); }
 
-    private void fermer() { ((Stage) texteField.getScene().getWindow()).close(); }
+    private void fermer() {
+        if (tn.formini.controllers.DashboardController.instance != null) {
+            tn.formini.controllers.DashboardController.instance.ouvrirReponse();
+        } else {
+            ((Stage) texteField.getScene().getWindow()).close();
+        }
+    }
 }

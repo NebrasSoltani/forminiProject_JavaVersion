@@ -72,20 +72,23 @@ public class QuizController implements Initializable {
     }
 
     private void ouvrirFormulaire(Quiz quiz) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/QuizForm.fxml"));
-            Parent root = loader.load();
-            QuizFormController ctrl = loader.getController();
-            if (quiz != null) ctrl.setQuiz(quiz);
+        if (tn.formini.controllers.DashboardController.instance != null) {
+            tn.formini.controllers.DashboardController.instance.ouvrirFormulaireQuiz(quiz, this::chargerDonnees);
+        } else {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/QuizForm.fxml"));
+                Parent root = loader.load();
+                tn.formini.controllers.QuizFormController ctrl = loader.getController();
+                ctrl.initData(quiz, this::chargerDonnees);
 
-            Stage stage = new Stage();
-            stage.setTitle(quiz == null ? "Nouveau Quiz" : "Modifier Quiz");
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-            chargerDonnees();
-        } catch (IOException e) {
-            showAlert("Erreur", e.getMessage());
+                Stage stage = new Stage();
+                stage.setTitle(quiz == null ? "Nouveau Quiz" : "Modifier Quiz");
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.setScene(new Scene(root));
+                stage.showAndWait();
+            } catch (IOException e) {
+                showAlert("Erreur", e.getMessage());
+            }
         }
     }
 

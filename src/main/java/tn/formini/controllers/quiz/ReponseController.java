@@ -100,20 +100,23 @@ public class ReponseController implements Initializable {
     public void ouvrirFormAjout() { ouvrirFormulaire(null); }
 
     private void ouvrirFormulaire(Reponse reponse) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/ReponseForm.fxml"));
-            Parent root = loader.load();
-            ReponseFormController ctrl = loader.getController();
-            if (reponse != null) ctrl.setReponse(reponse);
+        if (tn.formini.controllers.DashboardController.instance != null) {
+            tn.formini.controllers.DashboardController.instance.ouvrirFormulaireReponse(reponse, this::chargerDonnees);
+        } else {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/ReponseForm.fxml"));
+                Parent root = loader.load();
+                tn.formini.controllers.ReponseFormController ctrl = loader.getController();
+                ctrl.initData(reponse, this::chargerDonnees);
 
-            Stage stage = new Stage();
-            stage.setTitle(reponse == null ? "Nouvelle Réponse" : "Modifier Réponse");
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-            chargerDonnees();
-        } catch (IOException e) {
-            System.out.println("Erreur formulaire réponse : " + e.getMessage());
+                Stage stage = new Stage();
+                stage.setTitle(reponse == null ? "Nouvelle Réponse" : "Modifier Réponse");
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.setScene(new Scene(root));
+                stage.showAndWait();
+            } catch (IOException e) {
+                System.out.println("Erreur formulaire réponse : " + e.getMessage());
+            }
         }
     }
 

@@ -23,19 +23,27 @@ public class QuizFormController implements Initializable {
 
     private final QuizService service = new QuizService();
     private Quiz quizExistant = null;
+    private Runnable onSuccess = null;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {}
 
     public void setQuiz(Quiz quiz) {
         this.quizExistant = quiz;
-        titreLabel.setText("Modifier Quiz");
-        titreField.setText(quiz.getTitre());
-        descriptionField.setText(quiz.getDescription());
-        dureeField.setText(String.valueOf(quiz.getDuree()));
-        noteMinField.setText(String.valueOf(quiz.getNote_minimale()));
-        melangerCheck.setSelected(quiz.isMelanger());
-        afficherCorrectionCheck.setSelected(quiz.isAfficher_correction());
+        if (quiz != null) {
+            titreLabel.setText("Modifier Quiz");
+            titreField.setText(quiz.getTitre());
+            descriptionField.setText(quiz.getDescription());
+            dureeField.setText(String.valueOf(quiz.getDuree()));
+            noteMinField.setText(String.valueOf(quiz.getNote_minimale()));
+            melangerCheck.setSelected(quiz.isMelanger());
+            afficherCorrectionCheck.setSelected(quiz.isAfficher_correction());
+        }
+    }
+
+    public void initData(Quiz quiz, Runnable onSuccess) {
+        this.onSuccess = onSuccess;
+        setQuiz(quiz);
     }
 
     @FXML
@@ -69,7 +77,11 @@ public class QuizFormController implements Initializable {
             } else {
                 service.modifier(quiz);
             }
-            fermer();
+            if (onSuccess != null) {
+                onSuccess.run();
+            } else {
+                fermer();
+            }
         } catch (NumberFormatException e) {
             errorLabel.setText("⚠ La durée et la note minimale doivent être des nombres.");
         } catch (IllegalArgumentException e) {
@@ -83,6 +95,10 @@ public class QuizFormController implements Initializable {
     }
 
     private void fermer() {
-        ((Stage) titreField.getScene().getWindow()).close();
+        if (tn.formini.controllers.DashboardController.instance != null) {
+            tn.formini.controllers.DashboardController.instance.ouvrirQuiz();
+        } else {
+            ((Stage) titreField.getScene().getWindow()).close();
+        }
     }
 }

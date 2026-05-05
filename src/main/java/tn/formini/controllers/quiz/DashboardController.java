@@ -126,4 +126,104 @@ public class DashboardController {
         activerBouton(btnApprenantQuiz);
         chargerVue("/fxml/quiz/ApprenantQuizList.fxml");
     }
+
+    public void ouvrirApprenantQuizPasser(tn.formini.entities.Apprenant apprenant, int formationId, int quizId) {
+        resetBoutons();
+        activerBouton(btnApprenantQuiz);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/ApprenantQuizPasser.fxml"));
+            Node vue = loader.load();
+            tn.formini.controllers.ApprenantQuizPasserController ctrl = loader.getController();
+            ctrl.initData(apprenant, formationId, quizId);
+            contentArea.getChildren().setAll(vue);
+        } catch (IOException e) {
+            System.out.println("Erreur ouverture Passer Quiz : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void ouvrirGenerateurIA(tn.formini.entities.Quiz quizToFilter, Runnable onSuccess) {
+        resetBoutons();
+        activerBouton(btnQuestion); // On reste logiquement sous "Questions"
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/GenererQuestionIA.fxml"));
+            Node vue = loader.load();
+            tn.formini.controllers.GenererQuestionIAController ctrl = loader.getController();
+            ctrl.initData(quizToFilter, () -> {
+                if (onSuccess != null) onSuccess.run();
+                // Return to Question view
+                if (quizToFilter != null) {
+                    ouvrirQuestionPourQuiz(quizToFilter);
+                } else {
+                    ouvrirQuestion();
+                }
+            });
+            contentArea.getChildren().setAll(vue);
+        } catch (IOException e) {
+            System.out.println("Erreur ouverture Générateur IA : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void ouvrirFormulaireQuiz(tn.formini.entities.Quiz quizToEdit, Runnable onSuccess) {
+        resetBoutons();
+        activerBouton(btnQuiz);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/QuizForm.fxml"));
+            Node vue = loader.load();
+            tn.formini.controllers.QuizFormController ctrl = loader.getController();
+            
+            // On lui passe un callback pour revenir à la liste des quiz
+            ctrl.initData(quizToEdit, () -> {
+                if (onSuccess != null) onSuccess.run();
+                ouvrirQuiz();
+            });
+            
+            contentArea.getChildren().setAll(vue);
+        } catch (IOException e) {
+            System.out.println("Erreur ouverture formulaire Quiz : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void ouvrirFormulaireQuestion(tn.formini.entities.Question questionToEdit, Runnable onSuccess) {
+        resetBoutons();
+        activerBouton(btnQuestion);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/QuestionForm.fxml"));
+            Node vue = loader.load();
+            tn.formini.controllers.QuestionFormController ctrl = loader.getController();
+            
+            // On lui passe un callback pour revenir à la liste des questions
+            ctrl.initData(questionToEdit, () -> {
+                if (onSuccess != null) onSuccess.run();
+                ouvrirQuestion();
+            });
+            
+            contentArea.getChildren().setAll(vue);
+        } catch (IOException e) {
+            System.out.println("Erreur ouverture formulaire Question : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    public void ouvrirFormulaireReponse(tn.formini.entities.Reponse reponseToEdit, Runnable onSuccess) {
+        resetBoutons();
+        activerBouton(btnReponse);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/ReponseForm.fxml"));
+            Node vue = loader.load();
+            tn.formini.controllers.ReponseFormController ctrl = loader.getController();
+            
+            // On lui passe un callback pour revenir à la liste des réponses
+            ctrl.initData(reponseToEdit, () -> {
+                if (onSuccess != null) onSuccess.run();
+                ouvrirReponse();
+            });
+            
+            contentArea.getChildren().setAll(vue);
+        } catch (IOException e) {
+            System.out.println("Erreur ouverture formulaire Réponse : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }
