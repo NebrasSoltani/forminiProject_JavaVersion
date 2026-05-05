@@ -15,10 +15,10 @@
         <Label fx:id="labelFormTitle" text="Ajouter un Blog" styleClass="page-title"/>
     </HBox>
 
-    <VBox styleClass="form-container" VBox.vgrow="ALWAYS" alignment="TOP_CENTER">
+    <VBox fx:id="formRoot" styleClass="admin-form-card" VBox.vgrow="ALWAYS" alignment="TOP_CENTER">
         <ScrollPane fitToWidth="true" styleClass="scroll-pane">
-            <GridPane hgap="30" vgap="20">
-                <padding><Insets bottom="30" left="30" right="30" top="30"/></padding>
+            <GridPane hgap="30" vgap="25">
+                <padding><Insets bottom="30" left="40" right="40" top="30"/></padding>
                 <columnConstraints>
                     <ColumnConstraints hgrow="ALWAYS" minWidth="350" />
                     <ColumnConstraints hgrow="ALWAYS" minWidth="250" />
@@ -39,26 +39,25 @@
 
                 <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
                     <Label text="Résumé" styleClass="form-label"/>
-                    <TextArea fx:id="fieldResume" styleClass="form-control" prefHeight="80" promptText="Court aperçu..." wrapText="true"/>
+                    <TextArea fx:id="fieldResume" styleClass="form-control" prefHeight="70" promptText="Court aperçu..." wrapText="true"/>
                 </VBox>
 
                 <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
                     <Label text="Contenu complet *" styleClass="form-label"/>
-                    <TextArea fx:id="fieldContenu" styleClass="form-control" prefHeight="250" promptText="Écrivez votre article ici..." wrapText="true"/>
+                    <TextArea fx:id="fieldContenu" styleClass="form-control" prefHeight="220" promptText="Écrivez votre article ici..." wrapText="true"/>
                     <Label fx:id="errContenu" styleClass="error-label" visible="false"/>
                 </VBox>
 
                 <!-- Media & Association -->
-                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="3" spacing="10">
-                    <Label text="Image de couverture (IA 🤖 supporté)" styleClass="form-label"/>
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="3" spacing="12">
+                    <Label text="Image de couverture (Locale ou IA 🤖)" styleClass="form-label"/>
                     <HBox spacing="10" alignment="CENTER_LEFT">
-                        <TextField fx:id="fieldImage" styleClass="form-control" promptText="URL Cloudinary" HBox.hgrow="ALWAYS" editable="false"/>
-                        <Button text="📁" onAction="#browseImage" styleClass="icon-btn"/>
-                        <Button text="🤖 IA" onAction="#handleGenerateAIImage" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" styleClass="icon-btn"/>
-                        <Button text="🔄" onAction="#handleGenerateAIImage" styleClass="icon-btn"/>
+                        <TextField fx:id="fieldImage" styleClass="form-control" promptText="Charger ou générer" HBox.hgrow="ALWAYS" editable="false"/>
+                        <Button text="📁 Charger" onAction="#browseImage" styleClass="btn-browse"/>
+                        <Button text="🤖 IA" onAction="#handleGenerateAIImage" styleClass="btn-ai"/>
                     </HBox>
-                    <StackPane alignment="CENTER" style="-fx-background-color: #ecf0f1; -fx-background-radius: 5;">
-                        <ImageView fx:id="blogPreview" fitHeight="120.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                    <StackPane alignment="CENTER" style="-fx-background-color: #f8fafc; -fx-background-radius: 15; -fx-border-color: #e2e8f0; -fx-border-radius: 15; -fx-border-width: 1;">
+                        <ImageView fx:id="blogPreview" fitHeight="120.0" fitWidth="220.0" pickOnBounds="true" preserveRatio="true" />
                         <ProgressIndicator fx:id="aiLoading" visible="false" maxHeight="30" maxWidth="30" />
                     </StackPane>
                 </VBox>
@@ -66,46 +65,47 @@
                 <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="3">
                     <Label text="Événement associé" styleClass="form-label"/>
                     <ComboBox fx:id="fieldEvenement" styleClass="form-control" maxWidth="Infinity" promptText="Lier à un événement"/>
+                    <Region VBox.vgrow="ALWAYS" />
+                    <HBox spacing="15" alignment="CENTER_LEFT">
+                        <padding><Insets top="10"/></padding>
+                        <CheckBox fx:id="fieldIsPublie" text="Publier l'article" styleClass="form-label"/>
+                        <VBox spacing="5" HBox.hgrow="ALWAYS">
+                             <Label text="Date" styleClass="form-label" style="-fx-font-size: 11px;"/>
+                             <DatePicker fx:id="fieldDatePublication" styleClass="form-control" maxWidth="Infinity" style="-fx-padding: 8 10;"/>
+                        </VBox>
+                    </HBox>
                 </VBox>
 
                 <!-- Assistant Rédaction GROQ -->
                 <VBox GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.columnSpan="2" spacing="8">
-                    <TitledPane text="🤖 Assistant Rédaction IA (Groq)" expanded="false" styleClass="form-control">
+                    <TitledPane text="🤖 Assistant Rédaction IA (Groq)" expanded="false" styleClass="form-control" style="-fx-padding: 0;">
                         <VBox spacing="10">
-                            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
-                            <ScrollPane fitToWidth="true" prefHeight="150" styleClass="scroll-pane">
-                                <VBox fx:id="chatBox" spacing="8">
-                                    <Label text="L'IA de Formini est prête à vous aider pour rédiger ou améliorer votre article !" textFill="#64748b"/>
+                            <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
+                            <ScrollPane fitToWidth="true" prefHeight="150" styleClass="scroll-pane" style="-fx-background-color: #f1f5f9; -fx-background-radius: 10;">
+                                <VBox fx:id="chatBox" spacing="10" style="-fx-padding: 10;">
+                                    <Label text="L'IA de Formini est prête à vous aider pour rédiger ou améliorer votre article !" textFill="#64748b" style="-fx-font-style: italic;"/>
                                 </VBox>
                             </ScrollPane>
                             <HBox spacing="10" alignment="CENTER_LEFT">
                                 <TextField fx:id="chatInput" promptText="Posez une question sur le titre ou le contenu..." HBox.hgrow="ALWAYS" styleClass="form-control"/>
-                                <Button text="Envoyer" onAction="#handleSendChatMessage" styleClass="btn-primary" style="-fx-padding: 8 15;"/>
+                                <Button text="Envoyer" onAction="#handleSendChatMessage" styleClass="btn-primary" style="-fx-padding: 10 20;"/>
                             </HBox>
                         </VBox>
                     </TitledPane>
                 </VBox>
 
-                <!-- Tags & Publication -->
-                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="5">
+                <!-- Tags -->
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.columnSpan="2">
                     <Label text="Mots-clés (Tags)" styleClass="form-label"/>
-                    <TextField fx:id="fieldTags" styleClass="form-control" promptText="java, dev, formation..."/>
+                    <TextField fx:id="fieldTags" styleClass="form-control" promptText="java, dev, formation... (séparés par des virgules)"/>
                 </VBox>
-
-                <HBox spacing="20" GridPane.columnIndex="1" GridPane.rowIndex="5" alignment="CENTER_LEFT">
-                    <VBox styleClass="form-group" HBox.hgrow="ALWAYS">
-                        <Label text="Date" styleClass="form-label"/>
-                        <DatePicker fx:id="fieldDatePublication" styleClass="form-control" maxWidth="Infinity"/>
-                    </VBox>
-                    <CheckBox fx:id="fieldIsPublie" text="Publier" styleClass="form-label"/>
-                </HBox>
             </GridPane>
         </ScrollPane>
     </VBox>
 
-    <HBox spacing="20" alignment="CENTER_RIGHT">
-        <Button text="Annuler" onAction="#goBack" styleClass="btn-secondary" style="-fx-padding: 12 30;"/>
-        <Button fx:id="btnSave" text="🚀 Enregistrer le Blog" onAction="#saveBlog" styleClass="btn-primary" style="-fx-padding: 12 40;"/>
+    <HBox spacing="20" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+        <Button text="Annuler" onAction="#goBack" styleClass="btn-secondary" prefWidth="120"/>
+        <Button fx:id="btnSave" text="🚀 Enregistrer le Blog" onAction="#saveBlog" styleClass="btn-primary" prefWidth="250"/>
     </HBox>
 
 </VBox>

@@ -15,10 +15,10 @@
         <Label fx:id="labelFormTitle" text="Ajouter un Événement" styleClass="page-title"/>
     </HBox>
 
-    <VBox styleClass="form-container" VBox.vgrow="ALWAYS" alignment="TOP_CENTER">
+    <VBox fx:id="formRoot" styleClass="admin-form-card" VBox.vgrow="ALWAYS" alignment="TOP_CENTER">
         <ScrollPane fitToWidth="true" styleClass="scroll-pane">
-            <GridPane hgap="30" vgap="20">
-                <padding><Insets bottom="30" left="30" right="30" top="30"/></padding>
+            <GridPane hgap="30" vgap="25">
+                <padding><Insets bottom="30" left="40" right="40" top="30"/></padding>
                 <columnConstraints>
                     <ColumnConstraints hgrow="ALWAYS" minWidth="300" />
                     <ColumnConstraints hgrow="ALWAYS" minWidth="300" />
@@ -38,7 +38,7 @@
 
                 <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
                     <Label text="Description *" styleClass="form-label"/>
-                    <TextArea fx:id="fieldDescription" styleClass="form-control" prefHeight="120" promptText="Décrivez votre événement..." wrapText="true"/>
+                    <TextArea fx:id="fieldDescription" styleClass="form-control" prefHeight="100" promptText="Décrivez votre événement..." wrapText="true"/>
                     <Label fx:id="errDescription" styleClass="error-label" visible="false"/>
                 </VBox>
 
@@ -65,22 +65,27 @@
                 </VBox>
 
                 <!-- Multimédia -->
-                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="4" spacing="10">
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="4" spacing="12">
                     <Label text="Image principale (Locale ou IA 🤖)" styleClass="form-label"/>
                     <HBox spacing="10" alignment="CENTER_LEFT">
-                        <TextField fx:id="fieldImage" styleClass="form-control" promptText="URL Cloudinary" HBox.hgrow="ALWAYS" editable="false"/>
-                        <Button text="📁" onAction="#browseImage" styleClass="icon-btn"/>
-                        <Button text="🤖 IA" onAction="#handleGenerateAIImage" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" styleClass="icon-btn"/>
-                        <Button text="🔄" onAction="#handleGenerateAIImage" styleClass="icon-btn"/>
+                        <TextField fx:id="fieldImage" styleClass="form-control" promptText="Cliquer sur charger ou générer" HBox.hgrow="ALWAYS" editable="false"/>
+                        <Button text="📁 Charger" onAction="#browseImage" styleClass="btn-browse"/>
+                        <Button text="🤖 IA" onAction="#handleGenerateAIImage" styleClass="btn-ai"/>
                     </HBox>
-                    <StackPane alignment="CENTER" style="-fx-background-color: #ecf0f1; -fx-background-radius: 5;">
-                        <ImageView fx:id="eventPreview" fitHeight="150.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" />
+                    <StackPane alignment="CENTER" style="-fx-background-color: #f8fafc; -fx-background-radius: 15; -fx-border-color: #e2e8f0; -fx-border-radius: 15; -fx-border-width: 1;">
+                        <ImageView fx:id="eventPreview" fitHeight="150.0" fitWidth="280.0" pickOnBounds="true" preserveRatio="true" />
                         <ProgressIndicator fx:id="aiLoading" visible="false" maxHeight="40" maxWidth="40" />
                     </StackPane>
                 </VBox>
                 <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="4">
                     <Label text="Image 360°" styleClass="form-label"/>
                     <TextField fx:id="fieldImage360" styleClass="form-control" promptText="URL 360° (Optionnel)"/>
+                    <Region VBox.vgrow="ALWAYS" />
+                    <HBox spacing="30" alignment="CENTER_LEFT">
+                        <padding><Insets top="10"/></padding>
+                        <CheckBox fx:id="fieldIsActif" text="Événement Actif" styleClass="form-label"/>
+                        <CheckBox fx:id="fieldLive" text="En direct (Live)" styleClass="form-label"/>
+                    </HBox>
                 </VBox>
 
                 <!-- Statut & Options -->
@@ -88,17 +93,13 @@
                     <Label text="Lien du Stream (Live)" styleClass="form-label"/>
                     <TextField fx:id="fieldStreamUrl" styleClass="form-control" promptText="Lien de diffusion"/>
                 </VBox>
-                <HBox spacing="30" GridPane.columnIndex="1" GridPane.rowIndex="5" alignment="CENTER_LEFT">
-                    <CheckBox fx:id="fieldIsActif" text="Actif" styleClass="form-label"/>
-                    <CheckBox fx:id="fieldLive" text="En direct (Live)" styleClass="form-label"/>
-                </HBox>
-
-                <!-- Catégorisation -->
-                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="6">
+                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="5">
                     <Label text="Tags" styleClass="form-label"/>
                     <TextField fx:id="fieldTags" styleClass="form-control" promptText="Tags (séparés par des virgules)"/>
                 </VBox>
-                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="6">
+
+                <!-- Filières -->
+                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="6" GridPane.columnSpan="2">
                     <Label text="Filières" styleClass="form-label"/>
                     <TextField fx:id="fieldFilieres" styleClass="form-control" promptText="Filières concernées"/>
                 </VBox>
@@ -106,9 +107,9 @@
         </ScrollPane>
     </VBox>
 
-    <HBox spacing="20" alignment="CENTER_RIGHT">
-        <Button text="Annuler" onAction="#goBack" styleClass="btn-secondary" style="-fx-padding: 12 30;"/>
-        <Button fx:id="btnSave" text="🚀 Enregistrer l'événement" onAction="#saveEvenement" styleClass="btn-primary" style="-fx-padding: 12 40;"/>
+    <HBox spacing="20" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+        <Button text="Annuler" onAction="#goBack" styleClass="btn-secondary" prefWidth="120"/>
+        <Button fx:id="btnSave" text="🚀 Enregistrer l'événement" onAction="#saveEvenement" styleClass="btn-primary" prefWidth="250"/>
     </HBox>
 
 </VBox>

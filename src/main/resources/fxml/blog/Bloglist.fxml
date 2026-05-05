@@ -21,7 +21,7 @@
         <ComboBox fx:id="filterCategorie" promptText="Catégorie"/>
         <ComboBox fx:id="sortOptions" promptText="Trier par..." prefWidth="150"/>
         <ComboBox fx:id="filterStatus" promptText="Statut"/>
-        <Button text="Réinitialiser" onAction="#resetFilters" styleClass="icon-btn"/>
+        <Button text="Réinitialiser" onAction="#resetFilters" style="-fx-background-color: #64748b; -fx-text-fill: white; -fx-padding: 6 15; -fx-background-radius: 6; -fx-cursor: hand; -fx-font-weight: bold;"/>
         <Region HBox.hgrow="ALWAYS"/>
         <Label fx:id="labelCount" text="0 blog(s)" styleClass="topbar-date"/>
     </HBox>

@@ -130,136 +130,125 @@ public class HomeController implements Initializable {
         evts.forEach(e -> eventCardsBox.getChildren().add(creerCarteEvenement(e)));
     }
 
-    /** Construit une carte événement (230×400 env.) */
+    /** Construit une carte événement selon la Charte Graphique Formini (Light Theme) */
     private VBox creerCarteEvenement(Evenement e) {
         VBox card = new VBox();
         card.getStyleClass().add("home-card");
-        card.setPrefWidth(250);
-        card.setMaxWidth(250);
-        card.setStyle("-fx-background-color: white; -fx-background-radius: 14;"
-                + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.10), 12, 0, 0, 4);"
+        card.setPrefWidth(280);
+        card.setMaxWidth(280);
+        /* Fond: Clair #FFFFFF */
+        card.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 16;"
+                + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 15, 0, 0, 5);"
                 + "-fx-cursor: hand;");
 
-        /* ── Hover effect ── */
+        /* ── Hover effect accent violet #5B48D9 ── */
         card.setOnMouseEntered(ev -> card.setStyle(card.getStyle()
-                + "-fx-effect: dropshadow(three-pass-box, rgba(99,102,241,0.22), 18, 0, 0, 8);"
-                + "-fx-translate-y: -4;"));
+                + "-fx-effect: dropshadow(three-pass-box, rgba(91,72,217,0.25), 20, 0, 0, 8);"
+                + "-fx-translate-y: -6;"));
         card.setOnMouseExited(ev -> {
-            card.setStyle("-fx-background-color: white; -fx-background-radius: 14;"
-                    + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.10), 12, 0, 0, 4);"
+            card.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 16;"
+                    + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 15, 0, 0, 5);"
                     + "-fx-cursor: hand;");
             card.setTranslateY(0);
         });
 
-        /* ── Image ── */
+        /* ── Image ── Fond Surface #F3F4F6 */
         StackPane imgBox = new StackPane();
-        imgBox.setPrefHeight(150);
-        imgBox.setMaxHeight(150);
-        imgBox.setStyle("-fx-background-color: #dde1f4; -fx-background-radius: 14 14 0 0;");
+        imgBox.setPrefHeight(160);
+        imgBox.setMaxHeight(160);
+        imgBox.setStyle("-fx-background-color: #F8FAFC; -fx-background-radius: 16 16 0 0;");
         imgBox.setAlignment(Pos.CENTER);
 
-        Label placeholder = new Label("📅");
-        placeholder.setStyle("-fx-font-size: 40px;");
+        Label placeholder = new Label("Image de l'événement");
+        placeholder.setStyle("-fx-text-fill: #9CA3AF; -fx-font-size: 14px;");
         imgBox.getChildren().add(placeholder);
 
-        /* Chargement image en arrière-plan (idem ancien HomeController) */
         if (e.getImage() != null && !e.getImage().trim().isEmpty()) {
-            chargerImageAsync(e.getImage(), imgBox, 250, 150);
+            chargerImageAsync(e.getImage(), imgBox, 280, 160);
         }
 
-        /* ── Badge LIVE clignotant ── */
-        if (e.isLive()) {
-            Label liveBadge = new Label("🔴 LIVE");
-            liveBadge.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white;"
-                    + "-fx-font-size: 10px; -fx-font-weight: bold;"
-                    + "-fx-padding: 3 8; -fx-background-radius: 20;");
-            FadeTransition ft = new FadeTransition(Duration.millis(700), liveBadge);
-            ft.setFromValue(1.0);
-            ft.setToValue(0.2);
-            ft.setCycleCount(FadeTransition.INDEFINITE);
-            ft.setAutoReverse(true);
-            ft.play();
-            StackPane.setAlignment(liveBadge, Pos.TOP_RIGHT);
-            StackPane.setMargin(liveBadge, new Insets(8));
-            imgBox.getChildren().add(liveBadge);
-        }
+        /* ── Corps (Body) de la carte ── */
+        VBox body = new VBox(10);
+        body.setPadding(new Insets(20));
+        body.setAlignment(Pos.TOP_CENTER); // Centrage fidèle à la charte
 
         /* ── Badge type ── */
-        String typeLabel = e.getType() != null ? e.getType().toUpperCase() : "ÉVÉNEMENT";
-        Label badge = new Label(typeLabel);
-        badge.setStyle(badgeCouleurEvenement(e.getType()));
+        String typeStr = e.getType() != null ? e.getType() : "Formation";
+        Label badge = new Label(capitalize(typeStr));
+        String badgeColor = switch(typeStr.toLowerCase()) {
+            case "atelier" -> "#2563EB";     // Accent Bleu
+            case "webinaire" -> "#0BBFA2";   // Accent Vert
+            default -> "#5B48D9";            // Primaire 
+        };
+        badge.setStyle("-fx-background-color: " + badgeColor + "; -fx-text-fill: white;"
+                + "-fx-font-size: 11px; -fx-font-weight: bold; -fx-padding: 5 16;"
+                + "-fx-background-radius: 20;");
 
-        /* ── Titre ── */
-        Label titre = new Label(e.getTitre() != null ? e.getTitre() : "—");
-        titre.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1e293b;");
-        titre.setMaxWidth(220);
+        /* ── Titre Principal ── */
+        Label titre = new Label(e.getTitre() != null ? e.getTitre() : "Titre de l'événement");
+        titre.setStyle("-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #1e293b;");
+        titre.setMaxWidth(240);
         titre.setWrapText(true);
+        titre.setAlignment(Pos.CENTER);
+        titre.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
-        /* ── Date ── */
-        String dateStr = e.getDate_debut() != null ? sdf.format(e.getDate_debut()) : "—";
+        /* ── Description courte ── */
+        String descStr = e.getDescription() != null ? e.getDescription() : "Description courte...";
+        if(descStr.length() > 50) descStr = descStr.substring(0, 50) + "...";
+        Label desc = new Label(descStr);
+        desc.setStyle("-fx-font-size: 12px; -fx-text-fill: #64748b;");
+        desc.setMaxWidth(240);
+        desc.setWrapText(true);
+        desc.setAlignment(Pos.CENTER);
+        desc.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+        /* ── Infos : Lieu, Date, Places ── */
+        VBox infosBox = new VBox(4);
+        infosBox.setAlignment(Pos.CENTER);
+        
+        Label lieu = new Label("📍 " + (e.getLieu() != null ? e.getLieu() : "Lieu de l'événement"));
+        lieu.setStyle("-fx-font-size: 11px; -fx-text-fill: #64748b;");
+        
+        String dateStr = e.getDate_debut() != null ? sdf.format(e.getDate_debut()) : "jj/mm/aaaa";
         Label date = new Label("🗓 " + dateStr);
-        date.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
-
-        /* ── Lieu ── */
-        Label lieu = new Label("📍 " + (e.getLieu() != null ? e.getLieu() : "—"));
-        lieu.setStyle("-fx-font-size: 12px; -fx-text-fill: #64748b;");
-        lieu.setMaxWidth(220);
-        lieu.setWrapText(true);
-
-        /* ── Places ── */
-        String places = e.getNombre_places() != null
-                ? e.getNombre_places() + " places" : "Places illimitées";
+        date.setStyle("-fx-font-size: 11px; -fx-text-fill: #64748b;");
+        
+        String places = e.getNombre_places() != null ? e.getNombre_places() + " place(s) restante(s)" : "N place(s) restante(s)";
         Label placesLbl = new Label("👥 " + places);
-        placesLbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
+        placesLbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #64748b;");
+        
+        infosBox.getChildren().addAll(lieu, date,placesLbl);
 
-        /* ── Bouton "Voir >" ── */
-        Button voir = new Button("Voir ›");
-        voir.setStyle("-fx-background-color: #10b981; -fx-text-fill: white;"
-                + "-fx-font-weight: bold; -fx-font-size: 12px;"
-                + "-fx-padding: 8 20; -fx-background-radius: 8; -fx-cursor: hand;");
+        /* ── Bouton Principal ── Primaire #5B48D9 */
+        Button voir = new Button("Connectez-Vous Pour Participer");
+        voir.setStyle("-fx-background-color: #5B48D9; -fx-text-fill: white;"
+                + "-fx-font-weight: 600; -fx-font-size: 11px; -fx-padding: 10 20;"
+                + "-fx-background-radius: 20; -fx-cursor: hand;");
         voir.setMaxWidth(Double.MAX_VALUE);
-        voir.setOnMouseEntered(ev -> voir.setStyle(voir.getStyle().replace("#10b981", "#059669")));
-        voir.setOnMouseExited(ev  -> voir.setStyle(voir.getStyle().replace("#059669", "#10b981")));
+        voir.setOnMouseEntered(ev -> voir.setStyle(voir.getStyle().replace("#5B48D9", "#4338ca")));
+        voir.setOnMouseExited(ev  -> voir.setStyle(voir.getStyle().replace("#4338ca", "#5B48D9")));
 
-        /* ── Bouton 360° ── */
-        Button btn360 = new Button("🌐 Voir 360°");
-        btn360.setMaxWidth(Double.MAX_VALUE);
-        if (e.getImage360() != null && !e.getImage360().trim().isEmpty()) {
-            btn360.setStyle("-fx-background-color: #f1f5f9; -fx-text-fill: #475569;"
-                    + "-fx-font-weight: bold; -fx-font-size: 12px;"
-                    + "-fx-padding: 8 15; -fx-background-radius: 8; -fx-cursor: hand;");
-            btn360.setOnAction(ev -> {
-                try {
-                    String url360 = e.getImage360();
-                    if (!url360.startsWith("http")) url360 = "https://" + url360;
-                    java.awt.Desktop.getDesktop().browse(new java.net.URI(url360));
-                } catch (Exception ex) {
-                    System.err.println("[HomeController] Erreur 360° : " + ex.getMessage());
-                }
-            });
-        } else {
-            btn360.setDisable(true);
-            btn360.setText("🌐 360° indisponible");
-            btn360.setStyle("-fx-background-color: #f8fafc; -fx-text-fill: #cbd5e1;"
-                    + "-fx-font-size: 11px; -fx-padding: 8 15; -fx-background-radius: 8;");
-        }
+        /* ── Actions (Live / 360) horizontales ── */
+        HBox actionsRow = new HBox(8);
+        actionsRow.setAlignment(Pos.CENTER);
+        actionsRow.setMaxWidth(Double.MAX_VALUE);
 
-        /* ── Bouton Live 🔴 avec animation clignotante ── */
-        Button btnLive = new Button();
+        // Bouton LIVE - Alerte #E53E3E
+        Button btnLive = new Button("● VOIR LIVE");
         btnLive.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(btnLive, Priority.ALWAYS);
         if (e.isLive()) {
-            btnLive.setText("🔴 Voir en live");
-            btnLive.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white;"
-                    + "-fx-font-weight: bold; -fx-font-size: 12px;"
-                    + "-fx-padding: 8 15; -fx-background-radius: 8; -fx-cursor: hand;");
-            /* Animation clignotante */
+            btnLive.setStyle("-fx-background-color: #E53E3E; -fx-text-fill: white;"
+                    + "-fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 8 10;"
+                    + "-fx-background-radius: 20; -fx-cursor: hand;");
+            
             FadeTransition ft = new FadeTransition(Duration.millis(800), btnLive);
             ft.setFromValue(1.0);
             ft.setToValue(0.4);
             ft.setCycleCount(FadeTransition.INDEFINITE);
             ft.setAutoReverse(true);
             ft.play();
-            /* Action : ouvre le stream dans le navigateur */
+
             btnLive.setOnAction(ev -> {
                 String liveUrl = e.getStream_url();
                 if (liveUrl == null || liveUrl.trim().isEmpty()) liveUrl = e.getUrl_live();
@@ -267,24 +256,40 @@ public class HomeController implements Initializable {
                     try {
                         if (!liveUrl.startsWith("http")) liveUrl = "https://" + liveUrl;
                         java.awt.Desktop.getDesktop().browse(new java.net.URI(liveUrl));
-                    } catch (Exception ex) {
-                        System.err.println("[HomeController] Erreur live : " + ex.getMessage());
-                    }
+                    } catch (Exception ex) {}
                 }
             });
         } else {
-            btnLive.setText("⚪ Live indisponible");
             btnLive.setDisable(true);
-            btnLive.setStyle("-fx-background-color: #f8fafc; -fx-text-fill: #cbd5e1;"
-                    + "-fx-font-size: 11px; -fx-padding: 8 15; -fx-background-radius: 8;");
+            btnLive.setStyle("-fx-background-color: #f1f5f9; -fx-text-fill: #9CA3AF;"
+                    + "-fx-font-size: 10px; -fx-padding: 8 10; -fx-background-radius: 20;");
         }
 
-        /* ── Assemblage du body ── */
-        VBox body = new VBox(8);
-        body.setPadding(new Insets(14));
-        body.getChildren().addAll(badge, titre, date, lieu, placesLbl, voir, btn360, btnLive);
-        card.getChildren().addAll(imgBox, body);
+        // Bouton 360 - Vert #0BBFA2 / Blue
+        Button btn360 = new Button("VOIR 360°");
+        btn360.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(btn360, Priority.ALWAYS);
+        if (e.getImage360() != null && !e.getImage360().trim().isEmpty()) {
+            btn360.setStyle("-fx-background-color: #0ea5e9; -fx-text-fill: white;"
+                    + "-fx-font-weight: bold; -fx-font-size: 10px; -fx-padding: 8 10;"
+                    + "-fx-background-radius: 20; -fx-cursor: hand;");
+            btn360.setOnAction(ev -> {
+                try {
+                    String url360 = e.getImage360();
+                    if (!url360.startsWith("http")) url360 = "https://" + url360;
+                    java.awt.Desktop.getDesktop().browse(new java.net.URI(url360));
+                } catch (Exception ex) {}
+            });
+        } else {
+            btn360.setDisable(true);
+            btn360.setStyle("-fx-background-color: #f1f5f9; -fx-text-fill: #9CA3AF;"
+                    + "-fx-font-size: 10px; -fx-padding: 8 10; -fx-background-radius: 20;");
+        }
 
+        actionsRow.getChildren().addAll(btnLive, btn360);
+
+        body.getChildren().addAll(badge, titre, desc, infosBox, voir, actionsRow);
+        card.getChildren().addAll(imgBox, body);
         return card;
     }
 

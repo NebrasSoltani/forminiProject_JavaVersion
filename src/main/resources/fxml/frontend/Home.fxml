@@ -28,50 +28,43 @@
     <VBox spacing="45" style="-fx-background-color: #f8fafc;">
         <padding><Insets top="40" right="50" bottom="60" left="50"/></padding>
 
+        <!--  HERO SECTION (Inspiration Light Theme)                            -->
         <!-- ══════════════════════════════════════════════════════════════ -->
-        <!--  HERO SECTION                                                  -->
-        <!-- ══════════════════════════════════════════════════════════════ -->
-        <VBox styleClass="hero-section" spacing="30" alignment="CENTER_LEFT">
-            <VBox spacing="12">
-                <Label text="Bienvenue sur Formini.tn"
-                       style="-fx-text-fill: rgba(255,255,255,0.85); -fx-font-weight: bold; -fx-font-size: 17px;"/>
-                <TextFlow lineSpacing="6">
-                    <Text text="Formations " styleClass="hero-title"/>
-                    <Text text="certifiantes" styleClass="hero-title"
-                          style="-fx-fill: #ffa502; -fx-font-style: italic;"/>
-                    <Text text=" avec des " styleClass="hero-title"/>
-                    <Text text="experts" styleClass="hero-title" style="-fx-fill: #ffa502;"/>
+        <HBox spacing="40" alignment="CENTER_LEFT" style="-fx-padding: 20 0 40 0;">
+            <!-- Left content -->
+            <VBox spacing="18" HBox.hgrow="ALWAYS" maxWidth="600">
+                <Label text="ACCOMPAGNEMENT POST-FORMATION"
+                       style="-fx-text-fill: #5B48D9; -fx-font-weight: 800; -fx-font-size: 11px; -fx-letter-spacing: 1.5;"/>
+                
+                <TextFlow lineSpacing="8">
+                    <Text text="Trouvez un " style="-fx-fill: #1e293b; -fx-font-size: 38px; -fx-font-weight: 900; -fx-font-family: 'Segoe UI', Arial, sans-serif;"/>
+                    <Text text="stage" style="-fx-fill: #5B48D9; -fx-font-size: 38px; -fx-font-weight: 900; -fx-font-family: 'Segoe UI', Arial, sans-serif;"/>
+                    <Text text=" ou" style="-fx-fill: #1e293b; -fx-font-size: 38px; -fx-font-weight: 900; -fx-font-family: 'Segoe UI', Arial, sans-serif;"/>
+                    <Text text="&#10;un " style="-fx-fill: #1e293b; -fx-font-size: 38px; -fx-font-weight: 900; -fx-font-family: 'Segoe UI', Arial, sans-serif;"/>
+                    <Text text="emploi" style="-fx-fill: #b4a8ff; -fx-font-size: 38px; -fx-font-weight: 900; -fx-font-family: 'Segoe UI', Arial, sans-serif;"/>
+                    <Text text=" facilement" style="-fx-fill: #1e293b; -fx-font-size: 38px; -fx-font-weight: 900; -fx-font-family: 'Segoe UI', Arial, sans-serif;"/>
                 </TextFlow>
-                <Label text="Développez vos compétences avec des formateurs expérimentés."
-                       styleClass="hero-subtitle" wrapText="true" maxWidth="700"/>
+
+                <Label text="Après votre formation, nous vous aidons à postuler aux offres d'emploi et de stage publiées par nos partenaires."
+                       wrapText="true"
+                       style="-fx-font-size: 14px; -fx-text-fill: #64748b; -fx-line-spacing: 5;"/>
+
+                <Button text="En Savoir Plus" 
+                        style="-fx-background-color: #5B48D9; -fx-text-fill: white;
+                               -fx-font-size: 13px; -fx-font-weight: bold;
+                               -fx-padding: 12 30; -fx-background-radius: 25; -fx-cursor: hand;">
+                    <VBox.margin><Insets top="10"/></VBox.margin>
+                </Button>
             </VBox>
 
-            <!-- Stats -->
-            <HBox spacing="40" alignment="CENTER_LEFT" styleClass="hero-stats-container">
-                <VBox styleClass="stat-item">
-                    <Label text="5000+" styleClass="stat-value"/>
-                    <Label text="Apprenants" styleClass="stat-label"/>
+            <!-- Optional right side decorative element -->
+            <StackPane HBox.hgrow="SOMETIMES" alignment="CENTER_RIGHT">
+                <VBox alignment="CENTER" prefHeight="250" prefWidth="350" 
+                      style="-fx-background-color: #eef2ff; -fx-background-radius: 40 100 40 100;">
+                    <Label text="Formini Academy" style="-fx-font-size: 24px; -fx-text-fill: #5B48D9; -fx-font-weight: bold; opacity: 0.5;"/>
                 </VBox>
-                <Separator orientation="VERTICAL" styleClass="stat-sep" prefHeight="40"/>
-                <VBox styleClass="stat-item">
-                    <Label text="120+" styleClass="stat-value"/>
-                    <Label text="Formations" styleClass="stat-label"/>
-                </VBox>
-                <Separator orientation="VERTICAL" styleClass="stat-sep" prefHeight="40"/>
-                <VBox styleClass="stat-item">
-                    <Label text="98%" styleClass="stat-value"/>
-                    <Label text="Satisfaction" styleClass="stat-label"/>
-                </VBox>
-            </HBox>
-
-            <HBox spacing="20">
-                <Button text="Rejoindre Formini" styleClass="main-button-onix"
-                        style="-fx-background-color: -fx-accent; -fx-padding: 16 40; -fx-font-size: 15px;"/>
-                <Button text="Nos Formations" styleClass="main-button-onix"
-                        style="-fx-background-color: transparent; -fx-border-color: white;
-                               -fx-border-radius: 25; -fx-padding: 16 40; -fx-font-size: 15px;"/>
-            </HBox>
-        </VBox>
+            </StackPane>
+        </HBox>
 
         <!-- ══════════════════════════════════════════════════════════════ -->
         <!--  BARRE DE FILTRAGE PAR TYPE                                    -->
