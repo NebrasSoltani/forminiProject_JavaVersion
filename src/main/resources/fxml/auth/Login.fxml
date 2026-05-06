@@ -36,23 +36,17 @@
         <VBox maxWidth="480" spacing="24" alignment="CENTER">
 
             <!-- Logo & Branding -->
-            <VBox spacing="16" alignment="CENTER" styleClass="login-branding">
-                <HBox spacing="12" alignment="CENTER" styleClass="logo-container">
-                    <StackPane styleClass="logo-bg">
-                        <Label text="F" styleClass="logo-letter"/>
-                    </StackPane>
-                    <VBox spacing="2">
-                        <Label text="Formini" styleClass="brand-name"/>
-                        <Label text="فورميني" styleClass="brand-arabic"/>
-                    </VBox>
-                </HBox>
+            <VBox spacing="10" alignment="CENTER" styleClass="login-branding">
+                <StackPane styleClass="logo-bg">
+                    <Label text="⚡" style="-fx-font-size: 28px; -fx-text-fill: white;"/>
+                </StackPane>
+                <Label text="FORMINI" style="-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: white; -fx-letter-spacing: 4;"/>
             </VBox>
 
             <!-- En-tête -->
-            <VBox spacing="12" alignment="CENTER" styleClass="login-hero">
-                <Label text="Connexion" styleClass="login-hero-kicker"/>
-                <Label text="Bienvenue !" styleClass="login-hero-title"/>
-                <Label text="Connectez-vous pour accéder à votre espace formation"
+            <VBox spacing="8" alignment="CENTER" styleClass="login-hero">
+                <Label text="BIENVENUE !" styleClass="login-hero-title" style="-fx-font-size: 40px;"/>
+                <Label text="Accédez à votre plateforme d'apprentissage"
                        wrapText="true" styleClass="login-hero-sub" maxWidth="400" alignment="CENTER"/>
             </VBox>
 
@@ -97,11 +91,9 @@
                     </VBox>
 
                     <!-- Bouton de connexion -->
-                    <Button fx:id="btnLogin" text="Se connecter" onAction="#onLogin" styleClass="btn-primary login-btn-primary login-btn-enhanced" maxWidth="Infinity">
+                    <Button fx:id="btnLogin" text="SE CONNECTER" onAction="#onLogin" styleClass="signup-btn-primary" maxWidth="Infinity" style="-fx-font-size: 14px; -fx-letter-spacing: 1;">
                         <graphic>
-                            <HBox spacing="8" alignment="CENTER">
-                                <Label text="🔐" styleClass="login-btn-icon"/>
-                            </HBox>
+                            <Label text="➜" style="-fx-text-fill: white; -fx-font-size: 16px;"/>
                         </graphic>
                     </Button>
 

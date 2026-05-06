@@ -2336,123 +2336,238 @@
     -fx-padding: 10px 12px;
 }
 
-/* ── Dark Auth Theme (SaaS Premium) ───────────────────────── */
+/* ── Refined Dark Auth Theme (SaaS Premium) ───────────────── */
 .login-page, .signup-page {
-    -fx-background-color: #0f172a; /* Deep Navy */
+    -fx-background-color: #020617; /* Even deeper navy */
 }
 
 .login-card, .signup-card {
-    -fx-background-color: #1e293b; /* Dark Slate */
-    -fx-border-color: rgba(255, 255, 255, 0.1);
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 40, 0, 0, 10);
+    -fx-background-color: rgba(30, 41, 59, 0.7); /* Translucent Slate */
+    -fx-background-radius: 28px;
+    -fx-border-color: rgba(255, 255, 255, 0.08);
+    -fx-border-width: 1px;
+    -fx-border-radius: 28px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 50, 0, 0, 15);
+    -fx-backdrop-filter: blur(20px); /* Hint for future implementation or just for logic */
 }
 
 .login-hero-title, .signup-hero-title, .brand-name {
     -fx-text-fill: white;
+    -fx-font-weight: 900;
 }
 
 .login-hero-sub, .signup-hero-sub, .login-text, .signup-nav-text, .form-label {
     -fx-text-fill: #94a3b8;
+    -fx-font-weight: 600;
 }
 
+/* Form Controls - Neon Dark Style */
 .login-field, .signup-field, .form-control {
-    -fx-background-color: #0f172a;
-    -fx-border-color: #334155;
+    -fx-background-color: rgba(15, 23, 42, 0.6);
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-width: 1.5px;
     -fx-text-fill: white;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-padding: 12px 16px;
+    -fx-transition: all 0.2s ease;
 }
 
 .login-field:focused, .signup-field:focused, .form-control:focused {
-    -fx-border-color: #4f46e5;
-    -fx-background-color: #1e293b;
+    -fx-border-color: #6366f1;
+    -fx-background-color: rgba(15, 23, 42, 0.8);
+    -fx-effect: dropshadow(gaussian, rgba(99, 102, 241, 0.3), 15, 0, 0, 0);
 }
 
+.login-field:hover, .signup-field:hover, .form-control:hover {
+    -fx-border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Links */
 .login-link, .login-link-bold, .signup-nav-link {
     -fx-text-fill: #38bdf8;
+    -fx-cursor: hand;
+    -fx-underline: false;
 }
 
 .login-link:hover, .signup-nav-link:hover {
     -fx-text-fill: #7dd3fc;
+    -fx-translate-y: -1px;
 }
 
-.login-divider .divider-line, .signup-sep {
-    -fx-background-color: #334155;
+/* Main Buttons */
+.login-btn-primary, .signup-btn-primary {
+    -fx-background-color: linear-gradient(to right, #4f46e5, #6366f1);
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+    -fx-background-radius: 14px;
+    -fx-padding: 14px 32px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(79, 70, 229, 0.4), 20, 0, 0, 8);
 }
 
-.divider-text {
-    -fx-text-fill: #64748b;
-}
-
-.btn-oauth {
-    -fx-background-color: #0f172a;
-    -fx-border-color: #334155;
+/* ── ULTIMATE DARK AUTH OVERRIDES (Force SaaS Premium) ─────── */
+.login-page, .signup-page, .login-page *, .signup-page * {
+    /* Base text color for everything in auth */
     -fx-text-fill: #e2e8f0;
+}
+
+/* Force Dark Backgrounds on Inputs */
+.login-page .text-field, .login-page .password-field, .login-page .combo-box, .login-page .date-picker,
+.signup-page .text-field, .signup-page .password-field, .signup-page .combo-box, .signup-page .date-picker,
+.signup-page .text-area {
+    -fx-background-color: rgba(15, 23, 42, 0.8) !important;
+    -fx-border-color: rgba(255, 255, 255, 0.1) !important;
+    -fx-text-fill: white !important;
+    -fx-prompt-text-fill: #64748b !important;
+    -fx-background-radius: 12px !important;
+    -fx-border-radius: 12px !important;
+}
+
+.login-page .text-field:focused, .login-page .password-field:focused,
+.signup-page .text-field:focused, .signup-page .password-field:focused {
+    -fx-border-color: #6366f1 !important;
+    -fx-background-color: rgba(15, 23, 42, 0.9) !important;
+}
+
+/* Labels and Sections */
+.login-hero-title, .signup-hero-title {
+    -fx-text-fill: white !important;
+}
+
+.form-label, .login-hero-sub, .signup-hero-sub {
+    -fx-text-fill: #94a3b8 !important;
+}
+
+/* Fix Blue on Blue visibility */
+.login-link, .signup-nav-link, .login-link-bold {
+    -fx-text-fill: #38bdf8 !important; /* Brighter Cyan */
+}
+
+.login-checkbox, .login-checkbox .label {
+    -fx-text-fill: #cbd5e1 !important;
+}
+
+/* OAuth Buttons Overrides */
+.btn-oauth {
+    -fx-background-color: rgba(255, 255, 255, 0.05) !important;
+    -fx-border-color: rgba(255, 255, 255, 0.1) !important;
+    -fx-text-fill: #e2e8f0 !important;
 }
 
 .btn-oauth:hover {
-    -fx-background-color: #1e293b;
-    -fx-border-color: #475569;
+    -fx-background-color: rgba(255, 255, 255, 0.1) !important;
+    -fx-border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
-.oauth-text {
+/* Main Primary Buttons */
+.signup-btn-primary {
+    -fx-background-color: linear-gradient(to right, #4f46e5, #6366f1) !important;
+    -fx-text-fill: white !important;
+}
+
+/* ── ANTI-WHITE BUTTONS OVERRIDE (Total Dark Mode) ────────── */
+.login-page .button, .signup-page .button {
+    -fx-background-color: rgba(255, 255, 255, 0.08) !important;
+    -fx-border-color: rgba(255, 255, 255, 0.15) !important;
+    -fx-text-fill: white !important;
+    -fx-background-radius: 12px !important;
+    -fx-border-radius: 12px !important;
+}
+
+.login-page .button:hover, .signup-page .button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.15) !important;
+    -fx-border-color: #6366f1 !important;
+}
+
+/* ── ALERT MESSAGES VISIBILITY ────────────────────────────── */
+.login-alert, .signup-alert, .login-alert-error, .signup-alert-error {
+    -fx-text-fill: #000000 !important; /* Force black text for alerts */
+    -fx-font-weight: 800 !important;
+}
+
+/* Ensure other alert types are also readable */
+.login-alert-success, .login-alert-info {
+    -fx-text-fill: #000000 !important;
+}
+
+.login-btn-primary:hover, .signup-btn-primary:hover {
+    -fx-background-color: linear-gradient(to right, #4338ca, #4f46e5);
+    -fx-translate-y: -2px;
+    -fx-effect: dropshadow(gaussian, rgba(79, 70, 229, 0.6), 25, 0, 0, 10);
+}
+
+/* OAuth Buttons - Dark Glass */
+.btn-oauth {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-border-color: rgba(255, 255, 255, 0.1);
     -fx-text-fill: #e2e8f0;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
 }
 
-.login-checkbox, .signup-role-radio {
-    -fx-text-fill: #e2e8f0;
+.btn-oauth:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-border-color: rgba(255, 255, 255, 0.2);
+    -fx-translate-y: -1px;
 }
 
-.signup-role-tile {
-    -fx-background-color: #0f172a;
-    -fx-border-color: #334155;
-}
-
-.signup-role-tile:hover {
-    -fx-background-color: #1e293b;
-    -fx-border-color: #4f46e5;
-}
-
-.signup-role-tile-selected {
-    -fx-background-color: rgba(79, 70, 229, 0.1);
-    -fx-border-color: #4f46e5;
+/* Signup Specific Fixes */
+.signup-nav {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(255, 255, 255, 0.05);
+    -fx-border-width: 1px 0 0 0;
+    -fx-padding: 20 0;
 }
 
 .signup-actions {
-    -fx-background-color: #1e293b;
-    -fx-border-color: #334155;
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+
+.signup-role-tile {
+    -fx-background-color: rgba(15, 23, 42, 0.4);
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-background-radius: 16px;
+    -fx-border-radius: 16px;
+}
+
+.signup-role-tile:hover {
+    -fx-background-color: rgba(30, 41, 59, 0.6);
+    -fx-border-color: #6366f1;
+}
+
+.signup-role-tile-selected {
+    -fx-background-color: rgba(99, 102, 241, 0.15);
+    -fx-border-color: #6366f1;
+    -fx-border-width: 2px;
 }
 
 .signup-scroll {
-    -fx-background: #1e293b;
+    -fx-background: transparent;
 }
 
 .signup-scroll .viewport {
-    -fx-background-color: #1e293b;
+    -fx-background-color: transparent;
 }
 
 .signup-card-inner {
-    -fx-background-color: #1e293b;
+    -fx-background-color: transparent;
 }
 
-.signup-section-title {
-    -fx-text-fill: white;
-}
-
-.signup-role-hint, .signup-field-hint, .signup-file-name {
-    -fx-text-fill: #64748b;
+.signup-sep {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
 }
 
 .btn-secondary {
-    -fx-background-color: #334155;
+    -fx-background-color: rgba(255, 255, 255, 0.05);
     -fx-text-fill: #e2e8f0;
-    -fx-border-color: #475569;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-background-radius: 12px;
 }
 
 .btn-secondary:hover {
-    -fx-background-color: #475569;
-}
-
-.login-btn-enhanced {
-    -fx-effect: dropshadow(gaussian, rgba(79, 70, 229, 0.4), 15, 0, 0, 5);
+    -fx-background-color: rgba(255, 255, 255, 0.1);
 }
 
 

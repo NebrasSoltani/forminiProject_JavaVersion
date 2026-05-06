@@ -36,11 +36,10 @@
         <VBox maxWidth="720" spacing="20" alignment="TOP_CENTER" styleClass="signup-column">
 
             <!-- En-tête -->
-            <VBox spacing="8" alignment="CENTER_LEFT" styleClass="signup-hero">
-                <Label text="Inscription" styleClass="signup-hero-kicker"/>
-                <Label text="Créer un compte Formini" styleClass="signup-hero-title"/>
-                <Label text="Choisissez votre profil et complétez les informations. Les champs marqués * sont obligatoires."
-                       wrapText="true" styleClass="signup-hero-sub" maxWidth="680"/>
+            <VBox spacing="8" alignment="CENTER" styleClass="signup-hero">
+                <Label text="CRÉER UN COMPTE" styleClass="signup-hero-title" style="-fx-font-size: 32px;"/>
+                <Label text="Rejoignez la communauté Formini et commencez votre apprentissage."
+                       wrapText="true" styleClass="signup-hero-sub" maxWidth="680" alignment="CENTER"/>
             </VBox>
 
             <Label fx:id="lblMessage" styleClass="signup-alert" wrapText="true" maxWidth="680" visible="false" managed="false"/>
@@ -271,17 +270,14 @@
 
                 <!-- Navigation vers connexion -->
                 <HBox spacing="14" alignment="CENTER" styleClass="signup-nav">
-                    <padding><Insets top="8" right="24" bottom="8" left="24"/></padding>
                     <Label text="Déjà un compte ?" styleClass="signup-nav-text"/>
-                    <Button fx:id="btnGoToLogin" text="Se connecter" styleClass="signup-nav-link" onAction="#onGoToLogin"/>
+                    <Button fx:id="btnGoToLogin" text="Se connecter" styleClass="signup-nav-link" onAction="#onGoToLogin" style="-fx-font-weight: bold;"/>
                 </HBox>
 
                 <!-- Pied de carte : actions -->
-                <HBox spacing="14" alignment="CENTER_RIGHT" styleClass="signup-actions">
-                    <padding><Insets top="16" right="24" bottom="20" left="24"/></padding>
-                    <Region HBox.hgrow="ALWAYS"/>
-                    <Button text="Annuler" onAction="#goBack" styleClass="btn-secondary signup-btn-secondary"/>
-                    <Button text="Créer mon compte" onAction="#onSubmit" styleClass="btn-primary signup-btn-primary"/>
+                <HBox spacing="14" alignment="CENTER" styleClass="signup-actions" style="-fx-padding: 20 0 30 0;">
+                    <Button text="Annuler" onAction="#goBack" styleClass="btn-secondary" prefWidth="120"/>
+                    <Button text="CRÉER MON COMPTE" onAction="#onSubmit" styleClass="signup-btn-primary" prefWidth="240"/>
                 </HBox>
             </VBox>
         </VBox>
