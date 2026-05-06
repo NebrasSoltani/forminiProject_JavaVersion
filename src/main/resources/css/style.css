@@ -1337,12 +1337,12 @@
     -fx-background-radius: 18px;
     -fx-border-color: #eef2f7;
     -fx-border-radius: 18px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.06), 18, 0, 0, 6);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.06), 18, 0, 0, 6);
 }
 
 .shop-product-card:hover {
-    -fx-border-color: rgba(105,116,232,0.35);
-    -fx-effect: dropshadow(three-pass-box, rgba(105,116,232,0.18), 26, 0, 0, 10);
+    -fx-border-color: rgba(105, 116, 232, 0.35);
+    -fx-effect: dropshadow(three-pass-box, rgba(105, 116, 232, 0.18), 26, 0, 0, 10);
     -fx-translate-y: -2px;
 }
 
@@ -1500,8 +1500,8 @@
 }
 
 .cart-summary-card {
-    -fx-background-color: linear-gradient(to right, rgba(105,116,232,0.12), rgba(143,148,246,0.12));
-    -fx-border-color: rgba(105,116,232,0.25);
+    -fx-background-color: linear-gradient(to right, rgba(105, 116, 232, 0.12), rgba(143, 148, 246, 0.12));
+    -fx-border-color: rgba(105, 116, 232, 0.25);
     -fx-border-radius: 16px;
     -fx-background-radius: 16px;
     -fx-padding: 12px 16px;
@@ -1531,7 +1531,7 @@
     -fx-background: transparent;
 }
 
-.cart-page-scroll > .viewport {
+.cart-page-scroll>.viewport {
     -fx-background-color: transparent;
 }
 
@@ -1591,7 +1591,7 @@
     -fx-padding: 0;
 }
 
-.cart-suggestions-scroll > .viewport {
+.cart-suggestions-scroll>.viewport {
     -fx-background-color: #ffffff;
 }
 
@@ -1830,7 +1830,7 @@
 .modern-input:focused {
     -fx-border-color: #667eea;
     -fx-background-color: #f7fafc;
-    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.2), 8, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.2), 8, 0, 0, 0);
 }
 
 .modern-input:hover {
@@ -1851,7 +1851,7 @@
 .modern-combo:focused {
     -fx-border-color: #667eea;
     -fx-background-color: #f7fafc;
-    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.2), 8, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.2), 8, 0, 0, 0);
 }
 
 .modern-combo:hover {
@@ -1922,7 +1922,7 @@
 .modern-textarea:focused {
     -fx-border-color: #667eea;
     -fx-background-color: #f7fafc;
-    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.2), 8, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.2), 8, 0, 0, 0);
 }
 
 .modern-textarea:hover {
@@ -1942,7 +1942,7 @@
 .modern-date-picker:focused {
     -fx-border-color: #667eea;
     -fx-background-color: #f7fafc;
-    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.2), 8, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.2), 8, 0, 0, 0);
 }
 
 .modern-date-picker:hover {
@@ -1960,17 +1960,17 @@
 
 .btn-back:hover {
     -fx-background-color: #f7fafc !important;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 0);
 }
 
 .btn-browse:hover {
     -fx-background-color: #805ad5 !important;
-    -fx-effect: dropshadow(gaussian, rgba(159,122,234,0.3), 8, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(159, 122, 234, 0.3), 8, 0, 0, 0);
 }
 
 .btn-cancel:hover {
     -fx-background-color: #f7fafc !important;
-    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.2), 8, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.2), 8, 0, 0, 0);
 }
 
 /* Produit form — gradients live here so FXML inspectors do not choke on linear-gradient(...) in style="" */
@@ -1987,16 +1987,16 @@
     -fx-font-size: 14px;
     -fx-font-weight: 600;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.3), 10, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.3), 10, 0, 0, 0);
 }
 
 .btn-save:hover {
-    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.4), 12, 0, 0, 0) !important;
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.4), 12, 0, 0, 0) !important;
     -fx-background-color: linear-gradient(to bottom right, #5a67d8, #6b46c1) !important;
 }
 
 .btn-save:pressed {
-    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.2), 6, 0, 0, 0) !important;
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.2), 6, 0, 0, 0) !important;
 }
 
 /* Modern ScrollPane */
@@ -2008,19 +2008,19 @@
 }
 
 .modern-scroll-pane .scroll-bar:vertical .track {
-    -fx-background-color: rgba(255,255,255,0.2);
+    -fx-background-color: rgba(255, 255, 255, 0.2);
     -fx-background-radius: 4px;
     -fx-border-color: transparent;
 }
 
 .modern-scroll-pane .scroll-bar:vertical .thumb {
-    -fx-background-color: rgba(255,255,255,0.4);
+    -fx-background-color: rgba(255, 255, 255, 0.4);
     -fx-background-radius: 4px;
     -fx-border-color: transparent;
 }
 
 .modern-scroll-pane .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: rgba(255,255,255,0.6);
+    -fx-background-color: rgba(255, 255, 255, 0.6);
 }
 
 /* Form Card Animations */
@@ -2029,7 +2029,7 @@
 }
 
 .modern-form-card:hover {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 25, 0, 0, 12);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 25, 0, 0, 12);
 }
 
 /* ── Mes formations (formateur) ────────────────────────────── */
@@ -2039,12 +2039,12 @@
     -fx-border-color: #e2e8f0;
     -fx-border-radius: 14px;
     -fx-border-width: 1px;
-    -fx-effect: dropshadow(three-pass-box, rgba(15,23,42,0.06), 16, 0, 0, 5);
+    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.06), 16, 0, 0, 5);
 }
 
 .formation-card:hover {
     -fx-border-color: rgba(105, 116, 232, 0.35);
-    -fx-effect: dropshadow(three-pass-box, rgba(105,116,232,0.18), 22, 0, 0, 8);
+    -fx-effect: dropshadow(three-pass-box, rgba(105, 116, 232, 0.18), 22, 0, 0, 8);
 }
 
 .formation-card-selected {
@@ -2100,12 +2100,12 @@
     -fx-border-color: #e2e8f0;
     -fx-border-radius: 14px;
     -fx-border-width: 1px;
-    -fx-effect: dropshadow(three-pass-box, rgba(15,23,42,0.06), 16, 0, 0, 5);
+    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.06), 16, 0, 0, 5);
 }
 
 .lecon-card:hover {
     -fx-border-color: rgba(105, 116, 232, 0.35);
-    -fx-effect: dropshadow(three-pass-box, rgba(105,116,232,0.18), 22, 0, 0, 8);
+    -fx-effect: dropshadow(three-pass-box, rgba(105, 116, 232, 0.18), 22, 0, 0, 8);
 }
 
 .lecon-card-selected {
@@ -2178,7 +2178,7 @@
     -fx-fit-to-width: true;
 }
 
-.formation-form-scroll > .viewport {
+.formation-form-scroll>.viewport {
     -fx-background-color: transparent;
 }
 
@@ -2274,7 +2274,7 @@
     -fx-vgap: 12px;
 }
 
-.formation-form-grid > .label {
+.formation-form-grid>.label {
     -fx-font-size: 13px;
     -fx-font-weight: 700;
     -fx-text-fill: #475569;
@@ -2337,32 +2337,45 @@
 }
 
 /* ── Refined Dark Auth Theme (SaaS Premium) ───────────────── */
-.login-page, .signup-page {
-    -fx-background-color: #020617; /* Even deeper navy */
+.login-page,
+.signup-page {
+    -fx-background-color: #020617;
+    /* Even deeper navy */
 }
 
-.login-card, .signup-card {
-    -fx-background-color: rgba(30, 41, 59, 0.7); /* Translucent Slate */
+.login-card,
+.signup-card {
+    -fx-background-color: rgba(30, 41, 59, 0.7);
+    /* Translucent Slate */
     -fx-background-radius: 28px;
     -fx-border-color: rgba(255, 255, 255, 0.08);
     -fx-border-width: 1px;
     -fx-border-radius: 28px;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 50, 0, 0, 15);
-    -fx-backdrop-filter: blur(20px); /* Hint for future implementation or just for logic */
+    -fx-backdrop-filter: blur(20px);
+    /* Hint for future implementation or just for logic */
 }
 
-.login-hero-title, .signup-hero-title, .brand-name {
+.login-hero-title,
+.signup-hero-title,
+.brand-name {
     -fx-text-fill: white;
     -fx-font-weight: 900;
 }
 
-.login-hero-sub, .signup-hero-sub, .login-text, .signup-nav-text, .form-label {
+.login-hero-sub,
+.signup-hero-sub,
+.login-text,
+.signup-nav-text,
+.form-label {
     -fx-text-fill: #94a3b8;
     -fx-font-weight: 600;
 }
 
 /* Form Controls - Neon Dark Style */
-.login-field, .signup-field, .form-control {
+.login-field,
+.signup-field,
+.form-control {
     -fx-background-color: rgba(15, 23, 42, 0.6);
     -fx-border-color: rgba(255, 255, 255, 0.1);
     -fx-border-width: 1.5px;
@@ -2373,30 +2386,38 @@
     -fx-transition: all 0.2s ease;
 }
 
-.login-field:focused, .signup-field:focused, .form-control:focused {
+.login-field:focused,
+.signup-field:focused,
+.form-control:focused {
     -fx-border-color: #6366f1;
     -fx-background-color: rgba(15, 23, 42, 0.8);
     -fx-effect: dropshadow(gaussian, rgba(99, 102, 241, 0.3), 15, 0, 0, 0);
 }
 
-.login-field:hover, .signup-field:hover, .form-control:hover {
+.login-field:hover,
+.signup-field:hover,
+.form-control:hover {
     -fx-border-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Links */
-.login-link, .login-link-bold, .signup-nav-link {
+.login-link,
+.login-link-bold,
+.signup-nav-link {
     -fx-text-fill: #38bdf8;
     -fx-cursor: hand;
     -fx-underline: false;
 }
 
-.login-link:hover, .signup-nav-link:hover {
+.login-link:hover,
+.signup-nav-link:hover {
     -fx-text-fill: #7dd3fc;
     -fx-translate-y: -1px;
 }
 
 /* Main Buttons */
-.login-btn-primary, .signup-btn-primary {
+.login-btn-primary,
+.signup-btn-primary {
     -fx-background-color: linear-gradient(to right, #4f46e5, #6366f1);
     -fx-text-fill: white;
     -fx-font-weight: 900;
@@ -2407,14 +2428,23 @@
 }
 
 /* ── ULTIMATE DARK AUTH OVERRIDES (Force SaaS Premium) ─────── */
-.login-page, .signup-page, .login-page *, .signup-page * {
+.login-page,
+.signup-page,
+.login-page *,
+.signup-page * {
     /* Base text color for everything in auth */
     -fx-text-fill: #e2e8f0;
 }
 
 /* Force Dark Backgrounds on Inputs */
-.login-page .text-field, .login-page .password-field, .login-page .combo-box, .login-page .date-picker,
-.signup-page .text-field, .signup-page .password-field, .signup-page .combo-box, .signup-page .date-picker,
+.login-page .text-field,
+.login-page .password-field,
+.login-page .combo-box,
+.login-page .date-picker,
+.signup-page .text-field,
+.signup-page .password-field,
+.signup-page .combo-box,
+.signup-page .date-picker,
 .signup-page .text-area {
     -fx-background-color: rgba(15, 23, 42, 0.8) !important;
     -fx-border-color: rgba(255, 255, 255, 0.1) !important;
@@ -2424,27 +2454,36 @@
     -fx-border-radius: 12px !important;
 }
 
-.login-page .text-field:focused, .login-page .password-field:focused,
-.signup-page .text-field:focused, .signup-page .password-field:focused {
+.login-page .text-field:focused,
+.login-page .password-field:focused,
+.signup-page .text-field:focused,
+.signup-page .password-field:focused {
     -fx-border-color: #6366f1 !important;
     -fx-background-color: rgba(15, 23, 42, 0.9) !important;
 }
 
 /* Labels and Sections */
-.login-hero-title, .signup-hero-title {
+.login-hero-title,
+.signup-hero-title {
     -fx-text-fill: white !important;
 }
 
-.form-label, .login-hero-sub, .signup-hero-sub {
+.form-label,
+.login-hero-sub,
+.signup-hero-sub {
     -fx-text-fill: #94a3b8 !important;
 }
 
 /* Fix Blue on Blue visibility */
-.login-link, .signup-nav-link, .login-link-bold {
-    -fx-text-fill: #38bdf8 !important; /* Brighter Cyan */
+.login-link,
+.signup-nav-link,
+.login-link-bold {
+    -fx-text-fill: #38bdf8 !important;
+    /* Brighter Cyan */
 }
 
-.login-checkbox, .login-checkbox .label {
+.login-checkbox,
+.login-checkbox .label {
     -fx-text-fill: #cbd5e1 !important;
 }
 
@@ -2467,7 +2506,8 @@
 }
 
 /* ── ANTI-WHITE BUTTONS OVERRIDE (Total Dark Mode) ────────── */
-.login-page .button, .signup-page .button {
+.login-page .button,
+.signup-page .button {
     -fx-background-color: rgba(255, 255, 255, 0.08) !important;
     -fx-border-color: rgba(255, 255, 255, 0.15) !important;
     -fx-text-fill: white !important;
@@ -2475,23 +2515,30 @@
     -fx-border-radius: 12px !important;
 }
 
-.login-page .button:hover, .signup-page .button:hover {
+.login-page .button:hover,
+.signup-page .button:hover {
     -fx-background-color: rgba(255, 255, 255, 0.15) !important;
     -fx-border-color: #6366f1 !important;
 }
 
 /* ── ALERT MESSAGES VISIBILITY ────────────────────────────── */
-.login-alert, .signup-alert, .login-alert-error, .signup-alert-error {
-    -fx-text-fill: #000000 !important; /* Force black text for alerts */
+.login-alert,
+.signup-alert,
+.login-alert-error,
+.signup-alert-error {
+    -fx-text-fill: #000000 !important;
+    /* Force black text for alerts */
     -fx-font-weight: 800 !important;
 }
 
 /* Ensure other alert types are also readable */
-.login-alert-success, .login-alert-info {
+.login-alert-success,
+.login-alert-info {
     -fx-text-fill: #000000 !important;
 }
 
-.login-btn-primary:hover, .signup-btn-primary:hover {
+.login-btn-primary:hover,
+.signup-btn-primary:hover {
     -fx-background-color: linear-gradient(to right, #4338ca, #4f46e5);
     -fx-translate-y: -2px;
     -fx-effect: dropshadow(gaussian, rgba(79, 70, 229, 0.6), 25, 0, 0, 10);
@@ -2569,5 +2616,3 @@
 .btn-secondary:hover {
     -fx-background-color: rgba(255, 255, 255, 0.1);
 }
-
-

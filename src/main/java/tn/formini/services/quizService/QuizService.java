@@ -1,4 +1,5 @@
 package tn.formini.services.quizService;
+package tn.formini.services.quizService;
 
 import tn.formini.entities.Quizs.Quiz;
 import tn.formini.entities.formations.Formation;
