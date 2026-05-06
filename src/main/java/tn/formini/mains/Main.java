@@ -8,6 +8,6 @@ import tn.formini.tools.MyDataBase;
 public class Main {
     public static void main(String[] args) {
         MyDataBase.getInstance();
-        SignupLauncher.main(args);
+        LoginLauncher.main(args);
     }
 }

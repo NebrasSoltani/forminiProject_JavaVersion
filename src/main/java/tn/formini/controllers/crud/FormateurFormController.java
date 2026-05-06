@@ -93,6 +93,13 @@ public class FormateurFormController implements Initializable {
     @FXML private ImageView imageViewPhoto;
     @FXML private ComboBox<User> userComboBox;
 
+    // Field aliases for compatibility
+    private TextField emailField;
+    private TextField nomField;
+    private TextField prenomField;
+    private TextField telephoneField;
+    private Spinner<Integer> spinnerExperience;
+
     private FormateurService formateurService;
     private UserService userService;
     private FileUploadService fileUploadService;
@@ -578,6 +585,50 @@ public class FormateurFormController implements Initializable {
         hideError(errorBio);
     }
 
+    private boolean validateForm() {
+        clearAllErrors();
+        boolean valid = true;
+        
+        if (mode == Mode.EDIT) {
+            return validateEditForm();
+        }
+        
+        // For ADD mode, validate all fields
+        valid &= validateEmail();
+        valid &= validateTelephone();
+        valid &= validatePassword();
+        valid &= validatePasswordConfirm();
+        valid &= validateNom();
+        valid &= validatePrenom();
+        valid &= validateDateNaissance();
+        valid &= validateSpecialite();
+        
+        return valid;
+    }
+
+    private void showAlert(String title, String message, Alert.AlertType alertType) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void closeForm() {
+        if (cancelButton.getScene() != null && cancelButton.getScene().getWindow() != null) {
+            cancelButton.getScene().getWindow().hide();
+        }
+    }
+
+    private boolean validateSpecialite() {
+        if (specialiteTextField.getText().trim().isEmpty()) {
+            showError(errorSpecialite, "La spécialité est obligatoire.");
+            return false;
+        }
+        hideError(errorSpecialite);
+        return true;
+    }
+
     private boolean validateEditForm() {
         clearEditErrors();
         boolean valid = true;
@@ -680,6 +731,158 @@ public class FormateurFormController implements Initializable {
         hideError(errorPortfolio);
         hideError(errorCv);
         hideError(errorBio);
+    }
+
+    // Validation methods
+    private boolean validateEmail() {
+        String email = emailTextField.getText().trim();
+        if (email.isEmpty()) {
+            showError(errorEmail, "L'email est obligatoire");
+            return false;
+        }
+        
+        String emailRegex = "^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$";
+        if (!Pattern.matches(emailRegex, email)) {
+            showError(errorEmail, "Format d'email invalide");
+            return false;
+        }
+        
+        hideError(errorEmail);
+        return true;
+    }
+    
+    private boolean validateTelephone() {
+        String telephone = telephoneTextField.getText().trim();
+        if (telephone.isEmpty()) {
+            showError(errorTelephone, "Le téléphone est obligatoire");
+            return false;
+        }
+        
+        String normalized = normalizePhone(telephone);
+        if (normalized == null || !normalized.matches("\\+?[0-9]{8,12}$")) {
+            showError(errorTelephone, "Format invalide: 8-12 chiffres");
+            return false;
+        }
+        
+        hideError(errorTelephone);
+        return true;
+    }
+    
+    private boolean validatePassword() {
+        String password = passwordField.getText();
+        
+        // For EDIT mode, password is optional
+        if (mode == Mode.EDIT && password.isEmpty()) {
+            hideError(errorPassword);
+            return true;
+        }
+        
+        // For ADD mode, password is required
+        if (password.isEmpty()) {
+            showError(errorPassword, "Le mot de passe est obligatoire");
+            return false;
+        }
+        
+        if (password.length() < 8) {
+            showError(errorPassword, "Minimum 8 caractères");
+            return false;
+        }
+        
+        if (!password.matches(".*[A-Z].*")) {
+            showError(errorPassword, "Une majuscule requise");
+            return false;
+        }
+        
+        if (!password.matches(".*[a-z].*")) {
+            showError(errorPassword, "Une minuscule requise");
+            return false;
+        }
+        
+        if (!password.matches(".*\\d.*")) {
+            showError(errorPassword, "Un chiffre requis");
+            return false;
+        }
+        
+        hideError(errorPassword);
+        return true;
+    }
+    
+    private boolean validatePasswordConfirm() {
+        String password = passwordField.getText();
+        String passwordConfirm = passwordConfirmField.getText();
+        
+        // For EDIT mode, password confirmation is optional if password is empty
+        if (mode == Mode.EDIT && password.isEmpty() && passwordConfirm.isEmpty()) {
+            hideError(errorPasswordConfirm);
+            return true;
+        }
+        
+        // If password is provided, confirmation is required
+        if (passwordConfirm.isEmpty()) {
+            showError(errorPasswordConfirm, "La confirmation est obligatoire");
+            return false;
+        }
+        
+        if (!password.equals(passwordConfirm)) {
+            showError(errorPasswordConfirm, "Les mots de passe ne correspondent pas");
+            return false;
+        }
+        
+        hideError(errorPasswordConfirm);
+        return true;
+    }
+    
+    private boolean validateNom() {
+        String nom = nomTextField.getText().trim();
+        if (nom.isEmpty()) {
+            showError(errorNom, "Le nom est obligatoire");
+            return false;
+        }
+        
+        if (nom.length() < 2) {
+            showError(errorNom, "Minimum 2 caractères");
+            return false;
+        }
+        
+        hideError(errorNom);
+        return true;
+    }
+    
+    private boolean validatePrenom() {
+        String prenom = prenomTextField.getText().trim();
+        if (prenom.isEmpty()) {
+            showError(errorPrenom, "Le prénom est obligatoire");
+            return false;
+        }
+        
+        if (prenom.length() < 2) {
+            showError(errorPrenom, "Minimum 2 caractères");
+            return false;
+        }
+        
+        hideError(errorPrenom);
+        return true;
+    }
+    
+    private boolean validateDateNaissance() {
+        LocalDate date = dateNaissancePicker.getValue();
+        if (date == null) {
+            showError(errorDateNaissance, "La date de naissance est obligatoire");
+            return false;
+        }
+        
+        if (date.isAfter(LocalDate.now())) {
+            showError(errorDateNaissance, "Date invalide");
+            return false;
+        }
+        
+        if (date.isBefore(LocalDate.now().minusYears(120))) {
+            showError(errorDateNaissance, "Date invalide");
+            return false;
+        }
+        
+        hideError(errorDateNaissance);
+        return true;
     }
 
     // Utility methods

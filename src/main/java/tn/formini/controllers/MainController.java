@@ -12,7 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import tn.formini.controllers.blog.BlogFormController;
 import tn.formini.controllers.blog.BlogListController;
-import tn.formini.controllers.evenement.EvenementformController;
+import tn.formini.controllers.evenement.EvenementFormController;
 import tn.formini.controllers.evenement.EvenementListController;
 import tn.formini.controllers.order.OrderListController;
 import tn.formini.controllers.produit.ProduitListController;
@@ -99,7 +99,7 @@ public class MainController implements Initializable {
     public void showEventForm(tn.formini.entities.evenements.Evenement evt) {
         updateActiveButton(btnEventAdd);
         labelPageTitle.setText(evt == null ? "Nouvel Événement" : "Modifier l'Événement");
-        EvenementformController controller = (EvenementformController) loadPage("/fxml/evenement/Evenementform.fxml");
+        EvenementFormController controller = (EvenementFormController) loadPage("/fxml/evenement/Evenementform.fxml");
         if (controller != null) {
             controller.setMainController(this);
             if (evt != null) {

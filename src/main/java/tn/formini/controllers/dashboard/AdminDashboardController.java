@@ -40,6 +40,9 @@ public class AdminDashboardController implements DashboardRoleController {
     
     @FXML
     private Button reportsButton;
+    
+    @FXML
+    private Button mainMenuButton;
 
     private User currentUser;
     private UserService userService;
@@ -69,6 +72,7 @@ public class AdminDashboardController implements DashboardRoleController {
         formationsManagementButton.setOnAction(e -> openFormationsManagement());
         eventsManagementButton.setOnAction(e -> openEventsManagement());
         reportsButton.setOnAction(e -> openReports());
+        mainMenuButton.setOnAction(e -> openMainMenu());
     }
 
     private void loadStatistics() {
@@ -168,6 +172,23 @@ public class AdminDashboardController implements DashboardRoleController {
     private void openReports() {
         // TODO: Implement reports
         System.out.println("Reports - To be implemented");
+    }
+    
+    @FXML
+    private void openMainMenu() {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                getClass().getResource("/fxml/MainMenu.fxml")
+            );
+            javafx.scene.Parent root = loader.load();
+            
+            javafx.stage.Stage stage = (javafx.stage.Stage) mainMenuButton.getScene().getWindow();
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.setTitle("Formini - Menu Principal");
+        } catch (Exception e) {
+            System.err.println("Error opening main menu: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @Override

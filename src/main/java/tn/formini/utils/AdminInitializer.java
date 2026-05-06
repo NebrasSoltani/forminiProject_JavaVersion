@@ -94,7 +94,7 @@ public class AdminInitializer {
             admin.setDate_naissance(new java.util.Date(System.currentTimeMillis() - 25L * 365 * 24 * 60 * 60 * 1000)); // 25 years ago
             admin.setProfession("System Administrator");
             admin.setNiveau_etude("Higher Education");
-            
+            admin.setIs_email_verified(true);
             userService.ajouter(admin);
             
             if (admin.getId() > 0) {

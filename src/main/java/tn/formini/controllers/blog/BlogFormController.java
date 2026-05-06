@@ -16,7 +16,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.ResourceBundle;
 
-public class Blogformcontroller implements Initializable {
+public class BlogFormController implements Initializable {
 
     @FXML private Label                labelFormTitle;
     @FXML private TextField            fieldTitre;
