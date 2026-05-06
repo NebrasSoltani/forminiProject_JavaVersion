@@ -1973,6 +1973,23 @@
     -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.2), 8, 0, 0, 0);
 }
 
+/* Produit form — gradients live here so FXML inspectors do not choke on linear-gradient(...) in style="" */
+.content-area.produit-form-root {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea 0%, #764ba2 100%);
+}
+
+.btn-save {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea 0%, #764ba2 100%);
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+    -fx-background-radius: 25;
+    -fx-padding: 12 35;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.3), 10, 0, 0, 0);
+}
+
 .btn-save:hover {
     -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.4), 12, 0, 0, 0) !important;
     -fx-background-color: linear-gradient(to bottom right, #5a67d8, #6b46c1) !important;
