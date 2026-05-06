@@ -18,7 +18,7 @@ import tn.formini.services.UsersService.FormateurService;
 import tn.formini.services.UsersService.SessionManager;
 import tn.formini.services.UsersService.UserService;
 import tn.formini.services.UsersService.EmailVerificationService;
-import tn.formini.services.UsersService.EmailService;
+import tn.formini.services.UsersService.SMTPEmailService;
 import tn.formini.services.FileUploadService;
 import tn.formini.utils.TunisiaGovernorates;
 
@@ -72,7 +72,7 @@ public class EditProfileController implements Initializable {
     private final FormateurService formateurService = new FormateurService();
     private final FileUploadService fileUploadService = new FileUploadService();
     private final EmailVerificationService emailVerificationService = new EmailVerificationService();
-    private final EmailService emailService = new EmailService();
+    private final SMTPEmailService emailService = new SMTPEmailService();
     private java.io.File uploadedPhotoFile;
 
     private Runnable onBack;

@@ -1,29 +1,40 @@
 package tn.formini.services.UsersService;
 
-import java.util.Properties;
 import javax.mail.*;
 import javax.mail.internet.*;
+import java.util.Properties;
 
 /**
- * Email service using JavaMail with SMTP for sending verification emails.
+ * Email service using SMTP for sending verification emails.
  */
-public class EmailService {
+public class SMTPEmailService {
 
     private final String host;
     private final int port;
     private final String username;
     private final String password;
-    private final boolean authEnabled;
-    private final boolean starttlsEnabled;
+    private final String fromEmail;
+    private final String fromName;
+    private final Properties properties;
 
-    public EmailService() {
+    public SMTPEmailService() {
         // Gmail SMTP configuration
         this.host = "smtp.gmail.com";
         this.port = 587;
-        this.username = "soltaninebras304@gmail.com";
-        this.password = "YOUR_NEW_APP_PASSWORD_HERE";
-        this.authEnabled = true;
-        this.starttlsEnabled = true;
+        this.username = "forminiapp@gmail.com"; // Your Gmail address
+        this.password = "xcsvjqlyqlkbdfya"; // App password for Gmail SMTP
+        this.fromEmail = "forminiapp@gmail.com";
+        this.fromName = "Formini";
+        
+        this.properties = new Properties();
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.host", host);
+        properties.put("mail.smtp.port", port);
+        properties.put("mail.smtp.ssl.trust", host);
+        properties.put("mail.smtp.connectiontimeout", "10000");
+        properties.put("mail.smtp.timeout", "10000");
+        properties.put("mail.smtp.writetimeout", "10000");
     }
 
     /**
@@ -101,13 +112,7 @@ public class EmailService {
      * @return true if sent successfully, false otherwise
      */
     private boolean sendEmail(String to, String subject, String body) {
-        Properties props = new Properties();
-        props.put("mail.smtp.host", host);
-        props.put("mail.smtp.port", port);
-        props.put("mail.smtp.auth", String.valueOf(authEnabled));
-        props.put("mail.smtp.starttls.enable", String.valueOf(starttlsEnabled));
-
-        Session session = Session.getInstance(props, new Authenticator() {
+        Session session = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(username, password);
@@ -116,48 +121,49 @@ public class EmailService {
 
         try {
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(username));
+            message.setFrom(new InternetAddress(fromEmail, fromName));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
             message.setSubject(subject);
             message.setContent(body, "text/html");
 
             Transport.send(message);
+            
             System.out.println("Verification email sent to: " + to);
             return true;
+            
         } catch (MessagingException e) {
             System.err.println("Failed to send email to " + to + ": " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } catch (Exception e) {
+            System.err.println("Unexpected error sending email to " + to + ": " + e.getMessage());
             e.printStackTrace();
             return false;
         }
     }
 
     /**
-     * Test email configuration
+     * Test SMTP configuration
      * @return true if configuration is valid, false otherwise
      */
     public boolean testConfiguration() {
+        Session session = Session.getInstance(properties, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        });
+
         try {
-            Properties props = new Properties();
-            props.put("mail.smtp.host", host);
-            props.put("mail.smtp.port", port);
-            props.put("mail.smtp.auth", String.valueOf(authEnabled));
-            props.put("mail.smtp.starttls.enable", String.valueOf(starttlsEnabled));
-
-            Session session = Session.getInstance(props, new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(username, password);
-                }
-            });
-
             Transport transport = session.getTransport("smtp");
-            transport.connect(host, port, username, password);
+            transport.connect();
             transport.close();
-
-            System.out.println("Email configuration test successful");
+            
+            System.out.println("SMTP configuration test successful");
             return true;
+            
         } catch (MessagingException e) {
-            System.err.println("Email configuration test failed: " + e.getMessage());
+            System.err.println("SMTP configuration test failed: " + e.getMessage());
             return false;
         }
     }

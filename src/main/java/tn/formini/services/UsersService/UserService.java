@@ -15,13 +15,26 @@ public class UserService implements service<User> {
     Connection cnx;
     public UserService(){
         cnx= MyDataBase.getInstance().getCnx();
+        ensureFaceAuthColumnsExist();
+    }
+
+    private void ensureFaceAuthColumnsExist() {
+        if (cnx == null) {
+            return;
+        }
+        try (Statement st = cnx.createStatement()) {
+            st.executeUpdate("ALTER TABLE user ADD COLUMN IF NOT EXISTS face_encoding LONGBLOB NULL");
+            st.executeUpdate("ALTER TABLE user ADD COLUMN IF NOT EXISTS face_auth_enabled BOOLEAN NOT NULL DEFAULT FALSE");
+        } catch (SQLException ex) {
+            System.out.println("Impossible de vérifier/ajouter les colonnes de reconnaissance faciale : " + ex.getMessage());
+        }
     }
 
     @Override
     public void ajouter(User u) {
 
 
-        String req = "INSERT INTO user (email, roles, password, nom, prenom, telephone, gouvernorat, date_naissance, role_utilisateur) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String req = "INSERT INTO user (email, roles, password, nom, prenom, telephone, gouvernorat, date_naissance, role_utilisateur, is_email_verified, face_encoding, face_auth_enabled) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             // Hash the password before storing
             String hashedPassword = PasswordUtil.hashPassword(u.getPassword());
@@ -36,6 +49,9 @@ public class UserService implements service<User> {
             ps.setString(7, u.getGouvernorat());
             ps.setTimestamp(8, u.getDate_naissance() != null ? new Timestamp(u.getDate_naissance().getTime()) : null);
             ps.setString(9, u.getRole_utilisateur());
+            ps.setBoolean(10, u.isIs_email_verified());
+            ps.setBytes(11, u.getFace_encoding());
+            ps.setBoolean(12, u.isFace_auth_enabled());
             ps.executeUpdate();
             
             // Récupérer l'ID généré

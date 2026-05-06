@@ -123,13 +123,8 @@
             <version>${javafx.version}</version>
         </dependency>
 
-        <!-- OpenCV for facial recognition -->
-        <dependency>
-            <groupId>org.openpnp</groupId>
-            <artifactId>opencv</artifactId>
-            <version>4.7.0-0</version>
-        </dependency>
-
+        
+                
         <!-- TOTP for 2FA -->
         <dependency>
             <groupId>com.warrenstrange</groupId>

@@ -14,11 +14,11 @@ public class PasswordResetService {
     private static final long TOKEN_EXPIRY_HOURS = 1; // Token expires in 1 hour
 
     private final UserService userService;
-    private final EmailService emailService;
+    private final SMTPEmailService emailService;
 
     public PasswordResetService() {
         this.userService = new UserService();
-        this.emailService = new EmailService();
+        this.emailService = new SMTPEmailService();
     }
 
     /**

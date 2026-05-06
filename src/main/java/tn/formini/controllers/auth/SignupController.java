@@ -19,8 +19,6 @@ import tn.formini.entities.Users.User;
 import tn.formini.entities.Users.Gouvernorat;
 import tn.formini.services.UsersService.SignupService;
 import tn.formini.services.FileUploadService;
-import tn.formini.services.face.CameraCaptureService;
-import tn.formini.services.face.FaceRecognitionService;
 import tn.formini.utils.TunisiaGovernorates;
 
 import java.io.IOException;
@@ -79,14 +77,8 @@ public class SignupController implements Initializable {
     @FXML private TextField fieldPortfolio;
     @FXML private TextField fieldCv;
     @FXML private TextField fieldPhoto;
-    
-    @FXML private Button btnCaptureFace;
-    @FXML private ImageView cameraView;
-    @FXML private VBox cameraPanel;
-    @FXML private Button btnStartCamera;
-    @FXML private Button btnStopCamera;
-    @FXML private CheckBox cbEnableFaceAuth;
-    
+
+
     // Error labels
     @FXML private Label errorEmail;
     @FXML private Label errorTelephone;
@@ -99,14 +91,10 @@ public class SignupController implements Initializable {
 
     private final SignupService signupService = new SignupService();
     private final FileUploadService fileUploadService = new FileUploadService();
-    private final CameraCaptureService cameraService = CameraCaptureService.getInstance();
-    private final FaceRecognitionService faceService = FaceRecognitionService.getInstance();
     private ToggleGroup roleGroup;
     private java.io.File uploadedCvFile;
     private java.io.File uploadedPhotoFile;
     private final List<String> domainesList = new ArrayList<>();
-    private byte[] capturedFaceEncoding;
-    private boolean cameraActive = false;
 
     public void setOnBack(Runnable onBack) {
         this.onBack = onBack;
@@ -135,12 +123,6 @@ public class SignupController implements Initializable {
         updateRolePanels();
         updateRoleTileStyles();
         setupValidationListeners();
-        
-        // Hide camera panel initially
-        if (cameraPanel != null) {
-            cameraPanel.setVisible(false);
-            cameraPanel.setManaged(false);
-        }
     }
 
     private void updateRolePanels() {
@@ -199,15 +181,6 @@ public class SignupController implements Initializable {
                 }
             }
             user.setPhoto(photoPath);
-            
-            // Handle face encoding if face auth is enabled
-            if (cbEnableFaceAuth.isSelected() && capturedFaceEncoding != null) {
-                user.setFace_encoding(capturedFaceEncoding);
-                user.setFace_auth_enabled(true);
-            } else if (cbEnableFaceAuth.isSelected()) {
-                showMessage("Veuillez capturer votre visage pour activer l'authentification faciale.");
-                return;
-            }
 
             if (rbApprenant.isSelected()) {
                 Apprenant a = new Apprenant();
@@ -287,11 +260,11 @@ public class SignupController implements Initializable {
 
     private void togglePasswordField(javafx.scene.control.PasswordField passwordField, Button toggleButton) {
         HBox parent = (HBox) toggleButton.getParent();
-        
+
         // Find current password field (either PasswordField or TextField)
         javafx.scene.control.TextInputControl currentField = null;
         int fieldIndex = -1;
-        
+
         for (int i = 0; i < parent.getChildren().size(); i++) {
             javafx.scene.Node node = parent.getChildren().get(i);
             if ((node instanceof PasswordField || node instanceof TextField) && !node.equals(toggleButton)) {
@@ -300,9 +273,9 @@ public class SignupController implements Initializable {
                 break;
             }
         }
-        
+
         if (currentField == null) return;
-        
+
         if (currentField instanceof PasswordField currentPasswordField) {
             // Show plain text while keeping bidirectional sync with injected field.
             TextField visiblePassword = new TextField();
@@ -458,7 +431,7 @@ public class SignupController implements Initializable {
         return json.toString();
     }
 
-    
+
     /**
      * Redirect to login interface after successful signup
      */
@@ -538,12 +511,12 @@ public class SignupController implements Initializable {
         fieldEmail.textProperty().addListener((obs, oldVal, newVal) -> {
             validateEmail();
         });
-        
+
         // Telephone validation
         fieldTelephone.textProperty().addListener((obs, oldVal, newVal) -> {
             validateTelephone();
         });
-        
+
         // Password validation
         fieldPassword.textProperty().addListener((obs, oldVal, newVal) -> {
             validatePassword();
@@ -551,26 +524,26 @@ public class SignupController implements Initializable {
                 validatePasswordConfirm();
             }
         });
-        
+
         // Password confirmation validation
         fieldPasswordConfirm.textProperty().addListener((obs, oldVal, newVal) -> {
             validatePasswordConfirm();
         });
-        
+
         // Name validations
         fieldNom.textProperty().addListener((obs, oldVal, newVal) -> {
             validateNom();
         });
-        
+
         fieldPrenom.textProperty().addListener((obs, oldVal, newVal) -> {
             validatePrenom();
         });
-        
+
         // Date validation
         fieldDateNaissance.valueProperty().addListener((obs, oldVal, newVal) -> {
             validateDateNaissance();
         });
-        
+
         // Specialite validation (for formateur)
         fieldSpecialite.textProperty().addListener((obs, oldVal, newVal) -> {
             if (rbFormateur.isSelected()) {
@@ -578,164 +551,164 @@ public class SignupController implements Initializable {
             }
         });
     }
-    
+
     private boolean validateEmail() {
         String email = fieldEmail.getText().trim();
         if (email.isEmpty()) {
             showError(errorEmail, "L'email est obligatoire");
             return false;
         }
-        
+
         String emailRegex = "^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$";
         if (!Pattern.matches(emailRegex, email)) {
             showError(errorEmail, "Format d'email invalide");
             return false;
         }
-        
+
         hideError(errorEmail);
         return true;
     }
-    
+
     private boolean validateTelephone() {
         String telephone = fieldTelephone.getText().trim();
         if (telephone.isEmpty()) {
             showError(errorTelephone, "Le téléphone est obligatoire");
             return false;
         }
-        
+
         String normalized = normalizePhone(telephone);
         if (normalized == null || !normalized.matches("\\+?[0-9]{8,12}$")) {
             showError(errorTelephone, "Format invalide: 8-12 chiffres");
             return false;
         }
-        
+
         hideError(errorTelephone);
         return true;
     }
-    
+
     private boolean validatePassword() {
         String password = fieldPassword.getText();
         if (password.isEmpty()) {
             showError(errorPassword, "Le mot de passe est obligatoire");
             return false;
         }
-        
+
         if (password.length() < 8) {
             showError(errorPassword, "Minimum 8 caractères");
             return false;
         }
-        
+
         if (!password.matches(".*[A-Z].*")) {
             showError(errorPassword, "Une majuscule requise");
             return false;
         }
-        
+
         if (!password.matches(".*[a-z].*")) {
             showError(errorPassword, "Une minuscule requise");
             return false;
         }
-        
+
         if (!password.matches(".*\\d.*")) {
             showError(errorPassword, "Un chiffre requis");
             return false;
         }
-        
+
         hideError(errorPassword);
         return true;
     }
-    
+
     private boolean validatePasswordConfirm() {
         String password = fieldPassword.getText();
         String passwordConfirm = fieldPasswordConfirm.getText();
-        
+
         if (passwordConfirm.isEmpty()) {
             showError(errorPasswordConfirm, "La confirmation est obligatoire");
             return false;
         }
-        
+
         if (!password.equals(passwordConfirm)) {
             showError(errorPasswordConfirm, "Les mots de passe ne correspondent pas");
             return false;
         }
-        
+
         hideError(errorPasswordConfirm);
         return true;
     }
-    
+
     private boolean validateNom() {
         String nom = fieldNom.getText().trim();
         if (nom.isEmpty()) {
             showError(errorNom, "Le nom est obligatoire");
             return false;
         }
-        
+
         if (nom.length() < 2) {
             showError(errorNom, "Minimum 2 caractères");
             return false;
         }
-        
+
         hideError(errorNom);
         return true;
     }
-    
+
     private boolean validatePrenom() {
         String prenom = fieldPrenom.getText().trim();
         if (prenom.isEmpty()) {
             showError(errorPrenom, "Le prénom est obligatoire");
             return false;
         }
-        
+
         if (prenom.length() < 2) {
             showError(errorPrenom, "Minimum 2 caractères");
             return false;
         }
-        
+
         hideError(errorPrenom);
         return true;
     }
-    
+
     private boolean validateDateNaissance() {
         LocalDate date = fieldDateNaissance.getValue();
         if (date == null) {
             showError(errorDateNaissance, "La date de naissance est obligatoire");
             return false;
         }
-        
+
         if (date.isAfter(LocalDate.now())) {
             showError(errorDateNaissance, "Date invalide");
             return false;
         }
-        
+
         if (date.isBefore(LocalDate.now().minusYears(120))) {
             showError(errorDateNaissance, "Date invalide");
             return false;
         }
-        
+
         hideError(errorDateNaissance);
         return true;
     }
-    
+
     private boolean validateSpecialite() {
         String specialite = fieldSpecialite.getText().trim();
         if (specialite.isEmpty()) {
             showError(errorSpecialite, "La spécialité est obligatoire pour le formateur");
             return false;
         }
-        
+
         if (specialite.length() < 3) {
             showError(errorSpecialite, "Minimum 3 caractères");
             return false;
         }
-        
+
         hideError(errorSpecialite);
         return true;
     }
-    
+
     private void showError(Label errorLabel, String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
         errorLabel.setManaged(true);
-        
+
         // Add error styling to the associated input field
         javafx.scene.control.TextInputControl inputField = getAssociatedInputField(errorLabel);
         if (inputField != null) {
@@ -744,19 +717,19 @@ public class SignupController implements Initializable {
             }
         }
     }
-    
+
     private void hideError(Label errorLabel) {
         errorLabel.setText("");
         errorLabel.setVisible(false);
         errorLabel.setManaged(false);
-        
+
         // Remove error styling from the associated input field
         javafx.scene.control.TextInputControl inputField = getAssociatedInputField(errorLabel);
         if (inputField != null) {
             inputField.getStyleClass().remove("error");
         }
     }
-    
+
     private javafx.scene.control.TextInputControl getAssociatedInputField(Label errorLabel) {
         if (errorLabel == errorEmail) return fieldEmail;
         if (errorLabel == errorTelephone) return fieldTelephone;
@@ -767,7 +740,7 @@ public class SignupController implements Initializable {
         if (errorLabel == errorSpecialite) return fieldSpecialite;
         return null;
     }
-    
+
     private void clearAllErrors() {
         hideError(errorEmail);
         hideError(errorTelephone);
@@ -777,7 +750,7 @@ public class SignupController implements Initializable {
         hideError(errorPrenom);
         hideError(errorDateNaissance);
         hideError(errorSpecialite);
-        
+
         // Also clear error styling from all input fields
         clearErrorStyling(fieldEmail);
         clearErrorStyling(fieldTelephone);
@@ -787,18 +760,18 @@ public class SignupController implements Initializable {
         clearErrorStyling(fieldPrenom);
         clearErrorStyling(fieldSpecialite);
     }
-    
+
     private void clearErrorStyling(javafx.scene.control.TextInputControl field) {
         if (field != null) {
             field.getStyleClass().remove("error");
         }
     }
-    
+
     private boolean validateAllFields() {
         clearAllErrors();
-        
+
         boolean isValid = true;
-        
+
         isValid &= validateEmail();
         isValid &= validateTelephone();
         isValid &= validatePassword();
@@ -806,100 +779,12 @@ public class SignupController implements Initializable {
         isValid &= validateNom();
         isValid &= validatePrenom();
         isValid &= validateDateNaissance();
-        
+
         if (rbFormateur.isSelected()) {
             isValid &= validateSpecialite();
         }
-        
+
         return isValid;
-    }
-    
-    @FXML
-    private void onCaptureFace() {
-        if (!faceService.isInitialized()) {
-            showMessage("Service de reconnaissance faciale non initialisé. Veuillez vérifier l'installation d'OpenCV.");
-            return;
-        }
-        
-        // Show camera panel
-        if (cameraPanel != null) {
-            cameraPanel.setVisible(true);
-            cameraPanel.setManaged(true);
-        }
-        
-        showMessage("Cliquez sur 'Démarrer la caméra' pour capturer votre visage.");
-    }
-    
-    @FXML
-    private void onStartCamera() {
-        if (cameraActive) {
-            showMessage("La caméra est déjà active.");
-            return;
-        }
-        
-        if (!cameraService.isCameraAvailable()) {
-            showMessage("Aucune caméra détectée.");
-            return;
-        }
-        
-        boolean started = cameraService.startCamera(0, cameraView);
-        if (started) {
-            cameraActive = true;
-            showMessage("Caméra démarrée. Positionnez votre visage devant la caméra.");
-        } else {
-            showMessage("Impossible de démarrer la caméra.");
-        }
-    }
-    
-    @FXML
-    private void onStopCamera() {
-        if (!cameraActive) {
-            return;
-        }
-        
-        cameraService.stopCamera();
-        cameraActive = false;
-        showMessage("Caméra arrêtée.");
-    }
-    
-    @FXML
-    private void onCaptureFaceForAuth() {
-        if (!cameraActive) {
-            showMessage("Veuillez d'abord démarrer la caméra.");
-            return;
-        }
-        
-        // Capture frame
-        java.io.File capturedImage = cameraService.captureFrame();
-        if (capturedImage == null) {
-            showMessage("Échec de la capture de l'image.");
-            return;
-        }
-        
-        // Extract face encoding
-        byte[] faceEncoding = faceService.extractFaceEncoding(capturedImage.getAbsolutePath());
-        if (faceEncoding == null) {
-            showMessage("Aucun visage détecté dans l'image. Veuillez réessayer.");
-            capturedImage.delete();
-            return;
-        }
-        
-        // Store the captured encoding
-        capturedFaceEncoding = faceEncoding;
-        
-        // Stop camera
-        cameraService.stopCamera();
-        cameraActive = false;
-        
-        // Hide camera panel
-        if (cameraPanel != null) {
-            cameraPanel.setVisible(false);
-            cameraPanel.setManaged(false);
-        }
-        
-        showMessage("Visage capturé avec succès ! L'authentification faciale sera activée lors de l'inscription.");
-        
-        capturedImage.delete();
     }
 
     @FXML

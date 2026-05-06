@@ -9,13 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LoginService {
-    
-    private Connection cnx;
-    
+
     public LoginService() {
-        cnx = MyDataBase.getInstance().getCnx();
     }
-    
+
+    private Connection db() {
+        return MyDataBase.getInstance().getCnx();
+    }
+
     /**
      * Authenticate user with email and password
      * @param email User email
@@ -27,16 +28,22 @@ public class LoginService {
             System.out.println("Email et mot de passe sont obligatoires");
             return null;
         }
-        
+
+        Connection cnx = db();
+        if (cnx == null) {
+            System.out.println("Erreur lors de l'authentification: pas de connexion à la base.");
+            return null;
+        }
+
         String req = "SELECT * FROM user WHERE LOWER(email) = LOWER(?)";
         try {
             PreparedStatement ps = cnx.prepareStatement(req);
             ps.setString(1, email.trim());
             ResultSet rs = ps.executeQuery();
-            
+
             if (rs.next()) {
                 User user = mapResultSetToUser(rs);
-                
+
                 // Verify password using secure hash verification
                 if (PasswordUtil.verifyPassword(password, user.getPassword())) {
                     System.out.println("Authentification réussie pour: " + email);
@@ -50,10 +57,10 @@ public class LoginService {
         } catch (SQLException ex) {
             System.out.println("Erreur lors de l'authentification: " + ex.getMessage());
         }
-        
+
         return null;
     }
-    
+
     /**
      * Get user by email
      * @param email User email
@@ -63,23 +70,72 @@ public class LoginService {
         if (email == null || email.trim().isEmpty()) {
             return null;
         }
-        
+
+        Connection cnx = db();
+        if (cnx == null) {
+            return null;
+        }
+
         String req = "SELECT * FROM user WHERE LOWER(email) = LOWER(?)";
         try {
             PreparedStatement ps = cnx.prepareStatement(req);
             ps.setString(1, email.trim());
             ResultSet rs = ps.executeQuery();
-            
+
             if (rs.next()) {
                 return mapResultSetToUser(rs);
             }
         } catch (SQLException ex) {
             System.out.println("Erreur lors de la récupération de l'utilisateur: " + ex.getMessage());
         }
-        
+
         return null;
     }
-    
+
+    /**
+     * Get all users with face authentication enabled and a stored face encoding.
+     * @return list of users eligible for face login
+     */
+    public List<User> getUsersWithFaceAuthEnabled() {
+        List<User> users = new ArrayList<>();
+        Connection cnx = db();
+        if (cnx == null || !hasFaceAuthColumns(cnx)) {
+            return users;
+        }
+
+        String req = "SELECT * FROM user WHERE face_auth_enabled = 1 AND face_encoding IS NOT NULL";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(req);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                users.add(mapResultSetToUser(rs));
+            }
+        } catch (SQLException ex) {
+            System.out.println("Erreur lors de la récupération des utilisateurs avec authentification faciale: " + ex.getMessage());
+        }
+        return users;
+    }
+
+    private boolean hasFaceAuthColumns(Connection cnx) {
+        try {
+            DatabaseMetaData meta = cnx.getMetaData();
+            boolean hasEncoding = false;
+            boolean hasEnabled = false;
+
+            try (ResultSet rs = meta.getColumns(null, null, "user", "face_encoding")) {
+                hasEncoding = rs.next();
+            }
+            try (ResultSet rs = meta.getColumns(null, null, "user", "face_auth_enabled")) {
+                hasEnabled = rs.next();
+            }
+
+            return hasEncoding && hasEnabled;
+        } catch (SQLException ex) {
+            System.out.println("Erreur lors de la vérification des colonnes faciales : " + ex.getMessage());
+            return false;
+        }
+    }
+
     /**
      * Check if user account is verified
      * @param user User object
@@ -92,7 +148,7 @@ public class LoginService {
         // Check if email is verified
         return user.isIs_email_verified();
     }
-    
+
     /**
      * Get user role for authorization
      * @param user User object
@@ -101,7 +157,7 @@ public class LoginService {
     public String getUserRole(User user) {
         return user != null ? user.getRole_utilisateur() : null;
     }
-    
+
     /**
      * Validate user credentials format before database query
      * @param email User email
@@ -113,15 +169,15 @@ public class LoginService {
         if (email == null || email.trim().isEmpty()) {
             return false;
         }
-        
+
         // Password validation (basic check)
         if (password == null || password.length() < 8) {
             return false;
         }
-        
+
         return true;
     }
-    
+
     /**
      * Map ResultSet to User object
      * @param rs ResultSet from database query
@@ -138,27 +194,27 @@ public class LoginService {
         user.setPrenom(rs.getString("prenom"));
         user.setTelephone(rs.getString("telephone"));
         user.setGouvernorat(rs.getString("gouvernorat"));
-        
+
         Timestamp dateNaissance = rs.getTimestamp("date_naissance");
         if (dateNaissance != null) {
             user.setDate_naissance(new Date(dateNaissance.getTime()));
         }
-        
+
         user.setRole_utilisateur(rs.getString("role_utilisateur"));
         user.setPhoto(rs.getString("photo"));
         user.setIs_email_verified(rs.getBoolean("is_email_verified"));
         user.setEmail_verification_token(rs.getString("email_verification_token"));
-        
+
         Timestamp tokenExpires = rs.getTimestamp("email_verification_token_expires_at");
         if (tokenExpires != null) {
             user.setEmail_verification_token_expires_at(new Date(tokenExpires.getTime()));
         }
-        
+
         Timestamp emailVerified = rs.getTimestamp("email_verified_at");
         if (emailVerified != null) {
             user.setEmail_verified_at(new Date(emailVerified.getTime()));
         }
-        
+
         user.setGoogle_id(rs.getString("google_id"));
         user.setGithub_id(rs.getString("github_id"));
         user.setOauth_provider(rs.getString("oauth_provider"));
@@ -168,21 +224,35 @@ public class LoginService {
         user.setEmail_auth_enabled(rs.getBoolean("email_auth_enabled"));
         user.setGoogle_auth_enabled(rs.getBoolean("google_auth_enabled"));
         user.setPhone_verified(rs.getBoolean("phone_verified"));
-        
+
         Timestamp phoneVerified = rs.getTimestamp("phone_verified_at");
         if (phoneVerified != null) {
             user.setPhone_verified_at(new Date(phoneVerified.getTime()));
         }
-        
+        try {
+            user.setFace_encoding(rs.getBytes("face_encoding"));
+        } catch (SQLException ignored) {
+            user.setFace_encoding(null);
+        }
+        try {
+            user.setFace_auth_enabled(rs.getBoolean("face_auth_enabled"));
+        } catch (SQLException ignored) {
+            user.setFace_auth_enabled(false);
+        }
+
         return user;
     }
-    
+
     /**
      * Update last login timestamp for user
      * @param userId User ID
      * @return true if update successful, false otherwise
      */
     public boolean updateLastLogin(int userId) {
+        Connection cnx = db();
+        if (cnx == null) {
+            return false;
+        }
         String req = "UPDATE user SET last_login = NOW() WHERE id = ?";
         try {
             PreparedStatement ps = cnx.prepareStatement(req);
@@ -194,7 +264,7 @@ public class LoginService {
             return false;
         }
     }
-    
+
     /**
      * Check if user account is active/blocked
      * @param user User object

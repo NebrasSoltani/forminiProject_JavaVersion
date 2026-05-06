@@ -23,6 +23,10 @@ public class ReponseService {
 
     // ─── CREATE ───────────────────────────────────────────────
     public void ajouter(Reponse r) {
+        if (getCnx() == null) {
+            System.out.println("[ReponseService] Connexion DB indisponible.");
+            return;
+        }
         r.valider();
         String req = "INSERT INTO reponse (texte, est_correcte, explication_reponse, question_id) VALUES (?, ?, ?, ?)";
         try {
@@ -70,6 +74,10 @@ public class ReponseService {
 
     // ─── READ ONE ─────────────────────────────────────────────
     public Reponse getById(int id) {
+        if (getCnx() == null) {
+            System.out.println("[ReponseService] Connexion DB indisponible.");
+            return null;
+        }
         String req = "SELECT * FROM reponse WHERE id = ?";
         try {
             PreparedStatement ps = cnx.prepareStatement(req);
@@ -91,6 +99,10 @@ public class ReponseService {
 
     // ─── UPDATE ───────────────────────────────────────────────
     public void modifier(Reponse r) {
+        if (getCnx() == null) {
+            System.out.println("[ReponseService] Connexion DB indisponible.");
+            return;
+        }
         r.valider();
         String req = "UPDATE reponse SET texte=?, est_correcte=?, explication_reponse=? WHERE id=?";
         try {
@@ -108,6 +120,10 @@ public class ReponseService {
 
     // ─── DELETE ───────────────────────────────────────────────
     public void supprimer(int id) {
+        if (getCnx() == null) {
+            System.out.println("[ReponseService] Connexion DB indisponible.");
+            return;
+        }
         String req = "DELETE FROM reponse WHERE id = ?";
         try {
             PreparedStatement ps = cnx.prepareStatement(req);

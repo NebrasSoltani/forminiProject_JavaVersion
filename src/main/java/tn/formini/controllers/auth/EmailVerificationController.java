@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 import tn.formini.services.UsersService.EmailVerificationService;
 import tn.formini.services.UsersService.LoginService;
 import tn.formini.services.UsersService.SessionManager;
-import tn.formini.services.UsersService.EmailService;
+import tn.formini.services.UsersService.SMTPEmailService;
 
 public class EmailVerificationController {
 
@@ -34,7 +34,7 @@ public class EmailVerificationController {
     private Label errorToken;
 
     private EmailVerificationService emailVerificationService;
-    private EmailService emailService;
+    private SMTPEmailService emailService;
     private LoginService loginService;
     private String userEmail;
     private Runnable onBack;
@@ -43,7 +43,7 @@ public class EmailVerificationController {
     @FXML
     public void initialize() {
         emailVerificationService = new EmailVerificationService();
-        emailService = new EmailService();
+        emailService = new SMTPEmailService();
         loginService = new LoginService();
     }
 

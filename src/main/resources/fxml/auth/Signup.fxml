@@ -132,7 +132,6 @@
                                 <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="3">
                                     <Label text="Gouvernorat" styleClass="form-label"/>
                                     <ComboBox fx:id="fieldGouvernorat" styleClass="form-control signup-field" maxWidth="Infinity" promptText="Choisir"/>
-                                    <ComboBox fx:id="fieldGouvernorat" styleClass="form-control signup-field" maxWidth="Infinity" promptText="Choisir un gouvernorat"/>
                                 </VBox>
                                 <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                     <Label text="Date de naissance *" styleClass="form-label"/>
@@ -155,6 +154,9 @@
                                         </VBox>
                                     </HBox>
                                 </VBox>
+
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.columnSpan="2">
+                                                                    </VBox>
                             </GridPane>
                             <Label text="Mot de passe : au moins 8 caractères, une majuscule, une minuscule et un chiffre."
                                    styleClass="signup-field-hint" wrapText="true"/>
