@@ -1,78 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.formini.controllers.dashboard.FormateurDashboardController" spacing="20" style="-fx-padding: 20;">
+<VBox spacing="30" style="-fx-background-color: #0f172a; -fx-padding: 40;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.formini.controllers.dashboard.FormateurDashboardController">
     <children>
-        <!-- Title -->
-        <Label fx:id="titleLabel" text="Tableau de Bord Formateur" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-        
-        <!-- Welcome Message -->
-        <Label fx:id="welcomeLabel" text="Bienvenue!" style="-fx-font-size: 18px; -fx-text-fill: #34495e;"/>
-        
-        <!-- Statistics Section -->
-        <VBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 15; -fx-border-radius: 5;">
+        <!-- Header Section -->
+        <HBox alignment="CENTER_LEFT" spacing="20">
             <children>
-                <Label text="Mes Statistiques" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-                <Label fx:id="statsLabel" text="Chargement..." style="-fx-font-size: 14px;"/>
+                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <Label fx:id="titleLabel" text="Tableau de Bord Formateur" style="-fx-font-size: 32px; -fx-font-weight: 900; -fx-text-fill: white;"/>
+                    <Label fx:id="welcomeLabel" text="Gérez vos formations et vos étudiants" style="-fx-font-size: 16px; -fx-text-fill: #94a3b8;"/>
+                </VBox>
+                <Button onAction="#refreshDashboard" text="🔄 Actualiser" style="-fx-background-color: #1e293b; -fx-text-fill: white; -fx-background-radius: 10; -fx-padding: 10 20; -fx-font-weight: bold; -fx-cursor: hand;"/>
+            </children>
+        </HBox>
+
+        <!-- Stats Section -->
+        <VBox spacing="15" style="-fx-background-color: #1e293b; -fx-background-radius: 20; -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 20, 0, 0, 10); -fx-border-color: rgba(56,189,248,0.1); -fx-border-width: 1; -fx-border-radius: 20;">
+            <children>
+                <Label text="📈 MES STATISTIQUES" style="-fx-text-fill: #38bdf8; -fx-font-size: 12px; -fx-font-weight: 900; -fx-letter-spacing: 1.5;"/>
+                <Label fx:id="statsLabel" text="Chargement des données..." style="-fx-font-size: 18px; -fx-text-fill: white; -fx-font-weight: bold;"/>
             </children>
         </VBox>
-        
-        <!-- Teaching Menu -->
-        <VBox spacing="15">
+
+        <!-- Main Workspace -->
+        <HBox spacing="30" VBox.vgrow="ALWAYS">
             <children>
-                <Label text="Gestion Pédagogique" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-                
-                <GridPane hgap="15" vgap="15">
+                <!-- Teaching Menu -->
+                <VBox spacing="15" prefWidth="350">
                     <children>
-                        <Button fx:id="myFormationsButton" text="Mes Formations" 
-                                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;" 
-                                GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                        
-                        <Button fx:id="createFormationButton" text="Créer une Formation" 
-                                style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;" 
-                                GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                        
-                        <Button fx:id="manageLessonsButton" text="Gérer les Leçons" 
-                                style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;" 
-                                GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                        
-                        <Button fx:id="manageQuizzesButton" text="Gérer les Quiz" 
-                                style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;" 
-                                GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                        
-                        <Button fx:id="viewStudentsButton" text="Voir les Étudiants" 
-                                style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;" 
-                                GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                        
-                        <Button fx:id="myProfileButton" text="Mon Profil Formateur" 
-                                style="-fx-background-color: #1abc9c; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;" 
-                                GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                        
-                        <Button fx:id="reviewsButton" text="Voir les Avis" 
-                                style="-fx-background-color: #34495e; -fx-text-fill: white; -fx-pref-width: 200; -fx-pref-height: 50;" 
-                                GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                        <Label text="GESTION PÉDAGOGIQUE" style="-fx-text-fill: #475569; -fx-font-size: 12px; -fx-font-weight: 900;"/>
+                        <VBox fx:id="menuContainer" spacing="10" style="-fx-background-color: #1e293b; -fx-background-radius: 20; -fx-padding: 20;">
+                            <children>
+                                <Button fx:id="myFormationsButton" text="📚 Mes Formations" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #e2e8f0; -fx-padding: 15; -fx-background-radius: 12; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                                <Button fx:id="createFormationButton" text="➕ Créer une Formation" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: #0284c7; -fx-text-fill: white; -fx-padding: 15; -fx-background-radius: 12; -fx-cursor: hand; -fx-font-weight: bold; -fx-effect: dropshadow(gaussian, rgba(2,132,199,0.3), 10, 0, 0, 3);"/>
+                                <Button fx:id="manageLessonsButton" text="📝 Gérer les Leçons" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #e2e8f0; -fx-padding: 15; -fx-background-radius: 12; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                                <Button fx:id="manageQuizzesButton" text="🧠 Gérer les Quiz" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #e2e8f0; -fx-padding: 15; -fx-background-radius: 12; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                                <Button fx:id="viewStudentsButton" text="👥 Voir les Étudiants" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #e2e8f0; -fx-padding: 15; -fx-background-radius: 12; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                                <Button fx:id="myProfileButton" text="⚙️ Mon Profil" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #e2e8f0; -fx-padding: 15; -fx-background-radius: 12; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                            </children>
+                        </VBox>
                     </children>
-                </GridPane>
-            </children>
-        </VBox>
-        
-        <!-- Recent Activity -->
-        <VBox spacing="10" style="-fx-background-color: #f8f9fa; -fx-padding: 15; -fx-border-radius: 5;">
-            <children>
-                <Label text="Activité Récente" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-                <Label text="Aucune activité récente" style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d;"/>
-            </children>
-        </VBox>
-        
-        <!-- Quick Actions -->
-        <HBox spacing="10">
-            <children>
-                <Button text="Actualiser" onAction="#refreshDashboard" style="-fx-background-color: #95a5a6; -fx-text-fill: white;"/>
-                <Button text="Aide" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
-                <Button text="Paramètres" style="-fx-background-color: #7f8c8d; -fx-text-fill: white;"/>
+                </VBox>
+
+                <!-- Activity Feed -->
+                <VBox spacing="15" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label text="ACTIVITÉ RÉCENTE" style="-fx-text-fill: #475569; -fx-font-size: 12px; -fx-font-weight: 900;"/>
+                        <VBox alignment="CENTER" spacing="20" VBox.vgrow="ALWAYS" style="-fx-background-color: #1e293b; -fx-background-radius: 20; -fx-border-color: #334155; -fx-border-width: 2; -fx-border-style: dashed; -fx-border-radius: 20;">
+                            <children>
+                                <Label text="📅" style="-fx-font-size: 48px;"/>
+                                <Label text="Aucune activité récente" style="-fx-text-fill: #94a3b8; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                                <Label text="Vos futurs étudiants apparaîtront ici." style="-fx-text-fill: #475569; -fx-font-size: 13px;"/>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
             </children>
         </HBox>
     </children>

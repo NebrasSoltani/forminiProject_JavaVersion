@@ -5,6 +5,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.shape.*?>
+<?import java.net.URL?>
 
 <StackPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
@@ -12,16 +13,20 @@
            styleClass="login-page"
            minHeight="600">
 
+    <stylesheets>
+        <URL value="@../../css/style.css" />
+    </stylesheets>
+
     <!-- Decorative Background Elements -->
     <StackPane StackPane.alignment="TOP_LEFT">
-        <Circle radius="200" fill="linear-gradient(from 0% 0% to 100% 100%, #6974e8 0%, #8f94f6 100%)"
-                opacity="0.08" StackPane.alignment="TOP_LEFT"
+        <Circle radius="200" fill="linear-gradient(to bottom right, #4f46e5 0%, #1e1b4b 100%)"
+                opacity="0.15" StackPane.alignment="TOP_LEFT"
                 translateX="-100" translateY="-100"/>
     </StackPane>
 
     <StackPane StackPane.alignment="BOTTOM_RIGHT">
-        <Circle radius="250" fill="linear-gradient(from 0% 0% to 100% 100%, #ff4b5c 0%, #ff7b8c 100%)"
-                opacity="0.06" StackPane.alignment="BOTTOM_RIGHT"
+        <Circle radius="250" fill="linear-gradient(to bottom right, #1e293b 0%, #0f172a 100%)"
+                opacity="0.2" StackPane.alignment="BOTTOM_RIGHT"
                 translateX="150" translateY="150"/>
     </StackPane>
 

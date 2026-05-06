@@ -28,7 +28,53 @@ public class DashboardController {
     @FXML
     public void initialize() {
         instance = this;
-        ouvrirQuiz();
+        configurerInterfaceSelonRole();
+        
+        // Par défaut, on ouvre les statistiques ou les quiz selon le rôle
+        tn.formini.services.UsersService.SessionManager session = tn.formini.services.UsersService.SessionManager.getInstance();
+        if (session.isApprenant()) {
+            ouvrirApprenantQuiz();
+        } else {
+            ouvrirQuiz();
+        }
+    }
+
+    private void configurerInterfaceSelonRole() {
+        tn.formini.services.UsersService.SessionManager session = tn.formini.services.UsersService.SessionManager.getInstance();
+        boolean isApprenant = session.isApprenant();
+        boolean isFormateur = session.isFormateur();
+        boolean isAdmin = session.isAdmin();
+
+        // Si c'est un apprenant, on cache tout sauf le bouton "Apprenant Quiz"
+        if (isApprenant) {
+            cacherBouton(btnStatistiques);
+            cacherBouton(btnQuiz);
+            cacherBouton(btnQuestion);
+            cacherBouton(btnReponse);
+            cacherBouton(btnResultat);
+            
+            if (btnApprenantQuiz != null) {
+                btnApprenantQuiz.setVisible(true);
+                btnApprenantQuiz.setManaged(true);
+            }
+        } 
+        // Si c'est un formateur ou admin, on cache le bouton "Mode Apprenant"
+        else if (isFormateur || isAdmin) {
+            cacherBouton(btnApprenantQuiz);
+            
+            if (btnStatistiques != null) btnStatistiques.setVisible(true);
+            if (btnQuiz != null) btnQuiz.setVisible(true);
+            if (btnQuestion != null) btnQuestion.setVisible(true);
+            if (btnReponse != null) btnReponse.setVisible(true);
+            if (btnResultat != null) btnResultat.setVisible(true);
+        }
+    }
+
+    private void cacherBouton(Button btn) {
+        if (btn != null) {
+            btn.setVisible(false);
+            btn.setManaged(false);
+        }
     }
 
     private void chargerVue(String fxmlPath) {

@@ -2336,10 +2336,123 @@
     -fx-padding: 10px 12px;
 }
 
-.crud-form-actions {
-    -fx-background-color: linear-gradient(to right, #f8fafc, #f1f5f9);
-    -fx-border-color: #e2e8f0;
-    -fx-border-width: 1px 0 0 0;
+/* ── Dark Auth Theme (SaaS Premium) ───────────────────────── */
+.login-page, .signup-page {
+    -fx-background-color: #0f172a; /* Deep Navy */
+}
+
+.login-card, .signup-card {
+    -fx-background-color: #1e293b; /* Dark Slate */
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 40, 0, 0, 10);
+}
+
+.login-hero-title, .signup-hero-title, .brand-name {
+    -fx-text-fill: white;
+}
+
+.login-hero-sub, .signup-hero-sub, .login-text, .signup-nav-text, .form-label {
+    -fx-text-fill: #94a3b8;
+}
+
+.login-field, .signup-field, .form-control {
+    -fx-background-color: #0f172a;
+    -fx-border-color: #334155;
+    -fx-text-fill: white;
+}
+
+.login-field:focused, .signup-field:focused, .form-control:focused {
+    -fx-border-color: #4f46e5;
+    -fx-background-color: #1e293b;
+}
+
+.login-link, .login-link-bold, .signup-nav-link {
+    -fx-text-fill: #38bdf8;
+}
+
+.login-link:hover, .signup-nav-link:hover {
+    -fx-text-fill: #7dd3fc;
+}
+
+.login-divider .divider-line, .signup-sep {
+    -fx-background-color: #334155;
+}
+
+.divider-text {
+    -fx-text-fill: #64748b;
+}
+
+.btn-oauth {
+    -fx-background-color: #0f172a;
+    -fx-border-color: #334155;
+    -fx-text-fill: #e2e8f0;
+}
+
+.btn-oauth:hover {
+    -fx-background-color: #1e293b;
+    -fx-border-color: #475569;
+}
+
+.oauth-text {
+    -fx-text-fill: #e2e8f0;
+}
+
+.login-checkbox, .signup-role-radio {
+    -fx-text-fill: #e2e8f0;
+}
+
+.signup-role-tile {
+    -fx-background-color: #0f172a;
+    -fx-border-color: #334155;
+}
+
+.signup-role-tile:hover {
+    -fx-background-color: #1e293b;
+    -fx-border-color: #4f46e5;
+}
+
+.signup-role-tile-selected {
+    -fx-background-color: rgba(79, 70, 229, 0.1);
+    -fx-border-color: #4f46e5;
+}
+
+.signup-actions {
+    -fx-background-color: #1e293b;
+    -fx-border-color: #334155;
+}
+
+.signup-scroll {
+    -fx-background: #1e293b;
+}
+
+.signup-scroll .viewport {
+    -fx-background-color: #1e293b;
+}
+
+.signup-card-inner {
+    -fx-background-color: #1e293b;
+}
+
+.signup-section-title {
+    -fx-text-fill: white;
+}
+
+.signup-role-hint, .signup-field-hint, .signup-file-name {
+    -fx-text-fill: #64748b;
+}
+
+.btn-secondary {
+    -fx-background-color: #334155;
+    -fx-text-fill: #e2e8f0;
+    -fx-border-color: #475569;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #475569;
+}
+
+.login-btn-enhanced {
+    -fx-effect: dropshadow(gaussian, rgba(79, 70, 229, 0.4), 15, 0, 0, 5);
 }
 
 

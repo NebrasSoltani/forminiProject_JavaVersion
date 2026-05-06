@@ -200,7 +200,22 @@ public class LoginService {
             user.setDate_naissance(new Date(dateNaissance.getTime()));
         }
 
-        user.setRole_utilisateur(rs.getString("role_utilisateur"));
+        String roleUtil = rs.getString("role_utilisateur");
+        // Fallback: if role_utilisateur is null, try to derive it from roles JSON
+        if (roleUtil == null || roleUtil.trim().isEmpty()) {
+            String rolesJson = user.getRoles();
+            if (rolesJson != null) {
+                if (rolesJson.contains("ROLE_ADMIN")) roleUtil = "admin";
+                else if (rolesJson.contains("ROLE_FORMATEUR")) roleUtil = "formateur";
+                else if (rolesJson.contains("ROLE_APPRENANT")) roleUtil = "apprenant";
+                else if (rolesJson.contains("ROLE_SOCIETE")) roleUtil = "societe";
+                else roleUtil = "apprenant"; // default
+            } else {
+                roleUtil = "apprenant"; // default
+            }
+        }
+        user.setRole_utilisateur(roleUtil);
+
         user.setPhoto(rs.getString("photo"));
         user.setIs_email_verified(rs.getBoolean("is_email_verified"));
         user.setEmail_verification_token(rs.getString("email_verification_token"));

@@ -45,6 +45,7 @@ public class MainController implements Initializable {
     @FXML private Button btnProductAdd;
     @FXML private Button btnProductManage;
     @FXML private Button btnOrderManage;
+    @FXML private Label labelAdminSection;
 
     private List<Button> navButtons;
 
@@ -65,7 +66,91 @@ public class MainController implements Initializable {
                 btnOrderManage,
                 btnStageList
         );
+        
+        configurerInterfaceSelonRole();
         showDashboard();
+    }
+
+    private void configurerInterfaceSelonRole() {
+        tn.formini.services.UsersService.SessionManager session = tn.formini.services.UsersService.SessionManager.getInstance();
+        if (session.isLoggedIn()) {
+            tn.formini.entities.Users.User user = session.getCurrentUser();
+            String role = user.getRole_utilisateur();
+            if (role == null || role.trim().isEmpty()) {
+                // Fallback to roles JSON if role_utilisateur is missing
+                String rolesJson = user.getRoles();
+                if (rolesJson != null) {
+                    if (rolesJson.contains("ROLE_ADMIN")) role = "admin";
+                    else if (rolesJson.contains("ROLE_FORMATEUR")) role = "formateur";
+                    else if (rolesJson.contains("ROLE_APPRENANT")) role = "apprenant";
+                    else if (rolesJson.contains("ROLE_SOCIETE")) role = "societe";
+                }
+                if (role == null) role = "apprenant";
+                user.setRole_utilisateur(role);
+            }
+            
+            labelUserName.setText(user.getNom() + " " + user.getPrenom());
+            labelUserRole.setText(role.toUpperCase());
+
+            boolean isApprenant = session.isApprenant();
+            boolean isSociete = session.isSociete();
+
+            if (isApprenant) {
+                // Un apprenant ne peut pas ajouter de contenu ni gérer les produits/commandes
+                cacherBouton(btnBlogAdd);
+                cacherBouton(btnEventAdd);
+                cacherBouton(btnProductAdd);
+                cacherBouton(btnProductManage);
+                cacherBouton(btnOrderManage);
+                if (labelAdminSection != null) {
+                    labelAdminSection.setVisible(false);
+                    labelAdminSection.setManaged(false);
+                }
+            } else if (isSociete) {
+                // Une société se concentre sur les stages
+                cacherBouton(btnBlogAdd);
+                cacherBouton(btnEventAdd);
+                cacherBouton(btnProductAdd);
+                cacherBouton(btnProductManage);
+                cacherBouton(btnOrderManage);
+                cacherBouton(btnQuiz);
+                if (labelAdminSection != null) {
+                    labelAdminSection.setVisible(false);
+                    labelAdminSection.setManaged(false);
+                }
+            }
+        }
+    }
+
+    private void cacherBouton(Button btn) {
+        if (btn != null) {
+            btn.setVisible(false);
+            btn.setManaged(false);
+        }
+    }
+
+    @FXML
+    public void showDashboard() {
+        labelPageTitle.setText("Tableau de bord");
+        
+        tn.formini.services.UsersService.SessionManager session = tn.formini.services.UsersService.SessionManager.getInstance();
+        String fxmlPath = "/fxml/dashboard/Dashboard.fxml"; // Fallback
+        
+        if (session.isApprenant()) {
+            fxmlPath = "/fxml/dashboard/apprenant-dashboard.fxml";
+        } else if (session.isFormateur()) {
+            fxmlPath = "/fxml/dashboard/formateur-dashboard.fxml";
+        } else if (session.isAdmin()) {
+            fxmlPath = "/fxml/dashboard/admin-dashboard.fxml";
+        } else if (session.isSociete()) {
+            fxmlPath = "/fxml/dashboard/societe-dashboard.fxml";
+        }
+        
+        Object controller = loadPage(fxmlPath);
+        if (controller instanceof tn.formini.controllers.dashboard.DashboardRoleController roleController) {
+            roleController.initializeDashboard(session.getCurrentUser());
+        }
+        updateActiveButton(btnDashboard);
     }
 
     private void updateActiveButton(Button activeBtn) {
@@ -108,12 +193,6 @@ public class MainController implements Initializable {
         }
     }
 
-    @FXML
-    public void showDashboard() {
-        labelPageTitle.setText("Tableau de bord");
-        loadPage("/fxml/dashboard/Dashboard.fxml");
-        updateActiveButton(btnDashboard);
-    }
 
     @FXML
     public void showEventList() {

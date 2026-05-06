@@ -83,15 +83,13 @@ public class ApprenantDashboardController implements DashboardRoleController {
         welcomeLabel.setText("Bienvenue, " + currentUser.getPrenom() + "!");
         
         // Setup button actions
-        viewFormationsButton.setOnAction(e -> viewFormations());
-        myInscriptionsButton.setOnAction(e -> viewMyInscriptions());
-        myProgressButton.setOnAction(e -> viewMyProgress());
-        takeQuizButton.setOnAction(e -> takeQuiz());
-        myCertificatesButton.setOnAction(e -> viewMyCertificates());
-        profileButton.setOnAction(e -> viewProfile());
-        if (viewOffersButton != null) {
-            viewOffersButton.setOnAction(e -> viewOffers());
-        }
+        if (viewFormationsButton != null) viewFormationsButton.setOnAction(e -> viewFormations());
+        if (myInscriptionsButton != null) myInscriptionsButton.setOnAction(e -> viewMyInscriptions());
+        if (myProgressButton != null) myProgressButton.setOnAction(e -> viewMyProgress());
+        if (takeQuizButton != null) takeQuizButton.setOnAction(e -> takeQuiz());
+        if (myCertificatesButton != null) myCertificatesButton.setOnAction(e -> viewMyCertificates());
+        if (profileButton != null) profileButton.setOnAction(e -> viewProfile());
+        if (viewOffersButton != null) viewOffersButton.setOnAction(e -> viewOffers());
     }
 
     private void loadStudentInfo() {
