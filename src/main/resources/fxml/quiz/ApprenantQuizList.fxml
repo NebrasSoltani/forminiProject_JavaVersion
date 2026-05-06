@@ -5,7 +5,7 @@
 <?import javafx.geometry.Insets?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="tn.formini.controllers.ApprenantQuizListController"
+      fx:controller="tn.formini.controllers.quiz.ApprenantQuizListController"
       spacing="25" style="-fx-background-color: #f8fafc; -fx-padding: 30;">
 
     <!-- Hero Banner -->

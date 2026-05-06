@@ -5,7 +5,7 @@
 <?import javafx.geometry.Insets?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="tn.formini.controllers.ApprenantQuizPasserController"
+      fx:controller="tn.formini.controllers.quiz.ApprenantQuizPasserController"
       spacing="15" style="-fx-background-color: white; -fx-padding: 30;">
 
     <HBox alignment="CENTER_LEFT">

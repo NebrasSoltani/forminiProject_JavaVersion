@@ -9,9 +9,10 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import tn.formini.entities.Question;
-import tn.formini.entities.ResultatQuiz;
-import tn.formini.services.QuestionService;
+import tn.formini.entities.Quizs.Question;
+import tn.formini.entities.Quizs.Quiz;
+import tn.formini.entities.Quizs.ResultatQuiz;
+import tn.formini.services.quizService.QuestionService;
 import tn.formini.services.quizService.QuizService;
 import tn.formini.services.quizService.ResultatQuizService;
 
@@ -68,7 +69,7 @@ public class StatistiquesController implements Initializable {
     private void chargerStatistiques() {
         List<ResultatQuiz> resultats = resultatService.getAll();
         List<Question> questions = questionService.getAll();
-        List<tn.formini.entities.Quiz> allQuizzes = quizService.getAll();
+        List<Quiz> allQuizzes = quizService.getAll();
 
         long reussis = resultats.stream().filter(ResultatQuiz::isReussi).count();
         long echoues = resultats.size() - reussis;
@@ -92,7 +93,7 @@ public class StatistiquesController implements Initializable {
 
         // Map Quiz ID to Title
         Map<Integer, String> quizTitleMap = allQuizzes.stream()
-                .collect(Collectors.toMap(tn.formini.entities.Quiz::getId, tn.formini.entities.Quiz::getTitre, (v1, v2) -> v1));
+                .collect(Collectors.toMap(Quiz::getId, Quiz::getTitre, (v1, v2) -> v1));
 
         // Pie Chart: Questions per Quiz
         Map<String, Long> questionsParQuiz = questions.stream()

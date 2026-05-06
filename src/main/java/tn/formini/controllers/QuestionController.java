@@ -10,12 +10,14 @@ import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
-import tn.formini.entities.Question;
-import tn.formini.entities.Quiz;
-import tn.formini.entities.Reponse;
-import tn.formini.services.QuestionService;
-import tn.formini.services.QuizService;
-import tn.formini.services.ReponseService;
+import tn.formini.controllers.quiz.DashboardController;
+import tn.formini.controllers.quiz.QuestionFormController;
+import tn.formini.entities.Quizs.Question;
+import tn.formini.entities.Quizs.Quiz;
+import tn.formini.entities.Quizs.Reponse;
+import tn.formini.services.quizService.QuestionService;
+import tn.formini.services.quizService.QuizService;
+import tn.formini.services.quizService.ReponseService;
 
 import java.io.IOException;
 import java.net.URL;
@@ -134,8 +136,8 @@ public class QuestionController implements Initializable {
         btnDel.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 5 10;");
 
         btnReps.setOnAction(e -> {
-            if (tn.formini.controllers.DashboardController.instance != null) {
-                tn.formini.controllers.DashboardController.instance.ouvrirReponsePourQuestion(q);
+            if (DashboardController.instance != null) {
+                DashboardController.instance.ouvrirReponsePourQuestion(q);
             }
         });
         btnEdit.setOnAction(e -> ouvrirFormulaire(q));
@@ -187,21 +189,21 @@ public class QuestionController implements Initializable {
 
     @FXML
     public void ouvrirFormIA() {
-        if (tn.formini.controllers.DashboardController.instance != null) {
-            tn.formini.controllers.DashboardController.instance.ouvrirGenerateurIA(filtreQuiz.getValue(), this::chargerDonnees);
+        if (DashboardController.instance != null) {
+            DashboardController.instance.ouvrirGenerateurIA(filtreQuiz.getValue(), this::chargerDonnees);
         } else {
             System.out.println("DashboardController.instance est null. Impossible d'ouvrir l'IA dans la même fenêtre.");
         }
     }
 
     private void ouvrirFormulaire(Question question) {
-        if (tn.formini.controllers.DashboardController.instance != null) {
-            tn.formini.controllers.DashboardController.instance.ouvrirFormulaireQuestion(question, this::chargerDonnees);
+        if (DashboardController.instance != null) {
+            DashboardController.instance.ouvrirFormulaireQuestion(question, this::chargerDonnees);
         } else {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/QuestionForm.fxml"));
                 Parent root = loader.load();
-                tn.formini.controllers.QuestionFormController ctrl = loader.getController();
+                QuestionFormController ctrl = loader.getController();
                 ctrl.initData(question, this::chargerDonnees);
 
                 Stage stage = new Stage();

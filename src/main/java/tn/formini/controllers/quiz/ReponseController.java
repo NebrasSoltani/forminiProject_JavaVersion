@@ -1,4 +1,4 @@
-package tn.formini.controllers;
+package tn.formini.controllers.quiz;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -12,10 +12,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import tn.formini.entities.Question;
-import tn.formini.entities.Reponse;
-import tn.formini.services.QuestionService;
-import tn.formini.services.ReponseService;
+import tn.formini.controllers.quiz.ReponseFormController;
+import tn.formini.controllers.quiz.DashboardController;
+import tn.formini.entities.Quizs.Question;
+import tn.formini.entities.Quizs.Reponse;
+import tn.formini.services.quizService.QuestionService;
+import tn.formini.services.quizService.ReponseService;
+
 
 import java.io.IOException;
 import java.net.URL;
@@ -100,13 +103,13 @@ public class ReponseController implements Initializable {
     public void ouvrirFormAjout() { ouvrirFormulaire(null); }
 
     private void ouvrirFormulaire(Reponse reponse) {
-        if (tn.formini.controllers.DashboardController.instance != null) {
-            tn.formini.controllers.DashboardController.instance.ouvrirFormulaireReponse(reponse, this::chargerDonnees);
+        if (DashboardController.instance != null) {
+            DashboardController.instance.ouvrirFormulaireReponse(reponse, this::chargerDonnees);
         } else {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/ReponseForm.fxml"));
                 Parent root = loader.load();
-                tn.formini.controllers.ReponseFormController ctrl = loader.getController();
+                ReponseFormController ctrl = loader.getController();
                 ctrl.initData(reponse, this::chargerDonnees);
 
                 Stage stage = new Stage();

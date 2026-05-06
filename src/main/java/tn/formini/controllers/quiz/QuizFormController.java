@@ -1,11 +1,11 @@
-package tn.formini.controllers;
+package tn.formini.controllers.quiz;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import tn.formini.entities.Quiz;
-import tn.formini.services.QuizService;
+import tn.formini.entities.Quizs.Quiz;
+import tn.formini.services.quizService.*;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -95,8 +95,8 @@ public class QuizFormController implements Initializable {
     }
 
     private void fermer() {
-        if (tn.formini.controllers.DashboardController.instance != null) {
-            tn.formini.controllers.DashboardController.instance.ouvrirQuiz();
+        if (DashboardController.instance != null) {
+            DashboardController.instance.ouvrirQuiz();
         } else {
             ((Stage) titreField.getScene().getWindow()).close();
         }

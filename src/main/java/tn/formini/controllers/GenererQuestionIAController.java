@@ -7,12 +7,13 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import tn.formini.entities.Question;
-import tn.formini.entities.Quiz;
-import tn.formini.entities.Reponse;
-import tn.formini.services.QuestionService;
-import tn.formini.services.QuizService;
-import tn.formini.services.ReponseService;
+import tn.formini.controllers.quiz.DashboardController;
+import tn.formini.entities.Quizs.Question;
+import tn.formini.entities.Quizs.Quiz;
+import tn.formini.entities.Quizs.Reponse;
+import tn.formini.services.quizService.QuestionService;
+import tn.formini.services.quizService.QuizService;
+import tn.formini.services.quizService.ReponseService;
 
 import java.net.URI;
 import java.net.URL;
@@ -75,12 +76,12 @@ public class GenererQuestionIAController implements Initializable {
 
     @FXML
     public void fermer() {
-        if (tn.formini.controllers.DashboardController.instance != null) {
+        if (DashboardController.instance != null) {
             Quiz selected = comboQuiz.getValue();
             if (selected != null) {
-                tn.formini.controllers.DashboardController.instance.ouvrirQuestionPourQuiz(selected);
+                DashboardController.instance.ouvrirQuestionPourQuiz(selected);
             } else {
-                tn.formini.controllers.DashboardController.instance.ouvrirQuestion();
+                DashboardController.instance.ouvrirQuestion();
             }
         } else {
             // Fallback (if still opened in a separate window somehow)

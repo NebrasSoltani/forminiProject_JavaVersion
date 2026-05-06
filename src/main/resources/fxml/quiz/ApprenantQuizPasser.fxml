@@ -5,7 +5,7 @@
 <?import javafx.scene.shape.Circle?>
 
 <StackPane xmlns:fx="http://javafx.com/fxml"
-           fx:controller="tn.formini.controllers.ApprenantQuizPasserController"
+           fx:controller="tn.formini.controllers.quiz.ApprenantQuizPasserController"
            style="-fx-background-color: linear-gradient(to bottom right, #e2e8f0, #f8fafc);">
 
     <!-- Main Content (Quiz Mode) -->

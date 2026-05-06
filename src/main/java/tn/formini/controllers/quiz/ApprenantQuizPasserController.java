@@ -1,4 +1,4 @@
-package tn.formini.controllers;
+package tn.formini.controllers.quiz;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -7,14 +7,14 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
-import tn.formini.entities.Apprenant;
-import tn.formini.entities.Question;
-import tn.formini.entities.Quiz;
-import tn.formini.entities.Reponse;
-import tn.formini.entities.ResultatQuiz;
+import tn.formini.entities.Users.Apprenant;
+import tn.formini.entities.Quizs.Question;
+import tn.formini.entities.Quizs.Quiz;
+import tn.formini.entities.Quizs.Reponse;
+import tn.formini.entities.Quizs.ResultatQuiz;
 import tn.formini.services.ApprenantQuizService;
-import tn.formini.services.QuestionService;
-import tn.formini.services.ReponseService;
+import tn.formini.services.quizService.QuestionService;
+import tn.formini.services.quizService.ReponseService;
 
 import java.net.URL;
 import java.util.*;
@@ -471,8 +471,8 @@ public class ApprenantQuizPasserController implements Initializable {
 
     @FXML
     public void fermer() {
-        if (tn.formini.controllers.DashboardController.instance != null) {
-            tn.formini.controllers.DashboardController.instance.ouvrirApprenantQuiz();
+        if (DashboardController.instance != null) {
+           DashboardController.instance.ouvrirApprenantQuiz();
         } else {
             ((Stage) btnSoumettre.getScene().getWindow()).close();
         }

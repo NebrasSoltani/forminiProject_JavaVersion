@@ -1,4 +1,4 @@
-package tn.formini.controllers;
+package tn.formini.controllers.quiz;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,8 +14,9 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import tn.formini.entities.Apprenant;
-import tn.formini.entities.Quiz;
+import tn.formini.controllers.quiz.ApprenantQuizPasserController;
+import tn.formini.entities.Users.Apprenant;
+import tn.formini.entities.Quizs.Quiz;
 import tn.formini.services.ApprenantQuizService;
 
 import java.io.IOException;
@@ -166,8 +167,8 @@ public class ApprenantQuizListController implements Initializable {
     }
 
     private void ouvrirQuizPasser(int quizId, int formationId) {
-        if (tn.formini.controllers.DashboardController.instance != null) {
-            tn.formini.controllers.DashboardController.instance.ouvrirApprenantQuizPasser(currentApprenant, formationId, quizId);
+        if (DashboardController.instance != null) {
+           DashboardController.instance.ouvrirApprenantQuizPasser(currentApprenant, formationId, quizId);
         } else {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/ApprenantQuizPasser.fxml"));

@@ -1,10 +1,15 @@
-package tn.formini.controllers;
+package tn.formini.controllers.quiz;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.control.Button;
+import tn.formini.controllers.QuestionController;
+import tn.formini.entities.Quizs.Question;
+import tn.formini.entities.Quizs.Quiz;
+import tn.formini.entities.Quizs.Reponse;
+import tn.formini.entities.Users.Apprenant;
 
 import java.io.IOException;
 
@@ -38,16 +43,19 @@ public class DashboardController {
 
     private void resetBoutons() {
         String inactif = "-fx-background-color: transparent; -fx-text-fill: #64748b; -fx-font-weight: 900; -fx-background-radius: 20; -fx-padding: 12 25; -fx-cursor: hand; -fx-font-size: 14px; -fx-effect: null;";
-        btnStatistiques.setStyle(inactif);
-        btnQuiz.setStyle(inactif);
-        btnQuestion.setStyle(inactif);
-        btnReponse.setStyle(inactif);
-        btnResultat.setStyle(inactif);
-        
-        btnApprenantQuiz.setStyle("-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-radius: 20; -fx-text-fill: #0f172a; -fx-font-weight: 900; -fx-background-radius: 20; -fx-padding: 12 25; -fx-cursor: hand; -fx-font-size: 14px;");
+        if (btnStatistiques != null) btnStatistiques.setStyle(inactif);
+        if (btnQuiz != null) btnQuiz.setStyle(inactif);
+        if (btnQuestion != null) btnQuestion.setStyle(inactif);
+        if (btnReponse != null) btnReponse.setStyle(inactif);
+        if (btnResultat != null) btnResultat.setStyle(inactif);
+
+        if (btnApprenantQuiz != null) {
+            btnApprenantQuiz.setStyle("-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-radius: 20; -fx-text-fill: #0f172a; -fx-font-weight: 900; -fx-background-radius: 20; -fx-padding: 12 25; -fx-cursor: hand; -fx-font-size: 14px;");
+        }
     }
 
     private void activerBouton(Button btn) {
+        if (btn == null) return;
         if (btn == btnApprenantQuiz) {
             btn.setStyle("-fx-background-color: #0f172a; -fx-text-fill: white; -fx-font-weight: 900; -fx-background-radius: 20; -fx-padding: 12 25; -fx-cursor: hand; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.3), 10, 0, 0, 3);");
         } else {
@@ -58,7 +66,7 @@ public class DashboardController {
     @FXML
     public void ouvrirStatistiques() {
         resetBoutons();
-        activerBouton(btnStatistiques);
+        if (btnStatistiques != null) activerBouton(btnStatistiques);
         chargerVue("/fxml/quiz/Statistiques.fxml");
     }
 
@@ -76,7 +84,7 @@ public class DashboardController {
         chargerVue("/fxml/quiz/Question.fxml");
     }
 
-    public void ouvrirQuestionPourQuiz(tn.formini.entities.Quiz quizToFilter) {
+    public void ouvrirQuestionPourQuiz(Quiz quizToFilter) {
         resetBoutons();
         activerBouton(btnQuestion);
         try {
@@ -98,7 +106,7 @@ public class DashboardController {
         chargerVue("/fxml/quiz/Reponse.fxml");
     }
 
-    public void ouvrirReponsePourQuestion(tn.formini.entities.Question questionToFilter) {
+    public void ouvrirReponsePourQuestion(Question questionToFilter) {
         resetBoutons();
         activerBouton(btnReponse);
         try {
@@ -127,13 +135,13 @@ public class DashboardController {
         chargerVue("/fxml/quiz/ApprenantQuizList.fxml");
     }
 
-    public void ouvrirApprenantQuizPasser(tn.formini.entities.Apprenant apprenant, int formationId, int quizId) {
+    public void ouvrirApprenantQuizPasser(Apprenant apprenant, int formationId, int quizId) {
         resetBoutons();
         activerBouton(btnApprenantQuiz);
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/ApprenantQuizPasser.fxml"));
             Node vue = loader.load();
-            tn.formini.controllers.ApprenantQuizPasserController ctrl = loader.getController();
+            ApprenantQuizPasserController ctrl = loader.getController();
             ctrl.initData(apprenant, formationId, quizId);
             contentArea.getChildren().setAll(vue);
         } catch (IOException e) {
@@ -142,7 +150,7 @@ public class DashboardController {
         }
     }
 
-    public void ouvrirGenerateurIA(tn.formini.entities.Quiz quizToFilter, Runnable onSuccess) {
+    public void ouvrirGenerateurIA(Quiz quizToFilter, Runnable onSuccess) {
         resetBoutons();
         activerBouton(btnQuestion); // On reste logiquement sous "Questions"
         try {
@@ -165,13 +173,13 @@ public class DashboardController {
         }
     }
 
-    public void ouvrirFormulaireQuiz(tn.formini.entities.Quiz quizToEdit, Runnable onSuccess) {
+    public void ouvrirFormulaireQuiz(Quiz quizToEdit, Runnable onSuccess) {
         resetBoutons();
         activerBouton(btnQuiz);
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/QuizForm.fxml"));
             Node vue = loader.load();
-            tn.formini.controllers.QuizFormController ctrl = loader.getController();
+            QuizFormController ctrl = loader.getController();
             
             // On lui passe un callback pour revenir à la liste des quiz
             ctrl.initData(quizToEdit, () -> {
@@ -186,13 +194,13 @@ public class DashboardController {
         }
     }
 
-    public void ouvrirFormulaireQuestion(tn.formini.entities.Question questionToEdit, Runnable onSuccess) {
+    public void ouvrirFormulaireQuestion(Question questionToEdit, Runnable onSuccess) {
         resetBoutons();
         activerBouton(btnQuestion);
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/QuestionForm.fxml"));
             Node vue = loader.load();
-            tn.formini.controllers.QuestionFormController ctrl = loader.getController();
+            QuestionFormController ctrl = loader.getController();
             
             // On lui passe un callback pour revenir à la liste des questions
             ctrl.initData(questionToEdit, () -> {
@@ -206,13 +214,13 @@ public class DashboardController {
             e.printStackTrace();
         }
     }
-    public void ouvrirFormulaireReponse(tn.formini.entities.Reponse reponseToEdit, Runnable onSuccess) {
+    public void ouvrirFormulaireReponse(Reponse reponseToEdit, Runnable onSuccess) {
         resetBoutons();
         activerBouton(btnReponse);
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/ReponseForm.fxml"));
             Node vue = loader.load();
-            tn.formini.controllers.ReponseFormController ctrl = loader.getController();
+            ReponseFormController ctrl = loader.getController();
             
             // On lui passe un callback pour revenir à la liste des réponses
             ctrl.initData(reponseToEdit, () -> {

@@ -6,7 +6,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="tn.formini.controllers.DashboardController"
+      fx:controller="tn.formini.controllers.quiz.DashboardController"
       spacing="0"
       style="-fx-background-color: #0f172a;">
 

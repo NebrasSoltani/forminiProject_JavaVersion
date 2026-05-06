@@ -19,9 +19,16 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import tn.formini.controllers.QuizFormController;
-import tn.formini.entities.Quiz;
-import tn.formini.services.QuizService;
+import tn.formini.controllers.quiz.QuizFormController;
+import tn.formini.controllers.quiz.DashboardController;
+
+import tn.formini.entities.Quizs.Question;
+import tn.formini.entities.Quizs.Quiz;
+import tn.formini.entities.Quizs.Reponse;
+import tn.formini.services.quizService.QuestionService;
+import tn.formini.services.quizService.QuizService;
+import tn.formini.services.quizService.ReponseService;
+
 
 import java.io.IOException;
 import java.net.URL;
@@ -72,13 +79,13 @@ public class QuizController implements Initializable {
     }
 
     private void ouvrirFormulaire(Quiz quiz) {
-        if (tn.formini.controllers.DashboardController.instance != null) {
-            tn.formini.controllers.DashboardController.instance.ouvrirFormulaireQuiz(quiz, this::chargerDonnees);
+        if (DashboardController.instance != null) {
+            DashboardController.instance.ouvrirFormulaireQuiz(quiz, this::chargerDonnees);
         } else {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz/QuizForm.fxml"));
                 Parent root = loader.load();
-                tn.formini.controllers.QuizFormController ctrl = loader.getController();
+                QuizFormController ctrl = loader.getController();
                 ctrl.initData(quiz, this::chargerDonnees);
 
                 Stage stage = new Stage();
@@ -167,8 +174,8 @@ public class QuizController implements Initializable {
             "-fx-cursor: hand; -fx-padding: 8 14;"
         );
         btnQs.setOnAction(e -> {
-            if (tn.formini.controllers.DashboardController.instance != null)
-                tn.formini.controllers.DashboardController.instance.ouvrirQuestionPourQuiz(quiz);
+            if (DashboardController.instance != null)
+                DashboardController.instance.ouvrirQuestionPourQuiz(quiz);
         });
 
         Button btnPdf = new Button("🖨️");
@@ -233,27 +240,27 @@ public class QuizController implements Initializable {
                 document.add(new com.lowagie.text.Paragraph(" ")); // Spacer
 
                 // Questions
-                tn.formini.services.QuestionService questionService = new tn.formini.services.QuestionService();
-                tn.formini.services.ReponseService reponseService = new tn.formini.services.ReponseService();
+                QuestionService questionService = new QuestionService();
+                ReponseService reponseService = new ReponseService();
                 
-                List<tn.formini.entities.Question> qs = questionService.getAll().stream()
+                List<Question> qs = questionService.getAll().stream()
                         .filter(q -> q.getQuiz() != null && q.getQuiz().getId() == quiz.getId())
                         .collect(Collectors.toList());
 
-                List<tn.formini.entities.Reponse> allReps = reponseService.getAll();
+                List<Reponse> allReps = reponseService.getAll();
 
                 int index = 1;
-                for (tn.formini.entities.Question q : qs) {
+                for (Question q : qs) {
                     com.lowagie.text.Font qFont = new com.lowagie.text.Font(com.lowagie.text.Font.HELVETICA, 14, com.lowagie.text.Font.BOLD);
                     com.lowagie.text.Paragraph qPara = new com.lowagie.text.Paragraph("Q" + index + ". " + q.getEnonce() + " (" + q.getPoints() + " pts)", qFont);
                     qPara.setSpacingBefore(15);
                     document.add(qPara);
 
-                    List<tn.formini.entities.Reponse> reps = allReps.stream()
+                    List<Reponse> reps = allReps.stream()
                             .filter(r -> r.getQuestion() != null && r.getQuestion().getId() == q.getId())
                             .collect(Collectors.toList());
 
-                    for (tn.formini.entities.Reponse r : reps) {
+                    for (Reponse r : reps) {
                         // Checkbox empty box logic: [ ]
                         document.add(new com.lowagie.text.Paragraph("    [   ]  " + r.getTexte()));
                     }

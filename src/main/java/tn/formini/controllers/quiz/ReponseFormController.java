@@ -1,13 +1,14 @@
-package tn.formini.controllers;
+package tn.formini.controllers.quiz;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import tn.formini.entities.Question;
-import tn.formini.entities.Reponse;
-import tn.formini.services.QuestionService;
-import tn.formini.services.ReponseService;
+import tn.formini.controllers.quiz.DashboardController;
+import tn.formini.entities.Quizs.Question;
+import tn.formini.entities.Quizs.Reponse;
+import tn.formini.services.quizService.QuestionService;
+import tn.formini.services.quizService.ReponseService;
 
 import javafx.scene.layout.VBox;
 import java.net.URL;
@@ -91,8 +92,8 @@ public class ReponseFormController implements Initializable {
     @FXML public void annuler() { fermer(); }
 
     private void fermer() {
-        if (tn.formini.controllers.DashboardController.instance != null) {
-            tn.formini.controllers.DashboardController.instance.ouvrirReponse();
+        if (DashboardController.instance != null) {
+            DashboardController.instance.ouvrirReponse();
         } else {
             ((Stage) texteField.getScene().getWindow()).close();
         }
