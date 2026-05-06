@@ -485,6 +485,5 @@ public class             LoginController {
         prefs.putBoolean("rememberMe", false);
         prefs.remove("email");
         prefs.remove("password");
-    }}
-
-    
+    }
+}

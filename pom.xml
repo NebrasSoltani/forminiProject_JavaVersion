@@ -20,9 +20,8 @@
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
-            <version>8.4.0</version> <!-- Updated to fix CVE vulnerabilities -->
+            <version>8.3.0</version>
         </dependency>
-
         <!-- HTTP Client for OpenAI API -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -123,8 +122,13 @@
             <version>${javafx.version}</version>
         </dependency>
 
-        
-                
+        <!-- OpenCV for facial recognition -->
+        <dependency>
+            <groupId>org.openpnp</groupId>
+            <artifactId>opencv</artifactId>
+            <version>4.7.0-0</version>
+        </dependency>
+
         <!-- TOTP for 2FA -->
         <dependency>
             <groupId>com.warrenstrange</groupId>

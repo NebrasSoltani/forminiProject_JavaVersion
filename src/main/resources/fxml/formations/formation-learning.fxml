@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.formini.controllers.formations.FormationLearningController"
+            style="-fx-background-color: #f5f6fa;">
+
+    <top>
+        <VBox spacing="4" style="-fx-padding: 10; -fx-background-color: white; -fx-border-color: #ecf0f1; -fx-border-width: 0 0 1 0;">
+            <children>
+                <Label fx:id="formationTitleLabel" text="Formation" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                <Label fx:id="progressionLabel" text="Progression: 0%" style="-fx-text-fill: #2c3e50;"/>
+            </children>
+        </VBox>
+    </top>
+
+    <left>
+        <VBox spacing="8" prefWidth="300" style="-fx-padding: 10;">
+            <children>
+                <Label text="Lecons" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+                <ListView fx:id="lessonsListView" VBox.vgrow="ALWAYS"/>
+            </children>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="8" style="-fx-padding: 10;">
+            <children>
+                <Label fx:id="lessonTitleLabel" text="Selectionnez une lecon" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                <Label fx:id="lessonDescriptionLabel" wrapText="true"/>
+                <Label fx:id="lessonDurationLabel"/>
+                <Label fx:id="videoStatusLabel" text="Video" style="-fx-text-fill: #636e72;"/>
+                <Button text="Ouvrir video dans le navigateur" onAction="#handleOpenVideoInBrowser"/>
+                <VBox fx:id="videoContainer" VBox.vgrow="ALWAYS" minHeight="340"/>
+            </children>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 10; -fx-background-color: white; -fx-border-color: #ecf0f1; -fx-border-width: 1 0 0 0;">
+            <children>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="completeLessonButton" text="Marquer lecon terminee" onAction="#handleMarkLessonDone"
+                        style="-fx-background-color: #2ecc71; -fx-text-fill: white;"/>
+                <Button text="Fermer" onAction="#handleClose"/>
+            </children>
+            <padding>
+                <Insets top="6"/>
+            </padding>
+        </HBox>
+    </bottom>
+</BorderPane>
+
+
+
+
+

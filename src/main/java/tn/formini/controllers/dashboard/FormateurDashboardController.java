@@ -1,65 +1,74 @@
 package tn.formini.controllers.dashboard;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import tn.formini.controllers.formations.FormationCrudController;
+import tn.formini.controllers.formations.FormationFormController;
 import tn.formini.entities.Users.Formateur;
 import tn.formini.entities.Users.User;
 import tn.formini.services.UsersService.FormateurService;
+import tn.formini.services.formations.FormationService;
 import tn.formini.services.quizService.QuizService;
-
-import java.util.List;
 
 public class FormateurDashboardController implements DashboardRoleController {
 
     @FXML
     private Label titleLabel;
-    
+
     @FXML
     private Label welcomeLabel;
-    
+
     @FXML
     private Label statsLabel;
-    
+
     @FXML
     private VBox menuContainer;
-    
+
     @FXML
     private Button myFormationsButton;
-    
+
     @FXML
     private Button createFormationButton;
-    
+
     @FXML
     private Button manageLessonsButton;
-    
+
     @FXML
     private Button manageQuizzesButton;
-    
+
     @FXML
     private Button viewStudentsButton;
-    
+
     @FXML
     private Button myProfileButton;
-    
+
     @FXML
     private Button reviewsButton;
 
     private User currentUser;
     private Formateur currentFormateur;
     private FormateurService formateurService;
+    private FormationService formationService;
     private QuizService quizService;
 
     @Override
     public void initializeDashboard(User user) {
         this.currentUser = user;
         formateurService = new FormateurService();
+        formationService = new FormationService();
         quizService = new QuizService();
-        
-        // Get formateur data
+
         currentFormateur = formateurService.findByUserId(user.getId());
-        
+
         setupDashboard();
         loadFormateurInfo();
         loadStatistics();
@@ -68,8 +77,7 @@ public class FormateurDashboardController implements DashboardRoleController {
     private void setupDashboard() {
         titleLabel.setText("Tableau de Bord Formateur");
         welcomeLabel.setText("Bienvenue, " + currentUser.getPrenom() + " " + currentUser.getNom() + "!");
-        
-        // Setup button actions
+
         myFormationsButton.setOnAction(e -> viewMyFormations());
         createFormationButton.setOnAction(e -> createFormation());
         manageLessonsButton.setOnAction(e -> manageLessons());
@@ -82,15 +90,14 @@ public class FormateurDashboardController implements DashboardRoleController {
     private void loadFormateurInfo() {
         if (currentFormateur != null) {
             String infoText = String.format(
-                "Informations Formateur:\n" +
-                "Spécialité: %s\n" +
-                "Expérience: %s ans\n" +
-                "Note moyenne: %s",
-                currentFormateur.getSpecialite() != null ? currentFormateur.getSpecialite() : "Non définie",
-                currentFormateur.getExperience_annees() != null ? currentFormateur.getExperience_annees().toString() : "Non spécifiée",
-                currentFormateur.getNote_moyenne() != null ? currentFormateur.getNote_moyenne().toString() : "Non noté"
+                    "Informations Formateur:\n" +
+                            "Specialite: %s\n" +
+                            "Experience: %s ans\n" +
+                            "Note moyenne: %s",
+                    currentFormateur.getSpecialite() != null ? currentFormateur.getSpecialite() : "Non definie",
+                    currentFormateur.getExperience_annees() != null ? currentFormateur.getExperience_annees().toString() : "Non specifiee",
+                    currentFormateur.getNote_moyenne() != null ? currentFormateur.getNote_moyenne().toString() : "Non note"
             );
-            
             // You could display this info in a separate label or panel
             System.out.println(infoText);
         }
@@ -98,32 +105,28 @@ public class FormateurDashboardController implements DashboardRoleController {
 
     private void loadStatistics() {
         try {
-            // Load formateur statistics
             int totalFormations = 0;
             int activeFormations = 0;
-            int totalStudents = 0;
-            int totalQuizzes = 0;
-            
+
             if (currentFormateur != null) {
-                // TODO: Load actual statistics from services
-                // totalFormations = formationService.getFormateurFormationsCount(currentFormateur.getId());
-                // activeFormations = formationService.getActiveFormationsCount(currentFormateur.getId());
-                // totalStudents = formationService.getTotalStudentsCount(currentFormateur.getId());
-                // totalQuizzes = quizService.getFormateurQuizzesCount(currentFormateur.getId());
+                totalFormations = formationService.countByFormateurId(currentFormateur.getId());
+                activeFormations = formationService
+                        .findByFormateurId(currentFormateur.getId())
+                        .stream()
+                        .filter(f -> "publie".equalsIgnoreCase(f.getStatut()))
+                        .toList()
+                        .size();
             }
-            
+
             String statsText = String.format(
-                "Mes Statistiques:\n" +
-                "Total formations: %d\n" +
-                "Formations actives: %d\n" +
-                "Total étudiants: %d\n" +
-                "Total quiz: %d",
-                totalFormations,
-                activeFormations,
-                totalStudents,
-                totalQuizzes
+                    "Mes Statistiques:\n" +
+                            "Total formations: %d\n" +
+                            "Formations publiees: %d\n" +
+                            "Total quiz: en cours",
+                    totalFormations,
+                    activeFormations
             );
-            
+
             statsLabel.setText(statsText);
         } catch (Exception e) {
             statsLabel.setText("Erreur lors du chargement des statistiques");
@@ -133,66 +136,61 @@ public class FormateurDashboardController implements DashboardRoleController {
 
     @FXML
     private void viewMyFormations() {
+        if (!ensureFormateurReady()) return;
+
         try {
-            // TODO: Create formateur formations view
-            showFallbackMessage("Mes formations - En cours de développement");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/formations/formation-crud.fxml"));
+            Parent root = loader.load();
+
+            FormationCrudController controller = loader.getController();
+            controller.setFormateurId(currentFormateur.getId());
+
+            openWindow("Mes formations", root, true);
+            loadStatistics();
         } catch (Exception e) {
-            System.err.println("Error opening formations: " + e.getMessage());
+            showError("Erreur ouverture des formations: " + e.getMessage());
         }
     }
 
     @FXML
     private void createFormation() {
+        if (!ensureFormateurReady()) return;
+
         try {
-            // TODO: Create formation creation form
-            showFallbackMessage("Créer une formation - En cours de développement");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/formations/formation-form.fxml"));
+            Parent root = loader.load();
+
+            FormationFormController controller = loader.getController();
+            controller.setFormateurId(currentFormateur.getId());
+            controller.setOnSaved(this::loadStatistics);
+
+            openWindow("Creer une formation", root, true);
         } catch (Exception e) {
-            System.err.println("Error opening formation creation: " + e.getMessage());
+            showError("Erreur ouverture du formulaire de formation: " + e.getMessage());
         }
     }
 
     @FXML
     private void manageLessons() {
-        try {
-            // TODO: Create lessons management view
-            showFallbackMessage("Gérer les leçons - En cours de développement");
-        } catch (Exception e) {
-            System.err.println("Error opening lessons management: " + e.getMessage());
-        }
+        viewMyFormations();
     }
 
     @FXML
     private void manageQuizzes() {
-        try {
-            // TODO: Create quiz management view
-            showFallbackMessage("Gérer les quiz - En cours de développement");
-        } catch (Exception e) {
-            System.err.println("Error opening quiz management: " + e.getMessage());
-        }
+        showFallbackMessage("Gestion des quiz - En cours de developpement");
     }
 
     @FXML
     private void viewStudents() {
-        try {
-            // TODO: Create students view for formateur
-            showFallbackMessage("Voir les étudiants - En cours de développement");
-        } catch (Exception e) {
-            System.err.println("Error opening students view: " + e.getMessage());
-        }
+        showFallbackMessage("Voir les etudiants - En cours de developpement");
     }
 
     @FXML
     private void viewMyProfile() {
         try {
-            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
-                getClass().getResource("/fxml/auth/EditProfile.fxml")
-            );
-            javafx.scene.Parent root = loader.load();
-            
-            javafx.stage.Stage stage = new javafx.stage.Stage();
-            stage.setTitle("Mon Profil Formateur");
-            stage.setScene(new javafx.scene.Scene(root));
-            stage.show();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth/EditProfile.fxml"));
+            Parent root = loader.load();
+            openWindow("Mon Profil Formateur", root, false);
         } catch (Exception e) {
             System.err.println("Error opening profile: " + e.getMessage());
         }
@@ -200,16 +198,35 @@ public class FormateurDashboardController implements DashboardRoleController {
 
     @FXML
     private void viewReviews() {
-        try {
-            // TODO: Create reviews view
-            showFallbackMessage("Voir les avis - En cours de développement");
-        } catch (Exception e) {
-            System.err.println("Error opening reviews: " + e.getMessage());
+        showFallbackMessage("Voir les avis - En cours de developpement");
+    }
+
+    private boolean ensureFormateurReady() {
+        if (currentFormateur == null || currentFormateur.getId() <= 0) {
+            showError("Votre profil formateur est introuvable. Contactez l'administrateur.");
+            return false;
         }
+        return true;
+    }
+
+    private void openWindow(String title, Parent root, boolean modal) {
+        Stage stage = new Stage();
+        stage.setTitle(title);
+        stage.setScene(new Scene(root));
+        if (modal) {
+            stage.initModality(Modality.APPLICATION_MODAL);
+        }
+        stage.showAndWait();
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
+        alert.setHeaderText(null);
+        alert.showAndWait();
     }
 
     private void showFallbackMessage(String message) {
-        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information");
         alert.setHeaderText(null);
         alert.setContentText(message);

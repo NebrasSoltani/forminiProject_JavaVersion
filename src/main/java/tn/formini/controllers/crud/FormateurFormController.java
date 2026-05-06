@@ -49,6 +49,8 @@ public class FormateurFormController implements Initializable {
     @FXML private Label eyeSlashIconConfirm;
     @FXML private TextField nomTextField;
     @FXML private TextField prenomTextField;
+    @FXML private ComboBox<String> gouvernoratComboBox;
+    @FXML private DatePicker dateNaissanceField;
 
     // Formateur fields
     @FXML private TextField specialiteTextField;
@@ -59,6 +61,7 @@ public class FormateurFormController implements Initializable {
     @FXML private TextField cvTextField;
     @FXML private Button btnUploadCv;
     @FXML private Label lblCvFileName;
+    @FXML private TextField noteTextField;
     @FXML private Button saveButton;
     @FXML private Button cancelButton;
 
@@ -77,6 +80,19 @@ public class FormateurFormController implements Initializable {
     @FXML private Label errorCv;
     @FXML private Label errorBio;
 
+    // Alternate aliases kept for the merged code paths
+    @FXML private Label heroSubLabel;
+    @FXML private VBox passwordGroup;
+    @FXML private VBox passwordConfirmGroup;
+    @FXML private Label passwordHintLabel;
+    @FXML private ComboBox<String> gouvernoratField;
+    @FXML private DatePicker dateNaissancePicker;
+    @FXML private TextField photoField;
+    @FXML private Label lblPhotoFileName;
+    @FXML private Button btnUploadPhoto;
+    @FXML private ImageView imageViewPhoto;
+    @FXML private ComboBox<User> userComboBox;
+
     private FormateurService formateurService;
     private UserService userService;
     private FileUploadService fileUploadService;
@@ -85,41 +101,6 @@ public class FormateurFormController implements Initializable {
 
     private Formateur formateur;
     private Mode mode;
-    @FXML
-    private Label heroSubLabel;
-
-    @FXML
-    private VBox passwordGroup;
-
-    @FXML
-    private VBox passwordConfirmGroup;
-
-    @FXML
-    private Label passwordHintLabel;
-
-    @FXML
-    private ComboBox<String> gouvernoratField;
-
-    @FXML
-    private DatePicker dateNaissancePicker;
-
-    @FXML
-    private TextField photoField;
-
-    @FXML
-    private Label lblPhotoFileName;
-
-    @FXML
-    private Button btnUploadPhoto;
-
-    @FXML
-    private ImageView imageViewPhoto;
-
-    @FXML
-    private TextField noteTextField;
-
-    @FXML
-    private ComboBox<User> userComboBox;
 
     public enum Mode {
         ADD, EDIT
@@ -130,6 +111,13 @@ public class FormateurFormController implements Initializable {
         formateurService = new FormateurService();
         userService = new UserService();
         fileUploadService = new FileUploadService();
+
+        emailField = emailTextField;
+        nomField = nomTextField;
+        prenomField = prenomTextField;
+        telephoneField = telephoneTextField;
+        dateNaissancePicker = dateNaissanceField;
+        spinnerExperience = experienceSpinner;
 
         gouvernoratField.setItems(TunisiaGovernorates.asObservableList());
         experienceSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 70, 0));
@@ -195,84 +183,6 @@ public class FormateurFormController implements Initializable {
         });
     }
 
-    @FXML
-    private void onTogglePassword() {
-        if (passwordGroup == null || !passwordGroup.isVisible()) {
-            return;
-        }
-        togglePasswordField(passwordField, btnTogglePassword, true);
-    }
-
-    @FXML
-    private void onTogglePasswordConfirm() {
-        if (passwordConfirmGroup == null || !passwordConfirmGroup.isVisible()) {
-            return;
-        }
-        togglePasswordField(passwordConfirmField, btnTogglePasswordConfirm, false);
-    }
-
-    private void togglePasswordField(PasswordField targetField, Button toggleButton, boolean primary) {
-        HBox parent = (HBox) toggleButton.getParent();
-        javafx.scene.control.TextInputControl currentField = null;
-        int fieldIndex = -1;
-
-        for (int i = 0; i < parent.getChildren().size(); i++) {
-            javafx.scene.Node node = parent.getChildren().get(i);
-            if ((node instanceof PasswordField || node instanceof TextField) && !node.equals(toggleButton)) {
-                currentField = (javafx.scene.control.TextInputControl) node;
-                fieldIndex = i;
-                break;
-            }
-        }
-
-        if (currentField == null) {
-            return;
-        }
-
-        if (currentField instanceof PasswordField currentPasswordField) {
-            TextField visiblePassword = new TextField();
-            visiblePassword.setPromptText(currentPasswordField.getPromptText());
-            visiblePassword.getStyleClass().addAll(currentPasswordField.getStyleClass());
-            visiblePassword.setStyle(currentPasswordField.getStyle());
-            visiblePassword.textProperty().bindBidirectional(currentPasswordField.textProperty());
-
-            parent.getChildren().set(fieldIndex, visiblePassword);
-
-            if (primary) {
-                eyeIcon.setVisible(false);
-                eyeIcon.setManaged(false);
-                eyeSlashIcon.setVisible(true);
-                eyeSlashIcon.setManaged(true);
-            } else {
-                eyeIconConfirm.setVisible(false);
-                eyeIconConfirm.setManaged(false);
-                eyeSlashIconConfirm.setVisible(true);
-                eyeSlashIconConfirm.setManaged(true);
-            }
-        } else if (currentField instanceof TextField visiblePasswordField) {
-            PasswordField restore = primary ? passwordField : passwordConfirmField;
-            if (restore == null) {
-                return;
-            }
-            visiblePasswordField.textProperty().unbindBidirectional(restore.textProperty());
-            restore.setPromptText(visiblePasswordField.getPromptText());
-            restore.getStyleClass().setAll(visiblePasswordField.getStyleClass());
-            restore.setStyle(visiblePasswordField.getStyle());
-            parent.getChildren().set(fieldIndex, restore);
-
-            if (primary) {
-                eyeIcon.setVisible(true);
-                eyeIcon.setManaged(true);
-                eyeSlashIcon.setVisible(false);
-                eyeSlashIcon.setManaged(false);
-            } else {
-                eyeIconConfirm.setVisible(true);
-                eyeIconConfirm.setManaged(true);
-                eyeSlashIconConfirm.setVisible(false);
-                eyeSlashIconConfirm.setManaged(false);
-            }
-        }
-    }
 
     @FXML
     private void onUploadPhoto() {
@@ -302,27 +212,7 @@ public class FormateurFormController implements Initializable {
         }
     }
 
-    @FXML
-    private void onUploadCv() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choisir un fichier CV");
-
-        FileChooser.ExtensionFilter pdfFilter = new FileChooser.ExtensionFilter("PDF", "*.pdf");
-        FileChooser.ExtensionFilter docFilter = new FileChooser.ExtensionFilter("Documents", "*.doc", "*.docx");
-        FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("Tous les fichiers", "*.*");
-
-        fileChooser.getExtensionFilters().addAll(pdfFilter, docFilter, allFilter);
-        fileChooser.setSelectedExtensionFilter(pdfFilter);
-
-        Stage stage = (Stage) btnUploadCv.getScene().getWindow();
-        File selectedFile = fileChooser.showOpenDialog(stage);
-
-        if (selectedFile != null) {
-            uploadedCvFile = selectedFile;
-            cvTextField.setText(selectedFile.getAbsolutePath());
-            lblCvFileName.setText(selectedFile.getName());
-        }
-    }
+    // onUploadCv defined later in file (single authoritative version)
 
 
     public void setMode(Mode mode) {
@@ -382,7 +272,20 @@ public class FormateurFormController implements Initializable {
     }
 
     private void populateForm() {
-        if (formateur != null) {
+        if (formateur != null && formateur.getUser() != null) {
+            User user = formateur.getUser();
+            emailTextField.setText(user.getEmail() != null ? user.getEmail() : "");
+            telephoneTextField.setText(user.getTelephone() != null ? user.getTelephone() : "");
+            nomTextField.setText(user.getNom() != null ? user.getNom() : "");
+            prenomTextField.setText(user.getPrenom() != null ? user.getPrenom() : "");
+            if (user.getGouvernorat() != null) {
+                gouvernoratField.setValue(user.getGouvernorat());
+            }
+            
+            if (user.getDate_naissance() != null) {
+                dateNaissancePicker.setValue(user.getDate_naissance().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            }
+            
             specialiteTextField.setText(formateur.getSpecialite() != null ? formateur.getSpecialite() : "");
             bioTextArea.setText(formateur.getBio() != null ? formateur.getBio() : "");
 
@@ -402,33 +305,21 @@ public class FormateurFormController implements Initializable {
                 noteTextField.setText(formateur.getNote_moyenne() != null ? formateur.getNote_moyenne().toString() : "");
             }
 
-            if (formateur.getUser() != null) {
-                if (userComboBox != null) {
-                    userComboBox.setValue(formateur.getUser());
-                }
-                User user = formateur.getUser();
-                emailTextField.setText(user.getEmail() != null ? user.getEmail() : "");
-                nomTextField.setText(user.getNom() != null ? user.getNom() : "");
-                prenomTextField.setText(user.getPrenom() != null ? user.getPrenom() : "");
-                telephoneTextField.setText(user.getTelephone() != null ? user.getTelephone() : "");
-                gouvernoratField.setValue(user.getGouvernorat());
-                photoField.setText(user.getPhoto() != null ? user.getPhoto() : "");
+            if (userComboBox != null) {
+                userComboBox.setValue(formateur.getUser());
+            }
+            
+            photoField.setText(user.getPhoto() != null ? user.getPhoto() : "");
+            if (user.getPhoto() != null && !user.getPhoto().isEmpty()) {
+                lblPhotoFileName.setText(stripToFileName(user.getPhoto()));
+            }
 
-                if (user.getPhoto() != null && !user.getPhoto().isEmpty()) {
-                    lblPhotoFileName.setText(stripToFileName(user.getPhoto()));
-                }
-
-                if (user.getDate_naissance() != null) {
-                    dateNaissancePicker.setValue(user.getDate_naissance().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                }
-
-                if (user.getPhoto() != null && !user.getPhoto().isEmpty()) {
-                    try {
-                        Image image = new Image(user.getPhoto());
-                        imageViewPhoto.setImage(image);
-                    } catch (Exception e) {
-                        System.err.println("Failed to load image: " + e.getMessage());
-                    }
+            if (user.getPhoto() != null && !user.getPhoto().isEmpty()) {
+                try {
+                    Image image = new Image(user.getPhoto());
+                    imageViewPhoto.setImage(image);
+                } catch (Exception e) {
+                    System.err.println("Failed to load image: " + e.getMessage());
                 }
             }
         }
@@ -656,6 +547,7 @@ public class FormateurFormController implements Initializable {
     }
 
     private void showError(Label errorLabel, String message) {
+        if (errorLabel == null) return;
         errorLabel.setText(message);
         errorLabel.setStyle("-fx-text-fill: #dc2626;");
         errorLabel.setVisible(true);
@@ -663,6 +555,7 @@ public class FormateurFormController implements Initializable {
     }
 
     private void hideError(Label errorLabel) {
+        if (errorLabel == null) return;
         errorLabel.setText("");
         errorLabel.setStyle("");
         errorLabel.setVisible(false);
@@ -674,62 +567,15 @@ public class FormateurFormController implements Initializable {
         hideError(errorTelephone);
         hideError(errorPassword);
         hideError(errorPasswordConfirm);
-    }
-
-    private boolean validateForm() {
-        if (mode == Mode.EDIT) {
-            return validateEditForm();
-        }
-
-        String email = emailTextField.getText().trim();
-        String password = passwordField.getText();
-
-        if (!email.isEmpty() || (password != null && !password.isEmpty())) {
-            if (!SignupFieldValidation.isValidEmail(email)) {
-                showAlert("Erreur de validation", "Email invalide ou manquant.", Alert.AlertType.ERROR);
-                return false;
-            }
-            String phoneNorm = SignupFieldValidation.normalizePhone(telephoneTextField.getText());
-            if (!SignupFieldValidation.isValidPhoneNormalized(phoneNorm)) {
-                showAlert("Erreur de validation", "Téléphone invalide (8–12 chiffres).", Alert.AlertType.ERROR);
-                return false;
-            }
-            String pwdErr = SignupFieldValidation.validatePasswordStrength(password != null ? password : "");
-            if (pwdErr != null) {
-                showAlert("Erreur de validation", pwdErr, Alert.AlertType.ERROR);
-                return false;
-            }
-            String passwordConfirm = passwordConfirmField.getText();
-            if (passwordConfirm == null || passwordConfirm.isEmpty()) {
-                showAlert("Erreur de validation", "Confirmez le mot de passe.", Alert.AlertType.ERROR);
-                return false;
-            }
-            if (!password.equals(passwordConfirm)) {
-                showAlert("Erreur de validation", "Les mots de passe ne correspondent pas.", Alert.AlertType.ERROR);
-                return false;
-            }
-            if (!SignupFieldValidation.isValidNomPrenom(nomTextField.getText())) {
-                showAlert("Erreur de validation", "Le nom est obligatoire (min. 2 caractères).", Alert.AlertType.ERROR);
-                return false;
-            }
-            if (!SignupFieldValidation.isValidNomPrenom(prenomTextField.getText())) {
-                showAlert("Erreur de validation", "Le prénom est obligatoire (min. 2 caractères).", Alert.AlertType.ERROR);
-                return false;
-            }
-            if (dateNaissancePicker.getValue() == null) {
-                showAlert("Erreur de validation", "La date de naissance est obligatoire", Alert.AlertType.ERROR);
-                return false;
-            }
-            return true;
-        }
-
-        if (userComboBox != null && userComboBox.getValue() != null) {
-            return true;
-        }
-        showAlert("Erreur de validation",
-            "Renseignez email et mot de passe (comme à l'inscription) ou sélectionnez un utilisateur existant.",
-            Alert.AlertType.ERROR);
-        return false;
+        hideError(errorNom);
+        hideError(errorPrenom);
+        hideError(errorDateNaissance);
+        hideError(errorSpecialite);
+        hideError(errorExperience);
+        hideError(errorLinkedin);
+        hideError(errorPortfolio);
+        hideError(errorCv);
+        hideError(errorBio);
     }
 
     private boolean validateEditForm() {
@@ -834,172 +680,6 @@ public class FormateurFormController implements Initializable {
         hideError(errorPortfolio);
         hideError(errorCv);
         hideError(errorBio);
-    }
-
-    private void showAlert(String title, String message, Alert.AlertType alertType) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void closeForm() {
-        if (cancelButton.getScene() != null && cancelButton.getScene().getWindow() != null) {
-            cancelButton.getScene().getWindow().hide();
-        }
-    }
-
-    // Validation methods
-    private boolean validateEmail() {
-        String email = emailTextField.getText().trim();
-        if (email.isEmpty()) {
-            showError(errorEmail, "L'email est obligatoire");
-            return false;
-        }
-        
-        String emailRegex = "^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$";
-        if (!Pattern.matches(emailRegex, email)) {
-            showError(errorEmail, "Format d'email invalide");
-            return false;
-        }
-        
-        hideError(errorEmail);
-        return true;
-    }
-    
-    private boolean validateTelephone() {
-        String telephone = telephoneTextField.getText().trim();
-        if (telephone.isEmpty()) {
-            showError(errorTelephone, "Le téléphone est obligatoire");
-            return false;
-        }
-        
-        String normalized = normalizePhone(telephone);
-        if (normalized == null || !normalized.matches("\\+?[0-9]{8,12}$")) {
-            showError(errorTelephone, "Format invalide: 8-12 chiffres");
-            return false;
-        }
-        
-        hideError(errorTelephone);
-        return true;
-    }
-    
-    private boolean validatePassword() {
-        String password = passwordField.getText();
-        
-        // For EDIT mode, password is optional
-        if (mode == Mode.EDIT && password.isEmpty()) {
-            hideError(errorPassword);
-            return true;
-        }
-        
-        // For ADD mode, password is required
-        if (password.isEmpty()) {
-            showError(errorPassword, "Le mot de passe est obligatoire");
-            return false;
-        }
-        
-        if (password.length() < 8) {
-            showError(errorPassword, "Minimum 8 caractères");
-            return false;
-        }
-        
-        if (!password.matches(".*[A-Z].*")) {
-            showError(errorPassword, "Une majuscule requise");
-            return false;
-        }
-        
-        if (!password.matches(".*[a-z].*")) {
-            showError(errorPassword, "Une minuscule requise");
-            return false;
-        }
-        
-        if (!password.matches(".*\\d.*")) {
-            showError(errorPassword, "Un chiffre requis");
-            return false;
-        }
-        
-        hideError(errorPassword);
-        return true;
-    }
-    
-    private boolean validatePasswordConfirm() {
-        String password = passwordField.getText();
-        String passwordConfirm = passwordConfirmField.getText();
-        
-        // For EDIT mode, password confirmation is optional if password is empty
-        if (mode == Mode.EDIT && password.isEmpty() && passwordConfirm.isEmpty()) {
-            hideError(errorPasswordConfirm);
-            return true;
-        }
-        
-        // If password is provided, confirmation is required
-        if (passwordConfirm.isEmpty()) {
-            showError(errorPasswordConfirm, "La confirmation est obligatoire");
-            return false;
-        }
-        
-        if (!password.equals(passwordConfirm)) {
-            showError(errorPasswordConfirm, "Les mots de passe ne correspondent pas");
-            return false;
-        }
-        
-        hideError(errorPasswordConfirm);
-        return true;
-    }
-    
-    private boolean validateNom() {
-        String nom = nomTextField.getText().trim();
-        if (nom.isEmpty()) {
-            showError(errorNom, "Le nom est obligatoire");
-            return false;
-        }
-        
-        if (nom.length() < 2) {
-            showError(errorNom, "Minimum 2 caractères");
-            return false;
-        }
-        
-        hideError(errorNom);
-        return true;
-    }
-    
-    private boolean validatePrenom() {
-        String prenom = prenomTextField.getText().trim();
-        if (prenom.isEmpty()) {
-            showError(errorPrenom, "Le prénom est obligatoire");
-            return false;
-        }
-        
-        if (prenom.length() < 2) {
-            showError(errorPrenom, "Minimum 2 caractères");
-            return false;
-        }
-        
-        hideError(errorPrenom);
-        return true;
-    }
-    
-    private boolean validateDateNaissance() {
-        LocalDate date = dateNaissancePicker.getValue();
-        if (date == null) {
-            showError(errorDateNaissance, "La date de naissance est obligatoire");
-            return false;
-        }
-        
-        if (date.isAfter(LocalDate.now())) {
-            showError(errorDateNaissance, "Date invalide");
-            return false;
-        }
-        
-        if (date.isBefore(LocalDate.now().minusYears(120))) {
-            showError(errorDateNaissance, "Date invalide");
-            return false;
-        }
-        
-        hideError(errorDateNaissance);
-        return true;
     }
 
     // Utility methods

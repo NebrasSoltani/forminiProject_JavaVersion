@@ -117,9 +117,7 @@ public class EditProfileController implements Initializable {
         fieldNom.setText(safe(user.getNom()));
         fieldPrenom.setText(safe(user.getPrenom()));
         fieldTelephone.setText(safe(user.getTelephone()));
-        if (user.getGouvernorat() != null) {
-            fieldGouvernorat.setValue(user.getGouvernorat());
-        }
+        fieldGouvernorat.setValue(user.getGouvernorat());
         fieldPhoto.setText(safe(user.getPhoto()));
 
         // Load and display user photo
@@ -142,7 +140,6 @@ public class EditProfileController implements Initializable {
                 System.err.println("Failed to load photo: " + e.getMessage());
             }
         }
-
         if (user.getDate_naissance() != null) {
             fieldDateNaissance.setValue(user.getDate_naissance().toInstant()
                 .atZone(ZoneId.systemDefault())
@@ -205,8 +202,7 @@ public class EditProfileController implements Initializable {
         user.setNom(trim(fieldNom.getText()));
         user.setPrenom(trim(fieldPrenom.getText()));
         user.setTelephone(trim(fieldTelephone.getText()));
-        String selectedGouvernorat = fieldGouvernorat.getValue();
-        user.setGouvernorat(selectedGouvernorat);
+        user.setGouvernorat(fieldGouvernorat.getValue());
 
         // Handle photo upload
         String photoPath = null;

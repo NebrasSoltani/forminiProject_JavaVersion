@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="tn.formini.controllers.formations.FormationCrudController"
+      spacing="12" style="-fx-padding: 16; -fx-background-color: #f8f9fa;"
+      stylesheets="@/css/style.css">
+
+    <children>
+        <Label fx:id="headerLabel" text="Mes formations" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+        <HBox spacing="10">
+            <children>
+                <Button text="Retour" onAction="#handleBack" styleClass="btn-secondary"/>
+                <Button text="+ Creer" onAction="#handleCreate" style="-fx-background-color: #2ecc71; -fx-text-fill: white;"/>
+                <Button text="Modifier" onAction="#handleEdit" style="-fx-background-color: #f39c12; -fx-text-fill: white;"/>
+                <Button text="Supprimer" onAction="#handleDelete" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+                <Button text="Gerer les lecons" onAction="#handleManageLessons" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Actualiser" onAction="#handleRefresh"/>
+            </children>
+        </HBox>
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <children>
+                <Label text="Recherche:"/>
+                <TextField fx:id="searchField" promptText="Titre, categorie, description..." onKeyReleased="#handleSearch" prefWidth="280" styleClass="modern-input"/>
+                <Label text="Trier par:"/>
+                <ComboBox fx:id="sortCombo" onAction="#handleSortChange" prefWidth="190" styleClass="modern-combo"/>
+                <Button text="Reinitialiser" onAction="#handleResetFilters" styleClass="btn-secondary"/>
+            </children>
+        </HBox>
+
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" hbarPolicy="NEVER" styleClass="modern-scroll-pane">
+            <content>
+                <TilePane fx:id="formationsGrid" hgap="16" vgap="16" prefColumns="3" prefTileWidth="290" prefTileHeight="340"/>
+            </content>
+        </ScrollPane>
+    </children>
+</VBox>
+

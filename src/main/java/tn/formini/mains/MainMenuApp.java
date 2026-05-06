@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import tn.formini.utils.AdminInitializer;
+import tn.formini.utils.StageWindowMode;
 import java.io.File;
 import java.net.URL;
 
@@ -13,12 +14,19 @@ public class MainMenuApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        StageWindowMode.installGlobalMaximizedPolicy();
+
         AdminInitializer.initializeAdmin();
         initializeSession();
 
         // Essaie plusieurs chemins
+
+        // Essaie plusieurs chemins
         String[] chemins = {
-                "/fxml/MainMenu.fxml"
+                "/tn/formini/fxml/MainMenu.fxml",
+                "/fxml/MainMenu.fxml",
+                "/fxml/MainMenu.fxml",
+                "tn/formini/fxml/MainMenu.fxml"
         };
 
         Parent root = null;
@@ -26,22 +34,15 @@ public class MainMenuApp extends Application {
             try {
                 System.out.println("Tentative: " + chemin);
                 URL resource = getClass().getResource(chemin);
-                System.out.println("Resource URL: " + (resource != null ? resource.toString() : "NULL"));
-                
                 if (resource != null) {
-                    System.out.println("Resource exists, attempting to load FXML...");
                     root = FXMLLoader.load(resource);
                     System.out.println("FXML trouvé au chemin: " + chemin);
                     break;
                 } else {
                     System.out.println("Resource null pour: " + chemin);
-                    // Try to debug what's available
-                    System.out.println("Current class: " + getClass().getName());
-                    System.out.println("Class loader: " + getClass().getClassLoader());
                 }
             } catch (Exception e) {
-                System.out.println("Échec pour: " + chemin + " - " + e.getMessage());
-                e.printStackTrace();
+                System.out.println("Échec pour: " + chemin + " -> " + e.getClass().getSimpleName() + ": " + e.getMessage());
             }
         }
 
@@ -65,6 +66,7 @@ public class MainMenuApp extends Application {
         Scene scene = new Scene(root);
         primaryStage.setTitle("Formini - Menu Principal");
         primaryStage.setScene(scene);
+        StageWindowMode.maximize(primaryStage);
         primaryStage.show();
     }
 

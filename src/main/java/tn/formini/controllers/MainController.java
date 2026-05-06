@@ -10,7 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
-import tn.formini.controllers.blog.Blogformcontroller;
+import tn.formini.controllers.blog.BlogFormController;
 import tn.formini.controllers.blog.BlogListController;
 import tn.formini.controllers.evenement.EvenementformController;
 import tn.formini.controllers.evenement.EvenementListController;
@@ -34,9 +34,6 @@ public class MainController implements Initializable {
     @FXML private Label     labelUserName;
     @FXML private Label     labelUserRole;
 
-    @FXML private VBox sidebar;
-    @FXML private Circle userAvatar;
-
     @FXML private Button btnDashboard;
     @FXML private Button btnBlogList;
     @FXML private Button btnBlogAdd;
@@ -46,7 +43,6 @@ public class MainController implements Initializable {
     @FXML private Button btnQuiz;
     @FXML private Button btnStageList;
     @FXML private Button btnProductAdd;
-    @FXML private Button btnCandidatures;
     @FXML private Button btnProductManage;
     @FXML private Button btnOrderManage;
 
@@ -57,8 +53,18 @@ public class MainController implements Initializable {
         labelDate.setText(
                 LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
         );
-        navButtons = Arrays.asList(btnDashboard, btnBlogList, btnBlogAdd, btnEventList, btnEventAdd,
-                btnProductList, btnQuiz, btnProductAdd, btnProductManage, btnOrderManage, btnStageList);
+        navButtons = Arrays.asList(
+                btnDashboard,
+                btnBlogList,
+                btnBlogAdd,
+                btnEventList,
+                btnEventAdd,
+                btnProductList,
+                btnProductAdd,
+                btnProductManage,
+                btnOrderManage,
+                btnStageList
+        );
         showDashboard();
     }
 
@@ -156,7 +162,7 @@ public class MainController implements Initializable {
     public void showBlogForm(tn.formini.entities.evenements.Blog blog) {
         updateActiveButton(btnBlogAdd);
         labelPageTitle.setText(blog == null ? "Nouveau Blog" : "Modifier le Blog");
-        Blogformcontroller controller = (Blogformcontroller) loadPage("/fxml/blog/Blogform.fxml");
+        BlogFormController controller = (BlogFormController) loadPage("/fxml/blog/Blogform.fxml");
         if (controller != null) {
             controller.setMainController(this);
             if (blog != null) {
@@ -174,7 +180,7 @@ public class MainController implements Initializable {
 
     @FXML
     public void showProductManage() {
-        labelPageTitle.setText("Gérer les Produits");
+        labelPageTitle.setText("Gestion des Produits");
         ProduitListController controller = (ProduitListController) loadPage("/fxml/product/ProduitList.fxml");
         if (controller != null) {
             controller.setMainController(this);

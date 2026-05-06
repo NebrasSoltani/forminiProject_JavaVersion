@@ -7,9 +7,8 @@ import javafx.scene.layout.VBox;
 import tn.formini.entities.Users.Apprenant;
 import tn.formini.entities.Users.User;
 import tn.formini.services.UsersService.ApprenantService;
+import tn.formini.services.formations.FormationService;
 import tn.formini.services.quizService.QuizService;
-
-import java.util.List;
 
 public class ApprenantDashboardController implements DashboardRoleController {
 
@@ -61,12 +60,14 @@ public class ApprenantDashboardController implements DashboardRoleController {
     private User currentUser;
     private Apprenant currentApprenant;
     private ApprenantService apprenantService;
+    private FormationService formationService;
     private QuizService quizService;
 
     @Override
     public void initializeDashboard(User user) {
         this.currentUser = user;
         apprenantService = new ApprenantService();
+        formationService = new FormationService();
         quizService = new QuizService();
         
         // Get apprenant data
@@ -110,7 +111,7 @@ public class ApprenantDashboardController implements DashboardRoleController {
 
     private void loadStatistics() {
         try {
-            int totalFormations = 0;
+            int totalFormations = formationService.findPublished().size();
             int completedQuiz = 0;
             int offresStage = 0;
             int certificats = 0;
@@ -133,6 +134,9 @@ public class ApprenantDashboardController implements DashboardRoleController {
                 getClass().getResource("/fxml/formations/formation-list.fxml")
             );
             javafx.scene.Parent root = loader.load();
+
+            tn.formini.controllers.formations.FormationListController controller = loader.getController();
+            controller.setCurrentUser(currentUser);
             
             javafx.stage.Stage stage = new javafx.stage.Stage();
             stage.setTitle("Catalogue des Formations");
