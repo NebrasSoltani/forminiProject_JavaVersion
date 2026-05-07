@@ -20,7 +20,7 @@
     <!--  SIDEBAR (ADMIN PANEL)                                 -->
     <!-- ══════════════════════════════════════════════════════ -->
     <left>
-        <VBox fx:id="sidebar" styleClass="sidebar" prefWidth="160" spacing="0">
+        <VBox fx:id="sidebar" styleClass="sidebar" prefWidth="220" spacing="0">
 
             <!-- Premium Logo Section -->
             <VBox styleClass="sidebar-logo" alignment="CENTER" spacing="5">
@@ -30,58 +30,55 @@
                     </StackPane>
                     <VBox spacing="-2">
                         <Label text="Formini.tn" styleClass="logo-text-bold" style="-fx-font-size: 14px;"/>
-                        <Label text="ADMIN" style="-fx-font-size: 7px; -fx-text-fill: -fx-warning; -fx-font-weight: bold; -fx-letter-spacing: 0.5px;"/>
+                        <Label text="DASHBOARD" style="-fx-font-size: 7px; -fx-text-fill: #38bdf8; -fx-font-weight: bold; -fx-letter-spacing: 0.5px;"/>
                     </VBox>
                 </HBox>
             </VBox>
 
             <Separator styleClass="sidebar-sep"/>
 
-            <!-- Navigation Menu -->
-            <VBox spacing="2" style="-fx-padding: 12 8;" VBox.vgrow="ALWAYS">
-                <Label text="GESTION" style="-fx-font-size: 9px; -fx-text-fill: #64748b; -fx-font-weight: bold; -fx-padding: 0 0 6 6;"/>
-                
-                <Button fx:id="btnDashboard" text="  Tableau" onAction="#showDashboard" styleClass="nav-sub" maxWidth="Infinity"/>
-                <Button fx:id="btnBlogList" text="  Blogs" onAction="#showBlogList" styleClass="nav-sub" maxWidth="Infinity"/>
-                <Button fx:id="btnEventList" text="  Événements" onAction="#showEventList" styleClass="nav-sub" maxWidth="Infinity"/>
-                <Button fx:id="btnProductList" text="  Produits" onAction="#showProductList" styleClass="nav-sub" maxWidth="Infinity"/>
-                <Button fx:id="btnQuiz" text="  Quiz" onAction="#showQuizDashboard" styleClass="nav-sub" maxWidth="Infinity"/>
-                <Button fx:id="btnStageList" text="  Stages" onAction="#showSocieteOffres" styleClass="nav-sub" maxWidth="Infinity"/>
-                <Button fx:id="btnCandidatures" text="  Candidatures" onAction="#showSocieteCandidatures" styleClass="nav-sub" maxWidth="Infinity"/>
+            <!-- Scrollable Sidebar Content -->
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="sidebar-scroll" VBox.vgrow="ALWAYS" style="-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;">
+                <VBox spacing="0">
+                    <!-- Navigation Menu -->
+                    <VBox spacing="2" style="-fx-padding: 12 8;">
+                        <Label text="GESTION" style="-fx-font-size: 9px; -fx-text-fill: #64748b; -fx-font-weight: bold; -fx-padding: 0 0 6 6;"/>
+                        
+                        <Button fx:id="btnDashboard" text="  Tableau" onAction="#showDashboard" styleClass="nav-sub" maxWidth="Infinity"/>
+                        <Button fx:id="btnBlogList" text="  Blogs" onAction="#showBlogList" styleClass="nav-sub" maxWidth="Infinity"/>
+                        <Button fx:id="btnEventList" text="  Événements" onAction="#showEventList" styleClass="nav-sub" maxWidth="Infinity"/>
+                        <Button fx:id="btnProductList" text="  Produits" onAction="#showProductList" styleClass="nav-sub" maxWidth="Infinity"/>
+                        <Button fx:id="btnQuiz" text="  Gestion Quiz" onAction="#showQuizDashboard" styleClass="nav-sub" maxWidth="Infinity"/>
+                        <Button fx:id="btnStageList" text="  Stages &amp; Offres" onAction="#showSocieteOffres" styleClass="nav-sub" maxWidth="Infinity"/>
+                        <Button fx:id="btnCandidatures" text="  Candidatures" onAction="#showSocieteCandidatures" styleClass="nav-sub" maxWidth="Infinity"/>
 
-                <Region prefHeight="15"/>
-                <Label text="AJOUTER" style="-fx-font-size: 8px; -fx-text-fill: #64748b; -fx-font-weight: bold; -fx-padding: 0 0 6 6;"/>
-                <Button fx:id="btnBlogAdd" text="  Blog" onAction="#showBlogAdd" styleClass="nav-sub" maxWidth="Infinity"/>
-                <Button fx:id="btnEventAdd" text="  Événement" onAction="#showEventAdd" styleClass="nav-sub" maxWidth="Infinity"/>
-                <Button fx:id="btnProductAdd" text="  Produit" onAction="#showProductAdd" styleClass="nav-sub" maxWidth="Infinity"/>
-                
-                <Region prefHeight="12"/>
-                <Label text="PRODUITS" style="-fx-font-size: 8px; -fx-text-fill: #64748b; -fx-font-weight: bold; -fx-padding: 0 0 6 6;"/>
-                <Button fx:id="btnProductManage" text="  Gérer Produits" onAction="#showProductManage" styleClass="nav-sub" maxWidth="Infinity"/>
-                
-                <Region prefHeight="12"/>
-                <Label text="COMMANDES" style="-fx-font-size: 8px; -fx-text-fill: #64748b; -fx-font-weight: bold; -fx-padding: 0 0 6 6;"/>
-                <Button fx:id="btnOrderManage" text="  Gérer Commandes" onAction="#showOrderManage" styleClass="nav-sub" maxWidth="Infinity"/>
-            </VBox>
+                        <Region prefHeight="15"/>
+                        <Label text="BOUTIQUE &amp; BLOG" style="-fx-font-size: 8px; -fx-text-fill: #64748b; -fx-font-weight: bold; -fx-padding: 0 0 6 6;"/>
+                        <Button fx:id="btnBlogAdd" text="  Articles &amp; Blogs" onAction="#showBlogAdd" styleClass="nav-sub" maxWidth="Infinity"/>
+                        <Button fx:id="btnEventAdd" text="  Événements" onAction="#showEventAdd" styleClass="nav-sub" maxWidth="Infinity"/>
+                        <Button fx:id="btnProductAdd" text="  Catalogue Produits" onAction="#showProductAdd" styleClass="nav-sub" maxWidth="Infinity"/>
+                    </VBox>
 
-            <!-- Bottom Navigation Actions -->
-            <VBox spacing="8" style="-fx-padding: 12;">
-                <Button text="  Voir Site" onAction="#switchToPublic" 
-                        style="-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: rgba(255,255,255,0.2); -fx-border-radius: 25; -fx-background-radius: 25; -fx-padding: 6 12; -fx-font-weight: bold; -fx-cursor: hand;" 
-                        maxWidth="Infinity"/>
-                <Button text=" Déconnexion" style="-fx-background-color: rgba(255,255,255,0.05); -fx-text-fill: #94a3b8; -fx-background-radius: 10; -fx-padding: 6; -fx-cursor: hand;" maxWidth="Infinity"/>
-            </VBox>
+                    <!-- Bottom Navigation Actions -->
+                    <VBox spacing="8" style="-fx-padding: 12;">
+                        <Button text="  Voir Site" onAction="#switchToPublic" 
+                                style="-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: rgba(255,255,255,0.2); -fx-border-radius: 25; -fx-background-radius: 25; -fx-padding: 6 12; -fx-font-weight: bold; -fx-cursor: hand;" 
+                                maxWidth="Infinity"/>
+                        <Button text="  Déconnexion" onAction="#handleLogout" style="-fx-background-color: rgba(239, 68, 68, 0.1); -fx-text-fill: #f87171; -fx-background-radius: 10; -fx-padding: 10; -fx-cursor: hand; -fx-font-weight: bold;" maxWidth="Infinity"/>
+                    </VBox>
 
-            <Separator styleClass="sidebar-sep"/>
-            
-            <!-- User Info -->
-            <HBox styleClass="sidebar-user" alignment="CENTER_LEFT" spacing="12">
-                <Circle fx:id="userAvatar" radius="22" styleClass="user-avatar" style="-fx-fill: -fx-primary;"/>
-                <VBox spacing="2">
-                    <Label fx:id="labelUserName" text="Duaa Duaa" styleClass="user-name" style="-fx-font-size: 14px;"/>
-                    <Label fx:id="labelUserRole" text="Administrateur" styleClass="user-role" style="-fx-font-size: 11px;"/>
+                    <Separator styleClass="sidebar-sep"/>
+                    
+                    <!-- User Info -->
+                    <HBox styleClass="sidebar-user" alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 15;">
+                        <Circle fx:id="userAvatar" radius="20" styleClass="user-avatar" style="-fx-fill: #4f46e5;"/>
+                        <VBox spacing="2">
+                            <Label fx:id="labelUserName" text="Utilisateur" styleClass="user-name" style="-fx-font-size: 13px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                            <Label fx:id="labelUserRole" text="Rôle" styleClass="user-role" style="-fx-font-size: 10px; -fx-text-fill: #94a3b8;"/>
+                        </VBox>
+                    </HBox>
                 </VBox>
-            </HBox>
+            </ScrollPane>
         </VBox>
     </left>
 

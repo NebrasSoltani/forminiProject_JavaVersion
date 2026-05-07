@@ -331,4 +331,17 @@ public class MainController implements Initializable {
         }
         updateActiveButton(btnStageList);
     }
+
+    @FXML
+    public void handleLogout() {
+        tn.formini.services.UsersService.SessionManager.getInstance().logout();
+        try {
+            URL resource = getClass().getResource("/fxml/auth/Login.fxml");
+            FXMLLoader loader = new FXMLLoader(resource);
+            Parent root = loader.load();
+            contentArea.getScene().setRoot(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

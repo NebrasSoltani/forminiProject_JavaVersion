@@ -116,7 +116,11 @@ public class ApprenantDashboardController implements DashboardRoleController {
     private void loadStatistics() {
         try {
             int totalFormations = formationService.findPublished().size();
-            int completedQuiz = 0;
+            
+            // Use ResultatQuizService to get actual count
+            tn.formini.services.quizService.ResultatQuizService resService = new tn.formini.services.quizService.ResultatQuizService();
+            int completedQuiz = resService.countByUser(currentUser.getId());
+            
             int offresStage = 0;
             int certificats = 0;
             

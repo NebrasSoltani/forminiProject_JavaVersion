@@ -38,15 +38,28 @@ public class ApprenantQuizListController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         apprenantQuizService = new ApprenantQuizService();
-        // Simuler un apprenant connecté (ID 1)
-        currentApprenant = new Apprenant();
-        currentApprenant.setId(1);
         
-        // IMPORTANT: Un apprenant a besoin d'un objet User associé pour la soumission
-        tn.formini.entities.Users.User mockUser = new tn.formini.entities.Users.User();
-        mockUser.setId(1);
-        mockUser.setNom("ApprenantTest");
-        currentApprenant.setUser(mockUser);
+        // Get real logged-in user from SessionManager
+        tn.formini.entities.Users.User sessionUser = tn.formini.services.UsersService.SessionManager.getInstance().getCurrentUser();
+        
+        if (sessionUser != null) {
+            tn.formini.services.UsersService.ApprenantService apprenantService = new tn.formini.services.UsersService.ApprenantService();
+            currentApprenant = apprenantService.findByUserId(sessionUser.getId());
+            
+            if (currentApprenant == null) {
+                // Fallback or create temporary object if record not found in apprenant table
+                currentApprenant = new Apprenant();
+                currentApprenant.setUser(sessionUser);
+            }
+        } else {
+            // Fallback for dev/testing if no session
+            currentApprenant = new Apprenant();
+            currentApprenant.setId(1);
+            tn.formini.entities.Users.User mockUser = new tn.formini.entities.Users.User();
+            mockUser.setId(1);
+            mockUser.setNom("ApprenantTest");
+            currentApprenant.setUser(mockUser);
+        }
     }
 
     @FXML
