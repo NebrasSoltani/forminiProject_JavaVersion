@@ -7,7 +7,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ScrollPane;
@@ -17,7 +16,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.geometry.Insets;
-import javafx.stage.Stage;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -29,9 +27,7 @@ import tn.formini.services.produitsService.CommandeService;
 import tn.formini.services.cart.CartItem;
 import tn.formini.services.cart.CartService;
 import tn.formini.entities.produits.Produit;
-import tn.formini.services.SimpleCartAIService;
-import tn.formini.services.SimpleAdvancedProductAIService;
-import tn.formini.services.AdvancedProductAIService;
+import tn.formini.services.CartAIService;
 import tn.formini.services.StripePaymentService;
 
 import java.math.BigDecimal;
@@ -44,9 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import javafx.scene.control.ButtonType;
 
 public class CartController implements Initializable {
 
@@ -68,9 +62,8 @@ public class CartController implements Initializable {
 
     private final CartService cart = CartService.getInstance();
     
-    // Implémentations simples pour remplacer les services manquants
-    private final SimpleCartAIService cartAIService = new SimpleCartAIService();
-    private final SimpleAdvancedProductAIService advancedAIService = new SimpleAdvancedProductAIService();
+    // Service de recommandations disponible dans le projet
+    private final CartAIService cartAIService = CartAIService.getInstance();
 
     private enum SuggestionSort {
         ORDER, NAME, PRICE, STOCK
@@ -305,7 +298,7 @@ public class CartController implements Initializable {
 
         try {
             System.out.println("=== UTILISATION SUGGESTIONS PAR CATEGORIE ===");
-            List<Produit> categorySuggestions = cartAIService.getProduitsSimilairesParCategorie(cartProducts);
+            List<Produit> categorySuggestions = getCategoryBasedSuggestions(cartProducts);
             System.out.println("Suggestions trouvées: " + categorySuggestions.size());
             
             Platform.runLater(() -> {
@@ -509,7 +502,36 @@ public class CartController implements Initializable {
         alert.setContentText(content);
         alert.showAndWait();
     }
-    
+
+    private List<Produit> getCategoryBasedSuggestions(List<Produit> cartProducts) {
+        Set<String> cartCategories = cartProducts.stream()
+                .map(Produit::getCategorie)
+                .filter(cat -> cat != null && !cat.trim().isEmpty())
+                .map(String::trim)
+                .collect(Collectors.toSet());
+
+        if (cartCategories.isEmpty()) {
+            return cartAIService.getProduitsComplementaires();
+        }
+
+        Set<Integer> cartProductIds = cartProducts.stream()
+                .map(Produit::getId)
+                .collect(Collectors.toSet());
+
+        List<Produit> categorySuggestions = cartAIService.getAllProducts().stream()
+                .filter(p -> p.getCategorie() != null && cartCategories.contains(p.getCategorie().trim()))
+                .filter(p -> !cartProductIds.contains(p.getId()))
+                .filter(p -> p.getStock() > 0)
+                .sorted(Comparator.comparing(Produit::getNom, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)))
+                .limit(8)
+                .collect(Collectors.toList());
+
+        if (categorySuggestions.isEmpty()) {
+            return cartAIService.getProduitsComplementaires();
+        }
+        return categorySuggestions;
+    }
+
     private void showSuggestionsLoading(boolean show) {
         if (suggestionsLoading != null) {
             suggestionsLoading.setVisible(show);

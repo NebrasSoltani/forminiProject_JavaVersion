@@ -190,7 +190,6 @@
                     <mainClass>tn.formini.mains.AppLauncher</mainClass>
                     <options>
                         <option>--enable-native-access=ALL-UNNAMED</option>
-                        <option>--sun-misc-unsafe-memory-access=allow</option>
                     </options>
                 </configuration>
                 <executions>
@@ -220,7 +219,6 @@
                     <mainClass>tn.formini.mains.SignupLauncher</mainClass>
                     <arguments>
                         <argument>--enable-native-access=ALL-UNNAMED</argument>
-                        <argument>--sun-misc-unsafe-memory-access=allow</argument>
                     </arguments>
                 </configuration>
             </plugin>
