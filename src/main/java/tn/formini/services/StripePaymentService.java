@@ -29,29 +29,15 @@ public class StripePaymentService {
         try {
             String stripeSecretKey = null;
             
-            // 1. Essayer ConfigLoader d'abord (méthode unifiée)
-            try {
-                stripeSecretKey = tn.formini.utils.ConfigLoader.getStripeKey();
-                if (stripeSecretKey != null && !stripeSecretKey.trim().isEmpty()) {
-                    Stripe.apiKey = stripeSecretKey;
-                    System.out.println("✅ Stripe API initialized from ConfigLoader");
-                    System.out.println("🔑 Key: " + maskKey(stripeSecretKey));
-                    return;
-                }
-            } catch (Exception e) {
-                System.out.println("ConfigLoader not available, trying legacy methods...");
-            }
-            
-            // 2. Essayer les variables d'environnement
+            // 1. Essayer les variables d'environnement d'abord
             stripeSecretKey = System.getenv("STRIPE_SECRET_KEY");
             if (stripeSecretKey != null && !stripeSecretKey.trim().isEmpty()) {
                 Stripe.apiKey = stripeSecretKey;
-                System.out.println("✅ Stripe API initialized from environment variable");
-                System.out.println("🔑 Key: " + maskKey(stripeSecretKey));
+                System.out.println("Stripe API initialized from environment variable");
                 return;
             }
             
-            // 3. Essayer le fichier local config.properties.local
+            // 2. Essayer le fichier local config.properties.local (chemin absolu)
             try {
                 String projectPath = System.getProperty("user.dir");
                 java.util.Properties props = new java.util.Properties();
@@ -59,15 +45,14 @@ public class StripePaymentService {
                 stripeSecretKey = props.getProperty("stripe.secret.key");
                 if (stripeSecretKey != null && !stripeSecretKey.trim().isEmpty()) {
                     Stripe.apiKey = stripeSecretKey;
-                    System.out.println("✅ Stripe API initialized from config.properties.local");
-                    System.out.println("🔑 Key: " + maskKey(stripeSecretKey));
+                    System.out.println("Stripe API initialized from config.properties.local");
                     return;
                 }
             } catch (Exception e) {
                 System.out.println("config.properties.local not found, trying main config...");
             }
             
-            // 4. Essayer le fichier principal config.properties
+            // 3. Essayer le fichier principal config.properties
             try {
                 java.util.Properties props = new java.util.Properties();
                 props.load(getClass().getClassLoader().getResourceAsStream("config.properties"));
@@ -81,23 +66,21 @@ public class StripePaymentService {
                 
                 if (stripeSecretKey != null && !stripeSecretKey.trim().isEmpty()) {
                     Stripe.apiKey = stripeSecretKey;
-                    System.out.println("✅ Stripe API initialized from config.properties");
-                    System.out.println("🔑 Key: " + maskKey(stripeSecretKey));
+                    System.out.println("Stripe API initialized from config.properties");
                     return;
                 }
             } catch (Exception e) {
                 System.err.println("Error loading config.properties: " + e.getMessage());
             }
             
-            // 5. Si aucune clé trouvée, afficher un message d'erreur clair
-            System.err.println("=== ❌ STRIPE CONFIGURATION ERROR ===");
+            // 4. Si aucune clé trouvée, afficher un message d'erreur clair
+            System.err.println("=== STRIPE CONFIGURATION ERROR ===");
             System.err.println("Stripe API key not found in any source");
             System.err.println("");
             System.err.println("To configure Stripe, choose one option:");
             System.err.println("1. Set environment variable: STRIPE_SECRET_KEY");
             System.err.println("2. Create config.properties.local with stripe.secret.key");
             System.err.println("3. Run setup script: ./setup-stripe.bat (Windows) or ./setup-stripe.sh (Linux/Mac)");
-            System.err.println("4. Use ConfigLoader (recommended)");
             System.err.println("");
             System.err.println("For testing, you can get a test key from: https://dashboard.stripe.com/apikeys");
             System.err.println("=====================================");
@@ -107,14 +90,6 @@ public class StripePaymentService {
         }
     }
     
-    private String maskKey(String key) {
-        if (key == null || key.length() < 10) {
-            return "***";
-        }
-        return key.substring(0, 8) + "..." + key.substring(key.length() - 4);
-    }
-    
-        
     public String createCheckoutSession(BigDecimal amount, String successUrl, String cancelUrl) throws StripeException {
         // Convert amount to cents (Stripe works with cents)
         long amountInCents = amount.multiply(new BigDecimal("100")).longValue();
