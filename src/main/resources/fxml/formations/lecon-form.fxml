@@ -5,50 +5,71 @@
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="tn.formini.controllers.formations.LeconFormController"
-      spacing="12" stylesheets="@/css/style.css" styleClass="formation-form-root">
+      spacing="12" stylesheets="@/css/style.css"
+      style="-fx-background-color: #1e293b; -fx-padding: 30;">
 
     <children>
-        <Label fx:id="titleLabel" text="Creer une lecon" styleClass="formation-form-title"/>
+        <Label fx:id="titleLabel" text="Créer une leçon"
+               style="-fx-font-size: 26px; -fx-font-weight: 900; -fx-text-fill: white;"/>
 
-        <GridPane hgap="10" vgap="10" styleClass="formation-form-grid">
+        <GridPane hgap="14" vgap="12" style="-fx-padding: 4 0;">
             <columnConstraints>
                 <ColumnConstraints minWidth="130" prefWidth="150"/>
                 <ColumnConstraints hgrow="ALWAYS"/>
             </columnConstraints>
 
             <children>
-                <Label text="Titre*" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                <TextField fx:id="titreField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                <Label text="Titre*" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                       style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                <TextField fx:id="titreField" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                           style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-prompt-text-fill: #475569; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
 
-                <Label text="Description" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                <TextArea fx:id="descriptionArea" prefRowCount="3" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                <Label text="Description" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                       style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                <TextArea fx:id="descriptionArea" prefRowCount="3"
+                          GridPane.rowIndex="1" GridPane.columnIndex="1"
+                          style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
 
-                <Label text="Contenu" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                <TextArea fx:id="contenuArea" prefRowCount="4" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                <Label text="Contenu" GridPane.rowIndex="2" GridPane.columnIndex="0"
+                       style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                <TextArea fx:id="contenuArea" prefRowCount="4"
+                          GridPane.rowIndex="2" GridPane.columnIndex="1"
+                          style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
 
-                <Label text="Ordre*" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                <TextField fx:id="ordreField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                <Label text="Ordre*" GridPane.rowIndex="3" GridPane.columnIndex="0"
+                       style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                <TextField fx:id="ordreField" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                           style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-prompt-text-fill: #475569; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
 
-                <Label text="Duree (min)" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                <TextField fx:id="dureeField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                <Label text="Durée (min)" GridPane.rowIndex="4" GridPane.columnIndex="0"
+                       style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                <TextField fx:id="dureeField" GridPane.rowIndex="4" GridPane.columnIndex="1"
+                           style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-prompt-text-fill: #475569; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
 
-                <Label text="Video URL" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-                <TextField fx:id="videoUrlField" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                <Label text="Vidéo URL" GridPane.rowIndex="5" GridPane.columnIndex="0"
+                       style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                <TextField fx:id="videoUrlField" GridPane.rowIndex="5" GridPane.columnIndex="1"
+                           style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-prompt-text-fill: #475569; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
 
-                <Label text="Fichier" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
-                <TextField fx:id="fichierField" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+                <Label text="Fichier" GridPane.rowIndex="6" GridPane.columnIndex="0"
+                       style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                <TextField fx:id="fichierField" GridPane.rowIndex="6" GridPane.columnIndex="1"
+                           style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-prompt-text-fill: #475569; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
 
-                <Label text="Gratuit" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
-                <CheckBox fx:id="gratuitCheck" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+                <Label text="Gratuit" GridPane.rowIndex="7" GridPane.columnIndex="0"
+                       style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                <CheckBox fx:id="gratuitCheck" GridPane.rowIndex="7" GridPane.columnIndex="1"
+                          style="-fx-text-fill: #e2e8f0;"/>
             </children>
         </GridPane>
 
-        <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="formation-form-actions">
+        <HBox spacing="10" alignment="CENTER_RIGHT">
             <children>
-                <Button text="Annuler" onAction="#handleCancel" styleClass="btn-secondary"/>
-                <Button text="Enregistrer" onAction="#handleSave" styleClass="btn-primary"/>
+                <Button text="Annuler" onAction="#handleCancel"
+                        style="-fx-background-color: #334155; -fx-text-fill: #94a3b8; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
+                <Button text="Enregistrer" onAction="#handleSave"
+                        style="-fx-background-color: #4f46e5; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 24; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(79,70,229,0.4), 10, 0, 0, 3);"/>
             </children>
         </HBox>
     </children>
 </VBox>
-
