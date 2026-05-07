@@ -16,6 +16,7 @@
                 <Button text="+ Ajouter" onAction="#handleAdd" style="-fx-background-color: #2ecc71; -fx-text-fill: white;"/>
                 <Button text="Modifier" onAction="#handleEdit" style="-fx-background-color: #f39c12; -fx-text-fill: white;"/>
                 <Button text="Supprimer" onAction="#handleDelete" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+                <Button text="Recommandations" onAction="#handleRecommendations" style="-fx-background-color: #9b59b6; -fx-text-fill: white;"/>
                 <Region HBox.hgrow="ALWAYS"/>
                 <Button text="Actualiser" onAction="#handleRefresh"/>
             </children>

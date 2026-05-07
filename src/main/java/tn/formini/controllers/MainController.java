@@ -42,6 +42,8 @@ public class MainController implements Initializable {
     @FXML private Button btnStageList;
     @FXML private Button btnProductAdd;
     @FXML private Button btnProductManage;
+    @FXML private Button btnOrderManage;
+    @FXML private Button btnCandidatures;
 
     private List<Button> navButtons;
 
@@ -59,7 +61,9 @@ public class MainController implements Initializable {
                 btnProductList,
                 btnProductAdd,
                 btnProductManage,
-                btnStageList
+                btnOrderManage,
+                btnStageList,
+                btnCandidatures
         );
         showDashboard();
     }
@@ -195,6 +199,8 @@ public class MainController implements Initializable {
         loadPage("/fxml/produits/ProduitList.fxml");
         updateActiveButton(btnProductManage);
     }
+
+
 
     @FXML
     public void showProductAdd() {
