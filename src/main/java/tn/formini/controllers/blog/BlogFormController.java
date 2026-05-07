@@ -2,6 +2,7 @@ package tn.formini.controllers.blog;
 import tn.formini.controllers.MainController;
 
 import javafx.application.Platform;
+
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -64,6 +66,7 @@ public class BlogFormController implements Initializable {
     private final EvenementService evenementService = new EvenementService();
     private final tn.formini.services.ai.GroqChatService groqService = new tn.formini.services.ai.GroqChatService();
 
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         fieldCategorie.setItems(FXCollections.observableArrayList(
@@ -71,7 +74,6 @@ public class BlogFormController implements Initializable {
         ));
         fieldDatePublication.setValue(LocalDate.now());
         loadEvenements();
-        
         setupValidationListeners();
     }
 
@@ -92,6 +94,7 @@ public class BlogFormController implements Initializable {
         }
         errorLabel.setText(message);
         errorLabel.setVisible(true);
+
     }
 
     public void setMainController(MainController mc) {
@@ -128,6 +131,7 @@ public class BlogFormController implements Initializable {
         if (blog.getImage() != null && blog.getImage().startsWith("http")) {
             blogPreview.setImage(new Image(blog.getImage()));
         }
+
     }
 
     @FXML
@@ -171,8 +175,13 @@ public class BlogFormController implements Initializable {
             // Validation de l'entité
             blog.valider();
 
-            // Utilisation du repository JPA
-            blogRepository.save(blog);
+            // Utilisation du repository JPA ou fall back to service
+            if (blogRepository != null) {
+                blogRepository.save(blog);
+            } else {
+                if (blogToEdit == null) blogService.ajouter(blog);
+                else blogService.modifier(blog);
+            }
 
             showSuccess(blogToEdit == null ? "Blog ajouté avec succès !" : "Blog mis à jour !");
             mainController.showBlogList();
@@ -235,6 +244,7 @@ public class BlogFormController implements Initializable {
                 Platform.runLater(() -> aiLoading.setVisible(false));
             }
         }).start();
+
     }
 
     @FXML
@@ -296,6 +306,7 @@ public class BlogFormController implements Initializable {
                 chatBox.getChildren().add(botLabel);
             });
         }).start();
+
     }
 
     @FXML
@@ -316,6 +327,7 @@ public class BlogFormController implements Initializable {
         }
         if (fieldCategorie.getValue() == null) {
             applyError(fieldCategorie, errCategorie, "Veuillez choisir une catégorie.");
+
             ok = false;
         }
         return ok;
@@ -341,7 +353,6 @@ public class BlogFormController implements Initializable {
         alert.setHeaderText(null);
         alert.showAndWait();
     }
-
     private void showError(String msg) {
         Alert alert = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
         alert.setTitle("Erreur");

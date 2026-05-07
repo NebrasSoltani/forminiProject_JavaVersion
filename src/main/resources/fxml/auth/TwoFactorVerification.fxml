@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="tn.formini.controllers.auth.TwoFactorVerificationController"
+           styleClass="login-page"
+           minHeight="600">
+
+    <!-- Decorative Background Elements -->
+    <StackPane StackPane.alignment="TOP_LEFT">
+        <Circle radius="200" fill="linear-gradient(from 0% 0% to 100% 100%, #6974e8 0%, #8f94f6 100%)"
+                opacity="0.08" StackPane.alignment="TOP_LEFT"
+                translateX="-100" translateY="-100"/>
+    </StackPane>
+    
+    <StackPane StackPane.alignment="BOTTOM_RIGHT">
+        <Circle radius="250" fill="linear-gradient(from 0% 0% to 100% 100%, #ff4b5c 0%, #ff7b8c 100%)"
+                opacity="0.06" StackPane.alignment="BOTTOM_RIGHT"
+                translateX="150" translateY="150"/>
+    </StackPane>
+
+    <VBox alignment="CENTER" spacing="0" StackPane.alignment="CENTER">
+        <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+
+        <VBox maxWidth="480" spacing="24" alignment="CENTER">
+
+            <!-- Logo & Branding -->
+            <VBox spacing="16" alignment="CENTER" styleClass="login-branding">
+                <HBox spacing="12" alignment="CENTER" styleClass="logo-container">
+                    <StackPane styleClass="logo-bg">
+                        <Label text="F" styleClass="logo-letter"/>
+                    </StackPane>
+                    <VBox spacing="2">
+                        <Label text="Formini" styleClass="brand-name"/>
+                        <Label text="فورميني" styleClass="brand-arabic"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Header -->
+            <VBox spacing="12" alignment="CENTER" styleClass="login-hero">
+                <Label text="Vérification 2FA" styleClass="login-hero-kicker"/>
+                <Label text="Authentification à deux facteurs" styleClass="login-hero-title"/>
+                <Label text="Entrez le code de votre application d'authentification pour continuer"
+                       wrapText="true" styleClass="login-hero-sub" maxWidth="400" alignment="CENTER"/>
+            </VBox>
+
+            <Label fx:id="lblMessage" styleClass="login-alert" wrapText="true" maxWidth="450" visible="false" managed="false"/>
+
+            <!-- Verification Card -->
+            <VBox styleClass="login-card" spacing="0">
+                <VBox spacing="24" styleClass="login-card-inner">
+                    <padding><Insets top="32" right="32" bottom="32" left="32"/></padding>
+
+                    <!-- TOTP Code Input -->
+                    <VBox spacing="16" fx:id="totpBox">
+                        <VBox spacing="8">
+                            <Label text="Code d'authentification" styleClass="form-label"/>
+                            <TextField fx:id="fieldTotpCode" styleClass="form-control login-field" promptText="123456" maxWidth="300" alignment="CENTER"/>
+                            <Label fx:id="errorTotp" styleClass="error-label" text="" visible="false" managed="false"/>
+                        </VBox>
+
+                        <Button fx:id="btnVerifyTotp" text="Vérifier" styleClass="btn-primary login-btn-primary" maxWidth="Infinity" onAction="#onVerifyTotp"/>
+                    </VBox>
+
+                    <!-- Backup Code Input -->
+                    <VBox spacing="16" fx:id="backupBox" visible="false" managed="false">
+                        <VBox spacing="8">
+                            <Label text="Code de récupération" styleClass="form-label"/>
+                            <TextField fx:id="fieldBackupCode" styleClass="form-control login-field" promptText="Entrez votre code de récupération" maxWidth="300"/>
+                            <Label fx:id="errorBackup" styleClass="error-label" text="" visible="false" managed="false"/>
+                        </VBox>
+
+                        <Button fx:id="btnVerifyBackup" text="Utiliser le code de récupération" styleClass="btn-primary login-btn-primary" maxWidth="Infinity" onAction="#onVerifyBackup"/>
+                    </VBox>
+
+                    <!-- Toggle between TOTP and Backup -->
+                    <HBox spacing="12" alignment="CENTER">
+                        <Button fx:id="btnUseBackup" text="Utiliser un code de récupération" styleClass="login-link" onAction="#onUseBackup"/>
+                        <Button fx:id="btnUseTotp" text="Utiliser le code TOTP" styleClass="login-link" visible="false" managed="false" onAction="#onUseTotp"/>
+                    </HBox>
+
+                    <!-- Cancel Button -->
+                    <Button fx:id="btnCancel" text="Annuler" styleClass="btn-secondary" maxWidth="Infinity" onAction="#onCancel"/>
+                </VBox>
+            </VBox>
+        </VBox>
+    </VBox>
+</StackPane>

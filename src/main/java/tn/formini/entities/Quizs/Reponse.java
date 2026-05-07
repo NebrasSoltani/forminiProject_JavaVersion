@@ -1,6 +1,5 @@
 package tn.formini.entities.Quizs;
 
-
 public class Reponse {
 
     private int id;

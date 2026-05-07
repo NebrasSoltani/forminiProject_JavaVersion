@@ -40,12 +40,18 @@ public class PasswordUtil {
         if (plainPassword == null || hashedPassword == null) {
             return false;
         }
+
+        // Handle plain text passwords (fallback)
+        if (!hashedPassword.startsWith("$2a$")) {
+            return plainPassword.equals(hashedPassword);
+        }
         
         try {
             return BCrypt.checkpw(plainPassword, hashedPassword);
         } catch (Exception e) {
             System.err.println("Error verifying password: " + e.getMessage());
-            return false;
+            // Last resort: if it's not a valid BCrypt hash, try plain text comparison
+            return plainPassword.equals(hashedPassword);
         }
     }
     
@@ -126,12 +132,13 @@ class BCrypt {
     }
     
     public static boolean checkpw(String plaintext, String hashed) {
-        // This is a simplified implementation
-        // In production, use a proper BCrypt library
         try {
-            // For now, we'll use a simple hash for demonstration
-            // Replace this with proper BCrypt implementation
-            return hashpw(plaintext, hashed.substring(0, 29)).equals(hashed);
+            if (hashed == null || hashed.length() < 29) {
+                return false;
+            }
+            // Real BCrypt salts are at the start. Our fake one is also at the start.
+            String salt = hashed.substring(0, 29);
+            return hashpw(plaintext, salt).equals(hashed);
         } catch (Exception e) {
             return false;
         }

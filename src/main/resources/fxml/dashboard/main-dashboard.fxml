@@ -1,30 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
 
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.formini.controllers.dashboard.DashboardController" spacing="10" style="-fx-padding: 20;">
-    <children>
-        <!-- Header with user info and logout -->
-        <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-background-color: #f0f0f0; -fx-padding: 10;">
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.formini.controllers.MainController"
+            style="-fx-background-color: #0f172a;">
+
+    <!-- Sidebar -->
+    <left>
+        <VBox prefWidth="260" spacing="0" style="-fx-background-color: #1e293b; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 15, 0, 0, 5);">
             <children>
-                <VBox spacing="5">
-                    <children>
-                        <Label fx:id="welcomeLabel" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-                        <Label fx:id="userRoleLabel" style="-fx-font-size: 14px;"/>
-                        <Label fx:id="userInfoLabel" style="-fx-font-size: 12px;"/>
-                    </children>
+                <!-- Brand Logo Section -->
+                <VBox alignment="CENTER" spacing="10" style="-fx-padding: 30 20;">
+                    <StackPane style="-fx-background-color: linear-gradient(to bottom right, #4f46e5, #6366f1); -fx-background-radius: 15; -fx-min-width: 50; -fx-min-height: 50; -fx-max-width: 50; -fx-max-height: 50;">
+                        <Label text="⚡" style="-fx-font-size: 24px; -fx-text-fill: white;"/>
+                    </StackPane>
+                    <Label text="FORMINI" style="-fx-font-size: 20px; -fx-font-weight: 900; -fx-text-fill: white; -fx-letter-spacing: 2;"/>
                 </VBox>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Button text="Mon Profil" onAction="#handleProfile"/>
-                <Button text="Déconnexion" onAction="#handleLogout" style="-fx-background-color: #ff6b6b; -fx-text-fill: white;"/>
+
+                <!-- Navigation Section -->
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
+                    <content>
+                        <VBox spacing="5" style="-fx-padding: 10 15;">
+                            <children>
+                                <Label text="TABLEAU DE BORD" style="-fx-text-fill: #475569; -fx-font-size: 10px; -fx-font-weight: 900; -fx-padding: 10 0 5 10;"/>
+                                <Button fx:id="btnDashboard" text="🏠 Accueil" onAction="#showDashboard" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: #334155; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
+                                
+                                <Label text="APPRENTISSAGE" style="-fx-text-fill: #475569; -fx-font-size: 10px; -fx-font-weight: 900; -fx-padding: 15 0 5 10;"/>
+                                <Button fx:id="btnQuiz" text="🧠 Gestion Quiz" onAction="#showQuizDashboard" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
+                                <Button fx:id="btnStageList" text="💼 Stages &amp; Offres" onAction="#showStageManagement" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
+                                
+                                <Label text="BOUTIQUE &amp; BLOG" style="-fx-text-fill: #475569; -fx-font-size: 10px; -fx-font-weight: 900; -fx-padding: 15 0 5 10;"/>
+                                <Button fx:id="btnBlogList" text="📝 Articles &amp; Blogs" onAction="#showBlogList" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
+                                <Button fx:id="btnEventList" text="📅 Événements" onAction="#showEventList" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
+                                <Button fx:id="btnProductList" text="🛍️ Catalogue Produits" onAction="#showProductList" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
+                                
+                                <Label fx:id="labelAdminSection" text="ADMINISTRATION" style="-fx-text-fill: #475569; -fx-font-size: 10px; -fx-font-weight: 900; -fx-padding: 15 0 5 10;"/>
+                                <Button fx:id="btnProductManage" text="⚙️ Gérer Produits" onAction="#showProductManage" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
+                                <Button fx:id="btnOrderManage" text="📦 Gérer Commandes" onAction="#showOrderManage" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
+                                <Button fx:id="btnBlogAdd" text="➕ Nouveau Blog" onAction="#showBlogAdd" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
+                                <Button fx:id="btnEventAdd" text="➕ Nouvel Event" onAction="#showEventAdd" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
+                                <Button fx:id="btnProductAdd" text="➕ Nouveau Produit" onAction="#showProductAdd" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
+                            </children>
+                        </VBox>
+                    </content>
+                </ScrollPane>
+
+                <!-- Logout -->
+                <VBox style="-fx-padding: 15 20;">
+                    <Button text="🚪 Déconnexion" onAction="#switchToPublic" maxWidth="Infinity" alignment="CENTER_LEFT"
+                            style="-fx-background-color: rgba(239, 68, 68, 0.1); -fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
+                </VBox>
             </children>
-        </HBox>
-        
-        <!-- Dynamic content area for role-specific dashboard -->
-        <VBox fx:id="contentArea" VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5;">
-            <!-- Role-specific dashboard content will be loaded here -->
         </VBox>
-    </children>
-</VBox>
+    </left>
+
+    <!-- Content Area -->
+    <center>
+        <VBox spacing="0" style="-fx-background-color: #0f172a;">
+            <children>
+                <!-- Top Header -->
+                <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 20 40; -fx-background-color: #0f172a; -fx-border-color: #1e293b; -fx-border-width: 0 0 1 0;">
+                    <children>
+                        <Label fx:id="labelPageTitle" text="Tableau de bord" style="-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: white;"/>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <HBox spacing="15" alignment="CENTER">
+                            <VBox alignment="CENTER_RIGHT" spacing="2">
+                                <Label fx:id="labelUserName" text="Utilisateur" style="-fx-font-size: 14px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                                <Label fx:id="labelUserRole" text="Rôle" style="-fx-font-size: 11px; -fx-text-fill: #38bdf8; -fx-font-weight: bold;"/>
+                            </VBox>
+                            <Circle radius="20" fill="#334155" stroke="#4f46e5" strokeWidth="2" />
+                            <Label fx:id="labelDate" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
+                        </HBox>
+                    </children>
+                </HBox>
+
+                <!-- Dynamic Content -->
+                <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS" style="-fx-background-color: #0f172a;">
+                    <padding>
+                        <Insets top="0" right="0" bottom="0" left="0"/>
+                    </padding>
+                </StackPane>
+            </children>
+        </VBox>
+    </center>
+
+</BorderPane>

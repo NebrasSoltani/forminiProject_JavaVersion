@@ -18,12 +18,11 @@ public class ProduitService implements service<Produit> {
     @Override
     public void ajouter(Produit p) {
         Connection cnx = getCnx();
-        if (cnx == null) return;
+        if (cnx == null) throw new RuntimeException("Connexion à la base de données impossible.");
 
         String req = "INSERT INTO produit (nom, categorie, description, prix, stock, image, statut, date_creation) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        try {
-            PreparedStatement ps = cnx.prepareStatement(req);
+        try (PreparedStatement ps = cnx.prepareStatement(req)) {
             ps.setString(1, p.getNom());
             ps.setString(2, p.getCategorie());
             ps.setString(3, p.getDescription());
@@ -35,19 +34,18 @@ public class ProduitService implements service<Produit> {
             ps.executeUpdate();
             System.out.println("Produit ajouté avec succès !");
         } catch (SQLException ex) {
-            System.out.println("Erreur ajouter : " + ex.getMessage());
+            throw new RuntimeException("Erreur lors de l'ajout du produit: " + ex.getMessage());
         }
     }
 
     @Override
     public void modifier(Produit p) {
         Connection cnx = getCnx();
-        if (cnx == null) return;
+        if (cnx == null) throw new RuntimeException("Connexion à la base de données impossible.");
 
         String req = "UPDATE produit SET nom=?, categorie=?, description=?, prix=?, stock=?, image=?, statut=?, date_creation=? " +
                 "WHERE id=?";
-        try {
-            PreparedStatement ps = cnx.prepareStatement(req);
+        try (PreparedStatement ps = cnx.prepareStatement(req)) {
             ps.setString(1, p.getNom());
             ps.setString(2, p.getCategorie());
             ps.setString(3, p.getDescription());
@@ -60,23 +58,22 @@ public class ProduitService implements service<Produit> {
             ps.executeUpdate();
             System.out.println("Produit modifié avec succès !");
         } catch (SQLException ex) {
-            System.out.println("Erreur modifier : " + ex.getMessage());
+            throw new RuntimeException("Erreur lors de la modification du produit: " + ex.getMessage());
         }
     }
 
     @Override
     public void supprimer(int id) {
         Connection cnx = getCnx();
-        if (cnx == null) return;
+        if (cnx == null) throw new RuntimeException("Connexion à la base de données impossible.");
 
         String req = "DELETE FROM produit WHERE id=?";
-        try {
-            PreparedStatement ps = cnx.prepareStatement(req);
+        try (PreparedStatement ps = cnx.prepareStatement(req)) {
             ps.setInt(1, id);
             ps.executeUpdate();
             System.out.println("Produit supprimé avec succès !");
         } catch (SQLException e) {
-            System.out.println("Erreur supprimer : " + e.getMessage());
+            throw new RuntimeException("Erreur lors de la suppression du produit: " + e.getMessage());
         }
     }
 

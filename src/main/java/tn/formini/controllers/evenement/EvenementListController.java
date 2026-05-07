@@ -40,6 +40,8 @@ public class EvenementListController implements Initializable {
     @FXML private CheckBox filterActif;
     @FXML private Label labelCount;
     @FXML private Pagination pagination;
+    @FXML private VBox statsContainer;
+    @FXML private VBox statsContent;
 
     private MainController mainController;
     
@@ -251,10 +253,13 @@ public class EvenementListController implements Initializable {
     @FXML
     public void showEventStats() {
         try {
+            statsContent.getChildren().clear();
+            
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/evenement/Statistics.fxml"));
             loader.setControllerFactory(springContext::getBean);
-            Pane root = loader.load();
+            Pane statsRoot = loader.load();
             StatisticsController controller = loader.getController();
+            controller.hideCloseButton();
             
             Map<String, Integer> stats = new HashMap<>();
             for (Evenement e : allEvenements) {
@@ -266,14 +271,18 @@ public class EvenementListController implements Initializable {
             }
             controller.setPieData("Répartition des Événements par Type", stats);
 
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Tableau de bord - Statistiques");
-            stage.setScene(new Scene(root));
-            stage.show();
+            statsContent.getChildren().add(statsRoot);
+            statsContainer.setVisible(true);
+            statsContainer.setManaged(true);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    public void hideStats() {
+        statsContainer.setVisible(false);
+        statsContainer.setManaged(false);
     }
 
     @FXML

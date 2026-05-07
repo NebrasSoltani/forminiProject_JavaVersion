@@ -8,108 +8,214 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="tn.formini.controllers.evenement.EvenementFormController"
-      spacing="24" styleClass="content-area">
+      spacing="20" styleClass="content-area"
+      stylesheets="@/css/style.css"
+      style="-fx-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
 
-    <HBox alignment="CENTER_LEFT" spacing="20">
-        <Button text="⬅" onAction="#goBack" styleClass="icon-btn"/>
-        <Label fx:id="labelFormTitle" text="Ajouter un Événement" styleClass="page-title"/>
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 20 30 10 30;">
+        <Button text="←" onAction="#goBack"
+                style="-fx-background-color: white; -fx-text-fill: #667eea; -fx-border-color: transparent; -fx-background-radius: 50; -fx-pref-width: 40; -fx-pref-height: 40; -fx-font-size: 16px; -fx-font-weight: bold; -fx-cursor: hand;"/>
+        <VBox spacing="5">
+            <Label fx:id="labelFormTitle" text="Ajouter un Événement"
+                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+            <Label text="Remplissez les informations ci-dessous pour créer un événement"
+                   style="-fx-font-size: 14px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+        </VBox>
     </HBox>
 
-    <VBox fx:id="formRoot" styleClass="admin-form-card" VBox.vgrow="ALWAYS" alignment="TOP_CENTER">
-        <ScrollPane fitToWidth="true" styleClass="scroll-pane">
-            <GridPane hgap="30" vgap="25">
-                <padding><Insets bottom="30" left="40" right="40" top="30"/></padding>
-                <columnConstraints>
-                    <ColumnConstraints hgrow="ALWAYS" minWidth="300" />
-                    <ColumnConstraints hgrow="ALWAYS" minWidth="300" />
-                </columnConstraints>
+    <!-- Scrollable Content -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background: transparent; -fx-border-color: transparent;">
+        <VBox spacing="25" style="-fx-padding: 0 30 20 30;">
 
-                <!-- Section: Informations de base -->
-                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                    <Label text="Titre de l'événement *" styleClass="form-label"/>
-                    <TextField fx:id="fieldTitre" styleClass="form-control" promptText="Saisissez le titre"/>
-                    <Label fx:id="errTitre" styleClass="error-label" visible="false"/>
-                </VBox>
+            <!-- Card 1: Informations générales -->
+            <VBox spacing="20"
+                  style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 20, 0, 0, 10); -fx-padding: 25;">
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <Label text="📝"
+                           style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-background-radius: 50; -fx-pref-width: 35; -fx-pref-height: 35; -fx-alignment: center; -fx-font-size: 18px;"/>
+                    <VBox spacing="2">
+                        <Label text="Informations générales"
+                               style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2d3748;"/>
+                        <Label text="Titre, type, lieu et description de l'événement"
+                               style="-fx-font-size: 13px; -fx-text-fill: #718096;"/>
+                    </VBox>
+                </HBox>
 
-                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                    <Label text="Type *" styleClass="form-label"/>
-                    <ComboBox fx:id="fieldType" styleClass="form-control" maxWidth="Infinity" promptText="Type d'événement"/>
-                </VBox>
+                <GridPane hgap="25" vgap="20">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="250"/>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="250"/>
+                    </columnConstraints>
 
-                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
-                    <Label text="Description *" styleClass="form-label"/>
-                    <TextArea fx:id="fieldDescription" styleClass="form-control" prefHeight="100" promptText="Décrivez votre événement..." wrapText="true"/>
-                    <Label fx:id="errDescription" styleClass="error-label" visible="false"/>
-                </VBox>
+                    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label text="Titre de l'événement *"
+                               style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #4a5568;"/>
+                        <TextField fx:id="fieldTitre" styleClass="modern-input"
+                                   promptText="Ex: Hackathon Formini 2024" prefHeight="45"/>
+                        <Label fx:id="errTitre" styleClass="error-label" visible="false"
+                               style="-fx-font-size: 12px; -fx-text-fill: #e53e3e;"/>
+                    </VBox>
 
-                <!-- Section: Détails temporels -->
-                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="2">
-                    <Label text="Date de début *" styleClass="form-label"/>
-                    <DatePicker fx:id="fieldDateDebut" styleClass="form-control" maxWidth="Infinity"/>
-                    <Label fx:id="errDateDebut" styleClass="error-label" visible="false"/>
-                </VBox>
-                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                    <Label text="Date de fin *" styleClass="form-label"/>
-                    <DatePicker fx:id="fieldDateFin" styleClass="form-control" maxWidth="Infinity"/>
-                    <Label fx:id="errDateFin" styleClass="error-label" visible="false"/>
-                </VBox>
+                    <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label text="Type d'événement *"
+                               style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #4a5568;"/>
+                        <ComboBox fx:id="fieldType" styleClass="modern-combo"
+                                  maxWidth="Infinity" promptText="Choisir un type" prefHeight="45"/>
+                    </VBox>
 
-                <!-- Lieu & Logistique -->
-                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="3">
-                    <Label text="Lieu / Plateforme" styleClass="form-label"/>
-                    <TextField fx:id="fieldLieu" styleClass="form-control" promptText="Localisation"/>
-                </VBox>
-                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                    <Label text="Nombre de places" styleClass="form-label"/>
-                    <TextField fx:id="fieldNombrePlaces" styleClass="form-control" promptText="Capacité"/>
-                </VBox>
+                    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
+                        <Label text="Description"
+                               style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #4a5568;"/>
+                        <TextArea fx:id="fieldDescription" styleClass="modern-textarea"
+                                  prefHeight="100" promptText="Décrivez l'objectif et le déroulement..." wrapText="true"/>
+                        <Label fx:id="errDescription" styleClass="error-label" visible="false"
+                               style="-fx-font-size: 12px; -fx-text-fill: #e53e3e;"/>
+                    </VBox>
 
-                <!-- Multimédia -->
-                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="4" spacing="12">
-                    <Label text="Image principale (Locale ou IA 🤖)" styleClass="form-label"/>
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <TextField fx:id="fieldImage" styleClass="form-control" promptText="Cliquer sur charger ou générer" HBox.hgrow="ALWAYS" editable="false"/>
-                        <Button text="📁 Charger" onAction="#browseImage" styleClass="btn-browse"/>
-                        <Button text="🤖 IA" onAction="#handleGenerateAIImage" styleClass="btn-ai"/>
-                    </HBox>
-                    <StackPane alignment="CENTER" style="-fx-background-color: #f8fafc; -fx-background-radius: 15; -fx-border-color: #e2e8f0; -fx-border-radius: 15; -fx-border-width: 1;">
-                        <ImageView fx:id="eventPreview" fitHeight="150.0" fitWidth="280.0" pickOnBounds="true" preserveRatio="true" />
-                        <ProgressIndicator fx:id="aiLoading" visible="false" maxHeight="40" maxWidth="40" />
-                    </StackPane>
-                </VBox>
-                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="4">
-                    <Label text="Image 360°" styleClass="form-label"/>
-                    <TextField fx:id="fieldImage360" styleClass="form-control" promptText="URL 360° (Optionnel)"/>
-                    <Region VBox.vgrow="ALWAYS" />
-                    <HBox spacing="30" alignment="CENTER_LEFT">
-                        <padding><Insets top="10"/></padding>
-                        <CheckBox fx:id="fieldIsActif" text="Événement Actif" styleClass="form-label"/>
-                        <CheckBox fx:id="fieldLive" text="En direct (Live)" styleClass="form-label"/>
-                    </HBox>
-                </VBox>
+                    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                        <Label text="Lieu / Plateforme"
+                               style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #4a5568;"/>
+                        <TextField fx:id="fieldLieu" styleClass="modern-input"
+                                   promptText="Ex: Tunis, Zoom, Teams..." prefHeight="45"/>
+                    </VBox>
 
-                <!-- Statut & Options -->
-                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="5">
-                    <Label text="Lien du Stream (Live)" styleClass="form-label"/>
-                    <TextField fx:id="fieldStreamUrl" styleClass="form-control" promptText="Lien de diffusion"/>
-                </VBox>
-                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="5">
-                    <Label text="Tags" styleClass="form-label"/>
-                    <TextField fx:id="fieldTags" styleClass="form-control" promptText="Tags (séparés par des virgules)"/>
-                </VBox>
+                    <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <Label text="Nombre de places"
+                               style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #4a5568;"/>
+                        <TextField fx:id="fieldNombrePlaces" styleClass="modern-input"
+                                   promptText="Capacité maximale" prefHeight="45"/>
+                    </VBox>
 
-                <!-- Filières -->
-                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="6" GridPane.columnSpan="2">
-                    <Label text="Filières" styleClass="form-label"/>
-                    <TextField fx:id="fieldFilieres" styleClass="form-control" promptText="Filières concernées"/>
-                </VBox>
-            </GridPane>
-        </ScrollPane>
-    </VBox>
+                    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                        <Label text="Tags"
+                               style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #4a5568;"/>
+                        <TextField fx:id="fieldTags" styleClass="modern-input"
+                                   promptText="IA, Web, Soft Skills..." prefHeight="45"/>
+                    </VBox>
 
-    <HBox spacing="20" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
-        <Button text="Annuler" onAction="#goBack" styleClass="btn-secondary" prefWidth="120"/>
-        <Button fx:id="btnSave" text="🚀 Enregistrer l'événement" onAction="#saveEvenement" styleClass="btn-primary" prefWidth="250"/>
+                    <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                        <Label text="Filières cibles"
+                               style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #4a5568;"/>
+                        <TextField fx:id="fieldFilieres" styleClass="modern-input"
+                                   promptText="Génie Logiciel, Design..." prefHeight="45"/>
+                    </VBox>
+                </GridPane>
+            </VBox>
+
+            <!-- Card 2: Planning & Statut -->
+            <VBox spacing="20"
+                  style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 20, 0, 0, 10); -fx-padding: 25;">
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <Label text="📅"
+                           style="-fx-background-color: #48bb78; -fx-text-fill: white; -fx-background-radius: 50; -fx-pref-width: 35; -fx-pref-height: 35; -fx-alignment: center; -fx-font-size: 18px;"/>
+                    <VBox spacing="2">
+                        <Label text="Planning &amp; Visibilité"
+                               style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2d3748;"/>
+                        <Label text="Dates, statut et options de diffusion"
+                               style="-fx-font-size: 13px; -fx-text-fill: #718096;"/>
+                    </VBox>
+                </HBox>
+
+                <GridPane hgap="25" vgap="20">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="250"/>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="250"/>
+                    </columnConstraints>
+
+                    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label text="Date de début *"
+                               style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #4a5568;"/>
+                        <DatePicker fx:id="fieldDateDebut" styleClass="modern-date-picker"
+                                    maxWidth="Infinity" prefHeight="45"/>
+                        <Label fx:id="errDateDebut" styleClass="error-label" visible="false"
+                               style="-fx-font-size: 12px; -fx-text-fill: #e53e3e;"/>
+                    </VBox>
+
+                    <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label text="Date de fin *"
+                               style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #4a5568;"/>
+                        <DatePicker fx:id="fieldDateFin" styleClass="modern-date-picker"
+                                    maxWidth="Infinity" prefHeight="45"/>
+                        <Label fx:id="errDateFin" styleClass="error-label" visible="false"
+                               style="-fx-font-size: 12px; -fx-text-fill: #e53e3e;"/>
+                    </VBox>
+
+                    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <CheckBox fx:id="fieldIsActif" text="Événement visible au public"
+                                  style="-fx-font-size: 14px; -fx-text-fill: #4a5568;"/>
+                    </VBox>
+
+                    <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <CheckBox fx:id="fieldLive" text="Diffuser en direct (Live 🔴)"
+                                  style="-fx-font-size: 14px; -fx-text-fill: #4a5568;"/>
+                    </VBox>
+
+                    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
+                        <Label text="Lien du Stream (Live)"
+                               style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #4a5568;"/>
+                        <TextField fx:id="fieldStreamUrl" styleClass="modern-input"
+                                   promptText="Lien YouTube / Twitch..." prefHeight="45"/>
+                    </VBox>
+                </GridPane>
+            </VBox>
+
+            <!-- Card 3: Médias -->
+            <VBox spacing="20"
+                  style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 20, 0, 0, 10); -fx-padding: 25;">
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <Label text="🖼️"
+                           style="-fx-background-color: #9f7aea; -fx-text-fill: white; -fx-background-radius: 50; -fx-pref-width: 35; -fx-pref-height: 35; -fx-alignment: center; -fx-font-size: 18px;"/>
+                    <VBox spacing="2">
+                        <Label text="Médias &amp; Immersion"
+                               style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2d3748;"/>
+                        <Label text="Image de couverture et expérience 360°"
+                               style="-fx-font-size: 13px; -fx-text-fill: #718096;"/>
+                    </VBox>
+                </HBox>
+
+                <GridPane hgap="25" vgap="20">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="250"/>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="250"/>
+                    </columnConstraints>
+
+                    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2">
+                        <Label text="Image de couverture"
+                               style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #4a5568;"/>
+                        <HBox spacing="12" alignment="CENTER_LEFT">
+                            <TextField fx:id="fieldImage" styleClass="modern-input"
+                                       promptText="Chemin ou URL de l'image..." HBox.hgrow="ALWAYS" prefHeight="45" editable="false"/>
+                            <Button text="📁" onAction="#browseImage"
+                                    style="-fx-background-color: #9f7aea; -fx-text-fill: white; -fx-background-radius: 8; -fx-pref-width: 45; -fx-pref-height: 45; -fx-font-size: 18px; -fx-cursor: hand;"/>
+                            <Button text="🤖" onAction="#handleGenerateAIImage"
+                                    style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-background-radius: 8; -fx-pref-width: 45; -fx-pref-height: 45; -fx-font-size: 18px; -fx-cursor: hand;"/>
+                        </HBox>
+                        <StackPane style="-fx-background-color: #f7fafc; -fx-background-radius: 10; -fx-border-color: #e2e8f0; -fx-border-radius: 10; -fx-min-height: 160;">
+                            <ImageView fx:id="eventPreview" fitHeight="160" fitWidth="500" preserveRatio="true" pickOnBounds="true"/>
+                            <ProgressIndicator fx:id="aiLoading" visible="false" maxHeight="50" maxWidth="50"/>
+                        </StackPane>
+                    </VBox>
+
+                    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
+                        <Label text="Expérience 360° (URL StreetView)"
+                               style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #4a5568;"/>
+                        <TextField fx:id="fieldImage360" styleClass="modern-input"
+                                   promptText="URL Panorama ou Google StreetView..." prefHeight="45"/>
+                    </VBox>
+                </GridPane>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+    <!-- Action Buttons -->
+    <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 0 30 20 30;">
+        <Button text="Annuler" onAction="#goBack"
+                style="-fx-background-color: white; -fx-text-fill: #667eea; -fx-border-color: #667eea; -fx-border-width: 2; -fx-background-radius: 25; -fx-padding: 12 30; -fx-font-size: 14px; -fx-font-weight: 600; -fx-cursor: hand;"/>
+        <Button fx:id="btnSave" text="🚀 Enregistrer l'événement" onAction="#saveEvenement"
+                style="-fx-background-color: white; -fx-text-fill: #667eea; -fx-border-color: #667eea; -fx-border-width: 2; -fx-background-radius: 25; -fx-padding: 12 30; -fx-font-size: 14px; -fx-font-weight: bold; -fx-cursor: hand;"/>
     </HBox>
 
 </VBox>

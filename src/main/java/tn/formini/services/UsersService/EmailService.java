@@ -21,7 +21,7 @@ public class EmailService {
         this.host = "smtp.gmail.com";
         this.port = 587;
         this.username = "soltaninebras304@gmail.com";
-        this.password = "gooq dlkh xdxl btda";
+        this.password = "YOUR_NEW_APP_PASSWORD_HERE";
         this.authEnabled = true;
         this.starttlsEnabled = true;
     }

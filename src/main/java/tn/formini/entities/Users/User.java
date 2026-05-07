@@ -39,6 +39,8 @@ public class User {
     private boolean google_auth_enabled = false;
     private boolean phone_verified = false;
     private Date phone_verified_at;
+    private byte[] face_encoding;
+    private boolean face_auth_enabled;
 
     private static final String[] ROLES_VALIDES = {"admin", "formateur", "apprenant", "societe"};
 
@@ -278,6 +280,12 @@ public class User {
 
     public Date getPhone_verified_at() { return phone_verified_at; }
     public void setPhone_verified_at(Date phone_verified_at) { this.phone_verified_at = phone_verified_at; }
+
+    public byte[] getFace_encoding() { return face_encoding; }
+    public void setFace_encoding(byte[] face_encoding) { this.face_encoding = face_encoding; }
+
+    public boolean isFace_auth_enabled() { return face_auth_enabled; }
+    public void setFace_auth_enabled(boolean face_auth_enabled) { this.face_auth_enabled = face_auth_enabled; }
 
     @Override
     public String toString() {

@@ -7,11 +7,14 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import tn.formini.services.UsersService.SessionManager;
 import tn.formini.utils.AdminInitializer;
+import tn.formini.utils.StageWindowMode;
 
 public class DashboardApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        StageWindowMode.installGlobalMaximizedPolicy();
+
         // Initialize admin user if it doesn't exist
         AdminInitializer.initializeAdmin();
         
@@ -32,6 +35,7 @@ public class DashboardApp extends Application {
         Scene scene = new Scene(root);
         primaryStage.setTitle("Formini - Tableau de Bord");
         primaryStage.setScene(scene);
+        StageWindowMode.maximize(primaryStage);
         primaryStage.show();
     }
     

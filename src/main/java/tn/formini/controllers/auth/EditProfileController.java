@@ -1,7 +1,9 @@
 package tn.formini.controllers.auth;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -16,7 +18,7 @@ import tn.formini.services.UsersService.FormateurService;
 import tn.formini.services.UsersService.SessionManager;
 import tn.formini.services.UsersService.UserService;
 import tn.formini.services.UsersService.EmailVerificationService;
-import tn.formini.services.UsersService.EmailService;
+import tn.formini.services.UsersService.SMTPEmailService;
 import tn.formini.services.FileUploadService;
 import tn.formini.utils.TunisiaGovernorates;
 
@@ -62,6 +64,7 @@ public class EditProfileController implements Initializable {
     @FXML private VBox newPasswordSection;
     @FXML private PasswordField fieldNewPassword;
     @FXML private PasswordField fieldNewPasswordConfirm;
+    @FXML private Button btnTwoFactor;
 
     private final SessionManager sessionManager = SessionManager.getInstance();
     private final UserService userService = new UserService();
@@ -69,7 +72,7 @@ public class EditProfileController implements Initializable {
     private final FormateurService formateurService = new FormateurService();
     private final FileUploadService fileUploadService = new FileUploadService();
     private final EmailVerificationService emailVerificationService = new EmailVerificationService();
-    private final EmailService emailService = new EmailService();
+    private final SMTPEmailService emailService = new SMTPEmailService();
     private java.io.File uploadedPhotoFile;
 
     private Runnable onBack;
@@ -83,7 +86,7 @@ public class EditProfileController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        comboGenre.getItems().addAll("homme", "femme", "autre");
+        comboGenre.getItems().addAll("homme", "femme");
         comboEtatCivil.getItems().addAll("celibataire", "marie", "divorce", "veuf");
         fieldGouvernorat.setItems(TunisiaGovernorates.asObservableList());
         spinnerExperience.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 70, 0));
@@ -137,7 +140,6 @@ public class EditProfileController implements Initializable {
                 System.err.println("Failed to load photo: " + e.getMessage());
             }
         }
-
         if (user.getDate_naissance() != null) {
             fieldDateNaissance.setValue(user.getDate_naissance().toInstant()
                 .atZone(ZoneId.systemDefault())
@@ -433,5 +435,21 @@ public class EditProfileController implements Initializable {
         passwordChangeSection.setManaged(false);
         btnChangePassword.setVisible(true);
         btnChangePassword.setManaged(true);
+    }
+
+    @FXML
+    private void handleTwoFactor() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth/TwoFactorSetup.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Formini - Configuration 2FA");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            showMessage("Erreur lors de l'ouverture de la configuration 2FA.");
+            e.printStackTrace();
+        }
     }
 }

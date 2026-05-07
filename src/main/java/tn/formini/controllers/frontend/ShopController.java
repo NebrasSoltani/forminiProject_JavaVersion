@@ -16,7 +16,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import tn.formini.controllers.frontend.FrontMainController;
 import tn.formini.entities.produits.Produit;
+import tn.formini.services.AdvancedProductAIService;
 import tn.formini.services.cart.CartService;
 import tn.formini.services.produitsService.ProduitService;
 
@@ -35,9 +37,11 @@ public class ShopController implements Initializable {
     @FXML private Button btnNextPage;
     @FXML private Button btnLastPage;
     @FXML private HBox pageNumbersContainer;
+    @FXML private Button btnViewCart;
 
     private final ProduitService produitService = new ProduitService();
     private final CartService cart = CartService.getInstance();
+    private final AdvancedProductAIService aiService = AdvancedProductAIService.getInstance();
     private List<Produit> allProducts;
     private List<Produit> filteredProducts;
     private int currentPage = 1;
@@ -323,12 +327,41 @@ public class ShopController implements Initializable {
     public void searchProducts() {
         String searchTerm = fieldSearch.getText().trim().toLowerCase();
 
-        List<Produit> filteredProducts = allProducts.stream()
-                .filter(p -> searchTerm.isEmpty() || 
-                         p.getNom().toLowerCase().startsWith(searchTerm))
+        if (searchTerm.isEmpty()) {
+            displayProducts(allProducts);
+            return;
+        }
+
+        // Recherche simple locale d'abord
+        List<Produit> localResults = allProducts.stream()
+                .filter(p -> p.getNom().toLowerCase().contains(searchTerm) ||
+                         p.getDescription().toLowerCase().contains(searchTerm))
                 .toList();
 
-        displayProducts(filteredProducts);
+        if (!localResults.isEmpty()) {
+            displayProducts(localResults);
+            return;
+        }
+
+        // Si aucun résultat local, utiliser l'IA pour suggestions
+        showLoadingSearch();
+        String userContext = "Client intéressé par: " + searchTerm + 
+                           ", catégories disponibles: " + getAvailableCategories();
+        
+        aiService.getSearchSuggestions(searchTerm, userContext)
+            .thenAccept(suggestions -> {
+                javafx.application.Platform.runLater(() -> {
+                    hideLoadingSearch();
+                    displayAISearchSuggestions(suggestions, searchTerm);
+                });
+            })
+            .exceptionally(throwable -> {
+                javafx.application.Platform.runLater(() -> {
+                    hideLoadingSearch();
+                    showSearchError(searchTerm);
+                });
+                return null;
+            });
     }
 
     @FXML
@@ -401,9 +434,159 @@ public class ShopController implements Initializable {
         activeButton.setStyle("-fx-background-color: -fx-primary; -fx-text-fill: white;");
     }
 
-    private static String formatPrice(BigDecimal prix) {
+    @FXML
+    public void viewCart() {
+        try {
+            // Naviguer vers la page du panier
+            FrontMainController.getInstance().loadView("/fxml/frontend/Cart.fxml");
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la navigation vers le panier: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // Méthodes utilitaires pour la recherche IA
+    
+    private String getAvailableCategories() {
+        return allProducts.stream()
+            .map(Produit::getCategorie)
+            .filter(cat -> cat != null && !cat.isEmpty())
+            .distinct()
+            .collect(java.util.stream.Collectors.joining(", "));
+    }
+
+    private String formatPrice(BigDecimal prix) {
         if (prix == null) return "0.000 DT";
         return String.format("%.3f DT", prix.doubleValue());
+    }
+
+    private void showLoadingSearch() {
+        // Afficher un indicateur de chargement pendant la recherche IA
+        productsContainer.getChildren().clear();
+        javafx.scene.control.ProgressIndicator loading = new javafx.scene.control.ProgressIndicator();
+        loading.setPrefSize(50, 50);
+        javafx.scene.control.Label loadingText = new javafx.scene.control.Label("🤖 Recherche IA en cours...");
+        loadingText.setStyle("-fx-font-size: 14px; -fx-text-fill: #666;");
+        
+        javafx.scene.layout.VBox loadingBox = new javafx.scene.layout.VBox(10, loading, loadingText);
+        loadingBox.setAlignment(javafx.geometry.Pos.CENTER);
+        productsContainer.getChildren().add(loadingBox);
+    }
+
+    private void hideLoadingSearch() {
+        // Cache l'indicateur de chargement (sera remplacé par displayProducts)
+    }
+
+    private void displayAISearchSuggestions(List<String> suggestions, String originalSearch) {
+        productsContainer.getChildren().clear();
+        
+        // Titre des suggestions IA
+        javafx.scene.control.Label title = new javafx.scene.control.Label(
+            "🤖 Suggestions IA pour: \"" + originalSearch + "\""
+        );
+        title.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #4f46e5; -fx-padding: 10px;");
+        productsContainer.getChildren().add(title);
+
+        // Afficher les suggestions IA comme des cartes de produits virtuels
+        for (int i = 0; i < suggestions.size(); i++) {
+            String suggestion = suggestions.get(i);
+            javafx.scene.layout.VBox suggestionCard = createAISuggestionCard(suggestion, i + 1);
+            productsContainer.getChildren().add(suggestionCard);
+        }
+
+        // Bouton pour réinitialiser la recherche
+        javafx.scene.control.Button resetBtn = new javafx.scene.control.Button("🔄 Afficher tous les produits");
+        resetBtn.setStyle("-fx-background-color: #6b7280; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 8 16px;");
+        resetBtn.setOnAction(e -> displayProducts(allProducts));
+        
+        javafx.scene.layout.HBox buttonContainer = new javafx.scene.layout.HBox(resetBtn);
+        buttonContainer.setAlignment(javafx.geometry.Pos.CENTER);
+        buttonContainer.setStyle("-fx-padding: 20px;");
+        productsContainer.getChildren().add(buttonContainer);
+    }
+
+    private javafx.scene.layout.VBox createAISuggestionCard(String suggestion, int index) {
+        javafx.scene.layout.VBox card = new javafx.scene.layout.VBox(10);
+        card.setStyle("-fx-background-color: white; " +
+                      "-fx-border-color: #e5e7eb; " +
+                      "-fx-border-radius: 8; " +
+                      "-fx-background-radius: 8; " +
+                      "-fx-padding: 15; " +
+                      "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+
+        // Badge de suggestion
+        javafx.scene.control.Label badge = new javafx.scene.control.Label(String.valueOf(index));
+        badge.setStyle("-fx-background-color: #4f46e5; " +
+                       "-fx-text-fill: white; " +
+                       "-fx-background-radius: 50%; " +
+                       "-fx-pref-width: 25; " +
+                       "-fx-pref-height: 25; " +
+                       "-fx-alignment: center; " +
+                       "-fx-font-weight: bold;");
+
+        // Nom de la suggestion
+        javafx.scene.control.Label nameLabel = new javafx.scene.control.Label(suggestion);
+        nameLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #1e293b;");
+        nameLabel.setWrapText(true);
+        nameLabel.setMaxWidth(200);
+
+        // Badge IA
+        javafx.scene.control.Label aiBadge = new javafx.scene.control.Label("🤖 Suggestion IA");
+        aiBadge.setStyle("-fx-background-color: #f3f4f6; " +
+                         "-fx-text-fill: #6b7280; " +
+                         "-fx-background-radius: 4; " +
+                         "-fx-font-size: 10px; " +
+                         "-fx-padding: 2 8px;");
+
+        // Bouton d'action
+        javafx.scene.control.Button actionBtn = new javafx.scene.control.Button("🔍 Rechercher ce produit");
+        actionBtn.setStyle("-fx-background-color: #22c55e; " +
+                          "-fx-text-fill: white; " +
+                          "-fx-background-radius: 6; " +
+                          "-fx-cursor: hand; " +
+                          "-fx-font-size: 11px;");
+        actionBtn.setOnAction(e -> {
+            fieldSearch.setText(suggestion);
+            searchProducts(); // Relancer la recherche avec la suggestion
+        });
+
+        // Layout
+        javafx.scene.layout.HBox header = new javafx.scene.layout.HBox(10, badge, nameLabel);
+        header.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+
+        card.getChildren().addAll(header, aiBadge, actionBtn);
+        return card;
+    }
+
+    private void showSearchError(String searchTerm) {
+        productsContainer.getChildren().clear();
+        
+        javafx.scene.control.Label errorTitle = new javafx.scene.control.Label(
+            "❌ Erreur lors de la recherche IA pour: \"" + searchTerm + "\""
+        );
+        errorTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #ef4444; -fx-padding: 10px;");
+        
+        javafx.scene.control.Label errorDesc = new javafx.scene.control.Label(
+            "Veuillez réessayer ou utiliser une recherche plus simple."
+        );
+        errorDesc.setStyle("-fx-font-size: 12px; -fx-text-fill: #666; -fx-padding: 0 10px;");
+        
+        javafx.scene.control.Button retryBtn = new javafx.scene.control.Button("🔄 Réessayer");
+        retryBtn.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 8 16px;");
+        retryBtn.setOnAction(e -> searchProducts());
+        
+        javafx.scene.control.Button resetBtn = new javafx.scene.control.Button("📦 Tous les produits");
+        resetBtn.setStyle("-fx-background-color: #6b7280; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 8 16px;");
+        resetBtn.setOnAction(e -> displayProducts(allProducts));
+        
+        javafx.scene.layout.HBox buttonContainer = new javafx.scene.layout.HBox(10, retryBtn, resetBtn);
+        buttonContainer.setAlignment(javafx.geometry.Pos.CENTER);
+        buttonContainer.setStyle("-fx-padding: 20px;");
+        
+        javafx.scene.layout.VBox errorBox = new javafx.scene.layout.VBox(10, errorTitle, errorDesc, buttonContainer);
+        errorBox.setAlignment(javafx.geometry.Pos.CENTER);
+        
+        productsContainer.getChildren().add(errorBox);
     }
 }
 

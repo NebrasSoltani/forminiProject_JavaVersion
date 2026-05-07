@@ -40,6 +40,8 @@ public class BlogListController implements Initializable {
     @FXML private ComboBox<String> sortOptions;
     @FXML private Label labelCount;
     @FXML private Pagination pagination;
+    @FXML private VBox statsContainer;
+    @FXML private VBox statsContent;
 
     private MainController mainController;
 
@@ -256,10 +258,13 @@ public class BlogListController implements Initializable {
     @FXML
     public void showBlogStats() {
         try {
+            statsContent.getChildren().clear();
+            
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/evenement/Statistics.fxml"));
             loader.setControllerFactory(springContext::getBean);
-            Pane root = loader.load();
+            Pane statsRoot = loader.load();
             StatisticsController controller = loader.getController();
+            controller.hideCloseButton();
             
             Map<String, Integer> stats = new HashMap<>();
             for (Blog b : allBlogs) {
@@ -271,14 +276,18 @@ public class BlogListController implements Initializable {
             }
             controller.setBarData("Répartition des Blogs par Catégorie", stats);
 
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Analytique - Blogs");
-            stage.setScene(new Scene(root));
-            stage.show();
+            statsContent.getChildren().add(statsRoot);
+            statsContainer.setVisible(true);
+            statsContainer.setManaged(true);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    public void hideStats() {
+        statsContainer.setVisible(false);
+        statsContainer.setManaged(false);
     }
 
     @FXML

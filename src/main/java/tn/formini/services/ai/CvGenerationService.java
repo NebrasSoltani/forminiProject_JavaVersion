@@ -18,13 +18,7 @@ public class CvGenerationService {
     private String apiKey;
 
     public CvGenerationService() {
-        String envKey = System.getenv("GEMINI_API_KEY");
-        if (envKey != null && !envKey.trim().isEmpty()) {
-            this.apiKey = envKey.trim();
-        } else {
-            // Utilisation de la nouvelle clé fournie
-            this.apiKey = "AIzaSyA4-Xmxn3SO-5sbZw0t0315N7qsCKGKjx8";
-        }
+        this.apiKey = tn.formini.config.AiConfig.getApiKey();
     }
 
     public CvGenerationService(String apiKey) {

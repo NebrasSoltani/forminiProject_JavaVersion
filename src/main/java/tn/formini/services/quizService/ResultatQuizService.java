@@ -3,7 +3,7 @@ package tn.formini.services.quizService;
 import tn.formini.entities.Quizs.Quiz;
 import tn.formini.entities.Quizs.ResultatQuiz;
 import tn.formini.entities.Users.User;
-import tn.formini.tools.MyDataBase;
+import tn.formini.tools.FormationDataBase;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,7 +14,13 @@ public class ResultatQuizService {
     Connection cnx;
 
     public ResultatQuizService() {
-        cnx = MyDataBase.getInstance().getCnx();
+        cnx = FormationDataBase.getInstance().getCnx();
+    }
+
+    /** Rafraîchit la connexion depuis le singleton */
+    private Connection getCnx() {
+        cnx = FormationDataBase.getInstance().getCnx();
+        return cnx;
     }
 
     // ─── CREATE ───────────────────────────────────────────────
@@ -41,7 +47,14 @@ public class ResultatQuizService {
     // ─── READ ALL ─────────────────────────────────────────────
     public List<ResultatQuiz> getAll() {
         List<ResultatQuiz> list = new ArrayList<>();
-        String req = "SELECT * FROM resultat_quiz";
+        if (getCnx() == null) {
+            System.out.println("[ResultatQuizService] Connexion DB indisponible.");
+            return list;
+        }
+        String req = "SELECT r.*, u.nom, u.prenom, u.email, q.titre " +
+                    "FROM resultat_quiz r " +
+                    "JOIN user u ON r.apprenant_id = u.id " +
+                    "JOIN quiz q ON r.quiz_id = q.id";
         try {
             Statement st = cnx.createStatement();
             ResultSet rs = st.executeQuery(req);
@@ -57,10 +70,14 @@ public class ResultatQuizService {
 
                 User u = new User();
                 u.setId(rs.getInt("apprenant_id"));
+                u.setNom(rs.getString("nom"));
+                u.setPrenom(rs.getString("prenom"));
+                u.setEmail(rs.getString("email"));
                 r.setApprenant(u);
 
                 Quiz q = new Quiz();
                 q.setId(rs.getInt("quiz_id"));
+                q.setTitre(rs.getString("titre"));
                 r.setQuiz(q);
 
                 list.add(r);
@@ -69,6 +86,21 @@ public class ResultatQuizService {
             System.out.println("Erreur getAll résultat : " + e.getMessage());
         }
         return list;
+    }
+
+    public int countByUser(int userId) {
+        String req = "SELECT COUNT(*) FROM resultat_quiz WHERE apprenant_id = ?";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(req);
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error counting results: " + e.getMessage());
+        }
+        return 0;
     }
 
     // ─── READ ONE ─────────────────────────────────────────────

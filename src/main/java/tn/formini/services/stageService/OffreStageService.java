@@ -38,9 +38,11 @@ public class OffreStageService implements service<OffreStage> {
             ps.setString(13, offre.getContact_email() != null ? offre.getContact_email() : "contact@formini.tn");
             ps.setString(14, offre.getContact_tel() != null ? offre.getContact_tel() : "00000000");
             ps.setString(15, offre.getStatut() != null ? offre.getStatut() : "ouvert");
-            ps.setTimestamp(16, new Timestamp(System.currentTimeMillis()));
+            ps.setTimestamp(16, offre.getDate_publication() != null
+                    ? new Timestamp(offre.getDate_publication().getTime())
+                    : new Timestamp(System.currentTimeMillis()));
             ps.setInt(17, offre.getSociete() != null ? offre.getSociete().getId() : 1);
-            
+
             ps.executeUpdate();
             
             // Récupérer l'ID généré

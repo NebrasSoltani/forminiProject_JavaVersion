@@ -11,6 +11,7 @@ import javafx.embed.swing.SwingFXUtils;
 import org.knowm.xchart.*;
 import org.knowm.xchart.style.Styler;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Scope;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -20,6 +21,7 @@ import java.util.ResourceBundle;
 import java.util.ArrayList;
 
 @Component
+@Scope("prototype")
 public class StatisticsController implements Initializable {
 
     @FXML private StackPane chartContainer;
@@ -28,9 +30,13 @@ public class StatisticsController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
     }
 
+    public void hideCloseButton() {
+        // No longer needed
+    }
+
     public void setBarData(String title, Map<String, Integer> data) {
         CategoryChart chart = new CategoryChartBuilder()
-                .width(800).height(500).title(title)
+                .width(400).height(350).title(title)
                 .xAxisTitle("Catégories").yAxisTitle("Total")
                 .build();
 
@@ -49,11 +55,11 @@ public class StatisticsController implements Initializable {
 
     public void setPieData(String title, Map<String, Integer> data) {
         PieChart chart = new PieChartBuilder()
-                .width(800).height(500).title(title)
+                .width(400).height(350).title(title)
                 .build();
 
         chart.getStyler().setLegendPosition(Styler.LegendPosition.OutsideS);
-        chart.getStyler().setPlotContentSize(.8);
+        chart.getStyler().setPlotContentSize(.7);
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
 
         if (data != null) {
@@ -84,9 +90,4 @@ public class StatisticsController implements Initializable {
         }).start();
     }
 
-    @FXML
-    private void close() {
-        Stage stage = (Stage) chartContainer.getScene().getWindow();
-        stage.close();
-    }
 }

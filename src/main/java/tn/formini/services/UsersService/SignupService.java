@@ -14,18 +14,18 @@ public class SignupService {
     private final ApprenantService apprenantService;
     private final FormateurService formateurService;
     private final EmailVerificationService emailVerificationService;
-    private final EmailService emailService;
+    private final SMTPEmailService emailService;
 
     public SignupService() {
         this.userService = new UserService();
         this.apprenantService = new ApprenantService();
         this.formateurService = new FormateurService();
         this.emailVerificationService = new EmailVerificationService();
-        this.emailService = new EmailService();
+        this.emailService = new SMTPEmailService();
     }
 
     public SignupService(UserService userService, ApprenantService apprenantService, FormateurService formateurService,
-                         EmailVerificationService emailVerificationService, EmailService emailService) {
+                         EmailVerificationService emailVerificationService, SMTPEmailService emailService) {
         this.userService = userService;
         this.apprenantService = apprenantService;
         this.formateurService = formateurService;

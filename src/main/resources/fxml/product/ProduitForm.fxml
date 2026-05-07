@@ -7,7 +7,7 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="tn.formini.controllers.produit.ProduitFormController"
-      spacing="20" styleClass="content-area"
+      spacing="20" styleClass="content-area produit-form-root"
       stylesheets="@/css/style.css"
       style="-fx-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
 
@@ -46,7 +46,7 @@
                                 <Label text="" style="-fx-text-fill: #667eea; -fx-font-size: 12px;"/>
                             </graphic>
                         </Label>
-                        <TextField fx:id="fieldNom" styleClass="modern-input" promptText="Ex: MacBook Pro 14\"" prefHeight="45"/>
+                        <TextField fx:id="fieldNom" styleClass="modern-input" promptText="Ex: MacBook Pro 14&quot;" prefHeight="45"/>
                         <Label fx:id="errNom" styleClass="error-label" visible="false" style="-fx-font-size: 12px; -fx-text-fill: #e53e3e;"/>
                     </VBox>
 
@@ -186,7 +186,7 @@
     <!-- Modern Action Buttons -->
     <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 0 30 20 30;">
         <Button text="Annuler" onAction="#goBack" styleClass="btn-cancel" style="-fx-background-color: white; -fx-text-fill: #667eea; -fx-border-color: #667eea; -fx-border-width: 2; -fx-background-radius: 25; -fx-padding: 12 30; -fx-font-size: 14px; -fx-font-weight: 600; -fx-cursor: hand;"/>
-        <Button fx:id="btnSave" text=" Enregistrer le produit" onAction="#saveProduit" styleClass="btn-save" style="-fx-background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -fx-text-fill: white; -fx-border-color: transparent; -fx-background-radius: 25; -fx-padding: 12 35; -fx-font-size: 14px; -fx-font-weight: 600; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.3), 10, 0, 0, 0);"/>
+        <Button fx:id="btnSave" text=" Enregistrer le produit" onAction="#saveProduit" styleClass="btn-save"/>
     </HBox>
 
 </VBox>

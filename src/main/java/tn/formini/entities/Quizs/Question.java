@@ -1,6 +1,5 @@
 package tn.formini.entities.Quizs;
 
-
 public class Question {
 
     private int id;
@@ -11,10 +10,7 @@ public class Question {
     private String explication;
     private String explications_detaillees;
 
-
     private Quiz quiz;
-
-    private static final String[] TYPES_VALIDES = {"qcm", "vrai_faux", "texte_libre", "correspondance"};
 
     public Question() {}
 

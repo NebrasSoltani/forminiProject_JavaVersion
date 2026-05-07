@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import tn.formini.entities.Users.Apprenant;
 import tn.formini.entities.Users.Formateur;
 import tn.formini.entities.Users.User;
+import tn.formini.entities.Users.Gouvernorat;
 import tn.formini.services.UsersService.SignupService;
 import tn.formini.services.FileUploadService;
 import tn.formini.utils.TunisiaGovernorates;
@@ -28,6 +29,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.ResourceBundle;
+import tn.formini.services.auth.OAuthCallbackHandler;
+import tn.formini.services.auth.OAuthService;
 
 public class SignupController implements Initializable {
 
@@ -74,7 +77,8 @@ public class SignupController implements Initializable {
     @FXML private TextField fieldPortfolio;
     @FXML private TextField fieldCv;
     @FXML private TextField fieldPhoto;
-    
+
+
     // Error labels
     @FXML private Label errorEmail;
     @FXML private Label errorTelephone;
@@ -102,7 +106,7 @@ public class SignupController implements Initializable {
         rbApprenant.setToggleGroup(roleGroup);
         rbFormateur.setToggleGroup(roleGroup);
 
-        comboGenre.getItems().addAll("homme", "femme", "autre");
+        comboGenre.getItems().addAll("homme", "femme");
         comboEtatCivil.getItems().addAll("celibataire", "marie", "divorce", "veuf");
         fieldGouvernorat.setItems(TunisiaGovernorates.asObservableList());
 
@@ -256,11 +260,11 @@ public class SignupController implements Initializable {
 
     private void togglePasswordField(javafx.scene.control.PasswordField passwordField, Button toggleButton) {
         HBox parent = (HBox) toggleButton.getParent();
-        
+
         // Find current password field (either PasswordField or TextField)
         javafx.scene.control.TextInputControl currentField = null;
         int fieldIndex = -1;
-        
+
         for (int i = 0; i < parent.getChildren().size(); i++) {
             javafx.scene.Node node = parent.getChildren().get(i);
             if ((node instanceof PasswordField || node instanceof TextField) && !node.equals(toggleButton)) {
@@ -269,9 +273,9 @@ public class SignupController implements Initializable {
                 break;
             }
         }
-        
+
         if (currentField == null) return;
-        
+
         if (currentField instanceof PasswordField currentPasswordField) {
             // Show plain text while keeping bidirectional sync with injected field.
             TextField visiblePassword = new TextField();
@@ -427,7 +431,7 @@ public class SignupController implements Initializable {
         return json.toString();
     }
 
-    
+
     /**
      * Redirect to login interface after successful signup
      */
@@ -507,12 +511,12 @@ public class SignupController implements Initializable {
         fieldEmail.textProperty().addListener((obs, oldVal, newVal) -> {
             validateEmail();
         });
-        
+
         // Telephone validation
         fieldTelephone.textProperty().addListener((obs, oldVal, newVal) -> {
             validateTelephone();
         });
-        
+
         // Password validation
         fieldPassword.textProperty().addListener((obs, oldVal, newVal) -> {
             validatePassword();
@@ -520,26 +524,26 @@ public class SignupController implements Initializable {
                 validatePasswordConfirm();
             }
         });
-        
+
         // Password confirmation validation
         fieldPasswordConfirm.textProperty().addListener((obs, oldVal, newVal) -> {
             validatePasswordConfirm();
         });
-        
+
         // Name validations
         fieldNom.textProperty().addListener((obs, oldVal, newVal) -> {
             validateNom();
         });
-        
+
         fieldPrenom.textProperty().addListener((obs, oldVal, newVal) -> {
             validatePrenom();
         });
-        
+
         // Date validation
         fieldDateNaissance.valueProperty().addListener((obs, oldVal, newVal) -> {
             validateDateNaissance();
         });
-        
+
         // Specialite validation (for formateur)
         fieldSpecialite.textProperty().addListener((obs, oldVal, newVal) -> {
             if (rbFormateur.isSelected()) {
@@ -547,171 +551,196 @@ public class SignupController implements Initializable {
             }
         });
     }
-    
+
     private boolean validateEmail() {
         String email = fieldEmail.getText().trim();
         if (email.isEmpty()) {
             showError(errorEmail, "L'email est obligatoire");
             return false;
         }
-        
+
         String emailRegex = "^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$";
         if (!Pattern.matches(emailRegex, email)) {
             showError(errorEmail, "Format d'email invalide");
             return false;
         }
-        
+
         hideError(errorEmail);
         return true;
     }
-    
+
     private boolean validateTelephone() {
         String telephone = fieldTelephone.getText().trim();
         if (telephone.isEmpty()) {
             showError(errorTelephone, "Le téléphone est obligatoire");
             return false;
         }
-        
+
         String normalized = normalizePhone(telephone);
         if (normalized == null || !normalized.matches("\\+?[0-9]{8,12}$")) {
             showError(errorTelephone, "Format invalide: 8-12 chiffres");
             return false;
         }
-        
+
         hideError(errorTelephone);
         return true;
     }
-    
+
     private boolean validatePassword() {
         String password = fieldPassword.getText();
         if (password.isEmpty()) {
             showError(errorPassword, "Le mot de passe est obligatoire");
             return false;
         }
-        
+
         if (password.length() < 8) {
             showError(errorPassword, "Minimum 8 caractères");
             return false;
         }
-        
+
         if (!password.matches(".*[A-Z].*")) {
             showError(errorPassword, "Une majuscule requise");
             return false;
         }
-        
+
         if (!password.matches(".*[a-z].*")) {
             showError(errorPassword, "Une minuscule requise");
             return false;
         }
-        
+
         if (!password.matches(".*\\d.*")) {
             showError(errorPassword, "Un chiffre requis");
             return false;
         }
-        
+
         hideError(errorPassword);
         return true;
     }
-    
+
     private boolean validatePasswordConfirm() {
         String password = fieldPassword.getText();
         String passwordConfirm = fieldPasswordConfirm.getText();
-        
+
         if (passwordConfirm.isEmpty()) {
             showError(errorPasswordConfirm, "La confirmation est obligatoire");
             return false;
         }
-        
+
         if (!password.equals(passwordConfirm)) {
             showError(errorPasswordConfirm, "Les mots de passe ne correspondent pas");
             return false;
         }
-        
+
         hideError(errorPasswordConfirm);
         return true;
     }
-    
+
     private boolean validateNom() {
         String nom = fieldNom.getText().trim();
         if (nom.isEmpty()) {
             showError(errorNom, "Le nom est obligatoire");
             return false;
         }
-        
+
         if (nom.length() < 2) {
             showError(errorNom, "Minimum 2 caractères");
             return false;
         }
-        
+
         hideError(errorNom);
         return true;
     }
-    
+
     private boolean validatePrenom() {
         String prenom = fieldPrenom.getText().trim();
         if (prenom.isEmpty()) {
             showError(errorPrenom, "Le prénom est obligatoire");
             return false;
         }
-        
+
         if (prenom.length() < 2) {
             showError(errorPrenom, "Minimum 2 caractères");
             return false;
         }
-        
+
         hideError(errorPrenom);
         return true;
     }
-    
+
     private boolean validateDateNaissance() {
         LocalDate date = fieldDateNaissance.getValue();
         if (date == null) {
             showError(errorDateNaissance, "La date de naissance est obligatoire");
             return false;
         }
-        
+
         if (date.isAfter(LocalDate.now())) {
             showError(errorDateNaissance, "Date invalide");
             return false;
         }
-        
+
         if (date.isBefore(LocalDate.now().minusYears(120))) {
             showError(errorDateNaissance, "Date invalide");
             return false;
         }
-        
+
         hideError(errorDateNaissance);
         return true;
     }
-    
+
     private boolean validateSpecialite() {
         String specialite = fieldSpecialite.getText().trim();
         if (specialite.isEmpty()) {
             showError(errorSpecialite, "La spécialité est obligatoire pour le formateur");
             return false;
         }
-        
+
         if (specialite.length() < 3) {
             showError(errorSpecialite, "Minimum 3 caractères");
             return false;
         }
-        
+
         hideError(errorSpecialite);
         return true;
     }
-    
+
     private void showError(Label errorLabel, String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
         errorLabel.setManaged(true);
+
+        // Add error styling to the associated input field
+        javafx.scene.control.TextInputControl inputField = getAssociatedInputField(errorLabel);
+        if (inputField != null) {
+            if (!inputField.getStyleClass().contains("error")) {
+                inputField.getStyleClass().add("error");
+            }
+        }
     }
-    
+
     private void hideError(Label errorLabel) {
         errorLabel.setText("");
         errorLabel.setVisible(false);
         errorLabel.setManaged(false);
+
+        // Remove error styling from the associated input field
+        javafx.scene.control.TextInputControl inputField = getAssociatedInputField(errorLabel);
+        if (inputField != null) {
+            inputField.getStyleClass().remove("error");
+        }
     }
-    
+
+    private javafx.scene.control.TextInputControl getAssociatedInputField(Label errorLabel) {
+        if (errorLabel == errorEmail) return fieldEmail;
+        if (errorLabel == errorTelephone) return fieldTelephone;
+        if (errorLabel == errorPassword) return fieldPassword;
+        if (errorLabel == errorPasswordConfirm) return fieldPasswordConfirm;
+        if (errorLabel == errorNom) return fieldNom;
+        if (errorLabel == errorPrenom) return fieldPrenom;
+        if (errorLabel == errorSpecialite) return fieldSpecialite;
+        return null;
+    }
+
     private void clearAllErrors() {
         hideError(errorEmail);
         hideError(errorTelephone);
@@ -721,13 +750,28 @@ public class SignupController implements Initializable {
         hideError(errorPrenom);
         hideError(errorDateNaissance);
         hideError(errorSpecialite);
+
+        // Also clear error styling from all input fields
+        clearErrorStyling(fieldEmail);
+        clearErrorStyling(fieldTelephone);
+        clearErrorStyling(fieldPassword);
+        clearErrorStyling(fieldPasswordConfirm);
+        clearErrorStyling(fieldNom);
+        clearErrorStyling(fieldPrenom);
+        clearErrorStyling(fieldSpecialite);
     }
-    
+
+    private void clearErrorStyling(javafx.scene.control.TextInputControl field) {
+        if (field != null) {
+            field.getStyleClass().remove("error");
+        }
+    }
+
     private boolean validateAllFields() {
         clearAllErrors();
-        
+
         boolean isValid = true;
-        
+
         isValid &= validateEmail();
         isValid &= validateTelephone();
         isValid &= validatePassword();
@@ -735,11 +779,67 @@ public class SignupController implements Initializable {
         isValid &= validateNom();
         isValid &= validatePrenom();
         isValid &= validateDateNaissance();
-        
+
         if (rbFormateur.isSelected()) {
             isValid &= validateSpecialite();
         }
-        
+
         return isValid;
+    }
+
+    @FXML
+    private void onSignupWithGoogle() {
+        if (!OAuthService.isConfigured("google")) {
+            showMessage("OAuth Google n'est pas configuré. Veuillez contacter l'administrateur.");
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                OAuthCallbackHandler handler = new OAuthCallbackHandler();
+                User user = handler.authenticateWithGoogle();
+
+                Platform.runLater(() -> {
+                    if (user != null) {
+                        new Alert(Alert.AlertType.INFORMATION, "Inscription réussie avec Google ! Vous pouvez maintenant vous connecter.", ButtonType.OK).showAndWait();
+                        redirectToLogin();
+                    } else {
+                        showMessage("L'inscription avec Google a échoué. Veuillez réessayer.");
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    showMessage("Erreur lors de l'inscription avec Google: " + e.getMessage());
+                });
+            }
+        }).start();
+    }
+
+    @FXML
+    private void onSignupWithGithub() {
+        if (!OAuthService.isConfigured("github")) {
+            showMessage("OAuth GitHub n'est pas configuré. Veuillez contacter l'administrateur.");
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                OAuthCallbackHandler handler = new OAuthCallbackHandler();
+                User user = handler.authenticateWithGithub();
+
+                Platform.runLater(() -> {
+                    if (user != null) {
+                        new Alert(Alert.AlertType.INFORMATION, "Inscription réussie avec GitHub ! Vous pouvez maintenant vous connecter.", ButtonType.OK).showAndWait();
+                        redirectToLogin();
+                    } else {
+                        showMessage("L'inscription avec GitHub a échoué. Veuillez réessayer.");
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    showMessage("Erreur lors de l'inscription avec GitHub: " + e.getMessage());
+                });
+            }
+        }).start();
     }
 }

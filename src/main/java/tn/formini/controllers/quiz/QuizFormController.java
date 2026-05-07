@@ -1,0 +1,104 @@
+package tn.formini.controllers.quiz;
+
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
+import tn.formini.entities.Quizs.Quiz;
+import tn.formini.services.quizService.*;
+
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class QuizFormController implements Initializable {
+
+    @FXML private Label titreLabel;
+    @FXML private TextField titreField;
+    @FXML private TextArea descriptionField;
+    @FXML private TextField dureeField;
+    @FXML private TextField noteMinField;
+    @FXML private CheckBox melangerCheck;
+    @FXML private CheckBox afficherCorrectionCheck;
+    @FXML private Label errorLabel;
+
+    private final QuizService service = new QuizService();
+    private Quiz quizExistant = null;
+    private Runnable onSuccess = null;
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {}
+
+    public void setQuiz(Quiz quiz) {
+        this.quizExistant = quiz;
+        if (quiz != null) {
+            titreLabel.setText("Modifier Quiz");
+            titreField.setText(quiz.getTitre());
+            descriptionField.setText(quiz.getDescription());
+            dureeField.setText(String.valueOf(quiz.getDuree()));
+            noteMinField.setText(String.valueOf(quiz.getNote_minimale()));
+            melangerCheck.setSelected(quiz.isMelanger());
+            afficherCorrectionCheck.setSelected(quiz.isAfficher_correction());
+        }
+    }
+
+    public void initData(Quiz quiz, Runnable onSuccess) {
+        this.onSuccess = onSuccess;
+        setQuiz(quiz);
+    }
+
+    @FXML
+    public void sauvegarder() {
+        errorLabel.setText("");
+        try {
+            String titre = titreField.getText().trim();
+            String description = descriptionField.getText().trim();
+            int duree = Integer.parseInt(dureeField.getText().trim());
+            int noteMin = Integer.parseInt(noteMinField.getText().trim());
+
+            Quiz quiz = quizExistant != null ? quizExistant : new Quiz();
+            quiz.setTitre(titre);
+            quiz.setDescription(description);
+            quiz.setDuree(duree);
+            quiz.setNote_minimale(noteMin);
+            quiz.setMelanger(melangerCheck.isSelected());
+            quiz.setAfficher_correction(afficherCorrectionCheck.isSelected());
+
+            // Assign a default formation if missing to prevent DB null error
+            if (quiz.getFormation() == null) {
+                tn.formini.entities.formations.Formation f = new tn.formini.entities.formations.Formation();
+                f.setId(1);
+                quiz.setFormation(f);
+            }
+
+            quiz.valider();
+
+            if (quizExistant == null) {
+                service.ajouter(quiz);
+            } else {
+                service.modifier(quiz);
+            }
+            if (onSuccess != null) {
+                onSuccess.run();
+            } else {
+                fermer();
+            }
+        } catch (NumberFormatException e) {
+            errorLabel.setText("⚠ La durée et la note minimale doivent être des nombres.");
+        } catch (IllegalArgumentException e) {
+            errorLabel.setText("⚠ " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void annuler() {
+        fermer();
+    }
+
+    private void fermer() {
+        if (DashboardController.instance != null) {
+            DashboardController.instance.ouvrirQuiz();
+        } else {
+            ((Stage) titreField.getScene().getWindow()).close();
+        }
+    }
+}
