@@ -64,6 +64,7 @@ public class MainController implements Initializable {
                 btnProductAdd,
                 btnProductManage,
                 btnOrderManage,
+                btnQuiz,
                 btnStageList
         );
         
@@ -148,6 +149,7 @@ public class MainController implements Initializable {
         
         Object controller = loadPage(fxmlPath);
         if (controller instanceof tn.formini.controllers.dashboard.DashboardRoleController roleController) {
+            roleController.setMainController(this);
             roleController.initializeDashboard(session.getCurrentUser());
         }
         updateActiveButton(btnDashboard);
