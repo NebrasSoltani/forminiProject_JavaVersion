@@ -39,5 +39,10 @@ build/
 
 ### Environment and configuration files ###
 config.properties.local
+config.properties
 .env
 *.env
+**/config.properties
+**/config.properties.local
+**/secrets.properties
+**/api-keys.properties

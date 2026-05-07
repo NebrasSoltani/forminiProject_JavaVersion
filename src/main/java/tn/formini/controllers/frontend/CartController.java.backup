@@ -449,11 +449,7 @@ public class CartController implements Initializable {
                     
                     showAlert(Alert.AlertType.INFORMATION, "Redirection Stripe", 
                             "Vous avez été redirigé vers la page de paiement Stripe.\n\n" +
-                            "Après le paiement, vous revenez automatiquement à l'application.");
-                    
-                    // Simuler l'envoi d'email après paiement (pour tester)
-                    simulatePaymentSuccess();
-                    
+                            "Après le paiement, vous revenrez automatiquement à l'application.");
                 } catch (Exception e) {
                     showAlert(Alert.AlertType.ERROR, "Erreur de navigation", 
                             "Impossible d'ouvrir le navigateur: " + e.getMessage() + "\n\n" +
@@ -466,63 +462,8 @@ public class CartController implements Initializable {
                     "Erreur lors de l'initialisation du paiement Stripe: " + e.getMessage());
         }
     }
-    
-    private void simulatePaymentSuccess() {
-        try {
-            // Simuler l'envoi d'email de confirmation après paiement
-            showAlert(Alert.AlertType.INFORMATION, "Simulation d'envoi d'email", 
-                    "Simulation de l'envoi d'email de confirmation de paiement...\n\n" +
-                    "Cette fonctionnalité enverra un email avec la facture PDF au client après un paiement réussi.");
-            
-            // Appeler le service d'email pour tester
-            tn.formini.services.EmailService emailService = tn.formini.services.EmailService.getInstance();
-            
-            // Créer une facture PDF de test
-            java.io.ByteArrayOutputStream pdfStream = new java.io.ByteArrayOutputStream();
-            tn.formini.services.PDFInvoiceService pdfService = tn.formini.services.PDFInvoiceService.getInstance();
-            
-            // Créer une facture PDF pour le client réel
-            pdfService.generateInvoicePDF(
-                cart.getItems(),
-                cart.getGrandTotal(),
-                "Soujoud Chrigui",
-                "soujoudchrigui858@gmail.com",
-                "+21612345678",
-                "Tunis, Tunisia",
-                pdfStream
-            );
-            
-            // Convertir en base64 pour l'email
-            String pdfBase64 = java.util.Base64.getEncoder().encodeToString(pdfStream.toByteArray());
-            
-            // Envoyer l'email au client réel
-            String clientEmail = "soujoudchrigui858@gmail.com";
-            String clientName = "Soujoud Chrigui";
-            
-            boolean emailSent = emailService.sendPaymentConfirmationEmail(
-                clientEmail,
-                clientName,
-                cart.getGrandTotal(),
-                pdfBase64
-            );
-            
-            if (emailSent) {
-                showAlert(Alert.AlertType.INFORMATION, "Email envoyé avec succès", 
-                        "L'email de confirmation de paiement a été envoyé à " + clientEmail + "\n\n" +
-                        "✅ Facture PDF jointe\n" +
-                        "✅ Détails de la commande inclus\n" +
-                        "📧 Client: " + clientName);
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Erreur d'envoi d'email", 
-                        "L'envoi de l'email a échoué. Vérifiez la configuration Brevo.");
-            }
-            
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur de simulation", 
-                    "Erreur lors de la simulation d'envoi d'email: " + e.getMessage());
-        }
-    }
 
+    
     private VBox detailsBox(Label... labels) {
         VBox box = new VBox(8);
         box.setPadding(new Insets(0, 0, 0, 0));

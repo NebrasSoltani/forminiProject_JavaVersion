@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox spacing="15" alignment="CENTER" 
+      style="-fx-background-color: #FFFFFF; -fx-padding: 20;"
+      xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="tn.formini.controllers.frontend.AISearchFormController">
+    
+    <!-- Titre compact -->
+    <VBox spacing="5" alignment="CENTER">
+        <Label text="🔍 Recherche IA" 
+               style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #000000;"/>
+        <Label text="Trouvez vos produits facilement" 
+               style="-fx-font-size: 14px; -fx-text-fill: #333333;"
+               maxWidth="400"/>
+    </VBox>
+    
+    <!-- Zone de recherche compacte -->
+    <VBox spacing="12" alignment="CENTER" maxWidth="450">
+        <VBox spacing="8" alignment="CENTER_LEFT" maxWidth="450">
+            <Label text="Que cherchez-vous ?" 
+                   style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #000000;"/>
+            <TextArea fx:id="preferencesArea" 
+                      promptText="Ex: Je veux une calculatrice..." 
+                      prefRowCount="2"
+                      style="-fx-font-size: 14px; -fx-padding: 12px; -fx-background-radius: 6px; -fx-background-color: #FFFFFF; -fx-border-color: #000000; -fx-border-width: 2px; -fx-border-radius: 6px;"/>
+        </VBox>
+        
+        <Button text="🔍 CHERCHER" 
+                onAction="#performAISearch"
+                style="-fx-background-color: #FF0000; -fx-text-fill: #FFFFFF; 
+                       -fx-font-weight: bold; -fx-font-size: 16px; -fx-padding: 12 25; 
+                       -fx-background-radius: 6px; -fx-cursor: hand;"/>
+    </VBox>
+    
+    <!-- Options compactes -->
+    <VBox spacing="12" maxWidth="450" style="-fx-background-color: #FFFFFF; -fx-background-radius: 6px; -fx-padding: 15; -fx-border-color: #000000; -fx-border-width: 2px; -fx-border-radius: 6px;">
+        <Label text="Options" 
+               style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #000000;"/>
+        
+        <VBox spacing="10">
+            <Label text="Catégorie" 
+                   style="-fx-font-size: 14px; -fx-text-fill: #000000; -fx-font-weight: 600;"/>
+            <ComboBox fx:id="categoryCombo" 
+                      promptText="Choisir une catégorie" 
+                      style="-fx-font-size: 14px; -fx-padding: 8px; -fx-background-radius: 4px; -fx-background-color: #FFFFFF; -fx-border-color: #000000; -fx-border-width: 2px;"/>
+        </VBox>
+        
+        <HBox spacing="15" alignment="CENTER">
+            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                <Label text="Prix min" 
+                       style="-fx-font-size: 14px; -fx-text-fill: #000000; -fx-font-weight: 600;"/>
+                <TextField fx:id="minPriceField" 
+                           promptText="20" 
+                           style="-fx-font-size: 14px; -fx-padding: 8px; -fx-background-radius: 4px; -fx-background-color: #FFFFFF; -fx-border-color: #000000; -fx-border-width: 2px;"/>
+            </VBox>
+            
+            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                <Label text="Prix max" 
+                       style="-fx-font-size: 14px; -fx-text-fill: #000000; -fx-font-weight: 600;"/>
+                <TextField fx:id="maxPriceField" 
+                           promptText="80" 
+                           style="-fx-font-size: 14px; -fx-padding: 8px; -fx-background-radius: 4px; -fx-background-color: #FFFFFF; -fx-border-color: #000000; -fx-border-width: 2px;"/>
+            </VBox>
+        </HBox>
+    </VBox>
+    
+    <!-- Zone de résultats agrandie -->
+    <VBox spacing="15" maxWidth="600">
+        <Label text="Résultats" 
+               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #000000;"/>
+        
+        <ScrollPane fx:id="resultsScrollPane" 
+                   fitToWidth="true" 
+                   prefHeight="450"
+                   hbarPolicy="NEVER"
+                   vbarPolicy="AS_NEEDED"
+                   style="-fx-background-color: #FFFFFF; -fx-background-radius: 8px; -fx-border-color: #000000; -fx-border-width: 3px; -fx-border-radius: 8px;">
+            <VBox fx:id="resultsContainer" spacing="20" style="-fx-padding: 25; -fx-background-color: #FFFFFF;"/>
+        </ScrollPane>
+    </VBox>
+    
+    <!-- Boutons d'action compacts -->
+    <HBox spacing="12" alignment="CENTER">
+        <Button text="🔄 NOUVEAU" 
+                onAction="#clearSearch"
+                style="-fx-background-color: #FF0000; -fx-text-fill: #FFFFFF; 
+                       -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 10 20; 
+                       -fx-background-radius: 6px; -fx-cursor: hand;"/>
+        
+        <Button text="🎲 EXEMPLES" 
+                onAction="#showRandomSuggestions"
+                style="-fx-background-color: #FF0000; -fx-text-fill: #FFFFFF; 
+                       -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 10 20; 
+                       -fx-background-radius: 6px; -fx-cursor: hand;"/>
+        
+        <Button text="🏠 ACCUEIL" 
+                onAction="#goBack"
+                style="-fx-background-color: #FF0000; -fx-text-fill: #FFFFFF; 
+                       -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 10 20; 
+                       -fx-background-radius: 6px; -fx-cursor: hand;"/>
+    </HBox>
+    
+    <!-- Status compact -->
+    <Label fx:id="statusLabel" 
+           text="Prêt à rechercher..." 
+           style="-fx-font-size: 14px; -fx-text-fill: #000000; -fx-font-weight: 600;"/>
+    
+    <!-- Loading compact -->
+    <ProgressIndicator fx:id="loadingIndicator" 
+                       visible="false" 
+                       style="-fx-progress-color: #FF0000;"/>
+    
+</VBox>
