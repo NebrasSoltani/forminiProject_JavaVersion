@@ -62,6 +62,12 @@ public class ApprenantDashboardController implements DashboardRoleController {
     private ApprenantService apprenantService;
     private FormationService formationService;
     private QuizService quizService;
+    private tn.formini.controllers.MainController mainController;
+
+    @Override
+    public void setMainController(tn.formini.controllers.MainController mainController) {
+        this.mainController = mainController;
+    }
 
     @Override
     public void initializeDashboard(User user) {
@@ -110,7 +116,11 @@ public class ApprenantDashboardController implements DashboardRoleController {
     private void loadStatistics() {
         try {
             int totalFormations = formationService.findPublished().size();
-            int completedQuiz = 0;
+            
+            // Use ResultatQuizService to get actual count
+            tn.formini.services.quizService.ResultatQuizService resService = new tn.formini.services.quizService.ResultatQuizService();
+            int completedQuiz = resService.countByUser(currentUser.getId());
+            
             int offresStage = 0;
             int certificats = 0;
             
@@ -168,11 +178,10 @@ public class ApprenantDashboardController implements DashboardRoleController {
 
     @FXML
     private void takeQuiz() {
-        try {
-            // TODO: Create quiz interface
+        if (mainController != null) {
+            mainController.showQuizDashboard();
+        } else {
             showFallbackMessage("Quiz - En cours de développement");
-        } catch (Exception e) {
-            System.err.println("Error opening quiz: " + e.getMessage());
         }
     }
 

@@ -59,6 +59,12 @@ public class FormateurDashboardController implements DashboardRoleController {
     private FormateurService formateurService;
     private FormationService formationService;
     private QuizService quizService;
+    private tn.formini.controllers.MainController mainController;
+
+    @Override
+    public void setMainController(tn.formini.controllers.MainController mainController) {
+        this.mainController = mainController;
+    }
 
     @Override
     public void initializeDashboard(User user) {
@@ -177,7 +183,11 @@ public class FormateurDashboardController implements DashboardRoleController {
 
     @FXML
     private void manageQuizzes() {
-        showFallbackMessage("Gestion des quiz - En cours de developpement");
+        if (mainController != null) {
+            mainController.showQuizDashboard();
+        } else {
+            showFallbackMessage("Gestion des quiz - En cours de developpement");
+        }
     }
 
     @FXML

@@ -5,16 +5,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import tn.formini.controllers.blog.BlogFormController;
 import tn.formini.controllers.blog.BlogListController;
 import tn.formini.controllers.evenement.EvenementFormController;
 import tn.formini.controllers.evenement.EvenementListController;
+import tn.formini.controllers.order.OrderListController;
+import tn.formini.controllers.produit.ProduitListController;
 import tn.formini.controllers.produits.ProduitFormController;
 
 import java.io.IOException;
@@ -39,9 +40,12 @@ public class MainController implements Initializable {
     @FXML private Button btnEventList;
     @FXML private Button btnEventAdd;
     @FXML private Button btnProductList;
+    @FXML private Button btnQuiz;
     @FXML private Button btnStageList;
     @FXML private Button btnProductAdd;
     @FXML private Button btnProductManage;
+    @FXML private Button btnOrderManage;
+    @FXML private Label labelAdminSection;
 
     private List<Button> navButtons;
 
@@ -59,44 +63,119 @@ public class MainController implements Initializable {
                 btnProductList,
                 btnProductAdd,
                 btnProductManage,
+                btnOrderManage,
                 btnStageList
         );
+        
+        configurerInterfaceSelonRole();
         showDashboard();
+    }
+
+    private void configurerInterfaceSelonRole() {
+        tn.formini.services.UsersService.SessionManager session = tn.formini.services.UsersService.SessionManager.getInstance();
+        if (session.isLoggedIn()) {
+            tn.formini.entities.Users.User user = session.getCurrentUser();
+            String role = user.getRole_utilisateur();
+            if (role == null || role.trim().isEmpty()) {
+                // Fallback to roles JSON if role_utilisateur is missing
+                String rolesJson = user.getRoles();
+                if (rolesJson != null) {
+                    if (rolesJson.contains("ROLE_ADMIN")) role = "admin";
+                    else if (rolesJson.contains("ROLE_FORMATEUR")) role = "formateur";
+                    else if (rolesJson.contains("ROLE_APPRENANT")) role = "apprenant";
+                    else if (rolesJson.contains("ROLE_SOCIETE")) role = "societe";
+                }
+                if (role == null) role = "apprenant";
+                user.setRole_utilisateur(role);
+            }
+            
+            labelUserName.setText(user.getNom() + " " + user.getPrenom());
+            labelUserRole.setText(role.toUpperCase());
+
+            boolean isApprenant = session.isApprenant();
+            boolean isSociete = session.isSociete();
+
+            if (isApprenant) {
+                // Un apprenant ne peut pas ajouter de contenu ni gérer les produits/commandes
+                cacherBouton(btnBlogAdd);
+                cacherBouton(btnEventAdd);
+                cacherBouton(btnProductAdd);
+                cacherBouton(btnProductManage);
+                cacherBouton(btnOrderManage);
+                if (labelAdminSection != null) {
+                    labelAdminSection.setVisible(false);
+                    labelAdminSection.setManaged(false);
+                }
+            } else if (isSociete) {
+                // Une société se concentre sur les stages
+                cacherBouton(btnBlogAdd);
+                cacherBouton(btnEventAdd);
+                cacherBouton(btnProductAdd);
+                cacherBouton(btnProductManage);
+                cacherBouton(btnOrderManage);
+                cacherBouton(btnQuiz);
+                if (labelAdminSection != null) {
+                    labelAdminSection.setVisible(false);
+                    labelAdminSection.setManaged(false);
+                }
+            }
+        }
+    }
+
+    private void cacherBouton(Button btn) {
+        if (btn != null) {
+            btn.setVisible(false);
+            btn.setManaged(false);
+        }
+    }
+
+    @FXML
+    public void showDashboard() {
+        labelPageTitle.setText("Tableau de bord");
+        
+        tn.formini.services.UsersService.SessionManager session = tn.formini.services.UsersService.SessionManager.getInstance();
+        String fxmlPath = "/fxml/dashboard/Dashboard.fxml"; // Fallback
+        
+        if (session.isApprenant()) {
+            fxmlPath = "/fxml/dashboard/apprenant-dashboard.fxml";
+        } else if (session.isFormateur()) {
+            fxmlPath = "/fxml/dashboard/formateur-dashboard.fxml";
+        } else if (session.isAdmin()) {
+            fxmlPath = "/fxml/dashboard/admin-dashboard.fxml";
+        } else if (session.isSociete()) {
+            fxmlPath = "/fxml/dashboard/societe-dashboard.fxml";
+        }
+        
+        Object controller = loadPage(fxmlPath);
+        if (controller instanceof tn.formini.controllers.dashboard.DashboardRoleController roleController) {
+            roleController.initializeDashboard(session.getCurrentUser());
+        }
+        updateActiveButton(btnDashboard);
     }
 
     private void updateActiveButton(Button activeBtn) {
         for (Button btn : navButtons) {
+            if (btn == null) continue;
             btn.getStyleClass().remove("nav-btn-active");
             if (btn == activeBtn) btn.getStyleClass().add("nav-btn-active");
         }
     }
 
-    // ── Chargement dynamique ────────────────────────────────
-
     private Object loadPage(String fxmlPath) {
         try {
-            System.out.println("DEBUG: Loading FXML: " + fxmlPath);
             URL resource = getClass().getResource(fxmlPath);
             if (resource == null) {
                 System.err.println("FXML introuvable : " + fxmlPath);
                 return null;
             }
-            System.out.println("DEBUG: FXML found at: " + resource);
 
             FXMLLoader loader = new FXMLLoader(resource);
             Node page = loader.load();
-            System.out.println("DEBUG: FXML loaded successfully");
             Object controller = loader.getController();
-            System.out.println("DEBUG: Controller: " + (controller != null ? controller.getClass().getSimpleName() : "null"));
 
-            System.out.println("DEBUG: ContentArea before: " + contentArea.getChildren().size() + " children");
             contentArea.getChildren().setAll(page);
-            System.out.println("DEBUG: ContentArea after: " + contentArea.getChildren().size() + " children");
-            System.out.println("DEBUG: Page loaded: " + (page != null ? page.getClass().getSimpleName() : "null"));
-            
             return controller;
-        } catch (Exception e) {
-            System.err.println("DEBUG: Error loading FXML: " + e.getMessage());
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
@@ -105,7 +184,7 @@ public class MainController implements Initializable {
     public void showEventForm(tn.formini.entities.evenements.Evenement evt) {
         updateActiveButton(btnEventAdd);
         labelPageTitle.setText(evt == null ? "Nouvel Événement" : "Modifier l'Événement");
-        EvenementFormController controller = (EvenementFormController) loadPage("/fxml/evenement/EvenementForm.fxml");
+        EvenementFormController controller = (EvenementFormController) loadPage("/fxml/evenement/Evenementform.fxml");
         if (controller != null) {
             controller.setMainController(this);
             if (evt != null) {
@@ -114,14 +193,6 @@ public class MainController implements Initializable {
         }
     }
 
-    // ── Actions boutons sidebar ─────────────────────────────
-
-    @FXML
-    public void showDashboard() {
-        labelPageTitle.setText("Tableau de bord");
-        loadPage("/fxml/dashboard/Dashboard.fxml");
-        updateActiveButton(btnDashboard);
-    }
 
     @FXML
     public void showEventList() {
@@ -158,7 +229,7 @@ public class MainController implements Initializable {
 
     public void showBlogList() {
         labelPageTitle.setText("Liste des Blogs");
-        tn.formini.controllers.blog.BlogListController c = (tn.formini.controllers.blog.BlogListController) loadPage("/fxml/blog/Bloglist.fxml");
+        BlogListController c = (BlogListController) loadPage("/fxml/blog/Bloglist.fxml");
         if (c != null) c.setMainController(this);
         updateActiveButton(btnBlogList);
     }
@@ -170,7 +241,7 @@ public class MainController implements Initializable {
     public void showBlogForm(tn.formini.entities.evenements.Blog blog) {
         updateActiveButton(btnBlogAdd);
         labelPageTitle.setText(blog == null ? "Nouveau Blog" : "Modifier le Blog");
-        tn.formini.controllers.blog.BlogFormController controller = (tn.formini.controllers.blog.BlogFormController) loadPage("/fxml/blog/BlogForm.fxml");
+        BlogFormController controller = (BlogFormController) loadPage("/fxml/blog/Blogform.fxml");
         if (controller != null) {
             controller.setMainController(this);
             if (blog != null) {
@@ -179,39 +250,55 @@ public class MainController implements Initializable {
         }
     }
 
-    // ── Product Management ─────────────────────────────────────
-
     @FXML
     public void showProductList() {
         labelPageTitle.setText("Liste des Produits");
-        loadPage("/fxml/produits/ProduitList.fxml");
+        loadPage("/fxml/product/ProduitList.fxml");
         updateActiveButton(btnProductList);
     }
 
     @FXML
     public void showProductManage() {
-        // Handler dédié attendu par MainMenu.fxml
         labelPageTitle.setText("Gestion des Produits");
-        loadPage("/fxml/produits/ProduitList.fxml");
+        ProduitListController controller = (ProduitListController) loadPage("/fxml/product/ProduitList.fxml");
+        if (controller != null) {
+            controller.setMainController(this);
+        }
         updateActiveButton(btnProductManage);
     }
 
     @FXML
+    public void showQuizDashboard() {
+        labelPageTitle.setText("Gestion des Quiz");
+        loadPage("/fxml/quiz/Dashboard.fxml");
+        updateActiveButton(btnQuiz);
+    }
+
+    @FXML
     public void showProductAdd() {
-        System.out.println("DEBUG: showProductAdd() method called!");
         showProductForm(null);
     }
 
     public void showProductForm(tn.formini.entities.produits.Produit produit) {
         updateActiveButton(btnProductAdd);
         labelPageTitle.setText(produit == null ? "Nouveau Produit" : "Modifier le Produit");
-        ProduitFormController controller = (ProduitFormController) loadPage("/fxml/produits/ProduitForm_Minimal.fxml");
+        ProduitFormController controller = (ProduitFormController) loadPage("/fxml/produits/ProduitForm.fxml");
         if (controller != null) {
             controller.setMainController(this);
             if (produit != null) {
                 controller.setProduit(produit);
             }
         }
+    }
+
+    @FXML
+    public void showOrderManage() {
+        labelPageTitle.setText("Gérer les Commandes");
+        OrderListController controller = (OrderListController) loadPage("/fxml/order/OrderList.fxml");
+        if (controller != null) {
+            controller.setMainController(this);
+        }
+        updateActiveButton(btnOrderManage);
     }
 
     @FXML
@@ -224,7 +311,8 @@ public class MainController implements Initializable {
     @FXML
     public void showSocieteOffres() {
         labelPageTitle.setText("Mes Offres de Stage");
-        tn.formini.controllers.stages.StageManagementController controller = (tn.formini.controllers.stages.StageManagementController) loadPage("/fxml/stages/stage-management.fxml");
+        tn.formini.controllers.stages.StageManagementController controller =
+                (tn.formini.controllers.stages.StageManagementController) loadPage("/fxml/stages/stage-management.fxml");
         if (controller != null) {
             controller.setSelectedTab(0);
         }
@@ -234,7 +322,8 @@ public class MainController implements Initializable {
     @FXML
     public void showSocieteCandidatures() {
         labelPageTitle.setText("Candidatures Reçues");
-        tn.formini.controllers.stages.StageManagementController controller = (tn.formini.controllers.stages.StageManagementController) loadPage("/fxml/stages/stage-management.fxml");
+        tn.formini.controllers.stages.StageManagementController controller =
+                (tn.formini.controllers.stages.StageManagementController) loadPage("/fxml/stages/stage-management.fxml");
         if (controller != null) {
             controller.setSelectedTab(1);
         }

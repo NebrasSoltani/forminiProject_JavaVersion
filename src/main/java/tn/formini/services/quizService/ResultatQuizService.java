@@ -51,7 +51,10 @@ public class ResultatQuizService {
             System.out.println("[ResultatQuizService] Connexion DB indisponible.");
             return list;
         }
-        String req = "SELECT * FROM resultat_quiz";
+        String req = "SELECT r.*, u.nom, u.prenom, u.email, q.titre " +
+                    "FROM resultat_quiz r " +
+                    "JOIN user u ON r.apprenant_id = u.id " +
+                    "JOIN quiz q ON r.quiz_id = q.id";
         try {
             Statement st = cnx.createStatement();
             ResultSet rs = st.executeQuery(req);
@@ -67,10 +70,14 @@ public class ResultatQuizService {
 
                 User u = new User();
                 u.setId(rs.getInt("apprenant_id"));
+                u.setNom(rs.getString("nom"));
+                u.setPrenom(rs.getString("prenom"));
+                u.setEmail(rs.getString("email"));
                 r.setApprenant(u);
 
                 Quiz q = new Quiz();
                 q.setId(rs.getInt("quiz_id"));
+                q.setTitre(rs.getString("titre"));
                 r.setQuiz(q);
 
                 list.add(r);
@@ -79,6 +86,21 @@ public class ResultatQuizService {
             System.out.println("Erreur getAll résultat : " + e.getMessage());
         }
         return list;
+    }
+
+    public int countByUser(int userId) {
+        String req = "SELECT COUNT(*) FROM resultat_quiz WHERE apprenant_id = ?";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(req);
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error counting results: " + e.getMessage());
+        }
+        return 0;
     }
 
     // ─── READ ONE ─────────────────────────────────────────────
