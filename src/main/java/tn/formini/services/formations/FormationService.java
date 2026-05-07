@@ -13,6 +13,7 @@ import java.util.List;
 public class FormationService implements service<Formation> {
 
     private final Connection cnx;
+    private String lastDeleteError;
 
     public FormationService() {
         cnx = MyDataBase.getInstance().getCnx();
@@ -62,21 +63,70 @@ public class FormationService implements service<Formation> {
 
     @Override
     public void supprimer(int id) {
-        if (cnx == null) return;
+        deleteById(id);
+    }
 
-        // Supprimer d'abord les lecons pour respecter les contraintes FK.
-        String deleteLecons = "DELETE FROM lecon WHERE formation_id=?";
-        String deleteFormation = "DELETE FROM formation WHERE id=?";
+    public boolean deleteById(int id) {
+        if (cnx == null) {
+            lastDeleteError = "Connexion base de donnees indisponible.";
+            return false;
+        }
+        lastDeleteError = null;
 
-        try (PreparedStatement psLecons = cnx.prepareStatement(deleteLecons);
-             PreparedStatement psFormation = cnx.prepareStatement(deleteFormation)) {
-            psLecons.setInt(1, id);
-            psLecons.executeUpdate();
-
-            psFormation.setInt(1, id);
-            psFormation.executeUpdate();
+        boolean previousAutoCommit;
+        try {
+            previousAutoCommit = cnx.getAutoCommit();
+            cnx.setAutoCommit(false);
         } catch (SQLException ex) {
+            lastDeleteError = ex.getMessage();
             System.out.println("Erreur supprimer formation : " + ex.getMessage());
+            return false;
+        }
+
+        try {
+            executeDelete("DELETE FROM progression_lecon WHERE lecon_id IN (SELECT id FROM lecon WHERE formation_id=?)", id);
+            executeDelete("DELETE FROM inscription WHERE formation_id=?", id);
+            executeDelete("DELETE FROM reponse WHERE question_id IN (SELECT q.id FROM question q JOIN quiz z ON z.id=q.quiz_id WHERE z.formation_id=?)", id);
+            executeDelete("DELETE FROM question WHERE quiz_id IN (SELECT id FROM quiz WHERE formation_id=?)", id);
+            executeDelete("DELETE FROM resultat_quiz WHERE quiz_id IN (SELECT id FROM quiz WHERE formation_id=?)", id);
+            executeDelete("DELETE FROM quiz WHERE formation_id=?", id);
+            executeDelete("DELETE FROM lecon WHERE formation_id=?", id);
+
+            int deletedFormation = executeDelete("DELETE FROM formation WHERE id=?", id);
+            if (deletedFormation == 0) {
+                cnx.rollback();
+                lastDeleteError = "Formation introuvable ou deja supprimee.";
+                return false;
+            }
+
+            cnx.commit();
+            return true;
+        } catch (SQLException ex) {
+            try {
+                cnx.rollback();
+            } catch (SQLException rollbackEx) {
+                System.out.println("Erreur rollback suppression formation : " + rollbackEx.getMessage());
+            }
+            lastDeleteError = ex.getMessage();
+            System.out.println("Erreur supprimer formation : " + ex.getMessage());
+            return false;
+        } finally {
+            try {
+                cnx.setAutoCommit(previousAutoCommit);
+            } catch (SQLException ex) {
+                System.out.println("Erreur restauration auto-commit formation : " + ex.getMessage());
+            }
+        }
+    }
+
+    public String getLastDeleteError() {
+        return lastDeleteError;
+    }
+
+    private int executeDelete(String sql, int id) throws SQLException {
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate();
         }
     }
 

@@ -15,11 +15,22 @@ import java.util.ResourceBundle;
 
 public class FrontMainController implements Initializable {
 
+    private static FrontMainController instance;
+    
     @FXML private StackPane contentArea;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        instance = this;
         showHome();
+    }
+    
+    public static FrontMainController getInstance() {
+        return instance;
+    }
+    
+    public static void setInstance(FrontMainController controller) {
+        instance = controller;
     }
 
     private void loadPage(String fxml) {
@@ -30,6 +41,10 @@ public class FrontMainController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    public void loadView(String fxml) {
+        loadPage(fxml);
     }
 
     @FXML public void showHome() { loadPage("/fxml/frontend/Home.fxml"); }

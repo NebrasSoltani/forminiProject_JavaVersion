@@ -6,6 +6,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
@@ -14,14 +16,21 @@ import java.util.regex.Pattern;
 import tn.formini.entities.Users.Apprenant;
 import tn.formini.entities.Users.Formateur;
 import tn.formini.entities.Users.User;
+import tn.formini.entities.Users.Gouvernorat;
 import tn.formini.services.UsersService.SignupService;
+import tn.formini.services.FileUploadService;
+import tn.formini.utils.TunisiaGovernorates;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.ResourceBundle;
+import tn.formini.services.auth.OAuthCallbackHandler;
+import tn.formini.services.auth.OAuthService;
 
 public class SignupController implements Initializable {
 
@@ -43,26 +52,33 @@ public class SignupController implements Initializable {
     @FXML private Button btnTogglePasswordConfirm;
     @FXML private Button btnGoToLogin;
     @FXML private Button btnUploadCv;
+    @FXML private Button btnUploadPhoto;
     @FXML private Label lblCvFileName;
+    @FXML private Label lblPhotoFileName;
+    @FXML private ImageView imageViewPhoto;
     @FXML private Label eyeIcon;
     @FXML private Label eyeSlashIcon;
     @FXML private Label eyeIconConfirm;
     @FXML private Label eyeSlashIconConfirm;
     @FXML private TextField fieldNom;
     @FXML private TextField fieldPrenom;
-    @FXML private TextField fieldGouvernorat;
+    @FXML private ComboBox<String> fieldGouvernorat;
     @FXML private DatePicker fieldDateNaissance;
     @FXML private ComboBox<String> comboGenre;
     @FXML private ComboBox<String> comboEtatCivil;
     @FXML private TextField fieldObjectif;
-    @FXML private TextField fieldDomainesInteret;
+    @FXML private TextField fieldDomaineInput;
+    @FXML private Button btnAddDomaine;
+    @FXML private HBox flowPaneDomaines;
     @FXML private TextField fieldSpecialite;
     @FXML private TextArea fieldBio;
     @FXML private Spinner<Integer> spinnerExperience;
     @FXML private TextField fieldLinkedin;
     @FXML private TextField fieldPortfolio;
     @FXML private TextField fieldCv;
-    
+    @FXML private TextField fieldPhoto;
+
+
     // Error labels
     @FXML private Label errorEmail;
     @FXML private Label errorTelephone;
@@ -74,8 +90,11 @@ public class SignupController implements Initializable {
     @FXML private Label errorSpecialite;
 
     private final SignupService signupService = new SignupService();
+    private final FileUploadService fileUploadService = new FileUploadService();
     private ToggleGroup roleGroup;
     private java.io.File uploadedCvFile;
+    private java.io.File uploadedPhotoFile;
+    private final List<String> domainesList = new ArrayList<>();
 
     public void setOnBack(Runnable onBack) {
         this.onBack = onBack;
@@ -87,8 +106,9 @@ public class SignupController implements Initializable {
         rbApprenant.setToggleGroup(roleGroup);
         rbFormateur.setToggleGroup(roleGroup);
 
-        comboGenre.getItems().addAll("homme", "femme", "autre");
+        comboGenre.getItems().addAll("homme", "femme");
         comboEtatCivil.getItems().addAll("celibataire", "marie", "divorce", "veuf");
+        fieldGouvernorat.setItems(TunisiaGovernorates.asObservableList());
 
         spinnerExperience.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 70, 0));
 
@@ -147,9 +167,20 @@ public class SignupController implements Initializable {
             user.setNom(trimToNull(fieldNom.getText()));
             user.setPrenom(trimToNull(fieldPrenom.getText()));
             user.setTelephone(normalizePhone(fieldTelephone.getText()));
-            String gouv = fieldGouvernorat.getText();
-            user.setGouvernorat(gouv != null && !gouv.isBlank() ? gouv.trim() : null);
+            user.setGouvernorat(fieldGouvernorat.getValue());
             user.setDate_naissance(dateNaissance);
+
+            // Handle photo upload
+            String photoPath = null;
+            if (uploadedPhotoFile != null) {
+                photoPath = fileUploadService.uploadPhoto(uploadedPhotoFile);
+            } else {
+                String photoUrl = fieldPhoto.getText();
+                if (photoUrl != null && !photoUrl.trim().isEmpty()) {
+                    photoPath = photoUrl.trim();
+                }
+            }
+            user.setPhoto(photoPath);
 
             if (rbApprenant.isSelected()) {
                 Apprenant a = new Apprenant();
@@ -162,9 +193,8 @@ public class SignupController implements Initializable {
                 }
                 String obj = fieldObjectif.getText();
                 a.setObjectif(obj != null && !obj.isBlank() ? obj.trim() : null);
-                String dom = fieldDomainesInteret.getText();
-                if (dom != null && !dom.isBlank()) {
-                    a.setDomaines_interet(dom.trim());
+                if (!domainesList.isEmpty()) {
+                    a.setDomaines_interet(convertDomainesToJson(domainesList));
                 }
                 signupService.signupApprenant(a);
             } else {
@@ -230,11 +260,11 @@ public class SignupController implements Initializable {
 
     private void togglePasswordField(javafx.scene.control.PasswordField passwordField, Button toggleButton) {
         HBox parent = (HBox) toggleButton.getParent();
-        
+
         // Find current password field (either PasswordField or TextField)
         javafx.scene.control.TextInputControl currentField = null;
         int fieldIndex = -1;
-        
+
         for (int i = 0; i < parent.getChildren().size(); i++) {
             javafx.scene.Node node = parent.getChildren().get(i);
             if ((node instanceof PasswordField || node instanceof TextField) && !node.equals(toggleButton)) {
@@ -243,9 +273,9 @@ public class SignupController implements Initializable {
                 break;
             }
         }
-        
+
         if (currentField == null) return;
-        
+
         if (currentField instanceof PasswordField currentPasswordField) {
             // Show plain text while keeping bidirectional sync with injected field.
             TextField visiblePassword = new TextField();
@@ -298,30 +328,110 @@ public class SignupController implements Initializable {
     private void onUploadCv() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choisir un fichier CV");
-        
+
         // Set extension filters
         FileChooser.ExtensionFilter pdfFilter = new FileChooser.ExtensionFilter("Fichiers PDF", "*.pdf");
         FileChooser.ExtensionFilter docFilter = new FileChooser.ExtensionFilter("Documents Word", "*.doc", "*.docx");
         FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("Tous les fichiers", "*.*");
-        
+
         fileChooser.getExtensionFilters().addAll(pdfFilter, docFilter, allFilter);
         fileChooser.setSelectedExtensionFilter(pdfFilter);
-        
+
         // Show open dialog
         Stage stage = (Stage) btnUploadCv.getScene().getWindow();
         java.io.File selectedFile = fileChooser.showOpenDialog(stage);
-        
+
         if (selectedFile != null) {
             uploadedCvFile = selectedFile;
             lblCvFileName.setText(selectedFile.getName());
             fieldCv.setText(selectedFile.getAbsolutePath());
-            
+
             // Optional: You could copy the file to a specific uploads directory
             // For now, we'll just store the reference
         }
     }
 
-    
+    @FXML
+    private void onUploadPhoto() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choisir une photo de profil");
+
+        // Set extension filters for images
+        FileChooser.ExtensionFilter imageFilter = new FileChooser.ExtensionFilter("Images", "*.jpg", "*.jpeg", "*.png", "*.gif", "*.bmp");
+        FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("Tous les fichiers", "*.*");
+
+        fileChooser.getExtensionFilters().addAll(imageFilter, allFilter);
+        fileChooser.setSelectedExtensionFilter(imageFilter);
+
+        // Show open dialog
+        Stage stage = (Stage) btnUploadPhoto.getScene().getWindow();
+        java.io.File selectedFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedFile != null) {
+            uploadedPhotoFile = selectedFile;
+            lblPhotoFileName.setText(selectedFile.getName());
+            fieldPhoto.setText(selectedFile.getAbsolutePath());
+
+            // Load and display the image
+            try {
+                Image image = new Image(selectedFile.toURI().toString());
+                imageViewPhoto.setImage(image);
+            } catch (Exception e) {
+                System.err.println("Failed to load image: " + e.getMessage());
+            }
+        }
+    }
+
+    @FXML
+    private void onAddDomaine() {
+        String domaine = fieldDomaineInput.getText().trim();
+        if (domaine != null && !domaine.isEmpty() && !domainesList.contains(domaine)) {
+            domainesList.add(domaine);
+            fieldDomaineInput.clear();
+            displayDomainesTags();
+        }
+    }
+
+    private void displayDomainesTags() {
+        flowPaneDomaines.getChildren().clear();
+        for (String domaine : domainesList) {
+            HBox tag = createDomaineTag(domaine);
+            flowPaneDomaines.getChildren().add(tag);
+        }
+    }
+
+    private HBox createDomaineTag(String domaine) {
+        HBox tag = new HBox();
+        tag.getStyleClass().add("domaine-tag");
+        tag.setSpacing(4);
+
+        Label label = new Label(domaine);
+        label.getStyleClass().add("domaine-tag-label");
+
+        Button removeBtn = new Button("×");
+        removeBtn.getStyleClass().add("domaine-tag-remove");
+        removeBtn.setOnAction(e -> {
+            domainesList.remove(domaine);
+            displayDomainesTags();
+        });
+
+        tag.getChildren().addAll(label, removeBtn);
+        return tag;
+    }
+
+    private String convertDomainesToJson(List<String> domaines) {
+        StringBuilder json = new StringBuilder("[");
+        for (int i = 0; i < domaines.size(); i++) {
+            json.append("\"").append(domaines.get(i)).append("\"");
+            if (i < domaines.size() - 1) {
+                json.append(", ");
+            }
+        }
+        json.append("]");
+        return json.toString();
+    }
+
+
     /**
      * Redirect to login interface after successful signup
      */
@@ -401,12 +511,12 @@ public class SignupController implements Initializable {
         fieldEmail.textProperty().addListener((obs, oldVal, newVal) -> {
             validateEmail();
         });
-        
+
         // Telephone validation
         fieldTelephone.textProperty().addListener((obs, oldVal, newVal) -> {
             validateTelephone();
         });
-        
+
         // Password validation
         fieldPassword.textProperty().addListener((obs, oldVal, newVal) -> {
             validatePassword();
@@ -414,26 +524,26 @@ public class SignupController implements Initializable {
                 validatePasswordConfirm();
             }
         });
-        
+
         // Password confirmation validation
         fieldPasswordConfirm.textProperty().addListener((obs, oldVal, newVal) -> {
             validatePasswordConfirm();
         });
-        
+
         // Name validations
         fieldNom.textProperty().addListener((obs, oldVal, newVal) -> {
             validateNom();
         });
-        
+
         fieldPrenom.textProperty().addListener((obs, oldVal, newVal) -> {
             validatePrenom();
         });
-        
+
         // Date validation
         fieldDateNaissance.valueProperty().addListener((obs, oldVal, newVal) -> {
             validateDateNaissance();
         });
-        
+
         // Specialite validation (for formateur)
         fieldSpecialite.textProperty().addListener((obs, oldVal, newVal) -> {
             if (rbFormateur.isSelected()) {
@@ -441,171 +551,196 @@ public class SignupController implements Initializable {
             }
         });
     }
-    
+
     private boolean validateEmail() {
         String email = fieldEmail.getText().trim();
         if (email.isEmpty()) {
             showError(errorEmail, "L'email est obligatoire");
             return false;
         }
-        
+
         String emailRegex = "^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$";
         if (!Pattern.matches(emailRegex, email)) {
             showError(errorEmail, "Format d'email invalide");
             return false;
         }
-        
+
         hideError(errorEmail);
         return true;
     }
-    
+
     private boolean validateTelephone() {
         String telephone = fieldTelephone.getText().trim();
         if (telephone.isEmpty()) {
             showError(errorTelephone, "Le téléphone est obligatoire");
             return false;
         }
-        
+
         String normalized = normalizePhone(telephone);
         if (normalized == null || !normalized.matches("\\+?[0-9]{8,12}$")) {
             showError(errorTelephone, "Format invalide: 8-12 chiffres");
             return false;
         }
-        
+
         hideError(errorTelephone);
         return true;
     }
-    
+
     private boolean validatePassword() {
         String password = fieldPassword.getText();
         if (password.isEmpty()) {
             showError(errorPassword, "Le mot de passe est obligatoire");
             return false;
         }
-        
+
         if (password.length() < 8) {
             showError(errorPassword, "Minimum 8 caractères");
             return false;
         }
-        
+
         if (!password.matches(".*[A-Z].*")) {
             showError(errorPassword, "Une majuscule requise");
             return false;
         }
-        
+
         if (!password.matches(".*[a-z].*")) {
             showError(errorPassword, "Une minuscule requise");
             return false;
         }
-        
+
         if (!password.matches(".*\\d.*")) {
             showError(errorPassword, "Un chiffre requis");
             return false;
         }
-        
+
         hideError(errorPassword);
         return true;
     }
-    
+
     private boolean validatePasswordConfirm() {
         String password = fieldPassword.getText();
         String passwordConfirm = fieldPasswordConfirm.getText();
-        
+
         if (passwordConfirm.isEmpty()) {
             showError(errorPasswordConfirm, "La confirmation est obligatoire");
             return false;
         }
-        
+
         if (!password.equals(passwordConfirm)) {
             showError(errorPasswordConfirm, "Les mots de passe ne correspondent pas");
             return false;
         }
-        
+
         hideError(errorPasswordConfirm);
         return true;
     }
-    
+
     private boolean validateNom() {
         String nom = fieldNom.getText().trim();
         if (nom.isEmpty()) {
             showError(errorNom, "Le nom est obligatoire");
             return false;
         }
-        
+
         if (nom.length() < 2) {
             showError(errorNom, "Minimum 2 caractères");
             return false;
         }
-        
+
         hideError(errorNom);
         return true;
     }
-    
+
     private boolean validatePrenom() {
         String prenom = fieldPrenom.getText().trim();
         if (prenom.isEmpty()) {
             showError(errorPrenom, "Le prénom est obligatoire");
             return false;
         }
-        
+
         if (prenom.length() < 2) {
             showError(errorPrenom, "Minimum 2 caractères");
             return false;
         }
-        
+
         hideError(errorPrenom);
         return true;
     }
-    
+
     private boolean validateDateNaissance() {
         LocalDate date = fieldDateNaissance.getValue();
         if (date == null) {
             showError(errorDateNaissance, "La date de naissance est obligatoire");
             return false;
         }
-        
+
         if (date.isAfter(LocalDate.now())) {
             showError(errorDateNaissance, "Date invalide");
             return false;
         }
-        
+
         if (date.isBefore(LocalDate.now().minusYears(120))) {
             showError(errorDateNaissance, "Date invalide");
             return false;
         }
-        
+
         hideError(errorDateNaissance);
         return true;
     }
-    
+
     private boolean validateSpecialite() {
         String specialite = fieldSpecialite.getText().trim();
         if (specialite.isEmpty()) {
             showError(errorSpecialite, "La spécialité est obligatoire pour le formateur");
             return false;
         }
-        
+
         if (specialite.length() < 3) {
             showError(errorSpecialite, "Minimum 3 caractères");
             return false;
         }
-        
+
         hideError(errorSpecialite);
         return true;
     }
-    
+
     private void showError(Label errorLabel, String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
         errorLabel.setManaged(true);
+
+        // Add error styling to the associated input field
+        javafx.scene.control.TextInputControl inputField = getAssociatedInputField(errorLabel);
+        if (inputField != null) {
+            if (!inputField.getStyleClass().contains("error")) {
+                inputField.getStyleClass().add("error");
+            }
+        }
     }
-    
+
     private void hideError(Label errorLabel) {
         errorLabel.setText("");
         errorLabel.setVisible(false);
         errorLabel.setManaged(false);
+
+        // Remove error styling from the associated input field
+        javafx.scene.control.TextInputControl inputField = getAssociatedInputField(errorLabel);
+        if (inputField != null) {
+            inputField.getStyleClass().remove("error");
+        }
     }
-    
+
+    private javafx.scene.control.TextInputControl getAssociatedInputField(Label errorLabel) {
+        if (errorLabel == errorEmail) return fieldEmail;
+        if (errorLabel == errorTelephone) return fieldTelephone;
+        if (errorLabel == errorPassword) return fieldPassword;
+        if (errorLabel == errorPasswordConfirm) return fieldPasswordConfirm;
+        if (errorLabel == errorNom) return fieldNom;
+        if (errorLabel == errorPrenom) return fieldPrenom;
+        if (errorLabel == errorSpecialite) return fieldSpecialite;
+        return null;
+    }
+
     private void clearAllErrors() {
         hideError(errorEmail);
         hideError(errorTelephone);
@@ -615,13 +750,28 @@ public class SignupController implements Initializable {
         hideError(errorPrenom);
         hideError(errorDateNaissance);
         hideError(errorSpecialite);
+
+        // Also clear error styling from all input fields
+        clearErrorStyling(fieldEmail);
+        clearErrorStyling(fieldTelephone);
+        clearErrorStyling(fieldPassword);
+        clearErrorStyling(fieldPasswordConfirm);
+        clearErrorStyling(fieldNom);
+        clearErrorStyling(fieldPrenom);
+        clearErrorStyling(fieldSpecialite);
     }
-    
+
+    private void clearErrorStyling(javafx.scene.control.TextInputControl field) {
+        if (field != null) {
+            field.getStyleClass().remove("error");
+        }
+    }
+
     private boolean validateAllFields() {
         clearAllErrors();
-        
+
         boolean isValid = true;
-        
+
         isValid &= validateEmail();
         isValid &= validateTelephone();
         isValid &= validatePassword();
@@ -629,11 +779,67 @@ public class SignupController implements Initializable {
         isValid &= validateNom();
         isValid &= validatePrenom();
         isValid &= validateDateNaissance();
-        
+
         if (rbFormateur.isSelected()) {
             isValid &= validateSpecialite();
         }
-        
+
         return isValid;
+    }
+
+    @FXML
+    private void onSignupWithGoogle() {
+        if (!OAuthService.isConfigured("google")) {
+            showMessage("OAuth Google n'est pas configuré. Veuillez contacter l'administrateur.");
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                OAuthCallbackHandler handler = new OAuthCallbackHandler();
+                User user = handler.authenticateWithGoogle();
+
+                Platform.runLater(() -> {
+                    if (user != null) {
+                        new Alert(Alert.AlertType.INFORMATION, "Inscription réussie avec Google ! Vous pouvez maintenant vous connecter.", ButtonType.OK).showAndWait();
+                        redirectToLogin();
+                    } else {
+                        showMessage("L'inscription avec Google a échoué. Veuillez réessayer.");
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    showMessage("Erreur lors de l'inscription avec Google: " + e.getMessage());
+                });
+            }
+        }).start();
+    }
+
+    @FXML
+    private void onSignupWithGithub() {
+        if (!OAuthService.isConfigured("github")) {
+            showMessage("OAuth GitHub n'est pas configuré. Veuillez contacter l'administrateur.");
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                OAuthCallbackHandler handler = new OAuthCallbackHandler();
+                User user = handler.authenticateWithGithub();
+
+                Platform.runLater(() -> {
+                    if (user != null) {
+                        new Alert(Alert.AlertType.INFORMATION, "Inscription réussie avec GitHub ! Vous pouvez maintenant vous connecter.", ButtonType.OK).showAndWait();
+                        redirectToLogin();
+                    } else {
+                        showMessage("L'inscription avec GitHub a échoué. Veuillez réessayer.");
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    showMessage("Erreur lors de l'inscription avec GitHub: " + e.getMessage());
+                });
+            }
+        }).start();
     }
 }

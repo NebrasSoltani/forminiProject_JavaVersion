@@ -1,6 +1,5 @@
 package tn.formini.services.formations;
 
-import tn.formini.entities.Users.User;
 import tn.formini.entities.formations.Formation;
 import tn.formini.entities.formations.Lecon;
 import tn.formini.services.service;
@@ -13,6 +12,7 @@ import java.util.List;
 public class LeconService implements service<Lecon> {
 
     private final Connection cnx;
+    private String lastDeleteError;
 
     public LeconService() {
         cnx = MyDataBase.getInstance().getCnx();
@@ -55,14 +55,63 @@ public class LeconService implements service<Lecon> {
 
     @Override
     public void supprimer(int id) {
-        if (cnx == null) return;
+        deleteById(id);
+    }
 
-        String req = "DELETE FROM lecon WHERE id=?";
-        try (PreparedStatement ps = cnx.prepareStatement(req)) {
-            ps.setInt(1, id);
-            ps.executeUpdate();
+    public boolean deleteById(int id) {
+        if (cnx == null) {
+            lastDeleteError = "Connexion base de donnees indisponible.";
+            return false;
+        }
+        lastDeleteError = null;
+
+        boolean previousAutoCommit;
+        try {
+            previousAutoCommit = cnx.getAutoCommit();
+            cnx.setAutoCommit(false);
         } catch (SQLException ex) {
+            lastDeleteError = ex.getMessage();
             System.out.println("Erreur supprimer lecon : " + ex.getMessage());
+            return false;
+        }
+
+        try {
+            executeDelete("DELETE FROM progression_lecon WHERE lecon_id=?", id);
+            int deletedLecon = executeDelete("DELETE FROM lecon WHERE id=?", id);
+            if (deletedLecon == 0) {
+                cnx.rollback();
+                lastDeleteError = "Lecon introuvable ou deja supprimee.";
+                return false;
+            }
+
+            cnx.commit();
+            return true;
+        } catch (SQLException ex) {
+            try {
+                cnx.rollback();
+            } catch (SQLException rollbackEx) {
+                System.out.println("Erreur rollback suppression lecon : " + rollbackEx.getMessage());
+            }
+            lastDeleteError = ex.getMessage();
+            System.out.println("Erreur supprimer lecon : " + ex.getMessage());
+            return false;
+        } finally {
+            try {
+                cnx.setAutoCommit(previousAutoCommit);
+            } catch (SQLException ex) {
+                System.out.println("Erreur restauration auto-commit lecon : " + ex.getMessage());
+            }
+        }
+    }
+
+    public String getLastDeleteError() {
+        return lastDeleteError;
+    }
+
+    private int executeDelete(String sql, int id) throws SQLException {
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate();
         }
     }
 

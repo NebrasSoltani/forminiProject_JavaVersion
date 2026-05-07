@@ -78,13 +78,13 @@ public class FormateurDashboardController implements DashboardRoleController {
         titleLabel.setText("Tableau de Bord Formateur");
         welcomeLabel.setText("Bienvenue, " + currentUser.getPrenom() + " " + currentUser.getNom() + "!");
 
-        myFormationsButton.setOnAction(e -> viewMyFormations());
-        createFormationButton.setOnAction(e -> createFormation());
-        manageLessonsButton.setOnAction(e -> manageLessons());
-        manageQuizzesButton.setOnAction(e -> manageQuizzes());
-        viewStudentsButton.setOnAction(e -> viewStudents());
-        myProfileButton.setOnAction(e -> viewMyProfile());
-        reviewsButton.setOnAction(e -> viewReviews());
+        if (myFormationsButton != null) myFormationsButton.setOnAction(e -> viewMyFormations());
+        if (createFormationButton != null) createFormationButton.setOnAction(e -> createFormation());
+        if (manageLessonsButton != null) manageLessonsButton.setOnAction(e -> manageLessons());
+        if (manageQuizzesButton != null) manageQuizzesButton.setOnAction(e -> manageQuizzes());
+        if (viewStudentsButton != null) viewStudentsButton.setOnAction(e -> viewStudents());
+        if (myProfileButton != null) myProfileButton.setOnAction(e -> viewMyProfile());
+        if (reviewsButton != null) reviewsButton.setOnAction(e -> viewReviews());
     }
 
     private void loadFormateurInfo() {

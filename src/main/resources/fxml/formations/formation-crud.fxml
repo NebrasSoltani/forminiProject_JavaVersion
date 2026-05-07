@@ -13,6 +13,7 @@
 
         <HBox spacing="10">
             <children>
+                <Button text="Retour" onAction="#handleBack" styleClass="btn-secondary"/>
                 <Button text="+ Creer" onAction="#handleCreate" style="-fx-background-color: #2ecc71; -fx-text-fill: white;"/>
                 <Button text="Modifier" onAction="#handleEdit" style="-fx-background-color: #f39c12; -fx-text-fill: white;"/>
                 <Button text="Supprimer" onAction="#handleDelete" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>

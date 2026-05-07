@@ -24,22 +24,22 @@ public class AdminDashboardController implements DashboardRoleController {
     private VBox menuContainer;
     
     @FXML
-    private Button apprenantsManagementButton;
+    private Button manageUsersButton;
     
     @FXML
-    private Button formateursManagementButton;
+    private Button manageApprenantsButton;
     
     @FXML
-    private Button societesManagementButton;
+    private Button manageFormateursButton;
     
     @FXML
-    private Button formationsManagementButton;
+    private Button manageSocietesButton;
     
     @FXML
-    private Button eventsManagementButton;
+    private Button manageFormationsButton;
     
     @FXML
-    private Button reportsButton;
+    private Button manageCategoriesButton;
 
     private User currentUser;
     private UserService userService;
@@ -63,12 +63,14 @@ public class AdminDashboardController implements DashboardRoleController {
         titleLabel.setText("Tableau de Bord Administrateur");
         
         // Setup button actions
-        apprenantsManagementButton.setOnAction(e -> openApprenantsManagement());
-        formateursManagementButton.setOnAction(e -> openFormateursManagement());
-        societesManagementButton.setOnAction(e -> openSocietesManagement());
-        formationsManagementButton.setOnAction(e -> openFormationsManagement());
-        eventsManagementButton.setOnAction(e -> openEventsManagement());
-        reportsButton.setOnAction(e -> openReports());
+        if (manageApprenantsButton != null) manageApprenantsButton.setOnAction(e -> openApprenantsManagement());
+        if (manageFormateursButton != null) manageFormateursButton.setOnAction(e -> openFormateursManagement());
+        if (manageSocietesButton != null) manageSocietesButton.setOnAction(e -> openSocietesManagement());
+        if (manageFormationsButton != null) manageFormationsButton.setOnAction(e -> openFormationsManagement());
+        
+        // Buttons specific to new FXML layout
+        if (manageUsersButton != null) manageUsersButton.setOnAction(e -> System.out.println("Users management - To be implemented"));
+        if (manageCategoriesButton != null) manageCategoriesButton.setOnAction(e -> System.out.println("Categories management - To be implemented"));
     }
 
     private void loadStatistics() {
@@ -168,6 +170,23 @@ public class AdminDashboardController implements DashboardRoleController {
     private void openReports() {
         // TODO: Implement reports
         System.out.println("Reports - To be implemented");
+    }
+    
+    @FXML
+    private void openMainMenu() {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                getClass().getResource("/fxml/MainMenu.fxml")
+            );
+            javafx.scene.Parent root = loader.load();
+            
+            javafx.stage.Stage stage = (javafx.stage.Stage) titleLabel.getScene().getWindow();
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.setTitle("Formini - Menu Principal");
+        } catch (Exception e) {
+            System.err.println("Error opening main menu: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @Override

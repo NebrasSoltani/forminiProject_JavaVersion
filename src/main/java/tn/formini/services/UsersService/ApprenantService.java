@@ -238,7 +238,10 @@ public class ApprenantService implements service<Apprenant> {
     }
 
     private User getUserById(int userId) {
-
+        if (userId <= 0) {
+            System.out.println("getUserById: Invalid userId: " + userId);
+            return null;
+        }
 
         String req = "SELECT * FROM user WHERE id=?";
         try {
@@ -257,10 +260,15 @@ public class ApprenantService implements service<Apprenant> {
                 user.setGouvernorat(rs.getString("gouvernorat"));
                 user.setDate_naissance(rs.getTimestamp("date_naissance"));
                 user.setRole_utilisateur(rs.getString("role_utilisateur"));
+                user.setPhoto(rs.getString("photo"));
+                System.out.println("getUserById: Successfully loaded user with id=" + userId + ", email=" + user.getEmail());
                 return user;
+            } else {
+                System.out.println("getUserById: No user found with id=" + userId);
             }
         } catch (SQLException ex) {
             System.out.println("Erreur getUserById : " + ex.getMessage());
+            ex.printStackTrace();
         }
         return null;
     }

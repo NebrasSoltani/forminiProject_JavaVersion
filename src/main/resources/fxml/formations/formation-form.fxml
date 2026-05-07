@@ -7,14 +7,14 @@
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="tn.formini.controllers.formations.FormationFormController"
-      spacing="12" style="-fx-padding: 16; -fx-background-color: white;">
+      spacing="12" stylesheets="@/css/style.css" styleClass="formation-form-root">
 
     <children>
-        <Label fx:id="titleLabel" text="Creer une formation" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+        <Label fx:id="titleLabel" text="Creer une formation" styleClass="formation-form-title"/>
 
-        <ScrollPane fitToWidth="true" prefHeight="620" style="-fx-background-color: transparent;">
+        <ScrollPane fitToWidth="true" prefHeight="620" styleClass="formation-form-scroll">
             <content>
-                <GridPane hgap="10" vgap="10" style="-fx-padding: 4;">
+                <GridPane hgap="10" vgap="10" styleClass="formation-form-grid">
                     <columnConstraints>
                         <ColumnConstraints minWidth="160" prefWidth="180"/>
                         <ColumnConstraints hgrow="ALWAYS"/>
@@ -64,10 +64,10 @@
                         <TextField fx:id="prixField" promptText="Ex: 199.99" GridPane.rowIndex="13" GridPane.columnIndex="1"/>
 
                         <Label text="Image couverture" GridPane.rowIndex="14" GridPane.columnIndex="0"/>
-                        <HBox spacing="8" GridPane.rowIndex="14" GridPane.columnIndex="1">
+                        <HBox spacing="8" styleClass="formation-form-inline" GridPane.rowIndex="14" GridPane.columnIndex="1">
                             <children>
                                 <TextField fx:id="imageField" promptText="URL, chemin local ou /images/..." HBox.hgrow="ALWAYS" onKeyReleased="#handleImageTyped"/>
-                                <Button text="Choisir" onAction="#handleChooseImage"/>
+                                <Button text="Choisir" onAction="#handleChooseImage" styleClass="btn-secondary"/>
                             </children>
                         </HBox>
 
@@ -78,7 +78,7 @@
                         <ComboBox fx:id="statutCombo" GridPane.rowIndex="16" GridPane.columnIndex="1"/>
 
                         <Label text="Options" GridPane.rowIndex="17" GridPane.columnIndex="0"/>
-                        <HBox spacing="16" GridPane.rowIndex="17" GridPane.columnIndex="1">
+                        <HBox spacing="16" styleClass="formation-form-options" GridPane.rowIndex="17" GridPane.columnIndex="1">
                             <children>
                                 <CheckBox fx:id="certificatCheck" text="Certificat"/>
                                 <CheckBox fx:id="quizCheck" text="Quiz"/>
@@ -91,11 +91,10 @@
             </content>
         </ScrollPane>
 
-        <HBox spacing="10" alignment="CENTER_RIGHT">
+        <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="formation-form-actions">
             <children>
-                <Button text="Annuler" onAction="#handleCancel"/>
-                <Button text="Enregistrer" onAction="#handleSave"
-                        style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Button text="Annuler" onAction="#handleCancel" styleClass="btn-secondary"/>
+                <Button text="Enregistrer" onAction="#handleSave" styleClass="btn-primary"/>
             </children>
             <padding>
                 <Insets top="8"/>

@@ -15,7 +15,6 @@ public class ResultatQuiz {
     private boolean reussi;
     private String details_reponses;
 
-
     private User apprenant;
 
     private Quiz quiz;
@@ -68,4 +67,3 @@ public class ResultatQuiz {
     @Override
     public String toString() { return "ResultatQuiz{id=" + id + ", note=" + note + ", reussi=" + reussi + "}"; }
 }
-

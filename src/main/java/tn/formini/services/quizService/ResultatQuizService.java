@@ -17,6 +17,12 @@ public class ResultatQuizService {
         cnx = MyDataBase.getInstance().getCnx();
     }
 
+    /** Rafraîchit la connexion depuis le singleton */
+    private Connection getCnx() {
+        cnx = MyDataBase.getInstance().getCnx();
+        return cnx;
+    }
+
     // ─── CREATE ───────────────────────────────────────────────
     public void ajouter(ResultatQuiz r) {
         r.valider();
@@ -41,6 +47,10 @@ public class ResultatQuizService {
     // ─── READ ALL ─────────────────────────────────────────────
     public List<ResultatQuiz> getAll() {
         List<ResultatQuiz> list = new ArrayList<>();
+        if (getCnx() == null) {
+            System.out.println("[ResultatQuizService] Connexion DB indisponible.");
+            return list;
+        }
         String req = "SELECT * FROM resultat_quiz";
         try {
             Statement st = cnx.createStatement();

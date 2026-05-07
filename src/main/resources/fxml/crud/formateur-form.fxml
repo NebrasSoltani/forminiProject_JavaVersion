@@ -9,29 +9,35 @@
         
         <GridPane hgap="10" vgap="10">
             <children>
-                <Label text="Spécialité*:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                <TextField fx:id="specialiteTextField" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="300"/>
+                <Label text="Nom*:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <TextField fx:id="nomTextField" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="300"/>
                 
-                <Label text="Utilisateur*:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                <ComboBox fx:id="userComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="300"/>
+                <Label text="Prénom*:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <TextField fx:id="prenomTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="300"/>
                 
-                <Label text="Expérience (années):" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                <TextField fx:id="experienceTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="300" promptText="0-70"/>
+                <Label text="Email*:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <TextField fx:id="emailTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="300"/>
                 
-                <Label text="Note moyenne:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                <TextField fx:id="noteTextField" GridPane.columnIndex="1" GridPane.rowIndex="3" prefWidth="300" promptText="0-5"/>
+                <Label text="Téléphone*:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <TextField fx:id="telephoneTextField" GridPane.columnIndex="1" GridPane.rowIndex="3" prefWidth="300"/>
                 
-                <Label text="LinkedIn:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                <TextField fx:id="linkedinTextField" GridPane.columnIndex="1" GridPane.rowIndex="4" prefWidth="300" promptText="https://linkedin.com/..."/>
+                <Label text="Date de naissance*:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                <DatePicker fx:id="dateNaissanceField" GridPane.columnIndex="1" GridPane.rowIndex="4" prefWidth="300"/>
                 
-                <Label text="Portfolio:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                <TextField fx:id="portfolioTextField" GridPane.columnIndex="1" GridPane.rowIndex="5" prefWidth="300" promptText="https://portfolio.com/..."/>
+                <Label text="Spécialité*:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                <TextField fx:id="specialiteTextField" GridPane.columnIndex="1" GridPane.rowIndex="5" prefWidth="300"/>
                 
-                <Label text="CV:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                <TextField fx:id="cvTextField" GridPane.columnIndex="1" GridPane.rowIndex="6" prefWidth="300" promptText="URL du CV"/>
+                <Label text="Bio:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                <TextArea fx:id="bioTextArea" GridPane.columnIndex="1" GridPane.rowIndex="6" prefWidth="300" prefHeight="100"/>
                 
-                <Label text="Bio:" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                <TextArea fx:id="bioTextArea" GridPane.columnIndex="1" GridPane.rowIndex="7" prefWidth="300" prefHeight="100" promptText="Biographie du formateur..."/>
+                <Label text="Expérience (années):" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                <TextField fx:id="experienceTextField" GridPane.columnIndex="1" GridPane.rowIndex="7" prefWidth="300"/>
+                
+                <Label text="LinkedIn:" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                <TextField fx:id="linkedinTextField" GridPane.columnIndex="1" GridPane.rowIndex="8" prefWidth="300"/>
+                
+                <Label text="Portfolio:" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
+                <TextField fx:id="portfolioTextField" GridPane.columnIndex="1" GridPane.rowIndex="9" prefWidth="300"/>
             </children>
         </GridPane>
         

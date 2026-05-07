@@ -16,12 +16,17 @@ public class QuestionService {
         cnx = MyDataBase.getInstance().getCnx();
     }
 
+    private Connection getCnx() {
+        cnx = MyDataBase.getInstance().getCnx();
+        return cnx;
+    }
+
     // ─── CREATE ───────────────────────────────────────────────
     public void ajouter(Question q) {
         q.valider();
         String req = "INSERT INTO question (enonce, type, points, ordre, explication, explications_detaillees, quiz_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try {
-            PreparedStatement ps = cnx.prepareStatement(req);
+            PreparedStatement ps = getCnx().prepareStatement(req, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, q.getEnonce());
             ps.setString(2, q.getType());
             ps.setInt(3, q.getPoints());
@@ -30,7 +35,12 @@ public class QuestionService {
             ps.setString(6, q.getExplications_detaillees());
             ps.setInt(7, q.getQuiz().getId());
             ps.executeUpdate();
-            System.out.println("Question ajoutée !");
+
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                q.setId(rs.getInt(1));
+            }
+            System.out.println("Question ajoutée avec ID: " + q.getId());
         } catch (SQLException e) {
             System.out.println("Erreur ajouter question : " + e.getMessage());
         }
@@ -39,6 +49,10 @@ public class QuestionService {
     // ─── READ ALL ─────────────────────────────────────────────
     public List<Question> getAll() {
         List<Question> list = new ArrayList<>();
+        if (getCnx() == null) {
+            System.out.println("[QuestionService] Connexion DB indisponible.");
+            return list;
+        }
         String req = "SELECT * FROM question";
         try {
             Statement st = cnx.createStatement();

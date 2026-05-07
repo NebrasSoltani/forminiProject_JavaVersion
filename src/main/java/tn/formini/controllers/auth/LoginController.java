@@ -1,59 +1,75 @@
 package tn.formini.controllers.auth;
 
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import tn.formini.controllers.frontend.FrontMainController;
 import tn.formini.entities.Users.User;
 import tn.formini.services.UsersService.LoginService;
+import tn.formini.services.UsersService.RememberMeService;
 import tn.formini.services.UsersService.SessionManager;
+import tn.formini.services.auth.OAuthCallbackHandler;
+import tn.formini.utils.OAuthConfig;
+
+import java.util.List;
 import java.util.prefs.Preferences;
 
 
-public class LoginController {
+public class             LoginController {
 
     @FXML
     private TextField fieldEmail;
-    
+
     @FXML
     private PasswordField fieldPassword;
-    
+
     @FXML
     private CheckBox cbRememberMe;
-    
+
     @FXML
     private Button btnLogin;
-    
+
     @FXML
     private Button btnForgotPassword;
-    
+
     @FXML
     private Button btnSignup;
-    
+
+    @FXML
+    private Button btnGoogleLogin;
+
+    @FXML
+    private Button btnGithubLogin;
+
+
     @FXML
     private Button btnTogglePassword;
-    
+
     @FXML
     private Label eyeIcon;
-    
+
     @FXML
     private Label eyeSlashIcon;
-    
+
     @FXML
     private Label lblMessage;
-    
+
     @FXML
     private Label errorEmail;
-    
+
     @FXML
     private Label errorPassword;
 
     private LoginService loginService;
     private SessionManager sessionManager;
+    private RememberMeService rememberMeService;
     private Runnable onBack;
     private Preferences prefs;
 
@@ -61,11 +77,12 @@ public class LoginController {
     public void initialize() {
         loginService = new LoginService();
         sessionManager = SessionManager.getInstance();
+        rememberMeService = new RememberMeService();
         prefs = Preferences.userNodeForPackage(LoginController.class);
-        
-        // Load saved email if remember me was checked
-        loadRememberedCredentials();
-        
+
+        // Load saved credentials if remember me was checked
+        loadSavedCredentials();
+
         // Clear errors on input change
         fieldEmail.textProperty().addListener((obs, oldVal, newVal) -> {
             errorEmail.setVisible(false);
@@ -73,13 +90,22 @@ public class LoginController {
             lblMessage.setVisible(false);
             lblMessage.setManaged(false);
         });
-        
+
         fieldPassword.textProperty().addListener((obs, oldVal, newVal) -> {
             errorPassword.setVisible(false);
             errorPassword.setManaged(false);
             lblMessage.setVisible(false);
             lblMessage.setManaged(false);
         });
+
+        // Handle remember me checkbox changes
+        cbRememberMe.selectedProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal) {
+                rememberMeService.clearCredentials();
+            }
+        });
+
+        
     }
 
     @FXML
@@ -113,16 +139,29 @@ public class LoginController {
                 return;
             }
 
+            // Check if 2FA is enabled
+            if (user.isGoogle_auth_enabled()) {
+                // Navigate to 2FA verification
+                navigateToTwoFactorVerification(user, cbRememberMe.isSelected());
+                return;
+            }
+
             // Create session
             sessionManager.login(user);
+            // Handle remember me functionality
+            if (cbRememberMe.isSelected()) {
+                rememberMeService.saveCredentials(user.getEmail(), "");
+            } else {
+                rememberMeService.clearCredentials();
+            }
 
             // Save remember me preference
             if (cbRememberMe.isSelected()) {
-                saveRememberedCredentials(email);
+                prefs.putBoolean("rememberMe", true);
+                prefs.put("rememberedEmail", user.getEmail());
             } else {
                 clearRememberedCredentials();
             }
-
             // TODO: Update last login when database column is available
             // loginService.updateLastLogin(user.getId());
 
@@ -136,18 +175,31 @@ public class LoginController {
 
     @FXML
     public void onForgotPassword(ActionEvent event) {
-        // TODO: Implement password recovery
-        showInfo("Fonctionnalité de récupération de mot de passe bientôt disponible.");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth/PasswordResetRequest.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) btnForgotPassword.getScene().getWindow();
+            if (stage.getScene() != null) {
+                stage.getScene().setRoot(root);
+            } else {
+                stage.setScene(new javafx.scene.Scene(root));
+            }
+            stage.setTitle("Formini - Reset Password");
+        } catch (Exception e) {
+            showError("Erreur lors de l'ouverture de la page de réinitialisation.");
+            e.printStackTrace();
+        }
     }
 
     @FXML
     public void onTogglePassword(ActionEvent event) {
         HBox parent = (HBox) btnTogglePassword.getParent();
-        
+
         // Find current password field (either PasswordField or TextField)
         javafx.scene.control.TextInputControl currentField = null;
         int fieldIndex = -1;
-        
+
         for (int i = 0; i < parent.getChildren().size(); i++) {
             javafx.scene.Node node = parent.getChildren().get(i);
             if ((node instanceof PasswordField || node instanceof TextField) && !node.equals(btnTogglePassword)) {
@@ -156,9 +208,9 @@ public class LoginController {
                 break;
             }
         }
-        
+
         if (currentField == null) return;
-        
+
         if (currentField instanceof PasswordField) {
             // Create TextField to show password
             TextField visiblePassword = new TextField();
@@ -166,17 +218,17 @@ public class LoginController {
             visiblePassword.setPromptText(currentField.getPromptText());
             visiblePassword.getStyleClass().addAll(currentField.getStyleClass());
             visiblePassword.setStyle(currentField.getStyle());
-            
+
             // Replace PasswordField with TextField
             parent.getChildren().set(fieldIndex, visiblePassword);
-            
+
             // Update icons
             eyeIcon.setVisible(false);
             eyeIcon.setManaged(false);
             eyeSlashIcon.setVisible(true);
             eyeSlashIcon.setManaged(true);
             fieldPassword = null; // Clear reference
-            
+
         } else {
             // Create PasswordField to hide password
             PasswordField newPasswordField = new PasswordField();
@@ -184,10 +236,10 @@ public class LoginController {
             newPasswordField.setPromptText(currentField.getPromptText());
             newPasswordField.getStyleClass().addAll(currentField.getStyleClass());
             newPasswordField.setStyle(currentField.getStyle());
-            
+
             // Replace TextField with PasswordField
             parent.getChildren().set(fieldIndex, newPasswordField);
-            
+
             // Update icons and field reference
             eyeIcon.setVisible(true);
             eyeIcon.setManaged(true);
@@ -206,7 +258,7 @@ public class LoginController {
             tn.formini.mains.SignupApp signupApp = new tn.formini.mains.SignupApp();
             Stage signupStage = new Stage();
             signupApp.start(signupStage);
-            
+
             // Close current login window
             if (onBack != null) {
                 onBack.run();
@@ -214,6 +266,53 @@ public class LoginController {
         } catch (Exception e) {
             System.err.println("Erreur lors de l'ouverture de la page d'inscription: " + e.getMessage());
         }
+    }
+
+    @FXML
+    public void onGoogleLogin(ActionEvent event) {
+        handleOAuthLogin("google");
+    }
+
+    @FXML
+    public void onGithubLogin(ActionEvent event) {
+        handleOAuthLogin("github");
+    }
+
+
+    private void handleOAuthLogin(String provider) {
+        // Run OAuth in a separate thread to avoid blocking UI
+        new Thread(() -> {
+            try {
+                OAuthCallbackHandler handler = new OAuthCallbackHandler();
+                User user;
+
+                if (provider.equals("google")) {
+                    user = handler.authenticateWithGoogle();
+                } else if (provider.equals("github")) {
+                    user = handler.authenticateWithGithub();
+                } else {
+                    user = null;
+                }
+
+                if (user != null) {
+                    // Update UI on JavaFX Application Thread
+                    javafx.application.Platform.runLater(() -> {
+                        sessionManager.login(user);
+                        showSuccess("Connexion via " + provider + " réussie !");
+                        navigateToEditProfile();
+                    });
+                } else {
+                    javafx.application.Platform.runLater(() -> {
+                        showError("Échec de l'authentification " + provider + ". Veuillez réessayer.");
+                    });
+                }
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> {
+                    showError("Erreur lors de l'authentification: " + e.getMessage());
+                });
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private String getPasswordText() {
@@ -233,17 +332,17 @@ public class LoginController {
 
     private boolean validateInput(String email, String password) {
         boolean isValid = true;
-        
+
         if (email.isEmpty()) {
             showFieldError(errorEmail, "L'email est obligatoire.");
             isValid = false;
         }
-        
+
         if (password.isEmpty()) {
             showFieldError(errorPassword, "Le mot de passe est obligatoire.");
             isValid = false;
         }
-        
+
         return isValid;
     }
 
@@ -325,26 +424,66 @@ public class LoginController {
         }
     }
 
+    private void navigateToTwoFactorVerification(User user, boolean rememberMe) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth/TwoFactorVerification.fxml"));
+            Parent root = loader.load();
+
+            TwoFactorVerificationController controller = loader.getController();
+            controller.setUser(user);
+            controller.setRememberMe(rememberMe);
+
+            Stage stage = (Stage) btnLogin.getScene().getWindow();
+            if (stage.getScene() != null) {
+                stage.getScene().setRoot(root);
+            } else {
+                stage.setScene(new javafx.scene.Scene(root));
+            }
+            stage.setTitle("Formini - Vérification 2FA");
+        } catch (Exception e) {
+            showError("Erreur lors de l'ouverture de la page de vérification 2FA.");
+            e.printStackTrace();
+        }
+    }
+
     public void setOnBack(Runnable onBack) {
         this.onBack = onBack;
     }
 
-    private void loadRememberedCredentials() {
+    /**
+     * Load saved credentials if remember me was previously checked
+     */
+    private void loadSavedCredentials() {
+        // Load from RememberMeService
+        if (rememberMeService.hasSavedCredentials()) {
+            String savedEmail = rememberMeService.getSavedEmail();
+            if (savedEmail != null && !savedEmail.isEmpty()) {
+                fieldEmail.setText(savedEmail);
+                cbRememberMe.setSelected(true);
+                System.out.println("Identifiants sauvegardés chargés pour la connexion automatique");
+            }
+        }
+
+        // Also load from preferences
         boolean rememberMe = prefs.getBoolean("rememberMe", false);
         if (rememberMe) {
-            String savedEmail = prefs.get("email", "");
-            fieldEmail.setText(savedEmail);
-            cbRememberMe.setSelected(true);
+            String rememberedEmail = prefs.get("rememberedEmail", "");
+            if (!rememberedEmail.isEmpty()) {
+                fieldEmail.setText(rememberedEmail);
+                cbRememberMe.setSelected(true);
+            }
         }
     }
 
-    private void saveRememberedCredentials(String email) {
+    private void saveRememberedCredentials(String email, String password) {
         prefs.putBoolean("rememberMe", true);
-        prefs.put("email", email);
+        prefs.put("rememberedEmail", email);
+        prefs.put("password", password);
     }
 
     private void clearRememberedCredentials() {
         prefs.putBoolean("rememberMe", false);
         prefs.remove("email");
+        prefs.remove("password");
     }
 }

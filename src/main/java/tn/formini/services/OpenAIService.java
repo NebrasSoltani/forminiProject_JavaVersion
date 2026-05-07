@@ -1,0 +1,113 @@
+package tn.formini.services;
+
+import com.theokanning.openai.service.OpenAiService;
+import com.theokanning.openai.completion.chat.ChatCompletionRequest;
+import com.theokanning.openai.completion.chat.ChatCompletionResult;
+import com.theokanning.openai.completion.chat.ChatMessage;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Properties;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+
+public class OpenAIService {
+    private static OpenAIService instance;
+    private OpenAiService service;
+    private String apiKey;
+    private boolean isConfigured = false;
+
+    private OpenAIService() {
+        loadConfiguration();
+    }
+
+    public static OpenAIService getInstance() {
+        if (instance == null) {
+            instance = new OpenAIService();
+        }
+        return instance;
+    }
+
+    private void loadConfiguration() {
+        try {
+            Properties prop = new Properties();
+            prop.load(new FileInputStream("src/main/resources/config.properties"));
+            apiKey = prop.getProperty("openai.api.key");
+            isConfigured = apiKey != null && !apiKey.trim().isEmpty();
+            
+            if (isConfigured) {
+                service = new OpenAiService(apiKey);
+            }
+        } catch (IOException e) {
+            System.err.println("Erreur lors du chargement de la configuration OpenAI: " + e.getMessage());
+            isConfigured = false;
+        }
+    }
+
+    public CompletableFuture<List<String>> getProductSuggestions(String category, String preferences) {
+        return CompletableFuture.supplyAsync(() -> {
+            if (!isConfigured) {
+                return getDefaultSuggestions(category);
+            }
+
+            try {
+                List<ChatMessage> messages = new ArrayList<>();
+                messages.add(new ChatMessage("system", "Tu es un assistant de shopping qui suggere des produits."));
+                
+                String prompt = "Suggere 5 produits pour la categorie: " + category;
+                if (preferences != null && !preferences.trim().isEmpty()) {
+                    prompt += ". Preferences: " + preferences;
+                }
+                messages.add(new ChatMessage("user", prompt));
+
+                ChatCompletionRequest request = ChatCompletionRequest.builder()
+                    .model("gpt-3.5-turbo")
+                    .messages(messages)
+                    .maxTokens(150)
+                    .temperature(0.7)
+                    .build();
+
+                ChatCompletionResult result = service.createChatCompletion(request);
+                String response = result.getChoices().get(0).getMessage().getContent();
+                
+                List<String> suggestions = new ArrayList<>();
+                String[] lines = response.split("\n");
+                for (String line : lines) {
+                    line = line.trim();
+                    if (!line.isEmpty() && !line.matches("^\\d+\\..*")) {
+                        suggestions.add(line);
+                    } else if (line.matches("^\\d+\\..*")) {
+                        suggestions.add(line.substring(line.indexOf('.') + 1).trim());
+                    }
+                }
+                
+                return suggestions;
+            } catch (Exception e) {
+                System.err.println("Erreur API OpenAI: " + e.getMessage());
+                return getDefaultSuggestions(category);
+            }
+        });
+    }
+
+    private List<String> getDefaultSuggestions(String category) {
+        List<String> defaults = new ArrayList<>();
+        defaults.add("Produit 1 pour " + category);
+        defaults.add("Produit 2 pour " + category);
+        defaults.add("Produit 3 pour " + category);
+        defaults.add("Produit 4 pour " + category);
+        defaults.add("Produit 5 pour " + category);
+        return defaults;
+    }
+
+    public String getApiKeyStatus() {
+        if (apiKey == null) return "Non configuree";
+        if (apiKey.trim().isEmpty()) {
+            return "Cle par defaut (non configuree)";
+        }
+        return "Configuree (" + apiKey.substring(0, Math.min(10, apiKey.length())) + "...)";
+    }
+
+    public boolean isConfigured() {
+        return isConfigured;
+    }
+}

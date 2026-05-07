@@ -2,7 +2,10 @@
 
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.*?>
+<?import java.net.URL?>
 
 <StackPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
@@ -10,17 +13,33 @@
            styleClass="signup-page"
            minHeight="400">
 
+    <stylesheets>
+        <URL value="@../../css/style.css" />
+    </stylesheets>
+
+    <!-- Decorative Background Elements -->
+    <StackPane StackPane.alignment="TOP_LEFT">
+        <Circle radius="200" fill="linear-gradient(to bottom right, #4f46e5 0%, #1e1b4b 100%)"
+                opacity="0.1" StackPane.alignment="TOP_LEFT"
+                translateX="-100" translateY="-100"/>
+    </StackPane>
+
+    <StackPane StackPane.alignment="BOTTOM_RIGHT">
+        <Circle radius="250" fill="linear-gradient(to bottom right, #1e293b 0%, #0f172a 100%)"
+                opacity="0.15" StackPane.alignment="BOTTOM_RIGHT"
+                translateX="150" translateY="150"/>
+    </StackPane>
+
     <VBox alignment="TOP_CENTER" spacing="0" StackPane.alignment="TOP_CENTER">
         <padding><Insets top="28" right="24" bottom="28" left="24"/></padding>
 
         <VBox maxWidth="720" spacing="20" alignment="TOP_CENTER" styleClass="signup-column">
 
             <!-- En-tête -->
-            <VBox spacing="8" alignment="CENTER_LEFT" styleClass="signup-hero">
-                <Label text="Inscription" styleClass="signup-hero-kicker"/>
-                <Label text="Créer un compte Formini" styleClass="signup-hero-title"/>
-                <Label text="Choisissez votre profil et complétez les informations. Les champs marqués * sont obligatoires."
-                       wrapText="true" styleClass="signup-hero-sub" maxWidth="680"/>
+            <VBox spacing="8" alignment="CENTER" styleClass="signup-hero">
+                <Label text="CRÉER UN COMPTE" styleClass="signup-hero-title" style="-fx-font-size: 32px;"/>
+                <Label text="Rejoignez la communauté Formini et commencez votre apprentissage."
+                       wrapText="true" styleClass="signup-hero-sub" maxWidth="680" alignment="CENTER"/>
             </VBox>
 
             <Label fx:id="lblMessage" styleClass="signup-alert" wrapText="true" maxWidth="680" visible="false" managed="false"/>
@@ -44,6 +63,20 @@
                                     <RadioButton fx:id="rbFormateur" text="Formateur" styleClass="signup-role-radio"/>
                                     <Label text="Publier du contenu et former" styleClass="signup-role-hint" wrapText="true"/>
                                 </VBox>
+                            </HBox>
+                        </VBox>
+
+                        <Separator styleClass="signup-sep"/>
+
+                        <!-- OAuth Signup -->
+                        <VBox spacing="14">
+                            <VBox spacing="4">
+                                <Label text="Ou inscrivez-vous avec" styleClass="signup-section-kicker"/>
+                                <Label text="Connexion rapide" styleClass="signup-section-title"/>
+                            </VBox>
+                            <HBox spacing="12" alignment="CENTER">
+                                <Button text="🔵 Google" onAction="#onSignupWithGoogle" styleClass="btn-oauth btn-google" HBox.hgrow="ALWAYS"/>
+                                <Button text="⚫ GitHub" onAction="#onSignupWithGithub" styleClass="btn-oauth btn-github" HBox.hgrow="ALWAYS"/>
                             </HBox>
                         </VBox>
 
@@ -116,13 +149,32 @@
 
                                 <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="3">
                                     <Label text="Gouvernorat" styleClass="form-label"/>
-                                    <TextField fx:id="fieldGouvernorat" styleClass="form-control signup-field" promptText="ex. Tunis"/>
+                                    <ComboBox fx:id="fieldGouvernorat" styleClass="form-control signup-field" maxWidth="Infinity" promptText="Choisir"/>
                                 </VBox>
                                 <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                     <Label text="Date de naissance *" styleClass="form-label"/>
                                     <DatePicker fx:id="fieldDateNaissance" styleClass="form-control signup-field" maxWidth="Infinity" promptText="JJ/MM/AAAA"/>
                                     <Label fx:id="errorDateNaissance" styleClass="error-label" text="" visible="false" managed="false"/>
                                 </VBox>
+
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.columnSpan="2">
+                                    <Label text="Photo de profil" styleClass="form-label"/>
+                                    <HBox spacing="12" alignment="CENTER_LEFT">
+                                        <VBox spacing="8" alignment="CENTER">
+                                            <ImageView fx:id="imageViewPhoto" fitWidth="100" fitHeight="100" preserveRatio="true"/>
+                                        </VBox>
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <HBox spacing="8" alignment="CENTER_LEFT">
+                                                <Button fx:id="btnUploadPhoto" text="Choisir une photo" styleClass="btn-secondary signup-btn-upload" onAction="#onUploadPhoto"/>
+                                                <Label fx:id="lblPhotoFileName" text="Aucune photo sélectionnée" styleClass="signup-file-name"/>
+                                            </HBox>
+                                            <TextField fx:id="fieldPhoto" styleClass="form-control signup-field" promptText="Ou lien URL vers photo"/>
+                                        </VBox>
+                                    </HBox>
+                                </VBox>
+
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.columnSpan="2">
+                                                                    </VBox>
                             </GridPane>
                             <Label text="Mot de passe : au moins 8 caractères, une majuscule, une minuscule et un chiffre."
                                    styleClass="signup-field-hint" wrapText="true"/>
@@ -154,9 +206,17 @@
                                         <TextField fx:id="fieldObjectif" styleClass="form-control signup-field" promptText="Ex. Devenir développeur Java"/>
                                     </VBox>
                                     <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
-                                        <Label text="Domaines d'intérêt" styleClass="form-label"/>
-                                        <TextField fx:id="fieldDomainesInteret" styleClass="form-control signup-field" promptText='Format JSON : ["Java","Web"] ou laisser vide'/>
-                                        <Label text="Tableau JSON entre crochets, noms entre guillemets." styleClass="signup-field-hint" wrapText="true"/>
+                                        <HBox spacing="8" alignment="CENTER_LEFT">
+                                            <Label text="Domaines d'intérêt" styleClass="form-label"/>
+                                            <Label text="ℹ" styleClass="info-icon"/>
+                                        </HBox>
+                                        <VBox spacing="8">
+                                            <HBox spacing="8" alignment="CENTER_LEFT">
+                                                <TextField fx:id="fieldDomaineInput" styleClass="form-control signup-field" promptText="Ex: Java" HBox.hgrow="ALWAYS"/>
+                                                <Button fx:id="btnAddDomaine" text="Ajouter" styleClass="btn-secondary" onAction="#onAddDomaine"/>
+                                            </HBox>
+                                            <HBox fx:id="flowPaneDomaines" spacing="8" alignment="CENTER_LEFT"/>
+                                        </VBox>
                                     </VBox>
                                 </GridPane>
                             </VBox>
@@ -210,17 +270,14 @@
 
                 <!-- Navigation vers connexion -->
                 <HBox spacing="14" alignment="CENTER" styleClass="signup-nav">
-                    <padding><Insets top="8" right="24" bottom="8" left="24"/></padding>
                     <Label text="Déjà un compte ?" styleClass="signup-nav-text"/>
-                    <Button fx:id="btnGoToLogin" text="Se connecter" styleClass="signup-nav-link" onAction="#onGoToLogin"/>
+                    <Button fx:id="btnGoToLogin" text="Se connecter" styleClass="signup-nav-link" onAction="#onGoToLogin" style="-fx-font-weight: bold;"/>
                 </HBox>
 
                 <!-- Pied de carte : actions -->
-                <HBox spacing="14" alignment="CENTER_RIGHT" styleClass="signup-actions">
-                    <padding><Insets top="16" right="24" bottom="20" left="24"/></padding>
-                    <Region HBox.hgrow="ALWAYS"/>
-                    <Button text="Annuler" onAction="#goBack" styleClass="btn-secondary signup-btn-secondary"/>
-                    <Button text="Créer mon compte" onAction="#onSubmit" styleClass="btn-primary signup-btn-primary"/>
+                <HBox spacing="14" alignment="CENTER" styleClass="signup-actions" style="-fx-padding: 20 0 30 0;">
+                    <Button text="Annuler" onAction="#goBack" styleClass="btn-secondary" prefWidth="120"/>
+                    <Button text="CRÉER MON COMPTE" onAction="#onSubmit" styleClass="signup-btn-primary" prefWidth="240"/>
                 </HBox>
             </VBox>
         </VBox>

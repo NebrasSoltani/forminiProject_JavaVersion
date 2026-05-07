@@ -1,6 +1,8 @@
 package tn.formini.services.quizService;
+package tn.formini.services.quizService;
 
 import tn.formini.entities.Quizs.Quiz;
+import tn.formini.entities.formations.Formation;
 import tn.formini.tools.MyDataBase;
 
 import java.sql.*;
@@ -15,48 +17,85 @@ public class QuizService {
         cnx = MyDataBase.getInstance().getCnx();
     }
 
-    // ─── CREATE ───────────────────────────────────────────────
+    private Connection getCnx() {
+        cnx = MyDataBase.getInstance().getCnx();
+        return cnx;
+    }
+
     public void ajouter(Quiz q) {
         q.valider();
         String req = "INSERT INTO quiz (titre, description, duree, note_minimale, afficher_correction, melanger, formation_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try {
-            PreparedStatement ps = cnx.prepareStatement(req);
+            PreparedStatement ps = getCnx().prepareStatement(req);
             ps.setString(1, q.getTitre());
             ps.setString(2, q.getDescription());
             ps.setInt(3, q.getDuree());
             ps.setInt(4, q.getNote_minimale());
             ps.setBoolean(5, q.isAfficher_correction());
             ps.setBoolean(6, q.isMelanger());
-            ps.setInt(7, q.getFormation().getId());
+            if (q.getFormation() != null) ps.setInt(7, q.getFormation().getId());
+            else ps.setNull(7, Types.INTEGER);
             ps.executeUpdate();
             System.out.println("Quiz ajouté !");
         } catch (SQLException e) {
             System.out.println("Erreur ajouter quiz : " + e.getMessage());
+            throw new IllegalArgumentException("Erreur BDD : " + e.getMessage());
         }
     }
 
     // ─── READ ALL ─────────────────────────────────────────────
     public List<Quiz> getAll() {
         List<Quiz> list = new ArrayList<>();
+        if (getCnx() == null) {
+            System.out.println("[QuizService] Connexion DB indisponible.");
+            return list;
+        }
         String req = "SELECT * FROM quiz";
         try {
             Statement st = cnx.createStatement();
             ResultSet rs = st.executeQuery(req);
             while (rs.next()) {
-                Quiz q = new Quiz();
-                q.setId(rs.getInt("id"));
-                q.setTitre(rs.getString("titre"));
-                q.setDescription(rs.getString("description"));
-                q.setDuree(rs.getInt("duree"));
-                q.setNote_minimale(rs.getInt("note_minimale"));
-                q.setAfficher_correction(rs.getBoolean("afficher_correction"));
-                q.setMelanger(rs.getBoolean("melanger"));
-                list.add(q);
+                list.add(mapRow(rs));
             }
         } catch (SQLException e) {
             System.out.println("Erreur getAll quiz : " + e.getMessage());
         }
         return list;
+    }
+
+    // ─── READ BY FORMATION ────────────────────────────────────
+    public List<Quiz> findByFormation(int formationId) {
+        List<Quiz> list = new ArrayList<>();
+        String req = "SELECT * FROM quiz WHERE formation_id = ?";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(req);
+            ps.setInt(1, formationId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            System.out.println("Erreur findByFormation quiz : " + e.getMessage());
+        }
+        return list;
+    }
+
+    private Quiz mapRow(ResultSet rs) throws SQLException {
+        Quiz q = new Quiz();
+        q.setId(rs.getInt("id"));
+        q.setTitre(rs.getString("titre"));
+        q.setDescription(rs.getString("description"));
+        q.setDuree(rs.getInt("duree"));
+        q.setNote_minimale(rs.getInt("note_minimale"));
+        q.setAfficher_correction(rs.getBoolean("afficher_correction"));
+        q.setMelanger(rs.getBoolean("melanger"));
+        int fid = rs.getInt("formation_id");
+        if (!rs.wasNull()) {
+            Formation f = new Formation();
+            f.setId(fid);
+            q.setFormation(f);
+        }
+        return q;
     }
 
     // ─── READ ONE ─────────────────────────────────────────────
@@ -67,15 +106,7 @@ public class QuizService {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                Quiz q = new Quiz();
-                q.setId(rs.getInt("id"));
-                q.setTitre(rs.getString("titre"));
-                q.setDescription(rs.getString("description"));
-                q.setDuree(rs.getInt("duree"));
-                q.setNote_minimale(rs.getInt("note_minimale"));
-                q.setAfficher_correction(rs.getBoolean("afficher_correction"));
-                q.setMelanger(rs.getBoolean("melanger"));
-                return q;
+                return mapRow(rs);
             }
         } catch (SQLException e) {
             System.out.println("Erreur getById quiz : " + e.getMessage());
@@ -100,6 +131,7 @@ public class QuizService {
             System.out.println("Quiz modifié !");
         } catch (SQLException e) {
             System.out.println("Erreur modifier quiz : " + e.getMessage());
+            throw new IllegalArgumentException("Erreur BDD : " + e.getMessage());
         }
     }
 

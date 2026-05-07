@@ -1,4 +1,8 @@
+<<<<<<<< HEAD:src/main/java/tn/formini/entities/produits/Produit.java
+package tn.formini.entities.produits;
+========
 package tn.formini.entities.Users;
+>>>>>>>> 3db19ffe55f267df3de0a8e7fc2dfbf76d31ad5f:src/main/java/tn/formini/entities/Users/Produit.java
 
 import java.math.BigDecimal;
 import java.util.Date;
