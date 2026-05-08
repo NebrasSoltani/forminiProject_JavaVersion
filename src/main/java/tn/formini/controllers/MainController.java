@@ -71,6 +71,7 @@ public class MainController implements Initializable {
                 btnOrderManage,
                 btnSocieteManage,
                 btnFormateurManage,
+                btnApprenantManage,
                 btnQuiz,
                 btnStageList
         );
@@ -111,6 +112,8 @@ public class MainController implements Initializable {
                 cacherBouton(btnProductManage);
                 cacherBouton(btnOrderManage);
                 cacherBouton(btnSocieteManage);
+                cacherBouton(btnFormateurManage);
+                cacherBouton(btnApprenantManage);
                 if (labelAdminSection != null) {
                     labelAdminSection.setVisible(false);
                     labelAdminSection.setManaged(false);
@@ -123,7 +126,22 @@ public class MainController implements Initializable {
                 cacherBouton(btnProductManage);
                 cacherBouton(btnOrderManage);
                 cacherBouton(btnSocieteManage);
+                cacherBouton(btnFormateurManage);
+                cacherBouton(btnApprenantManage);
                 cacherBouton(btnQuiz);
+                if (labelAdminSection != null) {
+                    labelAdminSection.setVisible(false);
+                    labelAdminSection.setManaged(false);
+                }
+            } else if (!session.isAdmin()) {
+                // Pour les formateurs et autres rôles non-admin
+                cacherBouton(btnBlogAdd);
+                cacherBouton(btnEventAdd);
+                cacherBouton(btnProductAdd);
+                cacherBouton(btnProductManage);
+                cacherBouton(btnOrderManage);
+                cacherBouton(btnFormateurManage);
+                cacherBouton(btnApprenantManage);
                 if (labelAdminSection != null) {
                     labelAdminSection.setVisible(false);
                     labelAdminSection.setManaged(false);
@@ -391,5 +409,19 @@ public class MainController implements Initializable {
             controller.setSelectedTab(1);
         }
         updateActiveButton(btnStageList);
+    }
+
+    @FXML
+    public void handleLogout() {
+        tn.formini.services.UsersService.SessionManager session = tn.formini.services.UsersService.SessionManager.getInstance();
+        session.logout();
+        try {
+            URL resource = getClass().getResource("/fxml/auth/Login.fxml");
+            FXMLLoader loader = new FXMLLoader(resource);
+            Parent root = loader.load();
+            contentArea.getScene().setRoot(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

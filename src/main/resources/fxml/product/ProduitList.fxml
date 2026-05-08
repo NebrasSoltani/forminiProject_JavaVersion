@@ -8,68 +8,94 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="tn.formini.controllers.produit.ProduitListController"
-      spacing="10" styleClass="content-area">
+      spacing="0" styleClass="content-area" style="-fx-background-color: #0f172a;">
 
-    <HBox alignment="CENTER_LEFT" spacing="15">
-        <Button text="⬅" onAction="#goBack" styleClass="icon-btn" style="-fx-pref-width: 30; -fx-pref-height: 30;"/>
-        <Label fx:id="labelFormTitle" text="Gestion des Produits" styleClass="page-title"/>
+    <!-- Header Section -->
+    <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 24 32 16 32; -fx-background-color: #0f172a;">
+        <Button text="⬅" onAction="#goBack" styleClass="icon-btn" style="-fx-pref-width: 36; -fx-pref-height: 36; -fx-background-color: #1e293b; -fx-text-fill: #94a3b8; -fx-background-radius: 8;"/>
+        <VBox spacing="4">
+            <Label fx:id="labelFormTitle" text="Catalogue des Produits" styleClass="page-title" style="-fx-font-size: 28px; -fx-font-weight: 800; -fx-text-fill: white;"/>
+            <Label text="Gérez votre inventaire de produits" style="-fx-font-size: 14px; -fx-text-fill: #64748b;"/>
+        </VBox>
         <Region HBox.hgrow="ALWAYS"/>
-        <HBox spacing="8">
-            <TextField fx:id="fieldSearch" promptText="Rechercher un produit..." styleClass="search-field" HBox.hgrow="ALWAYS"/>
-            <ComboBox fx:id="fieldFilterCategorie" promptText="Toutes les catégories" styleClass="filter-combo"/>
-            <Button text="🔍" onAction="#searchProducts" styleClass="icon-btn" style="-fx-pref-width: 30; -fx-pref-height: 30;"/>
-            <Button text="➕ Ajouter" onAction="#addProduct" styleClass="btn-primary" style="-fx-pref-width: 80; -fx-pref-height: 30;"/>
+        <HBox spacing="12" alignment="CENTER_RIGHT">
+            <TextField fx:id="fieldSearch" promptText="🔍 Rechercher..." styleClass="search-field" style="-fx-pref-width: 280; -fx-pref-height: 40; -fx-background-color: #1e293b; -fx-border-color: #334155; -fx-border-radius: 10; -fx-background-radius: 10; -fx-text-fill: white; -fx-prompt-text-fill: #64748b;"/>
+            <ComboBox fx:id="fieldFilterCategorie" promptText="Catégorie" styleClass="filter-combo" style="-fx-pref-width: 150; -fx-pref-height: 40; -fx-background-color: #1e293b; -fx-border-color: #334155; -fx-border-radius: 10; -fx-background-radius: 10; -fx-text-fill: white;"/>
+            <Button text="➕ Ajouter" onAction="#addProduct" styleClass="btn-primary" style="-fx-pref-width: 120; -fx-pref-height: 40; -fx-font-weight: 700;"/>
         </HBox>
     </HBox>
 
-    <!-- Category Filter Section -->
-    <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 0 20 10 20;">
-        <Label text="Filtrer par catégorie:" styleClass="filter-label"/>
-        <HBox spacing="10" HBox.hgrow="ALWAYS">
-            <Button text="Tous" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Tous"/>
-            <Button text="Informatique" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Informatique"/>
-            <Button text="Scientifique" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Scientifique"/>
-            <Button text="Outils intelligents" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Outils intelligents"/>
-            <Button text="Accessoires" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Accessoires"/>
+    <!-- Statistics Dashboard -->
+    <HBox spacing="20" style="-fx-padding: 0 32 20 32;">
+        <VBox spacing="8" styleClass="stat-card" style="-fx-background-color: #1e293b; -fx-background-radius: 16; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 4);" HBox.hgrow="ALWAYS">
+            <Label text="📦 Total Produits" style="-fx-font-size: 12px; -fx-text-fill: #64748b; -fx-font-weight: 600;"/>
+            <Label fx:id="statTotalProducts" text="0" style="-fx-font-size: 32px; -fx-font-weight: 800; -fx-text-fill: white;"/>
+        </VBox>
+        <VBox spacing="8" styleClass="stat-card" style="-fx-background-color: #1e293b; -fx-background-radius: 16; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 4);" HBox.hgrow="ALWAYS">
+            <Label text="✅ Disponibles" style="-fx-font-size: 12px; -fx-text-fill: #10b981; -fx-font-weight: 600;"/>
+            <Label fx:id="statAvailableProducts" text="0" style="-fx-font-size: 32px; -fx-font-weight: 800; -fx-text-fill: #10b981;"/>
+        </VBox>
+        <VBox spacing="8" styleClass="stat-card" style="-fx-background-color: #1e293b; -fx-background-radius: 16; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 4);" HBox.hgrow="ALWAYS">
+            <Label text="⚠️ Stock Faible" style="-fx-font-size: 12px; -fx-text-fill: #f59e0b; -fx-font-weight: 600;"/>
+            <Label fx:id="statLowStockProducts" text="0" style="-fx-font-size: 32px; -fx-font-weight: 800; -fx-text-fill: #f59e0b;"/>
+        </VBox>
+        <VBox spacing="8" styleClass="stat-card" style="-fx-background-color: #1e293b; -fx-background-radius: 16; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 4);" HBox.hgrow="ALWAYS">
+            <Label text="💰 Valeur Stock" style="-fx-font-size: 12px; -fx-text-fill: #3b82f6; -fx-font-weight: 600;"/>
+            <Label fx:id="statStockValue" text="0 DT" style="-fx-font-size: 32px; -fx-font-weight: 800; -fx-text-fill: #3b82f6;"/>
+        </VBox>
+    </HBox>
+
+    <!-- Category Filter Pills -->
+    <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 0 32 16 32;">
+        <Label text="Filtrer par catégorie:" style="-fx-font-size: 14px; -fx-text-fill: #94a3b8; -fx-font-weight: 600;"/>
+        <HBox spacing="8" HBox.hgrow="ALWAYS">
+            <Button text="Tous" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Tous" style="-fx-background-color: #334155; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 8 16; -fx-font-size: 13px; -fx-font-weight: 600; -fx-cursor: hand;"/>
+            <Button text="Informatique" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Informatique" style="-fx-background-color: #1e293b; -fx-text-fill: #94a3b8; -fx-background-radius: 20; -fx-padding: 8 16; -fx-font-size: 13px; -fx-font-weight: 600; -fx-cursor: hand;"/>
+            <Button text="Scientifique" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Scientifique" style="-fx-background-color: #1e293b; -fx-text-fill: #94a3b8; -fx-background-radius: 20; -fx-padding: 8 16; -fx-font-size: 13px; -fx-font-weight: 600; -fx-cursor: hand;"/>
+            <Button text="Outils intelligents" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Outils intelligents" style="-fx-background-color: #1e293b; -fx-text-fill: #94a3b8; -fx-background-radius: 20; -fx-padding: 8 16; -fx-font-size: 13px; -fx-font-weight: 600; -fx-cursor: hand;"/>
+            <Button text="Accessoires" onAction="#filterByCategory" styleClass="category-filter-btn" userData="Accessoires" style="-fx-background-color: #1e293b; -fx-text-fill: #94a3b8; -fx-background-radius: 20; -fx-padding: 8 16; -fx-font-size: 13px; -fx-font-weight: 600; -fx-cursor: hand;"/>
         </HBox>
     </HBox>
 
+    <!-- Products Grid -->
     <VBox styleClass="form-container" VBox.vgrow="ALWAYS" alignment="TOP_CENTER">
-        <ScrollPane fitToWidth="true" styleClass="scroll-pane">
-            <VBox spacing="15">
+        <ScrollPane fitToWidth="true" styleClass="scroll-pane" style="-fx-background-color: #0f172a; -fx-border-color: transparent;">
+            <VBox spacing="0">
                 <!-- Products will be dynamically added here -->
-                <FlowPane fx:id="productsContainer" hgap="20" vgap="20" alignment="TOP_LEFT">
-                    <padding><Insets top="20" left="20" right="20" bottom="20"/></padding>
-                </FlowPane>
+                <TilePane fx:id="productsContainer" hgap="24" vgap="24" alignment="TOP_LEFT" prefColumns="4">
+                    <padding><Insets top="0" left="32" right="32" bottom="20"/></padding>
+                </TilePane>
             </VBox>
         </ScrollPane>
         
-        <!-- Pagination Controls -->
-        <HBox fx:id="paginationContainer" alignment="CENTER" spacing="15" style="-fx-padding: 20 20 20 20; -fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-width: 1 0 0 0;">
-            <HBox alignment="CENTER_LEFT" spacing="10">
-                <Button fx:id="firstPageBtn" styleClass="pagination-btn" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-pref-width: 35; -fx-pref-height: 35; -fx-font-size: 14px;"/>
-                <Button fx:id="prevPageBtn" styleClass="pagination-btn" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-pref-width: 35; -fx-pref-height: 35; -fx-font-size: 14px;"/>
+        <!-- Enhanced Pagination Controls -->
+        <HBox fx:id="paginationContainer" alignment="CENTER" spacing="20" style="-fx-padding: 20 32 20 32; -fx-background-color: #1e293b; -fx-border-color: #334155; -fx-border-width: 1 0 0 0;">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Button fx:id="firstPageBtn" styleClass="pagination-btn" style="-fx-background-color: #374151; -fx-text-fill: white; -fx-background-radius: 8; -fx-pref-width: 40; -fx-pref-height: 40; -fx-font-size: 16px; -fx-font-weight: 700;"/>
+                <Button fx:id="prevPageBtn" styleClass="pagination-btn" style="-fx-background-color: #374151; -fx-text-fill: white; -fx-background-radius: 8; -fx-pref-width: 40; -fx-pref-height: 40; -fx-font-size: 16px; -fx-font-weight: 700;"/>
             </HBox>
             
-            <VBox alignment="CENTER" spacing="5">
-                <Label fx:id="currentPageLabel" text="Page 1 sur 1" styleClass="pagination-info" style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #1e293b;"/>
-                <Label fx:id="totalItemsLabel" text="0 produits" styleClass="pagination-info" style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
+            <VBox alignment="CENTER" spacing="4">
+                <Label fx:id="currentPageLabel" text="Page 1 sur 1" styleClass="pagination-info" style="-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+                <Label fx:id="totalItemsLabel" text="0 produits" styleClass="pagination-info" style="-fx-font-size: 13px; -fx-text-fill: #94a3b8;"/>
             </VBox>
             
-            <HBox alignment="CENTER_RIGHT" spacing="10">
-                <Button fx:id="nextPageBtn" styleClass="pagination-btn" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-pref-width: 35; -fx-pref-height: 35; -fx-font-size: 14px;"/>
-                <Button fx:id="lastPageBtn" styleClass="pagination-btn" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-pref-width: 35; -fx-pref-height: 35; -fx-font-size: 14px;"/>
+            <HBox alignment="CENTER_RIGHT" spacing="12">
+                <Button fx:id="nextPageBtn" styleClass="pagination-btn" style="-fx-background-color: #374151; -fx-text-fill: white; -fx-background-radius: 8; -fx-pref-width: 40; -fx-pref-height: 40; -fx-font-size: 16px; -fx-font-weight: 700;"/>
+                <Button fx:id="lastPageBtn" styleClass="pagination-btn" style="-fx-background-color: #374151; -fx-text-fill: white; -fx-background-radius: 8; -fx-pref-width: 40; -fx-pref-height: 40; -fx-font-size: 16px; -fx-font-weight: 700;"/>
             </HBox>
         </HBox>
     </VBox>
 
-    <!-- Empty State -->
-    <StackPane fx:id="emptyState" alignment="CENTER" visible="false" VBox.vgrow="ALWAYS">
-        <VBox alignment="CENTER" spacing="20">
-            <Label text="📦" style="-fx-font-size: 48px; -fx-text-fill: #94a3b8;"/>
-            <Label text="Aucun produit trouvé" styleClass="empty-state-title"/>
-            <Label text="Commencez par ajouter votre premier produit" styleClass="empty-state-subtitle"/>
-            <Button text="➕ Ajouter un produit" onAction="#addProduct" styleClass="btn-primary"/>
+    <!-- Enhanced Empty State -->
+    <StackPane fx:id="emptyState" alignment="CENTER" visible="false" VBox.vgrow="ALWAYS" style="-fx-background-color: #0f172a;">
+        <VBox alignment="CENTER" spacing="24" style="-fx-max-width: 400;">
+            <VBox alignment="CENTER" spacing="8">
+                <Label text="📦" style="-fx-font-size: 64px; -fx-text-fill: #475569;"/>
+                <Label text="Aucun produit trouvé" styleClass="empty-state-title" style="-fx-font-size: 24px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+                <Label text="Commencez par ajouter votre premier produit à votre catalogue" styleClass="empty-state-subtitle" style="-fx-font-size: 14px; -fx-text-fill: #64748b; -fx-wrap-text: true; -fx-text-alignment: center;"/>
+            </VBox>
+            <Button text="➕ Ajouter un produit" onAction="#addProduct" styleClass="btn-primary" style="-fx-pref-width: 200; -fx-pref-height: 48; -fx-font-size: 15px; -fx-font-weight: 700;"/>
         </VBox>
     </StackPane>
 

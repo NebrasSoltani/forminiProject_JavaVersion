@@ -42,6 +42,12 @@ public final class SignupFieldValidation {
         return normalized != null && normalized.matches("\\+?[0-9]{8,12}$");
     }
 
+    /** @return true si le numéro de téléphone est valide après normalisation */
+    public static boolean isValidPhone(String phone) {
+        String normalized = normalizePhone(phone);
+        return isValidPhoneNormalized(normalized);
+    }
+
     /** @return null si le mot de passe respecte les règles, sinon un message court. */
     public static String validatePasswordStrength(String password) {
         if (password == null || password.isEmpty()) {
@@ -60,6 +66,11 @@ public final class SignupFieldValidation {
             return "Un chiffre requis";
         }
         return null;
+    }
+
+    /** @return true si le mot de passe respecte les règles de sécurité */
+    public static boolean isValidPassword(String password) {
+        return validatePasswordStrength(password) == null;
     }
 
     public static boolean isValidNomPrenom(String s) {

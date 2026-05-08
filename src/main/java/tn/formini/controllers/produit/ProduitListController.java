@@ -27,7 +27,7 @@ public class ProduitListController implements Initializable {
     @FXML private Label labelFormTitle;
     @FXML private TextField fieldSearch;
     @FXML private ComboBox<String> fieldFilterCategorie;
-    @FXML private FlowPane productsContainer;
+    @FXML private TilePane productsContainer;
     @FXML private StackPane emptyState;
     @FXML private HBox paginationContainer;
     @FXML private Button firstPageBtn;
@@ -36,6 +36,12 @@ public class ProduitListController implements Initializable {
     @FXML private Button nextPageBtn;
     @FXML private Button lastPageBtn;
     @FXML private Label totalItemsLabel;
+    
+    // Statistics labels
+    @FXML private Label statTotalProducts;
+    @FXML private Label statAvailableProducts;
+    @FXML private Label statLowStockProducts;
+    @FXML private Label statStockValue;
 
     private MainController mainController;
     private final ProduitService service = new ProduitService();
@@ -75,6 +81,7 @@ public class ProduitListController implements Initializable {
     private void loadProducts() {
         allProducts = service.afficher();
         filteredProducts = allProducts;
+        updateStatistics();
         updatePagination();
         displayPaginatedProducts();
     }
@@ -84,6 +91,7 @@ public class ProduitListController implements Initializable {
         allProducts = service.afficher();
         filteredProducts = allProducts;
         currentPage = 1;
+        updateStatistics();
         updatePagination();
         displayPaginatedProducts();
     }
@@ -295,21 +303,44 @@ public class ProduitListController implements Initializable {
         
         System.out.println("Final products container children count: " + productsContainer.getChildren().size());
     }
+    
+    private void updateStatistics() {
+        if (allProducts == null) return;
+        
+        int totalProducts = allProducts.size();
+        int availableProducts = (int) allProducts.stream()
+                .filter(p -> "disponible".equalsIgnoreCase(p.getStatut()) && p.getStock() > 0)
+                .count();
+        int lowStockProducts = (int) allProducts.stream()
+                .filter(p -> p.getStock() > 0 && p.getStock() < 5)
+                .count();
+        double totalStockValue = allProducts.stream()
+                .filter(p -> p.getStock() > 0)
+                .mapToDouble(p -> p.getPrix().doubleValue() * p.getStock())
+                .sum();
+        
+        // Update statistics labels
+        statTotalProducts.setText(String.valueOf(totalProducts));
+        statAvailableProducts.setText(String.valueOf(availableProducts));
+        statLowStockProducts.setText(String.valueOf(lowStockProducts));
+        statStockValue.setText(String.format("%.2f DT", totalStockValue));
+    }
 
     private VBox createProductCard(Produit produit) {
         VBox card = new VBox();
         card.getStyleClass().addAll("product-card", "card");
-        card.setSpacing(8);
-        card.setPadding(new Insets(12));
-        card.setPrefWidth(220);
+        card.setSpacing(12);
+        card.setPadding(new Insets(20));
+        card.setPrefWidth(280);
+        card.setStyle("-fx-background-color: #1e293b; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 15, 0, 0, 8); -fx-cursor: hand;");
 
         // Product Image
         ImageView imageView = new ImageView();
-        imageView.setFitWidth(200);
-        imageView.setFitHeight(120);
+        imageView.setFitWidth(240);
+        imageView.setFitHeight(160);
         imageView.setPreserveRatio(true);
         imageView.setSmooth(true);
-        imageView.setStyle("-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-background-radius: 8;");
+        imageView.setStyle("-fx-background-color: #334155; -fx-border-color: #475569; -fx-border-radius: 12; -fx-background-radius: 12;");
         
         // Load image if available
         if (produit.getImage() != null && !produit.getImage().trim().isEmpty()) {
@@ -356,12 +387,12 @@ public class ProduitListController implements Initializable {
 
         // Product Header
         HBox header = new HBox();
-        header.setSpacing(10);
+        header.setSpacing(12);
         header.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
         Label categoryLabel = new Label(produit.getCategorie());
         categoryLabel.getStyleClass().add("product-category");
-        categoryLabel.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 4; -fx-padding: 2 8;");
+        categoryLabel.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 4 10; -fx-font-size: 11px; -fx-font-weight: 600;");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -376,22 +407,24 @@ public class ProduitListController implements Initializable {
         Label nameLabel = new Label(produit.getNom());
         nameLabel.getStyleClass().add("product-name");
         nameLabel.setWrapText(true);
-        nameLabel.setMaxWidth(250);
+        nameLabel.setMaxWidth(240);
+        nameLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: white; -fx-line-spacing: 2px;");
 
         // Product Description
-        Label descLabel = new Label(truncateText(produit.getDescription(), 80));
+        Label descLabel = new Label(truncateText(produit.getDescription(), 100));
         descLabel.getStyleClass().add("product-description");
         descLabel.setWrapText(true);
-        descLabel.setMaxWidth(250);
+        descLabel.setMaxWidth(240);
+        descLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #94a3b8; -fx-line-spacing: 1.5px;");
 
         // Product Price and Stock
         HBox priceStockBox = new HBox();
-        priceStockBox.setSpacing(15);
+        priceStockBox.setSpacing(16);
         priceStockBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
         Label priceLabel = new Label(String.format("%.3f DT", produit.getPrix()));
         priceLabel.getStyleClass().add("product-price");
-        priceLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #10b981;");
+        priceLabel.setStyle("-fx-font-weight: 800; -fx-font-size: 18px; -fx-text-fill: #10b981;");
 
         Label stockLabel = new Label("Stock: " + produit.getStock());
         stockLabel.getStyleClass().add("product-stock");
@@ -401,21 +434,32 @@ public class ProduitListController implements Initializable {
 
         // Action Buttons
         HBox actionsBox = new HBox();
-        actionsBox.setSpacing(10);
+        actionsBox.setSpacing(12);
         actionsBox.setAlignment(javafx.geometry.Pos.CENTER);
 
         Button editBtn = new Button("✏️ Modifier");
         editBtn.getStyleClass().addAll("btn-secondary", "btn-small");
+        editBtn.setStyle("-fx-background-color: #374151; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 16; -fx-font-size: 13px; -fx-font-weight: 600; -fx-cursor: hand;");
         editBtn.setOnAction(e -> editProduct(produit));
 
         Button deleteBtn = new Button("🗑️ Supprimer");
         deleteBtn.getStyleClass().addAll("btn-danger", "btn-small");
+        deleteBtn.setStyle("-fx-background-color: #dc2626; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 8 16; -fx-font-size: 13px; -fx-font-weight: 600; -fx-cursor: hand;");
         deleteBtn.setOnAction(e -> deleteProduct(produit));
 
         actionsBox.getChildren().addAll(editBtn, deleteBtn);
 
         // Add all elements to card
         card.getChildren().addAll(imageView, header, nameLabel, descLabel, priceStockBox, actionsBox);
+        
+        // Add hover effect
+        card.setOnMouseEntered(e -> {
+            card.setStyle("-fx-background-color: #334155; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 20, 0, 0, 10); -fx-cursor: hand; -fx-translate-y: -2;");
+        });
+        
+        card.setOnMouseExited(e -> {
+            card.setStyle("-fx-background-color: #1e293b; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 15, 0, 0, 8); -fx-cursor: hand; -fx-translate-y: 0;");
+        });
 
         return card;
     }
@@ -431,44 +475,44 @@ public class ProduitListController implements Initializable {
 
     private String getStatusStyle(String statut) {
         switch (statut.toLowerCase()) {
-            case "disponible": return "-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 4; -fx-padding: 2 8;";
-            case "épuisé": return "-fx-background-color: #ef4444; -fx-text-fill: white; -fx-background-radius: 4; -fx-padding: 2 8;";
-            case "archive": return "-fx-background-color: #6b7280; -fx-text-fill: white; -fx-background-radius: 4; -fx-padding: 2 8;";
-            default: return "-fx-background-color: #94a3b8; -fx-text-fill: white; -fx-background-radius: 4; -fx-padding: 2 8;";
+            case "disponible": return "-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 4 10; -fx-font-size: 11px; -fx-font-weight: 600;";
+            case "épuisé": return "-fx-background-color: #ef4444; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 4 10; -fx-font-size: 11px; -fx-font-weight: 600;";
+            case "archive": return "-fx-background-color: #6b7280; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 4 10; -fx-font-size: 11px; -fx-font-weight: 600;";
+            default: return "-fx-background-color: #94a3b8; -fx-text-fill: white; -fx-background-radius: 6; -fx-padding: 4 10; -fx-font-size: 11px; -fx-font-weight: 600;";
         }
     }
 
     private String getStockStyle(int stock) {
         if (stock == 0) {
-            return "-fx-text-fill: #ef4444; -fx-font-weight: bold;";
+            return "-fx-text-fill: #ef4444; -fx-font-weight: 700; -fx-background-color: rgba(239, 68, 68, 0.1); -fx-background-radius: 6; -fx-padding: 4 8;";
         } else if (stock < 5) {
-            return "-fx-text-fill: #f59e0b; -fx-font-weight: bold;";
+            return "-fx-text-fill: #f59e0b; -fx-font-weight: 700; -fx-background-color: rgba(245, 158, 11, 0.1); -fx-background-radius: 6; -fx-padding: 4 8;";
         } else {
-            return "-fx-text-fill: #10b981; -fx-font-weight: normal;";
+            return "-fx-text-fill: #10b981; -fx-font-weight: 600;";
         }
     }
 
     private void showPlaceholderImage(ImageView imageView) {
-        // Create a simple placeholder with a pattern
+        // Create a modern placeholder with a pattern
         String placeholderSvg = "data:image/svg+xml;base64," + 
             java.util.Base64.getEncoder().encodeToString(
-                ("<svg width='250' height='150' xmlns='http://www.w3.org/2000/svg'>" +
-                "<rect width='250' height='150' fill='#f1f5f9' stroke='#d1d5db' stroke-width='2' rx='8'/>" +
-                "<text x='125' y='75' text-anchor='middle' font-family='Arial' font-size='16' fill='#6b7280'>No Image</text>" +
-                "<circle cx='125' cy='50' r='20' fill='none' stroke='#9ca3af' stroke-width='2'/>" +
-                "<line x1='125' y1='60' x2='125' y2='80' stroke='#9ca3af' stroke-width='2'/>" +
-                "<line x1='115' y1='70' x2='135' y2='70' stroke='#9ca3af' stroke-width='2'/>" +
+                ("<svg width='240' height='160' xmlns='http://www.w3.org/2000/svg'>" +
+                "<rect width='240' height='160' fill='#334155' stroke='#475569' stroke-width='2' rx='12'/>" +
+                "<text x='120' y='80' text-anchor='middle' font-family='Arial' font-size='16' fill='#94a3b8'>No Image</text>" +
+                "<rect x='100' y='50' width='40' height='40' fill='none' stroke='#64748b' stroke-width='2' rx='4'/>" +
+                "<circle cx='120' cy='60' r='8' fill='none' stroke='#64748b' stroke-width='2'/>" +
+                "<path d='M110 75 L120 65 L130 75' stroke='#64748b' stroke-width='2' fill='none'/>" +
                 "</svg>").getBytes()
             );
         
         try {
             javafx.scene.image.Image placeholderImage = new javafx.scene.image.Image(placeholderSvg);
             imageView.setImage(placeholderImage);
-            imageView.setStyle("-fx-background-color: transparent; -fx-border-color: #e2e8f0; -fx-border-radius: 8;");
+            imageView.setStyle("-fx-background-color: transparent; -fx-border-color: #475569; -fx-border-radius: 12;");
         } catch (Exception e) {
             // Fallback: create a simple colored rectangle
             imageView.setImage(null);
-            imageView.setStyle("-fx-background-color: #f1f5f9; -fx-border-color: #d1d5db; -fx-border-radius: 8;");
+            imageView.setStyle("-fx-background-color: #334155; -fx-border-color: #475569; -fx-border-radius: 12;");
         }
     }
 
@@ -546,12 +590,12 @@ public class ProduitListController implements Initializable {
         // Reset all category buttons to default style
         for (javafx.scene.Node node : ((HBox) activeButton.getParent()).getChildren()) {
             if (node instanceof Button && node.getStyleClass().contains("category-filter-btn")) {
-                node.getStyleClass().remove("category-filter-active");
+                node.setStyle("-fx-background-color: #1e293b; -fx-text-fill: #94a3b8; -fx-background-radius: 20; -fx-padding: 8 16; -fx-font-size: 13px; -fx-font-weight: 600; -fx-cursor: hand;");
             }
         }
         
         // Highlight active button
-        activeButton.getStyleClass().add("category-filter-active");
+        activeButton.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 8 16; -fx-font-size: 13px; -fx-font-weight: 600; -fx-cursor: hand;");
     }
 
     @FXML

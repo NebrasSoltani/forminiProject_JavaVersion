@@ -1,8 +1,5 @@
 package tn.formini.entities.Users;
-<<<<<<< HEAD
-=======
 
->>>>>>> e0ac28abda5532a8a12f58ea87dfa18e9939476e
 import java.math.BigDecimal;
 import java.util.Date;
 

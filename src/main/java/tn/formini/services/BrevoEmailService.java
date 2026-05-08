@@ -78,7 +78,7 @@ public class BrevoEmailService {
             // Expéditeur (doit être validé dans Brevo)
             emailData.put("sender", Map.of(
                 "name", "Formini Shop",
-                "email", "admin@formini.com"  // Utiliser admin@formini.com
+                "email", "forminiapp@gmail.com"  // Utiliser admin@formini.com
             ));
             
             // Destinataire

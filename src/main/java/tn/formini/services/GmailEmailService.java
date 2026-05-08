@@ -38,13 +38,13 @@ public class GmailEmailService {
             Session session = Session.getInstance(props, new Authenticator() {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication("soltaninebras304@gmail.com", "gooq dlkh xdxl btda");
+                    return new PasswordAuthentication("forminiapp@gmail.com", "gooq dlkh xdxl btda");
                 }
             });
             
             // Créer le message
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("soltaninebras304@gmail.com"));
+            message.setFrom(new InternetAddress("forminiapp@gmail.com"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("🧪 TEST - Formini Shop (Gmail SMTP)");
             
@@ -55,7 +55,7 @@ public class GmailEmailService {
                     "<p>Ceci est un email de test envoyé via Gmail SMTP.</p>" +
                     "<p><strong>Destinataire:</strong> " + toEmail + "</p>" +
                     "<p><strong>Heure:</strong> " + java.time.LocalDateTime.now() + "</p>" +
-                    "<p><strong>Expéditeur:</strong> soltaninebras304@gmail.com</p>" +
+                    "<p><strong>Expéditeur:</strong> forminiapp@gmail.com</p>" +
                     "<hr>" +
                     "<p><em>Si vous recevez cet email, le service Gmail SMTP fonctionne !</em></p>" +
                     "</body></html>";
@@ -102,13 +102,13 @@ public class GmailEmailService {
             Session session = Session.getInstance(props, new Authenticator() {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication("soltaninebras304@gmail.com", "gooq dlkh xdxl btda");
+                    return new PasswordAuthentication("forminiapp@gmail.com", "gooq dlkh xdxl btda");
                 }
             });
             
             // Créer le message
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("soltaninebras304@gmail.com"));
+            message.setFrom(new InternetAddress("forminiapp@gmail.com"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject("Confirmation de paiement - Formini Shop");
             

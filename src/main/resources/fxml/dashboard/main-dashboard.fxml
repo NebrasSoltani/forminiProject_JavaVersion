@@ -35,13 +35,7 @@
                                         style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
                                 <Button fx:id="btnStageList" text="💼 Stages &amp; Offres" onAction="#showStageManagement" maxWidth="Infinity" alignment="CENTER_LEFT"
                                         style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
-                                <Button fx:id="btnSocieteManage" text="🏢 Gérer Sociétés" onAction="#showSocieteManagement" maxWidth="Infinity" alignment="CENTER_LEFT"
-                                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
-                                <Button fx:id="btnFormateurManage" text="👨‍🏫 Gérer Formateurs" onAction="#showFormateurManagement" maxWidth="Infinity" alignment="CENTER_LEFT"
-                                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
-                                <Button fx:id="btnApprenantManage" text="👨‍🎓 Gérer Apprenants" onAction="#showApprenantManagement" maxWidth="Infinity" alignment="CENTER_LEFT"
-                                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
-                                <Label text="BOUTIQUE &amp; BLOG" style="-fx-text-fill: #475569; -fx-font-size: 10px; -fx-font-weight: 900; -fx-padding: 15 0 5 10;"/>
+                                                                <Label text="BOUTIQUE &amp; BLOG" style="-fx-text-fill: #475569; -fx-font-size: 10px; -fx-font-weight: 900; -fx-padding: 15 0 5 10;"/>
                                 <Button fx:id="btnBlogList" text="📝 Articles &amp; Blogs" onAction="#showBlogList" maxWidth="Infinity" alignment="CENTER_LEFT"
                                         style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
                                 <Button fx:id="btnEventList" text="📅 Événements" onAction="#showEventList" maxWidth="Infinity" alignment="CENTER_LEFT"
@@ -50,6 +44,12 @@
                                         style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
 
                                 <Label fx:id="labelAdminSection" text="ADMINISTRATION" style="-fx-text-fill: #475569; -fx-font-size: 10px; -fx-font-weight: 900; -fx-padding: 15 0 5 10;"/>
+                                <Button fx:id="btnSocieteManage" text="🏢 Gérer Sociétés" onAction="#showSocieteManagement" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
+                                <Button fx:id="btnFormateurManage" text="👨‍🏫 Gérer Formateurs" onAction="#showFormateurManagement" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
+                                <Button fx:id="btnApprenantManage" text="👨‍🎓 Gérer Apprenants" onAction="#showApprenantManagement" maxWidth="Infinity" alignment="CENTER_LEFT"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
                                 <Button fx:id="btnProductManage" text="⚙️ Gérer Produits" onAction="#showProductManage" maxWidth="Infinity" alignment="CENTER_LEFT"
                                         style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
                                 <Button fx:id="btnOrderManage" text="📦 Gérer Commandes" onAction="#showOrderManage" maxWidth="Infinity" alignment="CENTER_LEFT"

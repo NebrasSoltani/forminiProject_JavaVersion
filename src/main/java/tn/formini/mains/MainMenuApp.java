@@ -19,14 +19,9 @@ public class MainMenuApp extends Application {
         AdminInitializer.initializeAdmin();
         initializeSession();
 
-        // Essaie plusieurs chemins
-
-        // Essaie plusieurs chemins
+        // Try correct FXML path
         String[] chemins = {
-                "/tn/formini/fxml/MainMenu.fxml",
-                "/fxml/MainMenu.fxml",
-                "/fxml/MainMenu.fxml",
-                "tn/formini/fxml/MainMenu.fxml"
+                "/fxml/MainMenu.fxml"
         };
 
         Parent root = null;

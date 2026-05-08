@@ -546,9 +546,9 @@ public class ApprenantCrudController {
     @FXML
     private void handleAddButton(ActionEvent event) {
         if (mainController != null) {
-            openFormInMainContent(ApprenantFormController.Mode.ADD, null, "Ajouter un Apprenant");
+            openAddFormInMainContent("Ajouter un Apprenant");
         } else {
-            openForm(ApprenantFormController.Mode.ADD, null, "Ajouter un Apprenant", false);
+            openAddFormModal("Ajouter un Apprenant");
         }
     }
 
@@ -605,6 +605,19 @@ public class ApprenantCrudController {
         }
     }
 
+    private void openAddFormInMainContent(String title) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/crud/apprenant-add.fxml"));
+            Parent root = loader.load();
+            tn.formini.controllers.crud.ApprenantAddController ctrl = loader.getController();
+            ctrl.setMainController(mainController);
+            mainController.getContentArea().getChildren().setAll(root);
+            mainController.getLabelPageTitle().setText(title);
+        } catch (IOException ex) {
+            showAlert("Erreur", ex.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
     private void openDetailsModal() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/crud/apprenant-details.fxml"));
@@ -626,6 +639,18 @@ public class ApprenantCrudController {
             if (a != null) ctrl.setApprenant(a);
             openStage(title, root);
             if (reload) loadApprenants();
+        } catch (IOException ex) {
+            showAlert("Erreur", ex.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private void openAddFormModal(String title) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/crud/apprenant-add.fxml"));
+            Parent root = loader.load();
+            tn.formini.controllers.crud.ApprenantAddController ctrl = loader.getController();
+            openStage(title, root);
+            loadApprenants();
         } catch (IOException ex) {
             showAlert("Erreur", ex.getMessage(), Alert.AlertType.ERROR);
         }
