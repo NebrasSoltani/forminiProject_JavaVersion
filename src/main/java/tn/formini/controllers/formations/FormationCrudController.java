@@ -132,6 +132,32 @@ public class FormationCrudController {
     }
 
     @FXML
+    private void handleRecommendations() {
+        if (selectedFormation == null) {
+            showError("Selectionnez une formation pour voir les recommandations.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/formations/formation-recommendations.fxml"));
+            Parent root = loader.load();
+
+            Object controller = loader.getController();
+            controller.getClass().getMethod("setFormation", Formation.class).invoke(controller, selectedFormation);
+
+            Stage stage = new Stage();
+            stage.setTitle("Recommandations - " + selectedFormation.getTitre());
+            stage.setScene(new Scene(root, 1000, 700));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+
+            refreshGrid();
+        } catch (Exception ex) {
+            showError("Impossible d'ouvrir les recommandations: " + ex.getMessage());
+        }
+    }
+
+    @FXML
     private void handleRefresh() {
         refreshGrid();
     }

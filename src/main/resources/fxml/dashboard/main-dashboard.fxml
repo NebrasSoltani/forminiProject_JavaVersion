@@ -29,7 +29,7 @@
                                 <Label text="TABLEAU DE BORD" style="-fx-text-fill: #475569; -fx-font-size: 10px; -fx-font-weight: 900; -fx-padding: 10 0 5 10;"/>
                                 <Button fx:id="btnDashboard" text="🏠 Accueil" onAction="#showDashboard" maxWidth="Infinity" alignment="CENTER_LEFT"
                                         style="-fx-background-color: #334155; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
-                                
+
                                 <Label text="APPRENTISSAGE" style="-fx-text-fill: #475569; -fx-font-size: 10px; -fx-font-weight: 900; -fx-padding: 15 0 5 10;"/>
                                 <Button fx:id="btnQuiz" text="🧠 Gestion Quiz" onAction="#showQuizDashboard" maxWidth="Infinity" alignment="CENTER_LEFT"
                                         style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
@@ -48,7 +48,7 @@
                                         style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
                                 <Button fx:id="btnProductList" text="🛍️ Catalogue Produits" onAction="#showProductList" maxWidth="Infinity" alignment="CENTER_LEFT"
                                         style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>
-                                
+
                                 <Label fx:id="labelAdminSection" text="ADMINISTRATION" style="-fx-text-fill: #475569; -fx-font-size: 10px; -fx-font-weight: 900; -fx-padding: 15 0 5 10;"/>
                                 <Button fx:id="btnProductManage" text="⚙️ Gérer Produits" onAction="#showProductManage" maxWidth="Infinity" alignment="CENTER_LEFT"
                                         style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 12 15; -fx-cursor: hand;"/>

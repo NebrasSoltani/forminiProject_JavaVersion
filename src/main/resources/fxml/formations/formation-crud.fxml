@@ -5,39 +5,54 @@
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="tn.formini.controllers.formations.FormationCrudController"
-      spacing="12" style="-fx-padding: 16; -fx-background-color: #f8f9fa;"
+      spacing="12" style="-fx-padding: 30; -fx-background-color: #1e293b;"
       stylesheets="@/css/style.css">
 
     <children>
-        <Label fx:id="headerLabel" text="Mes formations" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+        <Label fx:id="headerLabel" text="Mes formations"
+               style="-fx-font-size: 26px; -fx-font-weight: 900; -fx-text-fill: white;"/>
 
         <HBox spacing="10">
             <children>
-                <Button text="Retour" onAction="#handleBack" styleClass="btn-secondary"/>
-                <Button text="+ Creer" onAction="#handleCreate" style="-fx-background-color: #2ecc71; -fx-text-fill: white;"/>
-                <Button text="Modifier" onAction="#handleEdit" style="-fx-background-color: #f39c12; -fx-text-fill: white;"/>
-                <Button text="Supprimer" onAction="#handleDelete" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
-                <Button text="Gerer les lecons" onAction="#handleManageLessons" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+                <Button text="Retour" onAction="#handleBack"
+                        style="-fx-background-color: #334155; -fx-text-fill: #94a3b8; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;"/>
+                <Button text="+ Créer" onAction="#handleCreate"
+                        style="-fx-background-color: #22c55e; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;"/>
+                <Button text="Modifier" onAction="#handleEdit"
+                        style="-fx-background-color: #f59e0b; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;"/>
+                <Button text="Supprimer" onAction="#handleDelete"
+                        style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;"/>
+                <Button text="Gérer les leçons" onAction="#handleManageLessons"
+                        style="-fx-background-color: #38bdf8; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;"/>
+                <Button text="Recommandations" onAction="#handleRecommendations"
+                        style="-fx-background-color: #a855f7; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button text="Actualiser" onAction="#handleRefresh"/>
+                <Button text="Actualiser" onAction="#handleRefresh"
+                        style="-fx-background-color: #334155; -fx-text-fill: #94a3b8; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;"/>
             </children>
         </HBox>
 
         <HBox spacing="10" alignment="CENTER_LEFT">
             <children>
-                <Label text="Recherche:"/>
-                <TextField fx:id="searchField" promptText="Titre, categorie, description..." onKeyReleased="#handleSearch" prefWidth="280" styleClass="modern-input"/>
-                <Label text="Trier par:"/>
-                <ComboBox fx:id="sortCombo" onAction="#handleSortChange" prefWidth="190" styleClass="modern-combo"/>
-                <Button text="Reinitialiser" onAction="#handleResetFilters" styleClass="btn-secondary"/>
+                <Label text="Recherche:" style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                <TextField fx:id="searchField" promptText="Titre, catégorie, description..."
+                           onKeyReleased="#handleSearch" prefWidth="280"
+                           style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-prompt-text-fill: #475569; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
+                <Label text="Trier par:" style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                <ComboBox fx:id="sortCombo" onAction="#handleSortChange" prefWidth="190"
+                          style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 8;"/>
+                <Button text="Réinitialiser" onAction="#handleResetFilters"
+                        style="-fx-background-color: #334155; -fx-text-fill: #94a3b8; -fx-background-radius: 8; -fx-padding: 8 14; -fx-cursor: hand;"/>
             </children>
         </HBox>
 
-        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" hbarPolicy="NEVER" styleClass="modern-scroll-pane">
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" hbarPolicy="NEVER"
+                    style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
             <content>
-                <TilePane fx:id="formationsGrid" hgap="16" vgap="16" prefColumns="3" prefTileWidth="290" prefTileHeight="340"/>
+                <TilePane fx:id="formationsGrid" hgap="16" vgap="16"
+                          prefColumns="3" prefTileWidth="290" prefTileHeight="340"
+                          style="-fx-background-color: transparent; -fx-padding: 4;"/>
             </content>
         </ScrollPane>
     </children>
 </VBox>
-

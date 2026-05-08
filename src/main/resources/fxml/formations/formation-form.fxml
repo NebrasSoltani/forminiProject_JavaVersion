@@ -7,83 +7,133 @@
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="tn.formini.controllers.formations.FormationFormController"
-      spacing="12" stylesheets="@/css/style.css" styleClass="formation-form-root">
+      spacing="12" stylesheets="@/css/style.css"
+      style="-fx-background-color: #1e293b; -fx-padding: 30;">
 
     <children>
-        <Label fx:id="titleLabel" text="Creer une formation" styleClass="formation-form-title"/>
+        <Label fx:id="titleLabel" text="Créer une formation"
+               style="-fx-font-size: 26px; -fx-font-weight: 900; -fx-text-fill: white;"/>
 
-        <ScrollPane fitToWidth="true" prefHeight="620" styleClass="formation-form-scroll">
+        <ScrollPane fitToWidth="true" prefHeight="620"
+                    style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
             <content>
-                <GridPane hgap="10" vgap="10" styleClass="formation-form-grid">
+                <GridPane hgap="14" vgap="12" style="-fx-padding: 4 0;">
                     <columnConstraints>
                         <ColumnConstraints minWidth="160" prefWidth="180"/>
                         <ColumnConstraints hgrow="ALWAYS"/>
                     </columnConstraints>
 
                     <children>
-                        <Label text="Titre*" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                        <TextField fx:id="titreField" promptText="Titre de la formation" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                        <Label text="Titre*" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                               style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                        <TextField fx:id="titreField" promptText="Titre de la formation"
+                                   GridPane.rowIndex="0" GridPane.columnIndex="1"
+                                   style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-prompt-text-fill: #475569; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
 
-                        <Label text="Categorie*" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                        <TextField fx:id="categorieField" promptText="Ex: Developpement" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                        <Label text="Catégorie*" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                               style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                        <TextField fx:id="categorieField" promptText="Ex: Développement"
+                                   GridPane.rowIndex="1" GridPane.columnIndex="1"
+                                   style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-prompt-text-fill: #475569; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
 
-                        <Label text="Niveau*" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                        <ComboBox fx:id="niveauCombo" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                        <Label text="Niveau*" GridPane.rowIndex="2" GridPane.columnIndex="0"
+                               style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                        <ComboBox fx:id="niveauCombo" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                                  style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 8;" maxWidth="Infinity"/>
 
-                        <Label text="Langue*" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                        <TextField fx:id="langueField" promptText="fr, en..." GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                        <Label text="Langue*" GridPane.rowIndex="3" GridPane.columnIndex="0"
+                               style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                        <TextField fx:id="langueField" promptText="fr, en..."
+                                   GridPane.rowIndex="3" GridPane.columnIndex="1"
+                                   style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-prompt-text-fill: #475569; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
 
-                        <Label text="Description courte*" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                        <TextArea fx:id="descriptionCourteArea" prefRowCount="2" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                        <Label text="Description courte*" GridPane.rowIndex="4" GridPane.columnIndex="0"
+                               style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                        <TextArea fx:id="descriptionCourteArea" prefRowCount="2"
+                                  GridPane.rowIndex="4" GridPane.columnIndex="1"
+                                  style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
 
-                        <Label text="Description detaillee" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-                        <TextArea fx:id="descriptionDetailleeArea" prefRowCount="3" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                        <Label text="Description détaillée" GridPane.rowIndex="5" GridPane.columnIndex="0"
+                               style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                        <TextArea fx:id="descriptionDetailleeArea" prefRowCount="3"
+                                  GridPane.rowIndex="5" GridPane.columnIndex="1"
+                                  style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
 
-                        <Label text="Objectifs pedagogiques" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
-                        <TextArea fx:id="objectifsArea" prefRowCount="3" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+                        <Label text="Objectifs pédagogiques" GridPane.rowIndex="6" GridPane.columnIndex="0"
+                               style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                        <TextArea fx:id="objectifsArea" prefRowCount="3"
+                                  GridPane.rowIndex="6" GridPane.columnIndex="1"
+                                  style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
 
-                        <Label text="Prerequis" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
-                        <TextArea fx:id="prerequisArea" prefRowCount="2" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+                        <Label text="Prérequis" GridPane.rowIndex="7" GridPane.columnIndex="0"
+                               style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                        <TextArea fx:id="prerequisArea" prefRowCount="2"
+                                  GridPane.rowIndex="7" GridPane.columnIndex="1"
+                                  style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
 
-                        <Label text="Programme*" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
-                        <TextArea fx:id="programmeArea" prefRowCount="4" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
+                        <Label text="Programme*" GridPane.rowIndex="8" GridPane.columnIndex="0"
+                               style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                        <TextArea fx:id="programmeArea" prefRowCount="4"
+                                  GridPane.rowIndex="8" GridPane.columnIndex="1"
+                                  style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
 
-                        <Label text="Duree (heures)*" GridPane.rowIndex="9" GridPane.columnIndex="0"/>
-                        <TextField fx:id="dureeField" GridPane.rowIndex="9" GridPane.columnIndex="1"/>
+                        <Label text="Durée (heures)*" GridPane.rowIndex="9" GridPane.columnIndex="0"
+                               style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                        <TextField fx:id="dureeField" GridPane.rowIndex="9" GridPane.columnIndex="1"
+                                   style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-prompt-text-fill: #475569; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
 
-                        <Label text="Nombre de lecons*" GridPane.rowIndex="10" GridPane.columnIndex="0"/>
-                        <TextField fx:id="nombreLeconsField" GridPane.rowIndex="10" GridPane.columnIndex="1"/>
+                        <Label text="Nombre de leçons*" GridPane.rowIndex="10" GridPane.columnIndex="0"
+                               style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                        <TextField fx:id="nombreLeconsField" GridPane.rowIndex="10" GridPane.columnIndex="1"
+                                   style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-prompt-text-fill: #475569; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
 
-                        <Label text="Format*" GridPane.rowIndex="11" GridPane.columnIndex="0"/>
-                        <ComboBox fx:id="formatCombo" GridPane.rowIndex="11" GridPane.columnIndex="1"/>
+                        <Label text="Format*" GridPane.rowIndex="11" GridPane.columnIndex="0"
+                               style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                        <ComboBox fx:id="formatCombo" GridPane.rowIndex="11" GridPane.columnIndex="1"
+                                  style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 8;" maxWidth="Infinity"/>
 
-                        <Label text="Type acces*" GridPane.rowIndex="12" GridPane.columnIndex="0"/>
-                        <ComboBox fx:id="typeAccesCombo" GridPane.rowIndex="12" GridPane.columnIndex="1"/>
+                        <Label text="Type accès*" GridPane.rowIndex="12" GridPane.columnIndex="0"
+                               style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                        <ComboBox fx:id="typeAccesCombo" GridPane.rowIndex="12" GridPane.columnIndex="1"
+                                  style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 8;" maxWidth="Infinity"/>
 
-                        <Label text="Prix" GridPane.rowIndex="13" GridPane.columnIndex="0"/>
-                        <TextField fx:id="prixField" promptText="Ex: 199.99" GridPane.rowIndex="13" GridPane.columnIndex="1"/>
+                        <Label text="Prix" GridPane.rowIndex="13" GridPane.columnIndex="0"
+                               style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                        <TextField fx:id="prixField" promptText="Ex: 199.99"
+                                   GridPane.rowIndex="13" GridPane.columnIndex="1"
+                                   style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-prompt-text-fill: #475569; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
 
-                        <Label text="Image couverture" GridPane.rowIndex="14" GridPane.columnIndex="0"/>
-                        <HBox spacing="8" styleClass="formation-form-inline" GridPane.rowIndex="14" GridPane.columnIndex="1">
+                        <Label text="Image couverture" GridPane.rowIndex="14" GridPane.columnIndex="0"
+                               style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                        <HBox spacing="8" GridPane.rowIndex="14" GridPane.columnIndex="1">
                             <children>
-                                <TextField fx:id="imageField" promptText="URL, chemin local ou /images/..." HBox.hgrow="ALWAYS" onKeyReleased="#handleImageTyped"/>
-                                <Button text="Choisir" onAction="#handleChooseImage" styleClass="btn-secondary"/>
+                                <TextField fx:id="imageField" promptText="URL, chemin local ou /images/..."
+                                           HBox.hgrow="ALWAYS" onKeyReleased="#handleImageTyped"
+                                           style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-prompt-text-fill: #475569; -fx-border-color: #334155; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
+                                <Button text="Choisir" onAction="#handleChooseImage"
+                                        style="-fx-background-color: #334155; -fx-text-fill: #94a3b8; -fx-background-radius: 8; -fx-padding: 8 14; -fx-cursor: hand;"/>
                             </children>
                         </HBox>
 
-                        <Label text="Apercu" GridPane.rowIndex="15" GridPane.columnIndex="0"/>
-                        <ImageView fx:id="coverPreview" fitWidth="220" fitHeight="120" preserveRatio="true" smooth="true" GridPane.rowIndex="15" GridPane.columnIndex="1"/>
+                        <Label text="Aperçu" GridPane.rowIndex="15" GridPane.columnIndex="0"
+                               style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                        <ImageView fx:id="coverPreview" fitWidth="220" fitHeight="120"
+                                   preserveRatio="true" smooth="true"
+                                   GridPane.rowIndex="15" GridPane.columnIndex="1"/>
 
-                        <Label text="Statut*" GridPane.rowIndex="16" GridPane.columnIndex="0"/>
-                        <ComboBox fx:id="statutCombo" GridPane.rowIndex="16" GridPane.columnIndex="1"/>
+                        <Label text="Statut*" GridPane.rowIndex="16" GridPane.columnIndex="0"
+                               style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                        <ComboBox fx:id="statutCombo" GridPane.rowIndex="16" GridPane.columnIndex="1"
+                                  style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 8;" maxWidth="Infinity"/>
 
-                        <Label text="Options" GridPane.rowIndex="17" GridPane.columnIndex="0"/>
-                        <HBox spacing="16" styleClass="formation-form-options" GridPane.rowIndex="17" GridPane.columnIndex="1">
+                        <Label text="Options" GridPane.rowIndex="17" GridPane.columnIndex="0"
+                               style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                        <HBox spacing="16" GridPane.rowIndex="17" GridPane.columnIndex="1">
                             <children>
-                                <CheckBox fx:id="certificatCheck" text="Certificat"/>
-                                <CheckBox fx:id="quizCheck" text="Quiz"/>
-                                <CheckBox fx:id="fichiersCheck" text="Fichiers"/>
-                                <CheckBox fx:id="forumCheck" text="Forum"/>
+                                <CheckBox fx:id="certificatCheck" text="Certificat" style="-fx-text-fill: #e2e8f0;"/>
+                                <CheckBox fx:id="quizCheck" text="Quiz" style="-fx-text-fill: #e2e8f0;"/>
+                                <CheckBox fx:id="fichiersCheck" text="Fichiers" style="-fx-text-fill: #e2e8f0;"/>
+                                <CheckBox fx:id="forumCheck" text="Forum" style="-fx-text-fill: #e2e8f0;"/>
                             </children>
                         </HBox>
                     </children>
@@ -91,10 +141,12 @@
             </content>
         </ScrollPane>
 
-        <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="formation-form-actions">
+        <HBox spacing="10" alignment="CENTER_RIGHT">
             <children>
-                <Button text="Annuler" onAction="#handleCancel" styleClass="btn-secondary"/>
-                <Button text="Enregistrer" onAction="#handleSave" styleClass="btn-primary"/>
+                <Button text="Annuler" onAction="#handleCancel"
+                        style="-fx-background-color: #334155; -fx-text-fill: #94a3b8; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
+                <Button text="Enregistrer" onAction="#handleSave"
+                        style="-fx-background-color: #4f46e5; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 24; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(79,70,229,0.4), 10, 0, 0, 3);"/>
             </children>
             <padding>
                 <Insets top="8"/>
@@ -102,4 +154,3 @@
         </HBox>
     </children>
 </VBox>
-

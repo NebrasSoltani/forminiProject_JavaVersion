@@ -1,0 +1,244 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║        SYSTÈME DE RECOMMANDATIONS YOUTUBE ET GOOGLE BOOKS - ARCHITECTURE     ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        🌐 SOURCES EXTERNES                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                               │
+│  🔵 Google Books API v1                    🔴 YouTube API v3               │
+│  ├─ Récupère livres                        ├─ Récupère vidéos             │
+│  └─ Parameters: titre, catégorie, niveau  └─ Parameters: titre, keyword   │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                     ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    📦 COUCHE SERVICES                                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                               │
+│  FormationRecommendationService.java                                         │
+│  ├─ rekommendationService.getRecommendations(formation)                     │
+│  │  ├─ fetchBooks(formation) → List<BookRecommendation>                    │
+│  │  │  ├─ Google Books API HTTP Request                                    │
+│  │  │  └─ Fallback: getLocalBookSuggestions()                              │
+│  │  └─ fetchVideos(formation) → List<VideoRecommendation>                 │
+│  │     ├─ YouTube API HTTP Request                                         │
+│  │     └─ Fallback: getLocalVideoSuggestions()                             │
+│  │                                                                            │
+│  └─ Le résultat RecommendationResult contient:                              │
+│     ├─ List<BookRecommendation>                                             │
+│     └─ List<VideoRecommendation>                                            │
+│                                                                               │
+│  LeconService.java                                                           │
+│  └─ ajouter(Lecon lecon) → Sauvegarde la leçon en base de données          │
+│                                                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                     ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    🖥️  COUCHE CONTRÔLEURS                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                               │
+│  ┌─ FormationRecommendationsController          (Formateurs)               │
+│  │  └─ Gère la fenêtre dédiée aux recommandations                          │
+│  │     ├─ handlePublishBook()                                              │
+│  │     ├─ handlePublishVideo()                                             │
+│  │     ├─ handleRefreshBooks()                                             │
+│  │     ├─ handleRefreshVideos()                                            │
+│  │     ├─ handleOpenBook()                                                 │
+│  │     └─ handleOpenVideo()                                                │
+│  │                                                                            │
+│  ├─ FormationCrudController                     (Mes formations)           │
+│  │  └─ handleRecommendations() ← Bouton "Recommandations" (violet)        │
+│  │     └─ Ouvre FormationRecommendationsController                         │
+│  │                                                                            │
+│  ├─ LeconCrudController                         (Gestion des leçons)       │
+│  │  └─ handleRecommendations() ← Bouton "Recommandations" (violet)        │
+│  │     └─ Ouvre FormationRecommendationsController                         │
+│  │                                                                            │
+│  └─ FormationLearningController                 (Apprenants)               │
+│     ├─ loadRecommendations()                                               │
+│     ├─ handlePublishSelectedBookAsLesson()                                 │
+│     ├─ handlePublishSelectedVideoAsLesson()                                │
+│     └─ selectPublishedLesson()                                             │
+│                                                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                     ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    🎨 COUCHE INTERFACES (FXML)                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                               │
+│  formation-recommendations.fxml              (Fenêtre recommandations)     │
+│  ├─ Tab 1: "📚 Livres Google Books"                                         │
+│  │  ├─ ListView<BookRecommendation> booksListView                          │
+│  │  ├─ VBox avec détails du livre                                          │
+│  │  ├─ Bouton: ✓ Publier comme leçon (vert)                               │
+│  │  ├─ Bouton: 🌐 Ouvrir dans navigateur (bleu)                           │
+│  │  └─ Bouton: 🔄 Actualiser (violet)                                      │
+│  │                                                                            │
+│  └─ Tab 2: "🎥 Vidéos YouTube"                                              │
+│     ├─ ListView<VideoRecommendation> videosListView                        │
+│     ├─ VBox avec détails de la vidéo                                       │
+│     ├─ Bouton: ✓ Publier comme leçon (vert)                               │
+│     ├─ Bouton: 🌐 Ouvrir dans navigateur (bleu)                           │
+│     └─ Bouton: 🔄 Actualiser (violet)                                      │
+│                                                                               │
+│  formation-crud.fxml                         (Mes formations)              │
+│  └─ Bouton: "Recommandations" (violet) → handleRecommendations()          │
+│                                                                               │
+│  lecon-crud.fxml                             (Gestion des leçons)          │
+│  └─ Bouton: "Recommandations" (violet) → handleRecommendations()          │
+│                                                                               │
+│  formation-learning.fxml                     (Apprentissage)               │
+│  ├─ Tab 1: "Leçon"      (contenu original)                                │
+│  ├─ Tab 2: "Livres Recommandés"   → booksListView + détails + boutons    │
+│  └─ Tab 3: "Vidéos Recommandées"  → videosListView + détails + boutons   │
+│                                                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                     ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    💾 BASE DE DONNÉES                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                               │
+│  Table: lecon                                                                │
+│  ├─ id: INT PRIMARY KEY                                                     │
+│  ├─ titre: VARCHAR(255) ← Titre normalisé (MAX 255)                        │
+│  ├─ description: TEXT  ← Description du livre/vidéo                         │
+│  ├─ video_url: VARCHAR(500) ← URL preview/YouTube                          │
+│  ├─ contenu: TEXT ← Source + informations additionnelles                    │
+│  ├─ ordre: INT ← Auto-assigné                                              │
+│  ├─ gratuit: BOOLEAN ← true                                                │
+│  ├─ duree: INT ← NULL                                                       │
+│  ├─ fichier: VARCHAR(255) ← NULL                                            │
+│  └─ formation_id: INT FOREIGN KEY                                           │
+│                                                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        🔄 FLUX D'UTILISATION APPRENANT                        ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Formation Learning View
+    ↓
+[Voir Recommandations] ou basculer onglet
+    ↓
+Affichage des recommandations (livres + vidéos)
+    ↓
+Sélection d'un livre/vidéo
+    ↓
+Affichage des détails (auteur, chaîne, description)
+    ↓
+Choix:
+├─ [✓ Publier comme leçon] → Création automatique → Leçon dans la liste
+├─ [🌐 Ouvrir] → Ouverture du lien dans le navigateur
+└─ [🔄 Actualiser] → Rechargement des recommandations
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                       🔄 FLUX D'UTILISATION FORMATEUR                        ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Option 1: Depuis "Mes formations"
+    Sélectionner une formation
+    ↓
+    [Recommandations] (bouton violet)
+    ↓
+    Fenêtre: Formation Recommendations Controller
+    ↓
+    Choisir livre ou vidéo
+    ↓
+    [✓ Publier comme leçon]
+    ↓
+    Leçon création & sauvegarde
+    ↓
+    Alerte succès
+
+Option 2: Depuis "Gerer les leçons"
+    Cliquer [Recommandations] (bouton violet)
+    ↓
+    Fenêtre: Formation Recommendations Controller
+    ↓
+    Choisir livre ou vidéo
+    ↓
+    [✓ Publier comme leçon]
+    ↓
+    Leçon création & sauvegarde
+    ↓
+    Alerte succès
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                           ⚙️  CONFIGURATION                                  ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Fichier: .env (racine du projet)
+───────────────────────────────────
+YOUTUBE_API_KEY=AIzaSyCzI8l4ftjBinhQhAY0q44eGQLtdbfoWUg
+YOUTUBE_MAX_RESULTS=15
+GOOGLE_BOOKS_API_KEY=AIzaSyCfYy9jz7OGKjU_9EUYxqNV46BhBsyX06Y
+GOOGLE_BOOKS_MAX_RESULTS=15
+
+Chargement des clés:
+├─ DotEnvLoader.java (démarrage application)
+└─ System.setProperty() → Propriétés système Java
+   └─ Utilisées par FormationRecommendationService
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        📊 STATISTIQUES & VALIDATIONS                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Titre de leçon:
+├─ Maximum: 255 caractères ✓
+├─ Validation: Avant insertion DB ✓
+├─ Normalisation: Suppression retours ligne ✓
+└─ Troncature: Auto si > 255 ✓
+
+Doublons:
+├─ Vérification: Avant publication ✓
+├─ Message: "Une leçon avec ce titre existe déjà" ✓
+└─ Sensibilité casse: Non (case-insensitive) ✓
+
+Recommandations par tab:
+├─ Livres: Jusqu'à 15 résultats
+├─ Vidéos: Jusqu'à 15 résultats
+└─ Fallback: Suggestions locales si API échoue
+
+Détails affichés:
+├─ Livre: Titre, Auteur, Éditeur, Date, Description
+└─ Vidéo: Titre, Chaîne, Date, Description
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         ✅ POINTS CLÉS FONCTIONNELS                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+✓ Intégration complète Google Books API
+✓ Intégration complète YouTube API
+✓ Fallback vers suggestions locales
+✓ Interface dédiée pour formateurs
+✓ Intégration dans formation apprenant
+✓ Publication en 1 clic
+✓ Validation titres (255 caractères)
+✓ Détection doublons
+✓ Feedback utilisateur clair
+✓ Gestion d'erreurs robuste
+✓ Accès rapide depuis Mes formations ET Gerer les leçons
+✓ Affichage détails enrichis
+✓ Ouverture ressources navigateur
+✓ Actualisation recommandations
+✓ Auto-sélection leçon publiée
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                          📁 STRUCTURE DES FICHIERS                           ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+CRÉÉS:
+├─ src/main/java/.../FormationRecommendationsController.java
+├─ src/main/java/.../recommendations/FormationRecommendationService.java
+├─ src/main/resources/fxml/formations/formation-recommendations.fxml
+├─ RECOMMENDATIONS_GUIDE.md
+└─ CHANGELOG_RECOMMENDATIONS.md
+
+MODIFIÉS:
+├─ src/main/java/.../FormationLearningController.java
+├─ src/main/java/.../FormationCrudController.java
+├─ src/main/java/.../LeconCrudController.java
+├─ src/main/resources/fxml/formations/formation-learning.fxml
+├─ src/main/resources/fxml/formations/formation-crud.fxml
+└─ src/main/resources/fxml/formations/lecon-crud.fxml
+

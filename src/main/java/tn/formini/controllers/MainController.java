@@ -158,7 +158,6 @@ public class MainController implements Initializable {
         
         Object controller = loadPage(fxmlPath);
         if (controller instanceof tn.formini.controllers.dashboard.DashboardRoleController roleController) {
-            roleController.setMainController(this);
             roleController.initializeDashboard(session.getCurrentUser());
         }
         updateActiveButton(btnDashboard);
@@ -392,18 +391,5 @@ public class MainController implements Initializable {
             controller.setSelectedTab(1);
         }
         updateActiveButton(btnStageList);
-    }
-
-    @FXML
-    public void handleLogout() {
-        tn.formini.services.UsersService.SessionManager.getInstance().logout();
-        try {
-            URL resource = getClass().getResource("/fxml/auth/Login.fxml");
-            FXMLLoader loader = new FXMLLoader(resource);
-            Parent root = loader.load();
-            contentArea.getScene().setRoot(root);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

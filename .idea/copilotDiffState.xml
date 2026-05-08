@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/run_product_management.bat">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/run_product_management.bat" />
+              <option name="originalContent" value="@echo off&#10;echo Starting Product Management Interface...&#10;echo.&#10;&#10;cd /d &quot;%~dp0&quot;&#10;&#10;echo Running: tn.formini.product.launchers.ProduitManagementLauncher&#10;java -cp &quot;src/main/java&quot; tn.formini.product.launchers.ProduitManagementLauncher&#10;&#10;if errorlevel 1 (&#10;    echo.&#10;    echo Error occurred while running the application.&#10;    echo Make sure Java is properly installed and configured.&#10;    echo.&#10;    pause&#10;)&#10;" />
+              <option name="updatedContent" value="@echo off&#10;echo Starting Product Management Interface (via Maven javafx:run)...&#10;echo.&#10;&#10;cd /d &quot;%~dp0&quot;&#10;&#10;echo Running: mvn javafx:run&#10;mvn javafx:run&#10;&#10;if errorlevel 1 (&#10;    echo.&#10;    echo Error occurred while running 'mvn javafx:run'.&#10;    echo Make sure Maven is installed and in PATH and JavaFX dependencies are available.&#10;    echo To run a packaged jar instead, use:&#10;    echo   java --module-path ^&quot;&lt;path-to-javafx-sdk-lib&gt;^&quot; --add-modules=javafx.controls,javafx.fxml,javafx.web -jar target\yourapp.jar&#10;    echo.&#10;    pause&#10;)&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/run_product_management.ps1">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/run_product_management.ps1" />
+              <option name="originalContent" value="Write-Host &quot;Starting Product Management Interface...&quot; -ForegroundColor Green&#10;Write-Host &quot;&quot;&#10;&#10;Set-Location $PSScriptRoot&#10;&#10;Write-Host &quot;Running: tn.formini.product.launchers.ProduitManagementLauncher&quot; -ForegroundColor Yellow&#10;try {&#10;    java -cp &quot;src/main/java&quot; tn.formini.product.launchers.ProduitManagementLauncher&#10;} catch {&#10;    Write-Host &quot;Error occurred while running the application.&quot; -ForegroundColor Red&#10;    Write-Host &quot;Make sure Java is properly installed and configured.&quot; -ForegroundColor Red&#10;    Write-Host &quot;&quot;&#10;    Write-Host &quot;Press any key to continue...&quot; -ForegroundColor Yellow&#10;    $null = $Host.UI.RawUI.ReadKey(&quot;NoEcho,IncludeKeyDown&quot;)&#10;}&#10;" />
+              <option name="updatedContent" value="Write-Host &quot;Starting Product Management Interface (via Maven javafx:run)...&quot; -ForegroundColor Green&#10;Write-Host &quot;&quot;&#10;&#10;Set-Location $PSScriptRoot&#10;&#10;Write-Host &quot;Running via Maven plugin: javafx:run&quot; -ForegroundColor Yellow&#10;try {&#10;    mvn javafx:run&#10;} catch {&#10;    Write-Host &quot;Error occurred while running 'mvn javafx:run'.&quot; -ForegroundColor Red&#10;    Write-Host &quot;Make sure Maven is installed and in PATH, and JavaFX dependencies are available.&quot; -ForegroundColor Red&#10;    Write-Host &quot;If you prefer to run the packaged jar, use: java --module-path &lt;javafx-sdk-lib&gt; --add-modules=javafx.controls,javafx.fxml,javafx.web -jar target\yourapp.jar&quot; -ForegroundColor Yellow&#10;    Write-Host &quot;Press any key to continue...&quot; -ForegroundColor Yellow&#10;    $null = $Host.UI.RawUI.ReadKey(&quot;NoEcho,IncludeKeyDown&quot;)&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
