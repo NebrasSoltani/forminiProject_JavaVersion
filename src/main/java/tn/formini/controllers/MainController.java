@@ -12,6 +12,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import tn.formini.controllers.blog.BlogFormController;
 import tn.formini.controllers.blog.BlogListController;
+import tn.formini.controllers.crud.SocieteCrudController;
+import tn.formini.controllers.crud.FormateurCrudController;
 import tn.formini.controllers.evenement.EvenementFormController;
 import tn.formini.controllers.evenement.EvenementListController;
 import tn.formini.controllers.order.OrderListController;
@@ -45,6 +47,9 @@ public class MainController implements Initializable {
     @FXML private Button btnProductAdd;
     @FXML private Button btnProductManage;
     @FXML private Button btnOrderManage;
+    @FXML private Button btnSocieteManage;
+    @FXML private Button btnFormateurManage;
+    @FXML private Button btnApprenantManage;
     @FXML private Label labelAdminSection;
 
     private List<Button> navButtons;
@@ -64,6 +69,8 @@ public class MainController implements Initializable {
                 btnProductAdd,
                 btnProductManage,
                 btnOrderManage,
+                btnSocieteManage,
+                btnFormateurManage,
                 btnStageList
         );
         
@@ -102,6 +109,7 @@ public class MainController implements Initializable {
                 cacherBouton(btnProductAdd);
                 cacherBouton(btnProductManage);
                 cacherBouton(btnOrderManage);
+                cacherBouton(btnSocieteManage);
                 if (labelAdminSection != null) {
                     labelAdminSection.setVisible(false);
                     labelAdminSection.setManaged(false);
@@ -113,6 +121,7 @@ public class MainController implements Initializable {
                 cacherBouton(btnProductAdd);
                 cacherBouton(btnProductManage);
                 cacherBouton(btnOrderManage);
+                cacherBouton(btnSocieteManage);
                 cacherBouton(btnQuiz);
                 if (labelAdminSection != null) {
                     labelAdminSection.setVisible(false);
@@ -226,6 +235,8 @@ public class MainController implements Initializable {
 
     public Label getLabelUserName() { return labelUserName; }
     public Label getLabelUserRole() { return labelUserRole; }
+    public StackPane getContentArea() { return contentArea; }
+    public Label getLabelPageTitle() { return labelPageTitle; }
 
     public void showBlogList() {
         labelPageTitle.setText("Liste des Blogs");
@@ -306,6 +317,57 @@ public class MainController implements Initializable {
         labelPageTitle.setText("Gestion des Stages");
         loadPage("/fxml/stages/stage-management.fxml");
         updateActiveButton(btnStageList);
+    }
+
+    @FXML
+    public void showSocieteManagement() {
+        labelPageTitle.setText("Gestion des Sociétés");
+        SocieteCrudController controller = (SocieteCrudController) loadPage("/fxml/crud/societe-crud-cards.fxml");
+        if (controller != null) {
+            controller.setMainController(this);
+        }
+        updateActiveButton(btnSocieteManage);
+    }
+
+    @FXML
+    public void showFormateurManagement() {
+        labelPageTitle.setText("Gestion des Formateurs");
+        FormateurCrudController controller = (FormateurCrudController) loadPage("/fxml/crud/formateur-crud.fxml");
+        if (controller != null) {
+            controller.setMainController(this);
+        }
+        updateActiveButton(btnFormateurManage);
+    }
+
+    @FXML
+    public void showApprenantManagement() {
+        labelPageTitle.setText("Gestion des Apprenants");
+        tn.formini.controllers.crud.ApprenantCrudController controller = 
+            (tn.formini.controllers.crud.ApprenantCrudController) loadPage("/fxml/crud/apprenant-crud.fxml");
+        if (controller != null) {
+            controller.setMainController(this);
+        }
+        updateActiveButton(btnApprenantManage);
+    }
+
+    public void showFormateurForm(tn.formini.entities.Users.Formateur formateur) {
+        labelPageTitle.setText(formateur == null ? "Ajouter un Formateur" : "Modifier un Formateur");
+        tn.formini.controllers.crud.FormateurFormController controller = 
+            (tn.formini.controllers.crud.FormateurFormController) loadPage("/fxml/crud/formateur-form.fxml");
+        if (controller != null) {
+            controller.setMainController(this);
+            controller.setMode(formateur == null ? 
+                tn.formini.controllers.crud.FormateurFormController.Mode.ADD : 
+                tn.formini.controllers.crud.FormateurFormController.Mode.EDIT);
+            if (formateur != null) {
+                controller.setFormateur(formateur);
+            }
+        }
+    }
+
+    @FXML
+    public void showFormateurAdd() {
+        showFormateurForm(null);
     }
 
     @FXML

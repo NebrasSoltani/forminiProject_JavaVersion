@@ -8,7 +8,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.*;
+import javafx.geometry.Pos;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tn.formini.entities.Users.Formateur;
@@ -30,37 +31,13 @@ public class FormateurCrudController {
     private static final int ROWS_PER_PAGE = 10;
 
     @FXML
-    private TableView<Formateur> tableView;
+    private FlowPane cardsFlowPane;
+
+    @FXML
+    private ScrollPane cardsScrollPane;
 
     @FXML
     private Pagination pagination;
-    
-    @FXML
-    private TableColumn<Formateur, Integer> idColumn;
-    
-    @FXML
-    private TableColumn<Formateur, String> specialiteColumn;
-    
-    @FXML
-    private TableColumn<Formateur, String> bioColumn;
-    
-    @FXML
-    private TableColumn<Formateur, Integer> experienceColumn;
-    
-    @FXML
-    private TableColumn<Formateur, String> linkedinColumn;
-    
-    @FXML
-    private TableColumn<Formateur, Double> noteColumn;
-    
-    @FXML
-    private TableColumn<Formateur, String> userEmailColumn;
-    
-    @FXML
-    private TableColumn<Formateur, String> userNomColumn;
-    
-    @FXML
-    private TableColumn<Formateur, String> portfolioColumn;
     
         
     @FXML
@@ -79,10 +56,9 @@ public class FormateurCrudController {
     private Button refreshButton;
 
     @FXML
-    private Button backButton;
-
-    @FXML
     private Button searchButton;
+    
+    private tn.formini.controllers.MainController mainController;
     
     @FXML
     private TextField searchField;
@@ -124,6 +100,7 @@ public class FormateurCrudController {
     private UserService userService;
     private ObservableList<Formateur> formateurList;
     private ObservableList<Formateur> filteredFormateurList;
+    private Formateur selectedFormateur;
 
     @FXML
     public void initialize() {
@@ -132,20 +109,10 @@ public class FormateurCrudController {
         formateurList = FXCollections.observableArrayList();
         filteredFormateurList = FXCollections.observableArrayList();
         
-        setupTableColumns();
         setupAdvancedControls();
         setupPagination();
         loadFormateurs();
         updateUI();
-        
-        tableView.getSelectionModel().selectedItemProperty().addListener(
-            (obs, oldSelection, newSelection) -> {
-                updateButtonStates();
-                updateSelectionStatus(newSelection);
-            }
-        );
-        
-        updateButtonStates();
     }
 
     private void setupPagination() {
@@ -179,32 +146,7 @@ public class FormateurCrudController {
         sortDirectionComboBox.valueProperty().addListener((obs, oldVal, newVal) -> applyFiltersAndSorting());
     }
 
-    private void setupTableColumns() {
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        specialiteColumn.setCellValueFactory(new PropertyValueFactory<>("specialite"));
-        bioColumn.setCellValueFactory(new PropertyValueFactory<>("bio"));
-        experienceColumn.setCellValueFactory(new PropertyValueFactory<>("experience_annees"));
-        linkedinColumn.setCellValueFactory(new PropertyValueFactory<>("linkedin"));
-        portfolioColumn.setCellValueFactory(new PropertyValueFactory<>("portfolio"));
-        noteColumn.setCellValueFactory(new PropertyValueFactory<>("note_moyenne"));
-        
-        userEmailColumn.setCellValueFactory(cellData -> {
-            Formateur formateur = cellData.getValue();
-            return formateur.getUser() != null ? 
-                javafx.beans.binding.Bindings.createStringBinding(() -> formateur.getUser().getEmail()) : 
-                javafx.beans.binding.Bindings.createStringBinding(() -> "N/A");
-        });
-        
-        userNomColumn.setCellValueFactory(cellData -> {
-            Formateur formateur = cellData.getValue();
-            return formateur.getUser() != null ? 
-                javafx.beans.binding.Bindings.createStringBinding(() -> 
-                    formateur.getUser().getPrenom() + " " + formateur.getUser().getNom()
-                ) : 
-                javafx.beans.binding.Bindings.createStringBinding(() -> "N/A");
-        });
-    }
-
+    
     private void loadFormateurs() {
         try {
             statusLabel.setText("Chargement...");
@@ -230,20 +172,163 @@ public class FormateurCrudController {
         lastUpdateLabel.setText("Dernière mise à jour: " + now.format(formatter));
     }
 
-    private TableView<Formateur> createPage(int pageIndex) {
-        updateTablePage(pageIndex);
-        return tableView;
+    private VBox createPage(int pageIndex) {
+        updateCardsPage(pageIndex);
+        return new VBox(cardsScrollPane);
     }
 
-    private void updateTablePage(int pageIndex) {
+    private void updateCardsPage(int pageIndex) {
         int fromIndex = pageIndex * ROWS_PER_PAGE;
         if (fromIndex >= filteredFormateurList.size()) {
-            tableView.setItems(FXCollections.observableArrayList());
+            cardsFlowPane.getChildren().clear();
             return;
         }
 
         int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, filteredFormateurList.size());
-        tableView.setItems(FXCollections.observableArrayList(filteredFormateurList.subList(fromIndex, toIndex)));
+        List<Formateur> pageFormateurs = filteredFormateurList.subList(fromIndex, toIndex);
+        
+        cardsFlowPane.getChildren().clear();
+        for (Formateur formateur : pageFormateurs) {
+            cardsFlowPane.getChildren().add(createFormateurCard(formateur));
+        }
+    }
+
+    private VBox createFormateurCard(Formateur formateur) {
+        VBox card = new VBox();
+        card.setStyle("-fx-background-color: #1e293b; -fx-background-radius: 12; -fx-border-color: #334155; -fx-border-width: 1; -fx-border-radius: 12; -fx-padding: 16; -fx-cursor: hand;");
+        card.setPrefWidth(280);
+        card.setPrefHeight(200);
+        
+        // Header with name and avatar
+        HBox headerBox = new HBox();
+        headerBox.setAlignment(Pos.CENTER_LEFT);
+        headerBox.setSpacing(12);
+        
+        VBox avatarBox = new VBox();
+        avatarBox.setAlignment(Pos.CENTER);
+        avatarBox.setStyle("-fx-background-color: #38bdf8; -fx-background-radius: 20; -fx-pref-width: 40; -fx-pref-height: 40;");
+        
+        // Load user photo with fallback to default avatar
+        String photoUrl = getUserPhotoUrl(formateur);
+        if (photoUrl != null && !photoUrl.trim().isEmpty()) {
+            try {
+                javafx.scene.image.Image userImage = new javafx.scene.image.Image(photoUrl, true);
+                javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(userImage);
+                imageView.setFitWidth(40);
+                imageView.setFitHeight(40);
+                imageView.setPreserveRatio(true);
+                // Create circular clip
+                javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(20, 20, 20);
+                imageView.setClip(clip);
+                avatarBox.getChildren().add(imageView);
+            } catch (Exception e) {
+                // Fallback to emoji if image loading fails
+                Label avatarLabel = new Label("👨‍🏫");
+                avatarLabel.setStyle("-fx-font-size: 18px;");
+                avatarBox.getChildren().add(avatarLabel);
+            }
+        } else {
+            // Default avatar emoji
+            Label avatarLabel = new Label("👨‍🏫");
+            avatarLabel.setStyle("-fx-font-size: 18px;");
+            avatarBox.getChildren().add(avatarLabel);
+        }
+        
+        VBox nameBox = new VBox();
+        nameBox.setSpacing(2);
+        Label nameLabel = new Label(getFullName(formateur));
+        nameLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: white;");
+        Label emailLabel = new Label(getEmail(formateur));
+        emailLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
+        nameBox.getChildren().addAll(nameLabel, emailLabel);
+        
+        headerBox.getChildren().addAll(avatarBox, nameBox);
+        
+        // Content with speciality and rating
+        VBox contentBox = new VBox();
+        contentBox.setSpacing(8);
+        contentBox.setStyle("-fx-padding: 8 0;");
+        
+        HBox specialityBox = new HBox();
+        specialityBox.setAlignment(Pos.CENTER_LEFT);
+        specialityBox.setSpacing(6);
+        Label specialityIcon = new Label("💼");
+        specialityIcon.setStyle("-fx-font-size: 12px;");
+        Label specialityLabel = new Label(nullSafe(formateur.getSpecialite()));
+        specialityLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #e2e8f0;");
+        specialityBox.getChildren().addAll(specialityIcon, specialityLabel);
+        
+        HBox experienceBox = new HBox();
+        experienceBox.setAlignment(Pos.CENTER_LEFT);
+        experienceBox.setSpacing(6);
+        Label experienceIcon = new Label("📊");
+        experienceIcon.setStyle("-fx-font-size: 12px;");
+        Label experienceLabel = new Label(getSafeExperience(formateur) + " ans d'expérience");
+        experienceLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #e2e8f0;");
+        experienceBox.getChildren().addAll(experienceIcon, experienceLabel);
+        
+        HBox ratingBox = new HBox();
+        ratingBox.setAlignment(Pos.CENTER_LEFT);
+        ratingBox.setSpacing(6);
+        Label ratingIcon = new Label("⭐");
+        ratingIcon.setStyle("-fx-font-size: 12px;");
+        Label ratingLabel = new Label(String.format("%.1f", getSafeNote(formateur)));
+        ratingLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #fbbf24; -fx-font-weight: bold;");
+        ratingBox.getChildren().addAll(ratingIcon, ratingLabel);
+        
+        contentBox.getChildren().addAll(specialityBox, experienceBox, ratingBox);
+        
+        // Footer with bio preview
+        Label bioLabel = new Label();
+        String bio = nullSafe(formateur.getBio());
+        if (bio.length() > 60) {
+            bio = bio.substring(0, 60) + "...";
+        }
+        bioLabel.setText(bio);
+        bioLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #64748b; -fx-wrap-text: true;");
+        
+        card.getChildren().addAll(headerBox, contentBox, bioLabel);
+        
+        // Add click handler
+        card.setOnMouseClicked(event -> selectFormateur(formateur));
+        
+        return card;
+    }
+
+    private void selectFormateur(Formateur formateur) {
+        selectedFormateur = formateur;
+        updateButtonStates();
+        updateSelectionStatus(formateur);
+        
+        // Highlight selected card
+        cardsFlowPane.getChildren().forEach(node -> {
+            node.setStyle("-fx-background-color: #1e293b; -fx-background-radius: 12; -fx-border-color: #334155; -fx-border-width: 1; -fx-border-radius: 12; -fx-padding: 16; -fx-cursor: hand;");
+        });
+        
+        // Find and highlight the selected card
+        for (javafx.scene.Node node : cardsFlowPane.getChildren()) {
+            if (node instanceof VBox) {
+                VBox card = (VBox) node;
+                // Check if this card contains the selected formateur's name
+                for (javafx.scene.Node child : card.getChildren()) {
+                    if (child instanceof HBox) {
+                        HBox headerBox = (HBox) child;
+                        for (javafx.scene.Node headerChild : headerBox.getChildren()) {
+                            if (headerChild instanceof VBox) {
+                                VBox nameBox = (VBox) headerChild;
+                                if (!nameBox.getChildren().isEmpty() && nameBox.getChildren().get(0) instanceof Label) {
+                                    Label nameLabel = (Label) nameBox.getChildren().get(0);
+                                    if (nameLabel.getText().equals(getFullName(formateur))) {
+                                        card.setStyle("-fx-background-color: #0f172a; -fx-background-radius: 12; -fx-border-color: #38bdf8; -fx-border-width: 2; -fx-border-radius: 12; -fx-padding: 16; -fx-cursor: hand;");
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void refreshPagination() {
@@ -256,12 +341,12 @@ public class FormateurCrudController {
             pagination.setCurrentPageIndex(currentPage);
         }
 
-        updateTablePage(currentPage);
+        updateCardsPage(currentPage);
     }
 
     private void setFilteredFormateurList(List<Formateur> formateurs) {
         filteredFormateurList = FXCollections.observableArrayList(formateurs != null ? formateurs : List.of());
-        tableView.getSelectionModel().clearSelection();
+        selectedFormateur = null;
         refreshPagination();
     }
 
@@ -374,6 +459,25 @@ public class FormateurCrudController {
         return formateur.getUser() != null ? nullSafe(formateur.getUser().getEmail()) : "";
     }
 
+    private String getUserPhotoUrl(Formateur formateur) {
+        if (formateur.getUser() == null) {
+            return null;
+        }
+        
+        User user = formateur.getUser();
+        
+        // Try avatar_url first, then photo, then return null for fallback
+        if (user.getAvatar_url() != null && !user.getAvatar_url().trim().isEmpty()) {
+            return user.getAvatar_url().trim();
+        }
+        
+        if (user.getPhoto() != null && !user.getPhoto().trim().isEmpty()) {
+            return user.getPhoto().trim();
+        }
+        
+        return null;
+    }
+
     private boolean containsIgnoreCase(String source, String keyword) {
         return normalize(source).contains(keyword);
     }
@@ -400,35 +504,15 @@ public class FormateurCrudController {
     
     @FXML
     private void handleAddButton(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/crud/formateur-form.fxml"));
-            Parent root = loader.load();
-            
-            FormateurFormController controller = loader.getController();
-            controller.setMode(FormateurFormController.Mode.ADD);
-            
-            Stage stage = new Stage();
-            stage.setTitle("Ajouter un Formateur");
-            Scene scene = new Scene(root, 760, 720);
-            URL css = getClass().getResource("/css/style.css");
-            if (css != null) {
-                scene.getStylesheets().add(css.toExternalForm());
-            }
-            stage.setScene(scene);
-            stage.setMinWidth(640);
-            stage.setMinHeight(560);
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.showAndWait();
-            
-            loadFormateurs();
-        } catch (IOException e) {
-            showAlert("Erreur", "Impossible d'ouvrir le formulaire: " + e.getMessage(), Alert.AlertType.ERROR);
+        if (mainController != null) {
+            mainController.showFormateurForm(null);
+        } else {
+            showAlert("Erreur", "MainController non disponible", Alert.AlertType.ERROR);
         }
     }
 
     @FXML
     private void handleViewDetailsButton(ActionEvent event) {
-        Formateur selectedFormateur = tableView.getSelectionModel().getSelectedItem();
         if (selectedFormateur == null) {
             showAlert("Avertissement", "Veuillez sélectionner un formateur pour voir les détails", Alert.AlertType.WARNING);
             return;
@@ -460,42 +544,20 @@ public class FormateurCrudController {
 
     @FXML
     private void handleEditButton(ActionEvent event) {
-        Formateur selectedFormateur = tableView.getSelectionModel().getSelectedItem();
         if (selectedFormateur == null) {
             showAlert("Avertissement", "Veuillez sélectionner un formateur à modifier", Alert.AlertType.WARNING);
             return;
         }
 
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/crud/formateur-form.fxml"));
-            Parent root = loader.load();
-
-            FormateurFormController controller = loader.getController();
-            controller.setMode(FormateurFormController.Mode.EDIT);
-            controller.setFormateur(selectedFormateur);
-
-            Stage stage = new Stage();
-            stage.setTitle("Modifier un Formateur");
-            Scene scene = new Scene(root, 760, 720);
-            URL css = getClass().getResource("/css/style.css");
-            if (css != null) {
-                scene.getStylesheets().add(css.toExternalForm());
-            }
-            stage.setScene(scene);
-            stage.setMinWidth(640);
-            stage.setMinHeight(560);
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.showAndWait();
-
-            loadFormateurs();
-        } catch (IOException e) {
-            showAlert("Erreur", "Impossible d'ouvrir le formulaire: " + e.getMessage(), Alert.AlertType.ERROR);
+        if (mainController != null) {
+            mainController.showFormateurForm(selectedFormateur);
+        } else {
+            showAlert("Erreur", "MainController non disponible", Alert.AlertType.ERROR);
         }
     }
 
     @FXML
     private void handleDeleteButton(ActionEvent event) {
-        Formateur selectedFormateur = tableView.getSelectionModel().getSelectedItem();
         if (selectedFormateur == null) {
             showAlert("Avertissement", "Veuillez sélectionner un formateur à supprimer", Alert.AlertType.WARNING);
             return;
@@ -552,7 +614,7 @@ public class FormateurCrudController {
     }
 
     private void updateButtonStates() {
-        boolean isSelected = tableView.getSelectionModel().getSelectedItem() != null;
+        boolean isSelected = selectedFormateur != null;
         viewDetailsButton.setDisable(!isSelected);
         editButton.setDisable(!isSelected);
         deleteButton.setDisable(!isSelected);
@@ -566,9 +628,7 @@ public class FormateurCrudController {
         alert.showAndWait();
     }
 
-    @FXML
-    private void handleBackButton(ActionEvent event) {
-        Stage stage = (Stage) backButton.getScene().getWindow();
-        stage.close();
+    public void setMainController(tn.formini.controllers.MainController mainController) {
+        this.mainController = mainController;
     }
 }

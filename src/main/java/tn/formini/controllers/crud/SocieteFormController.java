@@ -2,7 +2,9 @@ package tn.formini.controllers.crud;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -10,6 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import tn.formini.controllers.MainController;
 import tn.formini.entities.Users.Gouvernorat;
 import tn.formini.entities.Users.Societe;
 import tn.formini.entities.Users.User;
@@ -19,6 +22,7 @@ import tn.formini.services.UsersService.UserService;
 import tn.formini.utils.SignupFieldValidation;
 import tn.formini.utils.TunisiaGovernorates;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -32,6 +36,7 @@ public class SocieteFormController implements Initializable {
 
     /** Quand défini (ex. depuis MainController), retourne au shell parent au lieu de remplacer la scène. */
     private Runnable onBack;
+    private MainController mainController;
 
     @FXML private Label lblMessage;
     @FXML private Label lblTitle;
@@ -158,26 +163,6 @@ public class SocieteFormController implements Initializable {
     @FXML
     private ImageView imageViewPhoto;
 
-    @FXML
-    private TextField nomSocieteField;
-
-    @FXML
-    private TextField secteurTextField;
-
-    @FXML
-    private TextArea descriptionTextArea;
-
-    @FXML
-    private TextField adresseTextField;
-
-    @FXML
-    private TextField siteWebTextField;
-
-    @FXML
-    private Button saveButton;
-
-    @FXML
-    private Button cancelButton;
 
     private FileUploadService fileUploadService;
 
@@ -193,106 +178,158 @@ public class SocieteFormController implements Initializable {
         this.onBack = onBack;
     }
 
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+        // Configure le callback pour revenir à la liste des sociétés
+        setOnBack(() -> {
+            if (mainController != null) {
+                mainController.showSocieteManagement();
+            }
+        });
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         societeService = new SocieteService();
         userService = new UserService();
         
-        fieldUserGouvernorat.getItems().addAll(Gouvernorat.values());
+        // Initialize user gouvernorat combo box if it exists
+        if (fieldUserGouvernorat != null) {
+            fieldUserGouvernorat.getItems().addAll(Gouvernorat.values());
+        }
         
-        // Always show new user panel
-        panelNewUser.setVisible(true);
-        panelNewUser.setManaged(true);
+        // Always show new user panel if it exists
+        if (panelNewUser != null) {
+            panelNewUser.setVisible(true);
+            panelNewUser.setManaged(true);
+        }
+        
         fileUploadService = new FileUploadService();
-        gouvernoratField.setItems(TunisiaGovernorates.asObservableList());
+        
+        // Initialize other fields if they exist
+        if (gouvernoratField != null) {
+            gouvernoratField.setItems(TunisiaGovernorates.asObservableList());
+        }
+        
         setupValidationListeners();
     }
 
     private void setupValidationListeners() {
-        // Edit mode validation listeners
-        emailField.textProperty().addListener((obs, o, n) -> {
-            if (mode == Mode.EDIT) {
-                validateEditEmail();
-            }
-        });
-        telephoneField.textProperty().addListener((obs, o, n) -> {
-            if (mode == Mode.EDIT) {
-                validateEditPhone();
-            }
-        });
-        nomField.textProperty().addListener((obs, o, n) -> {
-            if (mode == Mode.EDIT) {
-                validateEditNom();
-            }
-        });
-        prenomField.textProperty().addListener((obs, o, n) -> {
-            if (mode == Mode.EDIT) {
-                validateEditPrenom();
-            }
-        });
-        dateNaissanceField.valueProperty().addListener((obs, o, n) -> {
-            if (mode == Mode.EDIT) {
-                validateEditBirthDate();
-            }
-        });
-        nomSocieteField.textProperty().addListener((obs, o, n) -> validateSocieteName());
+        // Edit mode validation listeners (only if fields exist)
+        if (emailField != null) {
+            emailField.textProperty().addListener((obs, o, n) -> {
+                if (mode == Mode.EDIT) {
+                    validateEditEmail();
+                }
+            });
+        }
+        if (telephoneField != null) {
+            telephoneField.textProperty().addListener((obs, o, n) -> {
+                if (mode == Mode.EDIT) {
+                    validateEditPhone();
+                }
+            });
+        }
+        if (nomField != null) {
+            nomField.textProperty().addListener((obs, o, n) -> {
+                if (mode == Mode.EDIT) {
+                    validateEditNom();
+                }
+            });
+        }
+        if (prenomField != null) {
+            prenomField.textProperty().addListener((obs, o, n) -> {
+                if (mode == Mode.EDIT) {
+                    validateEditPrenom();
+                }
+            });
+        }
+        if (dateNaissanceField != null) {
+            dateNaissanceField.valueProperty().addListener((obs, o, n) -> {
+                if (mode == Mode.EDIT) {
+                    validateEditBirthDate();
+                }
+            });
+        }
         
         // Nom société validation
-        fieldNomSociete.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateNomSociete();
-        });
+        if (fieldNomSociete != null) {
+            fieldNomSociete.textProperty().addListener((obs, oldVal, newVal) -> {
+                validateNomSociete();
+            });
+        }
         
         // Secteur validation
-        fieldSecteur.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateSecteur();
-        });
+        if (fieldSecteur != null) {
+            fieldSecteur.textProperty().addListener((obs, oldVal, newVal) -> {
+                validateSecteur();
+            });
+        }
         
         // Description validation
-        fieldDescription.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateDescription();
-        });
+        if (fieldDescription != null) {
+            fieldDescription.textProperty().addListener((obs, oldVal, newVal) -> {
+                validateDescription();
+            });
+        }
         
         // Adresse validation
-        fieldAdresse.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateAdresse();
-        });
+        if (fieldAdresse != null) {
+            fieldAdresse.textProperty().addListener((obs, oldVal, newVal) -> {
+                validateAdresse();
+            });
+        }
         
         // Site web validation
-        fieldSiteWeb.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateSiteWeb();
-        });
+        if (fieldSiteWeb != null) {
+            fieldSiteWeb.textProperty().addListener((obs, oldVal, newVal) -> {
+                validateSiteWeb();
+            });
+        }
         
         // New user validation
-        fieldUserEmail.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateUserEmail();
-        });
+        if (fieldUserEmail != null) {
+            fieldUserEmail.textProperty().addListener((obs, oldVal, newVal) -> {
+                validateUserEmail();
+            });
+        }
         
-        fieldUserTelephone.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateUserTelephone();
-        });
+        if (fieldUserTelephone != null) {
+            fieldUserTelephone.textProperty().addListener((obs, oldVal, newVal) -> {
+                validateUserTelephone();
+            });
+        }
         
-        fieldUserPassword.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateUserPassword();
-            if (!fieldUserPasswordConfirm.getText().isEmpty()) {
+        if (fieldUserPassword != null && fieldUserPasswordConfirm != null) {
+            fieldUserPassword.textProperty().addListener((obs, oldVal, newVal) -> {
+                validateUserPassword();
+                if (!fieldUserPasswordConfirm.getText().isEmpty()) {
+                    validateUserPasswordConfirm();
+                }
+            });
+            
+            fieldUserPasswordConfirm.textProperty().addListener((obs, oldVal, newVal) -> {
                 validateUserPasswordConfirm();
-            }
-        });
+            });
+        }
         
-        fieldUserPasswordConfirm.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateUserPasswordConfirm();
-        });
+        if (fieldUserNom != null) {
+            fieldUserNom.textProperty().addListener((obs, oldVal, newVal) -> {
+                validateUserNom();
+            });
+        }
         
-        fieldUserNom.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateUserNom();
-        });
+        if (fieldUserPrenom != null) {
+            fieldUserPrenom.textProperty().addListener((obs, oldVal, newVal) -> {
+                validateUserPrenom();
+            });
+        }
         
-        fieldUserPrenom.textProperty().addListener((obs, oldVal, newVal) -> {
-            validateUserPrenom();
-        });
-        
-        fieldUserDateNaissance.valueProperty().addListener((obs, oldVal, newVal) -> {
-            validateUserDateNaissance();
-        });
+        if (fieldUserDateNaissance != null) {
+            fieldUserDateNaissance.valueProperty().addListener((obs, oldVal, newVal) -> {
+                validateUserDateNaissance();
+            });
+        }
     }
 
     @FXML
@@ -404,19 +441,25 @@ public class SocieteFormController implements Initializable {
 
     public void setMode(Mode mode) {
         this.mode = mode;
+        clearForm();
         
-        // Update header text based on mode
         if (mode == Mode.ADD) {
             lblTitle.setText("Ajouter une société");
-            lblSubtitle.setText("Complétez les informations de la société. Les champs marqués * sont obligatoires.");
-            clearForm();
+            lblSubtitle.setText("Complétez les informations de la société. Un compte utilisateur sera créé automatiquement.");
+            btnSave.setText("Ajouter");
+            // Hide user panel in ADD mode since user will be created automatically
+            if (panelNewUser != null) {
+                panelNewUser.setVisible(false);
+                panelNewUser.setManaged(false);
+            }
         } else {
-            lblTitle.setText("Modifier une société");
-            lblSubtitle.setText("Modifiez les informations de la société. Les champs marqués * sont obligatoires. Le mot de passe est optionnel.");
-            setPasswordSectionVisible(true);
-            if (heroSubLabel != null) {
-                heroSubLabel.setText(
-                    "Comme à l'inscription : d'abord le compte du contact (rôle société), puis les informations de l'entreprise.");
+            lblTitle.setText("Modifier la société");
+            lblSubtitle.setText("Modifiez les informations de la société et du contact.");
+            btnSave.setText("Mettre à jour");
+            // Show user panel in EDIT mode
+            if (panelNewUser != null) {
+                panelNewUser.setVisible(true);
+                panelNewUser.setManaged(true);
             }
         }
     }
@@ -443,58 +486,60 @@ public class SocieteFormController implements Initializable {
 
     private void populateForm() {
         if (societe != null) {
-            fieldNomSociete.setText(societe.getNom_societe() != null ? societe.getNom_societe() : "");
-            fieldSecteur.setText(societe.getSecteur() != null ? societe.getSecteur() : "");
-            fieldDescription.setText(societe.getDescription() != null ? societe.getDescription() : "");
-            fieldAdresse.setText(societe.getAdresse() != null ? societe.getAdresse() : "");
-            fieldSiteWeb.setText(societe.getSite_web() != null ? societe.getSite_web() : "");
+            // Populate company fields
+            if (fieldNomSociete != null) fieldNomSociete.setText(societe.getNom_societe() != null ? societe.getNom_societe() : "");
+            if (fieldSecteur != null) fieldSecteur.setText(societe.getSecteur() != null ? societe.getSecteur() : "");
+            if (fieldDescription != null) fieldDescription.setText(societe.getDescription() != null ? societe.getDescription() : "");
+            if (fieldAdresse != null) fieldAdresse.setText(societe.getAdresse() != null ? societe.getAdresse() : "");
+            if (fieldSiteWeb != null) fieldSiteWeb.setText(societe.getSite_web() != null ? societe.getSite_web() : "");
             
             // Populate user fields if editing and user exists
             if (mode == Mode.EDIT && societe.getUser() != null) {
                 User user = societe.getUser();
-                fieldUserEmail.setText(user.getEmail() != null ? user.getEmail() : "");
-                fieldUserTelephone.setText(user.getTelephone() != null ? user.getTelephone() : "");
-                fieldUserNom.setText(user.getNom() != null ? user.getNom() : "");
-                fieldUserPrenom.setText(user.getPrenom() != null ? user.getPrenom() : "");
+                if (fieldUserEmail != null) fieldUserEmail.setText(user.getEmail() != null ? user.getEmail() : "");
+                if (fieldUserTelephone != null) fieldUserTelephone.setText(user.getTelephone() != null ? user.getTelephone() : "");
+                if (fieldUserNom != null) fieldUserNom.setText(user.getNom() != null ? user.getNom() : "");
+                if (fieldUserPrenom != null) fieldUserPrenom.setText(user.getPrenom() != null ? user.getPrenom() : "");
                 
-                if (user.getGouvernorat() != null) {
+                if (user.getGouvernorat() != null && fieldUserGouvernorat != null) {
                     Gouvernorat gouvernorat = Gouvernorat.fromDisplayName(user.getGouvernorat());
                     fieldUserGouvernorat.setValue(gouvernorat);
                 }
                 
-                if (user.getDate_naissance() != null) {
+                if (user.getDate_naissance() != null && fieldUserDateNaissance != null) {
                     fieldUserDateNaissance.setValue(user.getDate_naissance().toInstant()
                         .atZone(ZoneId.systemDefault()).toLocalDate());
                 }
                 
                 // Clear password fields in edit mode (optional update)
-                fieldUserPassword.clear();
-                fieldUserPasswordConfirm.clear();
+                if (fieldUserPassword != null) fieldUserPassword.clear();
+                if (fieldUserPasswordConfirm != null) fieldUserPasswordConfirm.clear();
             }
             
-            nomSocieteField.setText(societe.getNom_societe() != null ? societe.getNom_societe() : "");
-            secteurTextField.setText(societe.getSecteur() != null ? societe.getSecteur() : "");
-            descriptionTextArea.setText(societe.getDescription() != null ? societe.getDescription() : "");
-            adresseTextField.setText(societe.getAdresse() != null ? societe.getAdresse() : "");
-            siteWebTextField.setText(societe.getSite_web() != null ? societe.getSite_web() : "");
-
+            // Populate edit mode fields if they exist
             if (societe.getUser() != null) {
                 User user = societe.getUser();
-                emailField.setText(user.getEmail() != null ? user.getEmail() : "");
-                nomField.setText(user.getNom() != null ? user.getNom() : "");
-                prenomField.setText(user.getPrenom() != null ? user.getPrenom() : "");
-                telephoneField.setText(user.getTelephone() != null ? user.getTelephone() : "");
-                gouvernoratField.setValue(user.getGouvernorat());
-                photoField.setText(user.getPhoto() != null ? user.getPhoto() : "");
-                if (user.getPhoto() != null && !user.getPhoto().isEmpty()) {
+                if (emailField != null) emailField.setText(user.getEmail() != null ? user.getEmail() : "");
+                if (nomField != null) nomField.setText(user.getNom() != null ? user.getNom() : "");
+                if (prenomField != null) prenomField.setText(user.getPrenom() != null ? user.getPrenom() : "");
+                if (telephoneField != null) telephoneField.setText(user.getTelephone() != null ? user.getTelephone() : "");
+                if (gouvernoratField != null) {
+                    String govString = user.getGouvernorat();
+                    if (govString != null) {
+                        Gouvernorat govEnum = Gouvernorat.fromDisplayName(govString);
+                        gouvernoratField.setValue(String.valueOf(govEnum));
+                    }
+                }
+                if (photoField != null) photoField.setText(user.getPhoto() != null ? user.getPhoto() : "");
+                if (lblPhotoFileName != null && user.getPhoto() != null && !user.getPhoto().isEmpty()) {
                     lblPhotoFileName.setText(stripToFileName(user.getPhoto()));
                 }
 
-                if (user.getDate_naissance() != null) {
+                if (user.getDate_naissance() != null && dateNaissanceField != null) {
                     dateNaissanceField.setValue(user.getDate_naissance().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                 }
 
-                if (user.getPhoto() != null && !user.getPhoto().isEmpty()) {
+                if (user.getPhoto() != null && !user.getPhoto().isEmpty() && imageViewPhoto != null) {
                     try {
                         Image image = new Image(user.getPhoto());
                         imageViewPhoto.setImage(image);
@@ -515,40 +560,38 @@ public class SocieteFormController implements Initializable {
     }
 
     private void clearForm() {
-        fieldNomSociete.clear();
-        fieldSecteur.clear();
-        fieldDescription.clear();
-        fieldAdresse.clear();
-        fieldSiteWeb.clear();
+        // Clear company fields
+        if (fieldNomSociete != null) fieldNomSociete.clear();
+        if (fieldSecteur != null) fieldSecteur.clear();
+        if (fieldDescription != null) fieldDescription.clear();
+        if (fieldAdresse != null) fieldAdresse.clear();
+        if (fieldSiteWeb != null) fieldSiteWeb.clear();
         
         // Clear user fields
-        fieldUserEmail.clear();
-        fieldUserTelephone.clear();
-        fieldUserPassword.clear();
-        fieldUserPasswordConfirm.clear();
-        fieldUserNom.clear();
-        fieldUserPrenom.clear();
-        fieldUserGouvernorat.setValue(null);
-        fieldUserDateNaissance.setValue(null);
+        if (fieldUserEmail != null) fieldUserEmail.clear();
+        if (fieldUserTelephone != null) fieldUserTelephone.clear();
+        if (fieldUserPassword != null) fieldUserPassword.clear();
+        if (fieldUserPasswordConfirm != null) fieldUserPasswordConfirm.clear();
+        if (fieldUserNom != null) fieldUserNom.clear();
+        if (fieldUserPrenom != null) fieldUserPrenom.clear();
+        if (fieldUserGouvernorat != null) fieldUserGouvernorat.setValue(null);
+        if (fieldUserDateNaissance != null) fieldUserDateNaissance.setValue(null);
         
         clearAllErrors();
-        emailField.clear();
-        passwordField.clear();
-        passwordConfirmField.clear();
-        nomField.clear();
-        prenomField.clear();
-        telephoneField.clear();
-        gouvernoratField.setValue(null);
-        dateNaissanceField.setValue(null);
-        photoField.clear();
-        lblPhotoFileName.setText("Aucune photo sélectionnée");
-        imageViewPhoto.setImage(null);
+        
+        // Clear edit mode fields (if they exist)
+        if (emailField != null) emailField.clear();
+        if (passwordField != null) passwordField.clear();
+        if (passwordConfirmField != null) passwordConfirmField.clear();
+        if (nomField != null) nomField.clear();
+        if (prenomField != null) prenomField.clear();
+        if (telephoneField != null) telephoneField.clear();
+        if (gouvernoratField != null) gouvernoratField.setValue(null);
+        if (dateNaissanceField != null) dateNaissanceField.setValue(null);
+        if (photoField != null) photoField.clear();
+        if (lblPhotoFileName != null) lblPhotoFileName.setText("Aucune photo sélectionnée");
+        if (imageViewPhoto != null) imageViewPhoto.setImage(null);
         uploadedPhotoFile = null;
-        nomSocieteField.clear();
-        secteurTextField.clear();
-        descriptionTextArea.clear();
-        adresseTextField.clear();
-        siteWebTextField.clear();
     }
 
     @FXML
@@ -562,13 +605,29 @@ public class SocieteFormController implements Initializable {
         }
 
         try {
-            String email = emailField.getText().trim();
-            String password = passwordField.getText();
-            String phoneNorm = SignupFieldValidation.normalizePhone(telephoneField.getText());
-
+            // Get company information
+            String nomSociete = (fieldNomSociete != null) ? fieldNomSociete.getText().trim() : "";
+            String secteur = (fieldSecteur != null) ? fieldSecteur.getText().trim() : "";
+            String description = (fieldDescription != null) ? fieldDescription.getText().trim() : "";
+            String adresse = (fieldAdresse != null) ? fieldAdresse.getText().trim() : "";
+            String siteWeb = (fieldSiteWeb != null) ? fieldSiteWeb.getText().trim() : "";
+            
+            // Normalize website URL
+            if (!siteWeb.isEmpty() && !siteWeb.startsWith("http")) {
+                siteWeb = "https://" + siteWeb;
+            }
+            
             User userToUse;
 
             if (mode == Mode.EDIT && societe != null && societe.getUser() != null) {
+                // EDIT MODE - Use existing user fields
+                String email = (emailField != null) ? emailField.getText().trim() : "";
+                String password = (passwordField != null) ? passwordField.getText() : "";
+                String phoneNorm = (telephoneField != null) ? SignupFieldValidation.normalizePhone(telephoneField.getText()) : "";
+                String nom = (nomField != null) ? nomField.getText().trim() : "";
+                String prenom = (prenomField != null) ? prenomField.getText().trim() : "";
+                String gouvernoratString = (gouvernoratField != null) ? gouvernoratField.getValue() : null;
+                LocalDate dateNaissance = (dateNaissanceField != null) ? dateNaissanceField.getValue() : null;
                 User dbUser = userService.getUserByEmail(societe.getUser().getEmail());
                 if (dbUser == null) {
                     dbUser = userService.findById(societe.getUser().getId());
@@ -586,55 +645,53 @@ public class SocieteFormController implements Initializable {
                     return;
                 }
                 dbUser.setEmail(email);
-                dbUser.setNom(nomField.getText().trim());
-                dbUser.setPrenom(prenomField.getText().trim());
+                dbUser.setNom(nom);
+                dbUser.setPrenom(prenom);
                 dbUser.setTelephone(phoneNorm);
-                dbUser.setGouvernorat(gouvernoratField.getValue());
-                LocalDate localDateEdit = dateNaissanceField.getValue();
-                if (localDateEdit != null) {
-                    dbUser.setDate_naissance(java.sql.Date.valueOf(localDateEdit));
+                dbUser.setGouvernorat(gouvernoratString);
+                if (dateNaissance != null) {
+                    dbUser.setDate_naissance(java.sql.Date.valueOf(dateNaissance));
                 }
-                String photoPathEdit = photoField.getText().trim();
+                String photoPathEdit = (photoField != null) ? photoField.getText().trim() : "";
                 if (uploadedPhotoFile != null) {
                     photoPathEdit = fileUploadService.uploadPhoto(uploadedPhotoFile);
                 }
                 dbUser.setPhoto(photoPathEdit.isEmpty() ? null : photoPathEdit);
                 userService.modifier(dbUser);
                 userToUse = dbUser;
-            } else if (!email.isEmpty() && password != null && !password.isEmpty()) {
+            } else {
+                // ADD MODE - Create user from form input (like signup)
+                String email = (fieldUserEmail != null) ? fieldUserEmail.getText().trim() : "";
+                String password = (fieldUserPassword != null) ? fieldUserPassword.getText() : "";
+                String phoneNorm = (fieldUserTelephone != null) ? SignupFieldValidation.normalizePhone(fieldUserTelephone.getText()) : "";
+                String nom = (fieldUserNom != null) ? fieldUserNom.getText().trim() : "";
+                String prenom = (fieldUserPrenom != null) ? fieldUserPrenom.getText().trim() : "";
+                String gouvernoratString = (fieldUserGouvernorat != null && fieldUserGouvernorat.getValue() != null) ? fieldUserGouvernorat.getValue().toString() : null;
+                LocalDate dateNaissance = (fieldUserDateNaissance != null) ? fieldUserDateNaissance.getValue() : null;
+
+                // Validate email uniqueness
                 if (userService.emailExists(email)) {
-                    showAlert("Erreur de validation", "Cet email existe déjà", Alert.AlertType.ERROR);
+                    showError(errorUserEmail, "Cet email existe déjà");
                     return;
                 }
 
                 User newUser = new User();
                 newUser.setEmail(email);
                 newUser.setPassword(password);
-                newUser.setNom(nomField.getText().trim());
-                newUser.setPrenom(prenomField.getText().trim());
+                newUser.setNom(nom);
+                newUser.setPrenom(prenom);
                 newUser.setTelephone(phoneNorm);
-                newUser.setGouvernorat(gouvernoratField.getValue());
+                newUser.setGouvernorat(gouvernoratString);
                 newUser.setRole_utilisateur("societe");
-                newUser.setIs_email_verified(true);
+                newUser.setRoles("[\"ROLE_SOCIETE\"]");
+                newUser.setIs_email_verified(false); // Email not verified by default
 
-                LocalDate localDate = dateNaissanceField.getValue();
-                if (localDate != null) {
-                    newUser.setDate_naissance(java.sql.Date.valueOf(localDate));
+                if (dateNaissance != null) {
+                    newUser.setDate_naissance(java.sql.Date.valueOf(dateNaissance));
                 }
-
-                String photoPath = photoField.getText().trim();
-                if (uploadedPhotoFile != null) {
-                    photoPath = fileUploadService.uploadPhoto(uploadedPhotoFile);
-                }
-                newUser.setPhoto(photoPath.isEmpty() ? null : photoPath);
 
                 userService.ajouter(newUser);
                 userToUse = newUser;
-            } else {
-                showAlert("Erreur de validation",
-                    "Renseignez l'email et le mot de passe pour créer le compte contact.",
-                    Alert.AlertType.ERROR);
-                return;
             }
 
             boolean isNew = (mode == Mode.ADD);
@@ -642,45 +699,66 @@ public class SocieteFormController implements Initializable {
                 societe = new Societe();
             }
 
-            societe.setNom_societe(trimToNull(fieldNomSociete.getText()));
-            societe.setSecteur(trimToNull(fieldSecteur.getText()));
-            societe.setDescription(trimToNull(fieldDescription.getText()));
-            societe.setAdresse(trimToNull(fieldAdresse.getText()));
-            societe.setSite_web(trimToNull(fieldSiteWeb.getText()));
+            societe.setNom_societe(fieldNomSociete.getText().trim());
+            societe.setSecteur(fieldSecteur.getText().trim().isEmpty() ? null : fieldSecteur.getText().trim());
+            societe.setDescription(fieldDescription.getText().trim().isEmpty() ? null : fieldDescription.getText().trim());
+            societe.setAdresse(fieldAdresse.getText().trim().isEmpty() ? null : fieldAdresse.getText().trim());
 
-            // Validate entity
-            societe.valider();
-            societe.setNom_societe(nomSocieteField.getText().trim());
-            societe.setSecteur(secteurTextField.getText().trim().isEmpty() ? null : secteurTextField.getText().trim());
-            societe.setDescription(descriptionTextArea.getText().trim().isEmpty() ? null : descriptionTextArea.getText().trim());
-            societe.setAdresse(adresseTextField.getText().trim().isEmpty() ? null : adresseTextField.getText().trim());
-
-            String siteWebText = siteWebTextField.getText().trim();
+            String siteWebText = fieldSiteWeb.getText().trim();
             if (!siteWebText.isEmpty() && !siteWebText.startsWith("http")) {
                 siteWebText = "https://" + siteWebText;
             }
             societe.setSite_web(siteWebText.isEmpty() ? null : siteWebText);
 
+            // Set user before validation
             societe.setUser(userToUse);
+            
+            // Validate entity
+            societe.valider();
 
             if (isNew) {
                 societeService.ajouter(societe);
-                showMessage("Société ajoutée avec succès.");
+                showAlert("Société ajoutée avec succès", "La société a été créée avec succès.", Alert.AlertType.INFORMATION);
+                // Return to list after successful add
+                Platform.runLater(() -> {
+                    try {
+                        Thread.sleep(1000);
+                        if (onBack != null) {
+                            onBack.run();
+                        } else {
+                            closeForm();
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        if (onBack != null) {
+                            onBack.run();
+                        } else {
+                            closeForm();
+                        }
+                    }
+                });
             } else {
                 societeService.modifier(societe);
                 showMessage("Société modifiée avec succès.");
+                // Return to list after successful edit
+                Platform.runLater(() -> {
+                    try {
+                        Thread.sleep(1500);
+                        if (onBack != null) {
+                            onBack.run();
+                        } else {
+                            closeForm();
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        if (onBack != null) {
+                            onBack.run();
+                        } else {
+                            closeForm();
+                        }
+                    }
+                });
             }
-
-            // Close form after a short delay to show success message
-            Platform.runLater(() -> {
-                try {
-                    Thread.sleep(1500);
-                    closeForm();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    closeForm();
-                }
-            });
         } catch (IllegalArgumentException ex) {
             showMessage(ex.getMessage() != null ? ex.getMessage() : "Données invalides.");
         } catch (IllegalStateException ex) {
@@ -692,7 +770,21 @@ public class SocieteFormController implements Initializable {
 
     @FXML
     private void onCancel() {
-        closeForm();
+        if (onBack != null) {
+            onBack.run();
+        } else {
+            closeForm();
+        }
+    }
+
+    @FXML
+    private void handleSaveButton() {
+        onSubmit();
+    }
+
+    @FXML
+    private void handleCancelButton() {
+        onCancel();
     }
 
     @FXML
@@ -819,6 +911,9 @@ public class SocieteFormController implements Initializable {
     }
     
     private boolean validateNomSociete() {
+        if (fieldNomSociete == null) {
+            return true; // Skip validation if field doesn't exist
+        }
         String nom = fieldNomSociete.getText().trim();
         if (nom.isEmpty()) {
             showError(errorNomSociete, "Le nom de la société est obligatoire");
@@ -840,6 +935,9 @@ public class SocieteFormController implements Initializable {
     }
     
     private boolean validateSecteur() {
+        if (fieldSecteur == null) {
+            return true; // Skip validation if field doesn't exist
+        }
         String secteur = fieldSecteur.getText().trim();
         if (!secteur.isEmpty() && secteur.length() > 100) {
             showError(errorSecteur, "Maximum 100 caractères");
@@ -851,6 +949,9 @@ public class SocieteFormController implements Initializable {
     }
     
     private boolean validateDescription() {
+        if (fieldDescription == null) {
+            return true; // Skip validation if field doesn't exist
+        }
         String description = fieldDescription.getText().trim();
         if (!description.isEmpty() && description.length() > 2000) {
             showError(errorDescription, "Maximum 2000 caractères");
@@ -862,6 +963,9 @@ public class SocieteFormController implements Initializable {
     }
     
     private boolean validateAdresse() {
+        if (fieldAdresse == null) {
+            return true; // Skip validation if field doesn't exist
+        }
         String adresse = fieldAdresse.getText().trim();
         if (!adresse.isEmpty() && adresse.length() > 500) {
             showError(errorAdresse, "Maximum 500 caractères");
@@ -873,24 +977,33 @@ public class SocieteFormController implements Initializable {
     }
     
     private boolean validateSiteWeb() {
+        if (fieldSiteWeb == null) {
+            return true; // Skip validation if field doesn't exist
+        }
         String siteWeb = fieldSiteWeb.getText().trim();
-        if (!siteWeb.isEmpty()) {
-            if (!siteWeb.startsWith("http://") && !siteWeb.startsWith("https://")) {
-                showError(errorSiteWeb, "Doit commencer par http:// ou https://");
-                return false;
-            }
-            
-            if (siteWeb.length() > 500) {
-                showError(errorSiteWeb, "Maximum 500 caractères");
-                return false;
-            }
-            
-            // Basic URL validation
-            String urlRegex = "^https?://[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}(/.*)?$";
-            if (!Pattern.matches(urlRegex, siteWeb)) {
-                showError(errorSiteWeb, "Format d'URL invalide");
-                return false;
-            }
+        
+        // Website is optional, so if empty, it's valid
+        if (siteWeb.isEmpty()) {
+            hideError(errorSiteWeb);
+            return true;
+        }
+        
+        // Validate URL format when website is provided
+        if (!siteWeb.startsWith("http://") && !siteWeb.startsWith("https://")) {
+            showError(errorSiteWeb, "Doit commencer par http:// ou https://");
+            return false;
+        }
+        
+        if (siteWeb.length() > 500) {
+            showError(errorSiteWeb, "Maximum 500 caractères");
+            return false;
+        }
+        
+        // Basic URL validation
+        String urlRegex = "^https?://[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}(/.*)?$";
+        if (!Pattern.matches(urlRegex, siteWeb)) {
+            showError(errorSiteWeb, "Format d'URL invalide");
+            return false;
         }
         
         hideError(errorSiteWeb);
@@ -925,17 +1038,19 @@ public class SocieteFormController implements Initializable {
         isValid &= validateAdresse();
         isValid &= validateSiteWeb();
         
-        // Validate user fields
-        isValid &= validateUserEmail();
-        isValid &= validateUserTelephone();
-        isValid &= validateUserNom();
-        isValid &= validateUserPrenom();
-        isValid &= validateUserDateNaissance();
-        
-        // Password validation - only required in ADD mode or if password is provided in EDIT mode
-        if (mode == Mode.ADD || !fieldUserPassword.getText().isEmpty() || !fieldUserPasswordConfirm.getText().isEmpty()) {
-            isValid &= validateUserPassword();
-            isValid &= validateUserPasswordConfirm();
+        // Only validate user fields in EDIT mode
+        if (mode == Mode.EDIT) {
+            isValid &= validateUserEmail();
+            isValid &= validateUserTelephone();
+            isValid &= validateUserNom();
+            isValid &= validateUserPrenom();
+            isValid &= validateUserDateNaissance();
+            
+            // Password validation - only required if password is provided in EDIT mode
+            if (!fieldUserPassword.getText().isEmpty() || !fieldUserPasswordConfirm.getText().isEmpty()) {
+                isValid &= validateUserPassword();
+                isValid &= validateUserPasswordConfirm();
+            }
         }
         
         return isValid;
@@ -958,8 +1073,42 @@ public class SocieteFormController implements Initializable {
         return plus ? "+" + digits : digits;
     }
     
+    private String generateEmailFromCompany(String nomSociete) {
+        if (nomSociete == null || nomSociete.trim().isEmpty()) {
+            return "contact@formini.com";
+        }
+        
+        // Normalize company name for email
+        String normalized = nomSociete.trim()
+            .toLowerCase()
+            .replaceAll("[^a-zA-Z0-9]", "")
+            .replaceAll("\\s+", "");
+        
+        if (normalized.isEmpty()) {
+            return "contact@formini.com";
+        }
+        
+        return normalized + "@formini.com";
+    }
+    
+    private String generateRandomPassword() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
+        StringBuilder password = new StringBuilder();
+        
+        // Generate 12 character password
+        for (int i = 0; i < 12; i++) {
+            int index = (int) (Math.random() * chars.length());
+            password.append(chars.charAt(index));
+        }
+        
+        return password.toString();
+    }
+    
     // User validation methods
     private boolean validateUserEmail() {
+        if (fieldUserEmail == null) {
+            return true; // Skip validation if field doesn't exist
+        }
         String email = fieldUserEmail.getText().trim();
         if (email.isEmpty()) {
             showError(errorUserEmail, "L'email est obligatoire");
@@ -977,6 +1126,9 @@ public class SocieteFormController implements Initializable {
     }
     
     private boolean validateUserTelephone() {
+        if (fieldUserTelephone == null) {
+            return true; // Skip validation if field doesn't exist
+        }
         String telephone = fieldUserTelephone.getText().trim();
         if (telephone.isEmpty()) {
             showError(errorUserTelephone, "Le téléphone est obligatoire");
@@ -994,6 +1146,9 @@ public class SocieteFormController implements Initializable {
     }
     
     private boolean validateUserPassword() {
+        if (fieldUserPassword == null) {
+            return true; // Skip validation if field doesn't exist
+        }
         String password = fieldUserPassword.getText();
         if (password.isEmpty()) {
             // In EDIT mode, password is optional
@@ -1031,6 +1186,9 @@ public class SocieteFormController implements Initializable {
     }
     
     private boolean validateUserPasswordConfirm() {
+        if (fieldUserPassword == null || fieldUserPasswordConfirm == null) {
+            return true; // Skip validation if fields don't exist
+        }
         String password = fieldUserPassword.getText();
         String passwordConfirm = fieldUserPasswordConfirm.getText();
         
@@ -1055,6 +1213,9 @@ public class SocieteFormController implements Initializable {
     }
     
     private boolean validateUserNom() {
+        if (fieldUserNom == null) {
+            return true; // Skip validation if field doesn't exist
+        }
         String nom = fieldUserNom.getText().trim();
         if (nom.isEmpty()) {
             showError(errorUserNom, "Le nom est obligatoire");
@@ -1071,6 +1232,9 @@ public class SocieteFormController implements Initializable {
     }
     
     private boolean validateUserPrenom() {
+        if (fieldUserPrenom == null) {
+            return true; // Skip validation if field doesn't exist
+        }
         String prenom = fieldUserPrenom.getText().trim();
         if (prenom.isEmpty()) {
             showError(errorUserPrenom, "Le prénom est obligatoire");
@@ -1087,6 +1251,9 @@ public class SocieteFormController implements Initializable {
     }
     
     private boolean validateUserDateNaissance() {
+        if (fieldUserDateNaissance == null) {
+            return true; // Skip validation if field doesn't exist
+        }
         LocalDate date = fieldUserDateNaissance.getValue();
         if (date == null) {
             showError(errorUserDateNaissance, "La date de naissance est obligatoire");
@@ -1107,14 +1274,6 @@ public class SocieteFormController implements Initializable {
         return true;
     }
 
-    private boolean validateSocieteName() {
-        if (nomSocieteField.getText().trim().isEmpty()) {
-            showError(errorNomSociete, "Le nom de la société est obligatoire.");
-            return false;
-        }
-        hideError(errorNomSociete);
-        return true;
-    }
 
     private boolean validateEditEmail() {
         if (!SignupFieldValidation.isValidEmail(emailField.getText().trim())) {
@@ -1201,5 +1360,89 @@ public class SocieteFormController implements Initializable {
         if (btnCancel.getScene() != null && btnCancel.getScene().getWindow() != null) {
             btnCancel.getScene().getWindow().hide();
         }
+    }
+
+    @FXML
+    private void onSignupWithGoogle() {
+        if (!tn.formini.services.auth.OAuthService.isConfigured("google")) {
+            showMessage("OAuth Google n'est pas configuré. Veuillez contacter l'administrateur.");
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                tn.formini.services.auth.OAuthCallbackHandler handler = new tn.formini.services.auth.OAuthCallbackHandler();
+                User user = handler.authenticateWithGoogle();
+
+                Platform.runLater(() -> {
+                    if (user != null) {
+                        // Set user information from OAuth
+                        if (fieldUserEmail != null) fieldUserEmail.setText(user.getEmail());
+                        if (fieldUserNom != null && user.getNom() != null) fieldUserNom.setText(user.getNom());
+                        if (fieldUserPrenom != null && user.getPrenom() != null) fieldUserPrenom.setText(user.getPrenom());
+                        
+                        showAlert("Connexion réussie avec Google !", "Veuillez compléter les informations de la société.", Alert.AlertType.INFORMATION);
+                    } else {
+                        showMessage("L'inscription avec Google a échoué. Veuillez réessayer.");
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    showMessage("Erreur lors de l'inscription avec Google: " + e.getMessage());
+                });
+            }
+        }).start();
+    }
+
+    @FXML
+    private void onSignupWithGithub() {
+        if (!tn.formini.services.auth.OAuthService.isConfigured("github")) {
+            showMessage("OAuth GitHub n'est pas configuré. Veuillez contacter l'administrateur.");
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                tn.formini.services.auth.OAuthCallbackHandler handler = new tn.formini.services.auth.OAuthCallbackHandler();
+                User user = handler.authenticateWithGithub();
+
+                Platform.runLater(() -> {
+                    if (user != null) {
+                        // Set user information from OAuth
+                        if (fieldUserEmail != null) fieldUserEmail.setText(user.getEmail());
+                        if (fieldUserNom != null && user.getNom() != null) fieldUserNom.setText(user.getNom());
+                        if (fieldUserPrenom != null && user.getPrenom() != null) fieldUserPrenom.setText(user.getPrenom());
+                        
+                        showAlert("Connexion réussie avec GitHub !", "Veuillez compléter les informations de la société.", Alert.AlertType.INFORMATION);
+                    } else {
+                        showMessage("L'inscription avec GitHub a échoué. Veuillez réessayer.");
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    showMessage("Erreur lors de l'inscription avec GitHub: " + e.getMessage());
+                });
+            }
+        }).start();
+    }
+
+    private void redirectToLogin() {
+        if (lblMessage.getScene() == null) {
+            return;
+        }
+        try {
+            URL resource = getClass().getResource("/fxml/auth/Login.fxml");
+            if (resource != null) {
+                Parent root = FXMLLoader.load(resource);
+                lblMessage.getScene().setRoot(root);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void onGoToLogin() {
+        redirectToLogin();
     }
 }

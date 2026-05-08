@@ -35,6 +35,11 @@
 
         <VBox maxWidth="720" spacing="20" alignment="TOP_CENTER" styleClass="signup-column">
 
+            <!-- Back to Main Button -->
+            <HBox alignment="CENTER_LEFT">
+                <Button text="← Retour à l'accueil" onAction="#onBackToMain" styleClass="btn-secondary" style="-fx-font-size: 12px; -fx-padding: 4 8;"/>
+            </HBox>
+
             <!-- En-tête -->
             <VBox spacing="8" alignment="CENTER" styleClass="signup-hero">
                 <Label text="CRÉER UN COMPTE" styleClass="signup-hero-title" style="-fx-font-size: 32px;"/>

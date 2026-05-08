@@ -4,10 +4,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import tn.formini.entities.Users.Formateur;
 import tn.formini.entities.Users.User;
 import tn.formini.services.UsersService.FormateurService;
+import tn.formini.controllers.MainController;
 
 import java.awt.Desktop;
 import java.net.URI;
@@ -17,7 +20,10 @@ import java.util.Date;
 public class FormateurDetailsController {
 
     @FXML
-    private Label nomCompletLabel;
+    private Label nomLabel;
+    
+    @FXML
+    private Label prenomLabel;
 
     @FXML
     private Label emailLabel;
@@ -66,9 +72,31 @@ public class FormateurDetailsController {
 
     @FXML
     private Button closeButton;
+    
+    @FXML
+    private Button editButton;
+    
+    @FXML
+    private ImageView imageViewPhoto;
+    
+    @FXML
+    private Label photoFileName;
+    
+    @FXML
+    private VBox roleTileApprenant;
+    
+    @FXML
+    private VBox roleTileFormateur;
+    
+    @FXML
+    private VBox panelFormateur;
+    
+    @FXML
+    private Label heroSubLabel;
 
     private Formateur formateur;
     private FormateurService formateurService;
+    private MainController mainController;
 
     @FXML
     public void initialize() {
@@ -110,7 +138,8 @@ public class FormateurDetailsController {
         User user = formateur.getUser();
         System.out.println("populateFields: user=" + (user != null ? user.getEmail() : "null"));
         if (user != null) {
-            nomCompletLabel.setText(formatString(user.getPrenom()) + " " + formatString(user.getNom()));
+            nomLabel.setText(formatString(user.getNom()));
+            prenomLabel.setText(formatString(user.getPrenom()));
             emailLabel.setText(formatString(user.getEmail()));
             telephoneLabel.setText(formatString(user.getTelephone()));
             dateNaissanceLabel.setText(formatDate(user.getDate_naissance()));
@@ -118,9 +147,16 @@ public class FormateurDetailsController {
             roleLabel.setText(formatString(user.getRole_utilisateur()));
             professionLabel.setText(formatString(user.getProfession()));
             niveauEtudeLabel.setText(formatString(user.getNiveau_etude()));
+            
+            // Setup role tiles
+            if (user.getRole_utilisateur() != null && user.getRole_utilisateur().equals("FORMATEUR")) {
+                roleTileFormateur.getStyleClass().add("signup-role-tile-selected");
+                roleTileApprenant.getStyleClass().remove("signup-role-tile-selected");
+            }
         } else {
             System.out.println("populateFields: User is null, setting user fields to N/A");
-            nomCompletLabel.setText("N/A");
+            nomLabel.setText("N/A");
+            prenomLabel.setText("N/A");
             emailLabel.setText("N/A");
             telephoneLabel.setText("N/A");
             dateNaissanceLabel.setText("N/A");
@@ -139,6 +175,19 @@ public class FormateurDetailsController {
         setupHyperlink(linkedinLink, formateur.getLinkedin());
         setupHyperlink(portfolioLink, formateur.getPortfolio());
         setupHyperlink(cvLink, formateur.getCv());
+        
+        // Setup photo if available
+        if (imageViewPhoto != null && user != null && user.getPhoto() != null && !user.getPhoto().isEmpty()) {
+            try {
+                javafx.scene.image.Image image = new javafx.scene.image.Image(user.getPhoto());
+                imageViewPhoto.setImage(image);
+                if (photoFileName != null) {
+                    photoFileName.setText("Photo de profil");
+                }
+            } catch (Exception e) {
+                System.out.println("Error loading photo: " + e.getMessage());
+            }
+        }
     }
 
     private String formatString(String value) {
@@ -173,7 +222,24 @@ public class FormateurDetailsController {
 
     @FXML
     private void handleCloseButton() {
-        Stage stage = (Stage) closeButton.getScene().getWindow();
-        stage.close();
+        if (mainController != null) {
+            mainController.showFormateurManagement();
+        } else {
+            Stage stage = (Stage) closeButton.getScene().getWindow();
+            stage.close();
+        }
+    }
+    
+    @FXML
+    private void handleEditButton() {
+        if (mainController != null && formateur != null) {
+            mainController.showFormateurForm(formateur);
+        } else {
+            System.out.println("Cannot edit: mainController or formateur is null");
+        }
+    }
+    
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 }

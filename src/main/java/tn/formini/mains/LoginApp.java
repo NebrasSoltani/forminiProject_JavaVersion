@@ -12,7 +12,7 @@ import tn.formini.utils.StageWindowMode;
 import java.net.URL;
 
 /**
- * Lance uniquement l'écran de connexion (FXML {@code /fxml/auth/Login.fxml}).
+ * Lance la page d'accueil (FXML {@code /fxml/frontend/Home.fxml}).
  */
 public class LoginApp extends Application {
 
@@ -23,18 +23,14 @@ public class LoginApp extends Application {
         // Initialize admin user if it doesn't exist
         AdminInitializer.initializeAdmin();
         
-        URL resource = getClass().getResource("/fxml/auth/Login.fxml");
+        URL resource = getClass().getResource("/fxml/frontend/Home.fxml");
         if (resource == null) {
-            System.err.println("FXML introuvable : /fxml/auth/Login.fxml");
+            System.err.println("FXML introuvable : /fxml/frontend/Home.fxml");
             return;
         }
 
         FXMLLoader loader = new FXMLLoader(resource);
         Parent root = loader.load();
-        LoginController controller = loader.getController();
-        if (controller != null) {
-            controller.setOnBack(primaryStage::close);
-        }
 
         Scene scene = new Scene(root, 980, 760);
         URL css = getClass().getResource("/css/style.css");
@@ -42,7 +38,7 @@ public class LoginApp extends Application {
             scene.getStylesheets().add(css.toExternalForm());
         }
 
-        primaryStage.setTitle("Formini - Connexion");
+        primaryStage.setTitle("Formini - Accueil");
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(640);
         primaryStage.setMinHeight(520);

@@ -251,20 +251,20 @@ public class             LoginController {
 
     @FXML
     public void onSignup(ActionEvent event) {
-        // TODO: Navigate to signup page
-        showInfo("Redirection vers la page d'inscription...");
-        // You could open SignupApp here
         try {
-            tn.formini.mains.SignupApp signupApp = new tn.formini.mains.SignupApp();
-            Stage signupStage = new Stage();
-            signupApp.start(signupStage);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth/Signup.fxml"));
+            Parent root = loader.load();
 
-            // Close current login window
-            if (onBack != null) {
-                onBack.run();
+            Stage stage = (Stage) btnSignup.getScene().getWindow();
+            if (stage.getScene() != null) {
+                stage.getScene().setRoot(root);
+            } else {
+                stage.setScene(new javafx.scene.Scene(root));
             }
+            stage.setTitle("Formini - Inscription");
         } catch (Exception e) {
-            System.err.println("Erreur lors de l'ouverture de la page d'inscription: " + e.getMessage());
+            showError("Erreur lors de l'ouverture de la page d'inscription.");
+            e.printStackTrace();
         }
     }
 
@@ -485,5 +485,24 @@ public class             LoginController {
         prefs.putBoolean("rememberMe", false);
         prefs.remove("email");
         prefs.remove("password");
+    }
+
+    @FXML
+    public void onBackToMain(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/frontend/FrontMain.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) fieldEmail.getScene().getWindow();
+            if (stage.getScene() != null) {
+                stage.getScene().setRoot(root);
+            } else {
+                stage.setScene(new javafx.scene.Scene(root));
+            }
+            stage.setTitle("Formini - Accueil");
+        } catch (Exception e) {
+            showError("Erreur lors du retour à l'accueil.");
+            e.printStackTrace();
+        }
     }
 }

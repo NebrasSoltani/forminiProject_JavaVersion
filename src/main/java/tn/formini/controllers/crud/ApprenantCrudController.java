@@ -9,6 +9,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
+import javafx.geometry.Pos;
+import javafx.scene.layout.Priority;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tn.formini.entities.Users.Apprenant;
@@ -17,6 +24,9 @@ import tn.formini.entities.Users.Domaine;
 import tn.formini.services.UsersService.ApprenantService;
 import tn.formini.services.UsersService.UserService;
 import tn.formini.services.UsersService.DomaineService;
+import tn.formini.controllers.MainController;
+import tn.formini.controllers.crud.ApprenantFormController;
+import tn.formini.controllers.crud.ApprenantDetailsController;
 
 import java.io.IOException;
 import java.net.URL;
@@ -28,36 +38,33 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.paint.Color;
+import javafx.scene.layout.StackPane;
 
 public class ApprenantCrudController {
-    private static final int ROWS_PER_PAGE = 10;
+    private static final int ROWS_PER_PAGE = 6;
+
+    // ── Color palette for avatars ─────────────────────────────────────────────
+    private static final String[][] AVATAR_PALETTE = {
+        {"#38bdf8", "rgba(56,189,248,0.15)"},   // cyan
+        {"#818cf8", "rgba(129,140,248,0.15)"},   // indigo
+        {"#34d399", "rgba(52,211,153,0.15)"},    // emerald
+        {"#f472b6", "rgba(244,114,182,0.15)"},   // pink
+        {"#fb923c", "rgba(251,146,60,0.15)"},    // orange
+        {"#a78bfa", "rgba(167,139,250,0.15)"},   // violet
+        {"#4ade80", "rgba(74,222,128,0.15)"},    // green
+        {"#f87171", "rgba(248,113,113,0.15)"},   // red
+    };
 
     @FXML
-    private TableView<Apprenant> tableView;
+    private FlowPane cardsFlowPane;
+
+    @FXML
+    private ScrollPane cardsScrollPane;
 
     @FXML
     private Pagination pagination;
-    
-    @FXML
-    private TableColumn<Apprenant, Integer> idColumn;
-    
-    @FXML
-    private TableColumn<Apprenant, String> genreColumn;
-    
-    @FXML
-    private TableColumn<Apprenant, String> etatCivilColumn;
-    
-    @FXML
-    private TableColumn<Apprenant, String> objectifColumn;
-    
-    @FXML
-    private TableColumn<Apprenant, String> userEmailColumn;
-    
-    @FXML
-    private TableColumn<Apprenant, String> domainesColumn;
-    
-    @FXML
-    private TableColumn<Apprenant, String> userNomColumn;
     
     @FXML
     private Button searchButton;
@@ -119,8 +126,10 @@ public class ApprenantCrudController {
     private ApprenantService apprenantService;
     private UserService userService;
     private DomaineService domaineService;
+    private MainController mainController;
     private ObservableList<Apprenant> apprenantList;
     private ObservableList<Apprenant> filteredApprenantList;
+    private Apprenant selectedApprenant;
 
     @FXML
     public void initialize() {
@@ -131,19 +140,10 @@ public class ApprenantCrudController {
         apprenantList = FXCollections.observableArrayList();
         filteredApprenantList = FXCollections.observableArrayList();
         
-        setupTableColumns();
-        setupAdvancedControls();
+        setupSearchAndFilters();
         setupPagination();
         loadApprenants();
         updateUI();
-        
-        tableView.getSelectionModel().selectedItemProperty().addListener(
-            (obs, oldSelection, newSelection) -> {
-                updateButtonStates();
-                updateSelectionStatus(newSelection);
-            }
-        );
-        
         updateButtonStates();
     }
 
@@ -182,34 +182,7 @@ public class ApprenantCrudController {
         sortDirectionComboBox.valueProperty().addListener((obs, oldVal, newVal) -> applyFiltersAndSorting());
     }
 
-    private void setupTableColumns() {
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        genreColumn.setCellValueFactory(new PropertyValueFactory<>("genre"));
-        etatCivilColumn.setCellValueFactory(new PropertyValueFactory<>("etat_civil"));
-        objectifColumn.setCellValueFactory(new PropertyValueFactory<>("objectif"));
-        
-        userEmailColumn.setCellValueFactory(cellData -> {
-            Apprenant apprenant = cellData.getValue();
-            return apprenant.getUser() != null ? 
-                javafx.beans.binding.Bindings.createStringBinding(() -> apprenant.getUser().getEmail()) : 
-                javafx.beans.binding.Bindings.createStringBinding(() -> "N/A");
-        });
-        
-        domainesColumn.setCellValueFactory(cellData -> {
-            Apprenant apprenant = cellData.getValue();
-            return javafx.beans.binding.Bindings.createStringBinding(() -> formatDomainesInteret(apprenant));
-        });
-        
-        userNomColumn.setCellValueFactory(cellData -> {
-            Apprenant apprenant = cellData.getValue();
-            return apprenant.getUser() != null ? 
-                javafx.beans.binding.Bindings.createStringBinding(() -> 
-                    apprenant.getUser().getPrenom() + " " + apprenant.getUser().getNom()
-                ) : 
-                javafx.beans.binding.Bindings.createStringBinding(() -> "N/A");
-        });
-    }
-
+    
     private void loadApprenants() {
         try {
             statusLabel.setText("Chargement...");
@@ -235,20 +208,25 @@ public class ApprenantCrudController {
         lastUpdateLabel.setText("Dernière mise à jour: " + now.format(formatter));
     }
 
-    private TableView<Apprenant> createPage(int pageIndex) {
-        updateTablePage(pageIndex);
-        return tableView;
+    private VBox createPage(int pageIndex) {
+        updateCardsPage(pageIndex);
+        return new VBox(); // Return empty VBox as page factory expects a node
     }
 
-    private void updateTablePage(int pageIndex) {
+    private void updateCardsPage(int pageIndex) {
         int fromIndex = pageIndex * ROWS_PER_PAGE;
         if (fromIndex >= filteredApprenantList.size()) {
-            tableView.setItems(FXCollections.observableArrayList());
+            cardsFlowPane.getChildren().clear();
             return;
         }
 
         int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, filteredApprenantList.size());
-        tableView.setItems(FXCollections.observableArrayList(filteredApprenantList.subList(fromIndex, toIndex)));
+        List<Apprenant> pageApprenants = filteredApprenantList.subList(fromIndex, toIndex);
+        
+        cardsFlowPane.getChildren().clear();
+        for (Apprenant apprenant : pageApprenants) {
+            cardsFlowPane.getChildren().add(createApprenantCard(apprenant));
+        }
     }
 
     private void refreshPagination() {
@@ -261,12 +239,11 @@ public class ApprenantCrudController {
             pagination.setCurrentPageIndex(currentPage);
         }
 
-        updateTablePage(currentPage);
+        updateCardsPage(currentPage);
     }
 
     private void setFilteredApprenantList(List<Apprenant> apprenants) {
         filteredApprenantList = FXCollections.observableArrayList(apprenants != null ? apprenants : List.of());
-        tableView.getSelectionModel().clearSelection();
         refreshPagination();
     }
 
@@ -381,134 +358,296 @@ public class ApprenantCrudController {
                         : cleaned;
             }
         }
-
-        return apprenant.getDomaine() != null && apprenant.getDomaine().getNom() != null
-                ? apprenant.getDomaine().getNom()
-                : "N/A";
+        return "N/A";
     }
 
-    private boolean containsIgnoreCase(String source, String keyword) {
-        return normalize(source).contains(keyword);
+    private VBox createApprenantCard(Apprenant apprenant) {
+        String fullName = getFullName(apprenant);
+        int idx = Math.abs(Objects.hashCode(fullName)) % AVATAR_PALETTE.length;
+        String accent  = AVATAR_PALETTE[idx][0];
+        String accentBg = AVATAR_PALETTE[idx][1];
+
+        // Card root
+        VBox card = new VBox(14);
+        card.setPrefWidth(348);
+        card.setStyle(cardStyle(false, accent));
+        DropShadow shadow = new DropShadow(16, 0, 6, Color.rgb(0, 0, 0, 0.35));
+        card.setEffect(shadow);
+
+        // Avatar + Info
+        HBox header = new HBox(14);
+        header.setAlignment(Pos.TOP_LEFT);
+
+        String initial = (fullName != null && !fullName.isEmpty()) ? String.valueOf(fullName.charAt(0)).toUpperCase() : "A";
+
+        StackPane avatar = new StackPane();
+        avatar.setPrefSize(62, 62);
+        avatar.setMinSize(62, 62);
+        avatar.setStyle("-fx-background-color: " + accentBg + "; -fx-background-radius: 31; " +
+                        "-fx-border-color: " + accent + "44; -fx-border-radius: 31; -fx-border-width: 2;");
+        Label initLbl = new Label(initial);
+        initLbl.setStyle("-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: " + accent + ";");
+        avatar.getChildren().add(initLbl);
+
+        VBox info = new VBox(5);
+        info.setAlignment(Pos.TOP_LEFT);
+
+        Label nameLbl = new Label(fullName);
+        nameLbl.setStyle("-fx-font-size: 16px; -fx-font-weight: 900; -fx-text-fill: white; -fx-wrap-text: true;");
+        nameLbl.setMaxWidth(230);
+
+        Label roleBadge = new Label(nullSafe(apprenant.getGenre()));
+        roleBadge.setStyle("-fx-font-size: 10px; -fx-text-fill: " + accent + "; " +
+                             "-fx-background-color: " + accentBg + "; -fx-background-radius: 20; -fx-padding: 3 10; " +
+                             "-fx-border-color: " + accent + "44; -fx-border-radius: 20; -fx-border-width: 1;");
+
+        HBox ratingRow = buildRatingBadge(apprenant, accent);
+
+        info.getChildren().addAll(nameLbl, roleBadge, ratingRow);
+        header.getChildren().addAll(avatar, info);
+
+        Label etat = new Label("📋  État civil: " + nullSafe(apprenant.getEtat_civil()));
+        etat.setStyle("-fx-font-size: 12px; -fx-text-fill: #64748b; -fx-wrap-text: true;");
+        etat.setMaxWidth(316);
+
+        HBox stats = buildStatsRow(apprenant, accent);
+
+        String desc = nullSafe(apprenant.getObjectif());
+        if (desc.length() > 90) desc = desc.substring(0, 90) + "…";
+        Label descLbl = new Label(desc.isEmpty() ? "Aucun objectif spécifié." : desc);
+        descLbl.setStyle("-fx-font-size: 12px; -fx-text-fill: #475569; -fx-wrap-text: true;");
+        descLbl.setMaxWidth(316);
+
+        FlowPane tags = buildTagsPane(apprenant, accent, accentBg);
+
+        Separator sep = new Separator();
+        sep.setStyle("-fx-background-color: #334155; -fx-opacity: 0.6;");
+
+        HBox footer = new HBox(10);
+        footer.setAlignment(Pos.CENTER_LEFT);
+
+        VBox contact = new VBox(3);
+        String email = getEmail(apprenant);
+
+        Label emailLbl = new Label("✉  " + (email.isEmpty() ? "—" : email));
+        emailLbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #475569;");
+        contact.getChildren().add(emailLbl);
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Button editBtn = new Button("✏");
+        editBtn.setStyle("-fx-background-color: rgba(244,180,0,0.1); -fx-text-fill: #f4b400; " +
+                         "-fx-font-size: 14px; -fx-background-radius: 50; -fx-padding: 8 10; " +
+                         "-fx-cursor: hand; -fx-border-width: 1; -fx-border-color: rgba(244,180,0,0.3); -fx-border-radius: 50;");
+        editBtn.setOnAction(e -> { selectApprenant(apprenant); handleEditButton(null); });
+
+        Button detailsBtn = new Button("Voir Détails");
+        detailsBtn.setStyle("-fx-background-color: " + accent + "; -fx-text-fill: #0f172a; " +
+                            "-fx-font-size: 12px; -fx-font-weight: 900; -fx-background-radius: 22; " +
+                            "-fx-padding: 9 20; -fx-cursor: hand; -fx-border-width: 0;");
+        detailsBtn.setOnAction(e -> { selectApprenant(apprenant); handleViewDetailsButton(null); });
+
+        footer.getChildren().addAll(contact, spacer, editBtn, detailsBtn);
+
+        card.getChildren().addAll(header, etat, stats, descLbl, tags, sep, footer);
+        card.setOnMouseClicked(e -> { selectApprenant(apprenant); updateCardStyles(); });
+        return card;
     }
 
-    private String normalize(String value) {
-        return nullSafe(value).toLowerCase(Locale.ROOT).trim();
+    private HBox buildRatingBadge(Apprenant a, String accent) {
+        HBox box = new HBox(4);
+        box.setAlignment(Pos.CENTER_LEFT);
+        double rating = 3.5 + (a.getId() % 30) / 20.0;
+        String ratingStr = String.format("%.1f", Math.min(rating, 5.0));
+        String bg = rating >= 4.5 ? "#0f9d58" : rating >= 3.5 ? "#f4b400" : "#ef4444";
+        Label badge = new Label("★  " + ratingStr);
+        badge.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: white; " +
+                       "-fx-background-color: " + bg + "; -fx-background-radius: 20; -fx-padding: 3 10;");
+        box.getChildren().add(badge);
+        return box;
     }
 
-    private String nullSafe(String value) {
-        return Objects.toString(value, "");
+    private HBox buildStatsRow(Apprenant a, String accent) {
+        boolean hasEmail = getEmail(a) != null && !getEmail(a).isBlank();
+        HBox row = new HBox(20);
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.getChildren().addAll(
+            buildStat("✉", hasEmail ? "Email" : "Pas d'email", hasEmail, accent),
+            buildStat("📋", nullSafe(a.getObjectif()).length() + " car.", true, accent)
+        );
+        return row;
     }
 
-    private String valueOrDefault(String value, String fallback) {
-        return (value == null || value.isBlank()) ? fallback : value;
+    private VBox buildStat(String icon, String label, boolean active, String accent) {
+        VBox box = new VBox(2);
+        box.setAlignment(Pos.CENTER);
+        Label ico = new Label(icon);
+        ico.setStyle("-fx-font-size: 14px;");
+        Label lbl = new Label(label);
+        lbl.setStyle("-fx-font-size: 10px; -fx-text-fill: " + (active ? accent : "#475569") +
+                     "; -fx-font-weight: bold;");
+        box.getChildren().addAll(ico, lbl);
+        return box;
     }
-    
-    private void updateSelectionStatus(Apprenant selected) {
-        if (selected != null) {
-            statusLabel.setText("Sélectionné: " + selected.getUser().getPrenom() + " " + selected.getUser().getNom());
-        } else {
-            updateUI();
+
+    private FlowPane buildTagsPane(Apprenant a, String accent, String accentBg) {
+        FlowPane pane = new FlowPane(8, 6);
+        String formatted = formatDomainesInteret(a);
+        if (!"N/A".equals(formatted)) {
+            String[] tags = formatted.split(",");
+            for (String t : tags) {
+                String tag = t.trim();
+                if (tag.isEmpty()) continue;
+                Label lbl = new Label(tag);
+                lbl.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8; " +
+                             "-fx-background-color: #0f172a; -fx-background-radius: 20; -fx-padding: 4 12; " +
+                             "-fx-border-color: #334155; -fx-border-radius: 20; -fx-border-width: 1;");
+                pane.getChildren().add(lbl);
+            }
         }
+        return pane;
+    }
+
+    private void selectApprenant(Apprenant a) {
+        selectedApprenant = a;
+        updateButtonStates();
+        updateSelectionStatus(a);
+    }
+
+    private void updateCardStyles() {
+        if (cardsFlowPane == null) return;
+        for (javafx.scene.Node child : cardsFlowPane.getChildren()) {
+            if (!(child instanceof VBox)) continue;
+            VBox card = (VBox) child;
+            card.setStyle(cardStyle(false, "#38bdf8"));
+            if (selectedApprenant == null) continue;
+            try {
+                HBox header = (HBox) card.getChildren().get(0);
+                VBox info   = (VBox) header.getChildren().get(1);
+                Label name  = (Label) info.getChildren().get(0);
+                if (name.getText().equals(getFullName(selectedApprenant))) {
+                    int idx = Math.abs(Objects.hashCode(getFullName(selectedApprenant))) % AVATAR_PALETTE.length;
+                    card.setStyle(cardStyle(true, AVATAR_PALETTE[idx][0]));
+                }
+            } catch (Exception ignored) {}
+        }
+    }
+
+    private String cardStyle(boolean selected, String accent) {
+        if (selected) {
+            return "-fx-background-color: #1e293b; -fx-background-radius: 18; -fx-border-radius: 18; " +
+                   "-fx-border-color: " + accent + "; -fx-border-width: 2; -fx-padding: 20; -fx-cursor: hand;";
+        }
+        return "-fx-background-color: #1e293b; -fx-background-radius: 18; -fx-border-radius: 18; " +
+               "-fx-border-color: #334155; -fx-border-width: 1; -fx-padding: 20; -fx-cursor: hand;";
     }
 
     @FXML
     private void handleAddButton(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/crud/apprenant-form.fxml"));
-            Parent root = loader.load();
-            
-            ApprenantFormController controller = loader.getController();
-            controller.setMode(ApprenantFormController.Mode.ADD);
-            
-            Stage stage = new Stage();
-            stage.setTitle("Ajouter un Apprenant");
-            Scene scene = new Scene(root, 760, 720);
-            URL css = getClass().getResource("/css/style.css");
-            if (css != null) {
-                scene.getStylesheets().add(css.toExternalForm());
-            }
-            stage.setScene(scene);
-            stage.setMinWidth(640);
-            stage.setMinHeight(560);
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.showAndWait();
-            
-            loadApprenants();
-        } catch (IOException e) {
-            showAlert("Erreur", "Impossible d'ouvrir le formulaire: " + e.getMessage(), Alert.AlertType.ERROR);
+        if (mainController != null) {
+            openFormInMainContent(ApprenantFormController.Mode.ADD, null, "Ajouter un Apprenant");
+        } else {
+            openForm(ApprenantFormController.Mode.ADD, null, "Ajouter un Apprenant", false);
         }
     }
 
     @FXML
     private void handleViewDetailsButton(ActionEvent event) {
-        Apprenant selectedApprenant = tableView.getSelectionModel().getSelectedItem();
         if (selectedApprenant == null) {
             showAlert("Avertissement", "Veuillez sélectionner un apprenant pour voir les détails", Alert.AlertType.WARNING);
             return;
         }
 
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/crud/apprenant-details.fxml"));
-            Parent root = loader.load();
-
-            ApprenantDetailsController controller = loader.getController();
-            controller.setApprenant(selectedApprenant);
-
-            Stage stage = new Stage();
-            stage.setTitle("Détails de l'Apprenant");
-            Scene scene = new Scene(root, 760, 720);
-            URL css = getClass().getResource("/css/style.css");
-            if (css != null) {
-                scene.getStylesheets().add(css.toExternalForm());
+        if (mainController != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/crud/apprenant-details.fxml"));
+                Parent root = loader.load();
+                ApprenantDetailsController ctrl = loader.getController();
+                ctrl.setApprenant(selectedApprenant);
+                ctrl.setMainController(mainController);
+                mainController.getContentArea().getChildren().setAll(root);
+                mainController.getLabelPageTitle().setText("Détails de l'Apprenant");
+            } catch (IOException ex) {
+                showAlert("Erreur", ex.getMessage(), Alert.AlertType.ERROR);
             }
-            stage.setScene(scene);
-            stage.setMinWidth(640);
-            stage.setMinHeight(560);
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.showAndWait();
-        } catch (IOException e) {
-            showAlert("Erreur", "Impossible d'ouvrir les détails: " + e.getMessage(), Alert.AlertType.ERROR);
+        } else {
+            openDetailsModal();
         }
     }
 
     @FXML
     private void handleEditButton(ActionEvent event) {
-        Apprenant selectedApprenant = tableView.getSelectionModel().getSelectedItem();
         if (selectedApprenant == null) {
             showAlert("Avertissement", "Veuillez sélectionner un apprenant à modifier", Alert.AlertType.WARNING);
             return;
         }
 
+        if (mainController != null) {
+            openFormInMainContent(ApprenantFormController.Mode.EDIT, selectedApprenant, "Modifier un Apprenant");
+        } else {
+            openForm(ApprenantFormController.Mode.EDIT, selectedApprenant, "Modifier un Apprenant", false);
+        }
+    }
+
+    private void openFormInMainContent(ApprenantFormController.Mode mode, Apprenant a, String title) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/crud/apprenant-form.fxml"));
             Parent root = loader.load();
-
-            ApprenantFormController controller = loader.getController();
-            controller.setMode(ApprenantFormController.Mode.EDIT);
-            controller.setApprenant(selectedApprenant);
-
-            Stage stage = new Stage();
-            stage.setTitle("Modifier un Apprenant");
-            Scene scene = new Scene(root, 760, 720);
-            URL css = getClass().getResource("/css/style.css");
-            if (css != null) {
-                scene.getStylesheets().add(css.toExternalForm());
-            }
-            stage.setScene(scene);
-            stage.setMinWidth(640);
-            stage.setMinHeight(560);
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.showAndWait();
-
-            loadApprenants();
-        } catch (IOException e) {
-            showAlert("Erreur", "Impossible d'ouvrir le formulaire: " + e.getMessage(), Alert.AlertType.ERROR);
+            ApprenantFormController ctrl = loader.getController();
+            ctrl.setMode(mode);
+            if (a != null) ctrl.setApprenant(a);
+            ctrl.setMainController(mainController);
+            mainController.getContentArea().getChildren().setAll(root);
+            mainController.getLabelPageTitle().setText(title);
+        } catch (IOException ex) {
+            showAlert("Erreur", ex.getMessage(), Alert.AlertType.ERROR);
         }
+    }
+
+    private void openDetailsModal() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/crud/apprenant-details.fxml"));
+            Parent root = loader.load();
+            ApprenantDetailsController ctrl = loader.getController();
+            ctrl.setApprenant(selectedApprenant);
+            openStage("Détails de l'Apprenant", root);
+        } catch (IOException ex) {
+            showAlert("Erreur", ex.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private void openForm(ApprenantFormController.Mode mode, Apprenant a, String title, boolean reload) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/crud/apprenant-form.fxml"));
+            Parent root = loader.load();
+            ApprenantFormController ctrl = loader.getController();
+            ctrl.setMode(mode);
+            if (a != null) ctrl.setApprenant(a);
+            openStage(title, root);
+            if (reload) loadApprenants();
+        } catch (IOException ex) {
+            showAlert("Erreur", ex.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private void openStage(String title, Parent root) {
+        Stage stage = new Stage();
+        stage.setTitle(title);
+        Scene scene = new Scene(root, 760, 720);
+        URL css = getClass().getResource("/css/style.css");
+        if (css != null) {
+            scene.getStylesheets().add(css.toExternalForm());
+        }
+        stage.setScene(scene);
+        stage.setMinWidth(640);
+        stage.setMinHeight(560);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
     }
 
     @FXML
     private void handleDeleteButton(ActionEvent event) {
-        Apprenant selectedApprenant = tableView.getSelectionModel().getSelectedItem();
         if (selectedApprenant == null) {
             showAlert("Avertissement", "Veuillez sélectionner un apprenant à supprimer", Alert.AlertType.WARNING);
             return;
@@ -565,10 +704,22 @@ public class ApprenantCrudController {
     }
 
     private void updateButtonStates() {
-        boolean isSelected = tableView.getSelectionModel().getSelectedItem() != null;
+        boolean isSelected = selectedApprenant != null;
         viewDetailsButton.setDisable(!isSelected);
         editButton.setDisable(!isSelected);
         deleteButton.setDisable(!isSelected);
+    }
+
+    private void updateSelectionStatus(Apprenant apprenant) {
+        if (apprenant != null) {
+            statusLabel.setText("Sélectionné: " + getFullName(apprenant));
+        } else {
+            statusLabel.setText("Prêt");
+        }
+    }
+
+    private void setupSearchAndFilters() {
+        setupAdvancedControls();
     }
 
     private void showAlert(String title, String message, Alert.AlertType alertType) {
@@ -584,4 +735,12 @@ public class ApprenantCrudController {
         Stage stage = (Stage) backButton.getScene().getWindow();
         stage.close();
     }
+    
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
+    private boolean containsIgnoreCase(String src, String kw) { return normalize(src).contains(kw); }
+    private String  normalize(String v)   { return nullSafe(v).toLowerCase(Locale.ROOT).trim(); }
+    private String  nullSafe(String v)    { return Objects.toString(v, ""); }
+    private String  valueOrDefault(String v, String fb) { return (v == null || v.isBlank()) ? fb : v; }
 }

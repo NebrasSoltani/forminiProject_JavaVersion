@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.formini.controllers.crud.SocieteFormController" spacing="15" style="-fx-padding: 20;">
+    <children>
+        <Label fx:id="lblTitle" text="Ajouter une société" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+        <Label fx:id="lblSubtitle" text="Complétez les informations de la société. Les champs marqués * sont obligatoires." style="-fx-font-size: 12px; -fx-text-fill: #666;"/>
+        <Label fx:id="lblMessage" visible="false" managed="false" style="-fx-text-fill: #dc2626;"/>
+        
+        <!-- User Information Section -->
+        <VBox fx:id="panelNewUser" spacing="10" style="-fx-background-color: #f8f9fa; -fx-padding: 15; -fx-border-radius: 5;">
+            <children>
+                <Label text="Informations du contact" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                
+                <GridPane hgap="10" vgap="10">
+                    <children>
+                        <Label text="Nom*:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                        <TextField fx:id="fieldUserNom" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="250"/>
+                        <Label fx:id="errorUserNom" GridPane.columnIndex="2" GridPane.rowIndex="0" style="-fx-text-fill: #dc2626; -fx-font-size: 11px;"/>
+                        
+                        <Label text="Prénom*:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                        <TextField fx:id="fieldUserPrenom" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="250"/>
+                        <Label fx:id="errorUserPrenom" GridPane.columnIndex="2" GridPane.rowIndex="1" style="-fx-text-fill: #dc2626; -fx-font-size: 11px;"/>
+                        
+                        <Label text="Email*:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                        <TextField fx:id="fieldUserEmail" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="250"/>
+                        <Label fx:id="errorUserEmail" GridPane.columnIndex="2" GridPane.rowIndex="2" style="-fx-text-fill: #dc2626; -fx-font-size: 11px;"/>
+                        
+                        <Label text="Téléphone*:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                        <TextField fx:id="fieldUserTelephone" GridPane.columnIndex="1" GridPane.rowIndex="3" prefWidth="250"/>
+                        <Label fx:id="errorUserTelephone" GridPane.columnIndex="2" GridPane.rowIndex="3" style="-fx-text-fill: #dc2626; -fx-font-size: 11px;"/>
+                        
+                        <Label text="Date de naissance*:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                        <DatePicker fx:id="fieldUserDateNaissance" GridPane.columnIndex="1" GridPane.rowIndex="4" prefWidth="250"/>
+                        <Label fx:id="errorUserDateNaissance" GridPane.columnIndex="2" GridPane.rowIndex="4" style="-fx-text-fill: #dc2626; -fx-font-size: 11px;"/>
+                        
+                        <Label text="Gouvernorat:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                        <ComboBox fx:id="fieldUserGouvernorat" GridPane.columnIndex="1" GridPane.rowIndex="5" prefWidth="250"/>
+                        
+                        <Label text="Mot de passe*:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                        <HBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                            <children>
+                                <PasswordField fx:id="fieldUserPassword" prefWidth="200"/>
+                                <Button fx:id="btnToggleUserPassword" text="👁" style="-fx-background-color: transparent; -fx-cursor: hand;"/>
+                                <Label fx:id="eyeIconUser" text="👁" visible="true"/>
+                                <Label fx:id="eyeSlashIconUser" text="👁‍🗨️" visible="false"/>
+                            </children>
+                        </HBox>
+                        <Label fx:id="errorUserPassword" GridPane.columnIndex="2" GridPane.rowIndex="6" style="-fx-text-fill: #dc2626; -fx-font-size: 11px;"/>
+                        
+                        <Label text="Confirmer mot de passe*:" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                        <HBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                            <children>
+                                <PasswordField fx:id="fieldUserPasswordConfirm" prefWidth="200"/>
+                                <Button fx:id="btnToggleUserPasswordConfirm" text="👁" style="-fx-background-color: transparent; -fx-cursor: hand;"/>
+                                <Label fx:id="eyeIconUserConfirm" text="👁" visible="true"/>
+                                <Label fx:id="eyeSlashIconUserConfirm" text="👁‍🗨️" visible="false"/>
+                            </children>
+                        </HBox>
+                        <Label fx:id="errorUserPasswordConfirm" GridPane.columnIndex="2" GridPane.rowIndex="7" style="-fx-text-fill: #dc2626; -fx-font-size: 11px;"/>
+                    </children>
+                </GridPane>
+            </children>
+        </VBox>
+        
+        <!-- Company Information Section -->
+        <VBox spacing="10">
+            <children>
+                <Label text="Informations de la société" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                
+                <GridPane hgap="10" vgap="10">
+                    <children>
+                        <Label text="Nom de la société*:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                        <TextField fx:id="fieldNomSociete" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="300"/>
+                        <Label fx:id="errorNomSociete" GridPane.columnIndex="2" GridPane.rowIndex="0" style="-fx-text-fill: #dc2626; -fx-font-size: 11px;"/>
+                        
+                        <Label text="Secteur:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                        <TextField fx:id="fieldSecteur" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="300"/>
+                        <Label fx:id="errorSecteur" GridPane.columnIndex="2" GridPane.rowIndex="1" style="-fx-text-fill: #dc2626; -fx-font-size: 11px;"/>
+                        
+                        <Label text="Adresse:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                        <TextField fx:id="fieldAdresse" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="300"/>
+                        <Label fx:id="errorAdresse" GridPane.columnIndex="2" GridPane.rowIndex="2" style="-fx-text-fill: #dc2626; -fx-font-size: 11px;"/>
+                        
+                        <Label text="Site Web:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                        <TextField fx:id="fieldSiteWeb" GridPane.columnIndex="1" GridPane.rowIndex="3" prefWidth="300" promptText="https://..."/>
+                        <Label fx:id="errorSiteWeb" GridPane.columnIndex="2" GridPane.rowIndex="3" style="-fx-text-fill: #dc2626; -fx-font-size: 11px;"/>
+                        
+                        <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                        <TextArea fx:id="fieldDescription" GridPane.columnIndex="1" GridPane.rowIndex="4" prefWidth="300" prefHeight="100" promptText="Description de la société..."/>
+                        <Label fx:id="errorDescription" GridPane.columnIndex="2" GridPane.rowIndex="4" style="-fx-text-fill: #dc2626; -fx-font-size: 11px;"/>
+                    </children>
+                </GridPane>
+            </children>
+        </VBox>
+        
+        <!-- Action Buttons -->
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <children>
+                <Button fx:id="btnSave" text="Enregistrer" onAction="#handleSaveButton" style="-fx-background-color: #3b82f6; -fx-text-fill: white;"/>
+                <Button fx:id="btnCancel" text="Annuler" onAction="#handleCancelButton" style="-fx-background-color: #6b7280; -fx-text-fill: white;"/>
+            </children>
+        </HBox>
+    </children>
+</VBox>

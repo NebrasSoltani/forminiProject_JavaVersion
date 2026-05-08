@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.event.ActionEvent;
 import java.util.regex.Pattern;
 import tn.formini.entities.Users.Apprenant;
 import tn.formini.entities.Users.Formateur;
@@ -461,6 +462,11 @@ public class SignupController implements Initializable {
             onBack.run();
             return;
         }
+        onBackToMain(null);
+    }
+
+    @FXML
+    private void onBackToMain(ActionEvent event) {
         if (lblMessage.getScene() == null) {
             return;
         }

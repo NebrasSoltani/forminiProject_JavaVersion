@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
+import tn.formini.controllers.MainController;
 
 public class ApprenantFormController implements Initializable {
 
@@ -105,9 +106,14 @@ public class ApprenantFormController implements Initializable {
     private FileUploadService fileUploadService;
     private ObservableList<String> domainesList = FXCollections.observableArrayList();
     private File uploadedPhotoFile;
+    private MainController mainController;
     
     private Apprenant apprenant;
     private Mode mode;
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
     
     public enum Mode {
         ADD, EDIT
@@ -411,7 +417,9 @@ public class ApprenantFormController implements Initializable {
     }
 
     private void closeForm() {
-        if (cancelButton.getScene() != null && cancelButton.getScene().getWindow() != null) {
+        if (mainController != null) {
+            mainController.showApprenantManagement();
+        } else if (cancelButton.getScene() != null && cancelButton.getScene().getWindow() != null) {
             cancelButton.getScene().getWindow().hide();
         }
     }
@@ -464,5 +472,33 @@ public class ApprenantFormController implements Initializable {
         domaineComboBox.valueProperty().addListener((obs, oldV, newV) -> hideError(errorDomaine));
         objectifField.textProperty().addListener((obs, oldV, newV) -> hideError(errorObjectif));
         domainesInteretTextArea.textProperty().addListener((obs, oldV, newV) -> hideError(errorDomainesInteret));
+    }
+    @FXML
+    private void onTogglePassword(ActionEvent event) {
+        // Simple toggle implementation (dummy)
+    }
+
+    @FXML
+    private void onTogglePasswordConfirm(ActionEvent event) {
+        // Simple toggle implementation (dummy)
+    }
+
+    @FXML
+    private void onUploadPhoto(ActionEvent event) {
+        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+        fileChooser.setTitle("Choisir une photo de profil");
+        fileChooser.getExtensionFilters().addAll(
+                new javafx.stage.FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif")
+        );
+        File file = fileChooser.showOpenDialog(btnUploadPhoto.getScene().getWindow());
+        if (file != null) {
+            uploadedPhotoFile = file;
+            lblPhotoFileName.setText(file.getName());
+            try {
+                imageViewPhoto.setImage(new javafx.scene.image.Image(file.toURI().toString()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

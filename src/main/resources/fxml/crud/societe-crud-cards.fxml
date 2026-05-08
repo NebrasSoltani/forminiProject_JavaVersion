@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="tn.formini.controllers.crud.ApprenantCrudController"
+      fx:controller="tn.formini.controllers.crud.SocieteCrudController"
       style="-fx-background-color: #0f172a;"
       prefWidth="1280" prefHeight="860">
 
@@ -19,21 +19,21 @@
               style="-fx-background-color: linear-gradient(to bottom right, #1e293b, #0f172a); -fx-padding: 22 30; -fx-border-color: #1e293b; -fx-border-width: 0 0 1 0;
                      -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 15, 0, 0, 5);">
             <VBox spacing="4">
-                <Label text="Gestion des Apprenants"
+                <Label text="Gestion des Sociétés"
                        style="-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: white;"/>
-                <Label text="Gérez les informations, objectifs et domaines d'intérêt des apprenants"
+                <Label text="Gérez les informations, secteurs et coordonnées des sociétés partenaires"
                        style="-fx-font-size: 12px; -fx-text-fill: #38bdf8; -fx-font-weight: bold;"/>
             </VBox>
             <Region HBox.hgrow="ALWAYS"/>
             <!-- Count pill -->
             <HBox spacing="6" alignment="CENTER"
                   style="-fx-background-color: rgba(56,189,248,0.1); -fx-background-radius: 20; -fx-padding: 8 18; -fx-border-color: rgba(56,189,248,0.25); -fx-border-width: 1; -fx-border-radius: 20;">
-                <Label text="👨‍🎓" style="-fx-font-size: 12px;"/>
-                <Label fx:id="countLabel" text="Total: 0 apprenants"
+                <Label text="📊" style="-fx-font-size: 12px;"/>
+                <Label fx:id="countLabel" text="Total: 0 sociétés"
                        style="-fx-font-size: 12px; -fx-text-fill: #38bdf8; -fx-font-weight: bold;"/>
             </HBox>
             <!-- Primary add button -->
-            <Button fx:id="addButton" text="+ Ajouter un Apprenant" onAction="#handleAddButton"
+            <Button fx:id="addButton" text="+ Ajouter une Société" onAction="#handleAddButton"
                     style="-fx-background-color: #38bdf8; -fx-text-fill: #0f172a; -fx-font-size: 13px; -fx-font-weight: 900; -fx-background-radius: 22; -fx-padding: 10 24; -fx-cursor: hand; -fx-border-width: 0;
                            -fx-effect: dropshadow(gaussian, rgba(56,189,248,0.35), 12, 0, 0, 4);"/>
         </HBox>
@@ -63,7 +63,7 @@
                                style="-fx-font-size: 10px; -fx-font-weight: 900; -fx-text-fill: #475569;"/>
                         <HBox>
                             <TextField fx:id="searchField" prefHeight="42"
-                                       promptText="  🔍  Nom, email, objectif, domaine..."
+                                       promptText="  🔍  Nom, secteur, email, adresse, site web..."
                                        style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-prompt-text-fill: #475569; -fx-font-size: 13px; -fx-border-color: #334155 transparent #334155 #334155; -fx-border-width: 1; -fx-border-radius: 10 0 0 10; -fx-background-radius: 10 0 0 10; -fx-padding: 0 16;"
                                        HBox.hgrow="ALWAYS"/>
                             <Button fx:id="searchButton" text="Rechercher" onAction="#handleSearch"
@@ -86,25 +86,17 @@
                 <HBox spacing="12" alignment="BOTTOM_LEFT">
 
                     <VBox spacing="6">
-                        <Label text="GENRE"
+                        <Label text="SECTEUR D'ACTIVITÉ"
                                style="-fx-font-size: 10px; -fx-font-weight: 900; -fx-text-fill: #475569;"/>
-                        <ComboBox fx:id="genreFilterComboBox" prefWidth="160" prefHeight="38"
-                                  promptText="Genre..."
-                                  style="-fx-background-color: #0f172a; -fx-background-radius: 10; -fx-border-color: #334155; -fx-border-width: 1; -fx-border-radius: 10;"/>
-                    </VBox>
-
-                    <VBox spacing="6">
-                        <Label text="ÉTAT CIVIL"
-                               style="-fx-font-size: 10px; -fx-font-weight: 900; -fx-text-fill: #475569;"/>
-                        <ComboBox fx:id="etatCivilFilterComboBox" prefWidth="160" prefHeight="38"
-                                  promptText="État civil..."
-                                  style="-fx-background-color: #0f172a; -fx-background-radius: 10; -fx-border-color: #334155; -fx-border-width: 1; -fx-border-radius: 10;"/>
+                        <TextField fx:id="secteurFilterField" prefWidth="185" prefHeight="38"
+                                   promptText="Ex: Technologie..."
+                                   style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-prompt-text-fill: #475569; -fx-border-color: #334155; -fx-border-radius: 10; -fx-background-radius: 10; -fx-border-width: 1; -fx-padding: 0 14; -fx-font-size: 12px;"/>
                     </VBox>
 
                     <VBox spacing="6">
                         <Label text="TRIER PAR"
                                style="-fx-font-size: 10px; -fx-font-weight: 900; -fx-text-fill: #475569;"/>
-                        <ComboBox fx:id="sortByComboBox" prefWidth="148" prefHeight="38"
+                        <ComboBox fx:id="sortByComboBox" prefWidth="160" prefHeight="38"
                                   promptText="Trier par..."
                                   style="-fx-background-color: #0f172a; -fx-background-radius: 10; -fx-border-color: #334155; -fx-border-width: 1; -fx-border-radius: 10;"/>
                     </VBox>
@@ -115,6 +107,16 @@
                         <ComboBox fx:id="sortDirectionComboBox" prefWidth="148" prefHeight="38"
                                   promptText="Ordre..."
                                   style="-fx-background-color: #0f172a; -fx-background-radius: 10; -fx-border-color: #334155; -fx-border-width: 1; -fx-border-radius: 10;"/>
+                    </VBox>
+
+                    <VBox spacing="6" alignment="BOTTOM_LEFT">
+                        <Label text="OPTIONS"
+                               style="-fx-font-size: 10px; -fx-font-weight: 900; -fx-text-fill: #475569;"/>
+                        <HBox spacing="8" alignment="CENTER_LEFT" prefHeight="38"
+                              style="-fx-background-color: #0f172a; -fx-background-radius: 10; -fx-border-color: #334155; -fx-border-width: 1; -fx-border-radius: 10; -fx-padding: 0 16;">
+                            <CheckBox fx:id="hasWebsiteCheckBox" text="Avec site web"
+                                      style="-fx-text-fill: #94a3b8; -fx-font-size: 12px;"/>
+                        </HBox>
                     </VBox>
 
                     <Region HBox.hgrow="ALWAYS"/>
@@ -148,8 +150,6 @@
                         style="-fx-background-color: rgba(244,180,0,0.1); -fx-text-fill: #f4b400; -fx-font-size: 12px; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 8 18; -fx-cursor: hand; -fx-border-width: 1; -fx-border-color: rgba(244,180,0,0.3); -fx-border-radius: 20;"/>
                 <Button fx:id="deleteButton" text="🗑  Supprimer" onAction="#handleDeleteButton" disable="true"
                         style="-fx-background-color: rgba(239,68,68,0.1); -fx-text-fill: #ef4444; -fx-font-size: 12px; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 8 18; -fx-cursor: hand; -fx-border-width: 1; -fx-border-color: rgba(239,68,68,0.3); -fx-border-radius: 20;"/>
-                <Button fx:id="refreshButton" text="🔄  Actualiser" onAction="#handleRefreshButton"
-                        style="-fx-background-color: rgba(107,114,128,0.1); -fx-text-fill: #6b7280; -fx-font-size: 12px; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 8 18; -fx-cursor: hand; -fx-border-width: 1; -fx-border-color: rgba(107,114,128,0.3); -fx-border-radius: 20;"/>
             </HBox>
 
             <!-- ── CARDS SCROLL AREA ───────────────────────────────────────── -->

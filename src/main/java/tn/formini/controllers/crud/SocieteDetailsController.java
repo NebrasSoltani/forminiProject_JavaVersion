@@ -5,6 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import tn.formini.controllers.MainController;
 import tn.formini.entities.Users.Societe;
 import tn.formini.entities.Users.User;
 import tn.formini.services.UsersService.SocieteService;
@@ -13,6 +14,8 @@ import java.awt.Desktop;
 import java.net.URI;
 
 public class SocieteDetailsController {
+
+    private MainController mainController;
 
     @FXML
     private Label nomSocieteLabel;
@@ -70,6 +73,10 @@ public class SocieteDetailsController {
         populateFields();
     }
 
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
+
     private void populateFields() {
         if (societe == null) {
             System.out.println("populateFields: societe is null");
@@ -117,7 +124,13 @@ public class SocieteDetailsController {
 
     @FXML
     private void handleCloseButton() {
-        Stage stage = (Stage) closeButton.getScene().getWindow();
-        stage.close();
+        if (mainController != null) {
+            // Navigate back to societe list
+            mainController.showSocieteManagement();
+        } else {
+            // Fallback: close the window if no main controller available
+            Stage stage = (Stage) closeButton.getScene().getWindow();
+            stage.close();
+        }
     }
 }

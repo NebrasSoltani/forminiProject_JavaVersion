@@ -43,6 +43,11 @@
                 <Label text="FORMINI" style="-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: white; -fx-letter-spacing: 4;"/>
             </VBox>
 
+            <!-- Back to Main Button -->
+            <HBox alignment="CENTER_LEFT">
+                <Button text="← Retour à l'accueil" onAction="#onBackToMain" styleClass="btn-secondary" style="-fx-font-size: 12px; -fx-padding: 4 8;"/>
+            </HBox>
+
             <!-- En-tête -->
             <VBox spacing="8" alignment="CENTER" styleClass="login-hero">
                 <Label text="BIENVENUE !" styleClass="login-hero-title" style="-fx-font-size: 40px;"/>

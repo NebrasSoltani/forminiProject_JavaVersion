@@ -140,7 +140,7 @@ public class AdminDashboardController implements DashboardRoleController {
     private void openSocietesManagement() {
         try {
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
-                getClass().getResource("/fxml/crud/societe-crud.fxml")
+                getClass().getResource("/fxml/crud/societe-crud-cards.fxml")
             );
             javafx.scene.Parent root = loader.load();
             

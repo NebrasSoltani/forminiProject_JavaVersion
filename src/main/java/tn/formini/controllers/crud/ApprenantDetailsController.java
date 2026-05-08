@@ -15,6 +15,7 @@ import tn.formini.services.UsersService.ApprenantService;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
+import tn.formini.controllers.MainController;
 
 public class ApprenantDetailsController {
 
@@ -65,6 +66,11 @@ public class ApprenantDetailsController {
 
     private Apprenant apprenant;
     private ApprenantService apprenantService;
+    private MainController mainController;
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
 
     @FXML
     public void initialize() {
@@ -176,7 +182,11 @@ public class ApprenantDetailsController {
 
     @FXML
     private void handleCloseButton() {
-        Stage stage = (Stage) closeButton.getScene().getWindow();
-        stage.close();
+        if (mainController != null) {
+            mainController.showApprenantManagement();
+        } else if (closeButton.getScene() != null && closeButton.getScene().getWindow() != null) {
+            Stage stage = (Stage) closeButton.getScene().getWindow();
+            stage.close();
+        }
     }
 }

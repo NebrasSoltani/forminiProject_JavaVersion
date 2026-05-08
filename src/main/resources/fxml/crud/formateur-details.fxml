@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.*?>
+<?import java.net.URL?>
 
 <StackPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
@@ -10,25 +13,67 @@
            styleClass="signup-page"
            minHeight="400">
 
-    <VBox alignment="TOP_CENTER" spacing="0">
-        <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+    <stylesheets>
+        <URL value="@../../css/style.css" />
+    </stylesheets>
 
-        <VBox maxWidth="720" spacing="18" alignment="TOP_CENTER" styleClass="signup-column">
+    <!-- Decorative Background Elements -->
+    <StackPane StackPane.alignment="TOP_LEFT">
+        <Circle radius="200" fill="linear-gradient(to bottom right, #4f46e5 0%, #1e1b4b 100%)"
+                opacity="0.1" StackPane.alignment="TOP_LEFT"
+                translateX="-100" translateY="-100"/>
+    </StackPane>
 
-            <VBox spacing="8" alignment="CENTER_LEFT" styleClass="signup-hero crud-form-hero">
-                <Label text="Détails Formateur" styleClass="signup-hero-title"/>
+    <StackPane StackPane.alignment="BOTTOM_RIGHT">
+        <Circle radius="250" fill="linear-gradient(to bottom right, #1e293b 0%, #0f172a 100%)"
+                opacity="0.15" StackPane.alignment="BOTTOM_RIGHT"
+                translateX="150" translateY="150"/>
+    </StackPane>
+
+    <VBox alignment="TOP_CENTER" spacing="0" StackPane.alignment="TOP_CENTER">
+        <padding><Insets top="28" right="24" bottom="28" left="24"/></padding>
+
+        <VBox maxWidth="720" spacing="20" alignment="TOP_CENTER" styleClass="signup-column">
+
+            <!-- Back to Dashboard Button -->
+            <HBox alignment="CENTER_LEFT">
+                <Button text="← Retour à la liste" onAction="#handleCloseButton" styleClass="btn-secondary" style="-fx-font-size: 12px; -fx-padding: 4 8;"/>
+            </HBox>
+
+            <!-- En-tête -->
+            <VBox spacing="8" alignment="CENTER" styleClass="signup-hero">
+                <Label text="DÉTAILS FORMATEUR" styleClass="signup-hero-title" style="-fx-font-size: 32px;"/>
                 <Label fx:id="heroSubLabel" text="Informations complètes sur le formateur"
-                       wrapText="true" styleClass="signup-hero-sub" maxWidth="680"/>
+                       wrapText="true" styleClass="signup-hero-sub" maxWidth="680" alignment="CENTER"/>
             </VBox>
 
-            <VBox styleClass="signup-card crud-form-card" spacing="0" VBox.vgrow="ALWAYS">
+            <!-- Carte formulaire -->
+            <VBox styleClass="signup-card" spacing="0" VBox.vgrow="ALWAYS">
                 <ScrollPane fitToWidth="true" styleClass="signup-scroll" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
-                    <VBox spacing="24" styleClass="signup-card-inner crud-form-body">
-                        <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+                    <VBox spacing="28" styleClass="signup-card-inner">
+                        <padding><Insets top="28" right="28" bottom="28" left="28"/></padding>
 
-                        <VBox spacing="16" styleClass="crud-form-section">
+                        <!-- Rôle -->
+                        <VBox spacing="14">
+                            <Label text="Type de compte" styleClass="signup-section-kicker"/>
+                            <Label text="Rôle" styleClass="signup-section-title"/>
+                            <HBox spacing="14" alignment="CENTER_LEFT" styleClass="signup-role-row">
+                                <VBox fx:id="roleTileApprenant" styleClass="signup-role-tile" HBox.hgrow="ALWAYS" spacing="6">
+                                    <Label text="Apprenant" styleClass="signup-role-hint" wrapText="true"/>
+                                </VBox>
+                                <VBox fx:id="roleTileFormateur" styleClass="signup-role-tile signup-role-tile-selected" HBox.hgrow="ALWAYS" spacing="6">
+                                    <Label text="Formateur" styleClass="signup-role-hint" wrapText="true"/>
+                                </VBox>
+                            </HBox>
+                        </VBox>
+
+                        <Separator styleClass="signup-sep"/>
+
+                        <!-- Identité -->
+                        <VBox spacing="16">
                             <VBox spacing="4">
-                                <Label text="Informations personnelles" styleClass="signup-section-title"/>
+                                <Label text="Étape 1" styleClass="signup-section-kicker"/>
+                                <Label text="Identité &amp; connexion" styleClass="signup-section-title"/>
                             </VBox>
                             <GridPane hgap="18" vgap="18" styleClass="signup-grid">
                                 <columnConstraints>
@@ -37,95 +82,100 @@
                                 </columnConstraints>
 
                                 <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                                    <Label text="Nom complet" styleClass="form-label"/>
-                                    <Label fx:id="nomCompletLabel" styleClass="detail-value"/>
+                                    <Label text="Email" styleClass="form-label"/>
+                                    <Label fx:id="emailLabel" styleClass="form-control signup-field" style="-fx-background-color: #f8f9fa; -fx-padding: 8 12; -fx-border-radius: 6;"/>
                                 </VBox>
                                 <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                                    <Label text="Email" styleClass="form-label"/>
-                                    <Label fx:id="emailLabel" styleClass="detail-value"/>
+                                    <Label text="Téléphone" styleClass="form-label"/>
+                                    <Label fx:id="telephoneLabel" styleClass="form-control signup-field" style="-fx-background-color: #f8f9fa; -fx-padding: 8 12; -fx-border-radius: 6;"/>
                                 </VBox>
 
                                 <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="1">
-                                    <Label text="Téléphone" styleClass="form-label"/>
-                                    <Label fx:id="telephoneLabel" styleClass="detail-value"/>
+                                    <Label text="Nom" styleClass="form-label"/>
+                                    <Label fx:id="nomLabel" styleClass="form-control signup-field" style="-fx-background-color: #f8f9fa; -fx-padding: 8 12; -fx-border-radius: 6;"/>
                                 </VBox>
                                 <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                    <Label text="Date de naissance" styleClass="form-label"/>
-                                    <Label fx:id="dateNaissanceLabel" styleClass="detail-value"/>
+                                    <Label text="Prénom" styleClass="form-label"/>
+                                    <Label fx:id="prenomLabel" styleClass="form-control signup-field" style="-fx-background-color: #f8f9fa; -fx-padding: 8 12; -fx-border-radius: 6;"/>
                                 </VBox>
 
                                 <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="2">
                                     <Label text="Gouvernorat" styleClass="form-label"/>
-                                    <Label fx:id="gouvernoratLabel" styleClass="detail-value"/>
+                                    <Label fx:id="gouvernoratLabel" styleClass="form-control signup-field" style="-fx-background-color: #f8f9fa; -fx-padding: 8 12; -fx-border-radius: 6;"/>
                                 </VBox>
                                 <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                    <Label text="Rôle" styleClass="form-label"/>
-                                    <Label fx:id="roleLabel" styleClass="detail-value"/>
+                                    <Label text="Date de naissance" styleClass="form-label"/>
+                                    <Label fx:id="dateNaissanceLabel" styleClass="form-control signup-field" style="-fx-background-color: #f8f9fa; -fx-padding: 8 12; -fx-border-radius: 6;"/>
                                 </VBox>
 
-                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="3">
-                                    <Label text="Profession" styleClass="form-label"/>
-                                    <Label fx:id="professionLabel" styleClass="detail-value"/>
-                                </VBox>
-                                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                                    <Label text="ID Formateur" styleClass="form-label"/>
-                                    <Label fx:id="idLabel" styleClass="detail-value"/>
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2">
+                                    <Label text="Photo de profil" styleClass="form-label"/>
+                                    <HBox spacing="12" alignment="CENTER_LEFT">
+                                        <VBox spacing="8" alignment="CENTER">
+                                            <ImageView fx:id="imageViewPhoto" fitWidth="100" fitHeight="100" preserveRatio="true"/>
+                                        </VBox>
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label fx:id="photoFileName" text="Photo du profil" styleClass="signup-file-name"/>
+                                        </VBox>
+                                    </HBox>
                                 </VBox>
                             </GridPane>
                         </VBox>
 
                         <Separator styleClass="signup-sep"/>
 
-                        <VBox spacing="16" styleClass="crud-form-section">
+                        <!-- Profil formateur -->
+                        <VBox fx:id="panelFormateur" spacing="18">
                             <VBox spacing="4">
-                                <Label text="Profil formateur" styleClass="signup-section-title"/>
+                                <Label text="Profil formateur" styleClass="signup-section-kicker"/>
+                                <Label text="Présentation de l'expertise" styleClass="signup-section-title"/>
                             </VBox>
                             <GridPane hgap="18" vgap="18" styleClass="signup-grid">
                                 <columnConstraints>
                                     <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
                                     <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
                                 </columnConstraints>
-                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2">
                                     <Label text="Spécialité" styleClass="form-label"/>
-                                    <Label fx:id="specialiteLabel" styleClass="detail-value"/>
+                                    <Label fx:id="specialiteLabel" styleClass="form-control signup-field" style="-fx-background-color: #f8f9fa; -fx-padding: 8 12; -fx-border-radius: 6;"/>
                                 </VBox>
-                                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                                    <Label text="Expérience (années)" styleClass="form-label"/>
-                                    <Label fx:id="experienceLabel" styleClass="detail-value"/>
-                                </VBox>
-                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="1">
-                                    <Label text="Note moyenne" styleClass="form-label"/>
-                                    <Label fx:id="noteMoyenneLabel" styleClass="detail-value"/>
-                                </VBox>
-                                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                    <Label text="Niveau d'étude" styleClass="form-label"/>
-                                    <Label fx:id="niveauEtudeLabel" styleClass="detail-value"/>
-                                </VBox>
-                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
                                     <Label text="Bio" styleClass="form-label"/>
-                                    <Label fx:id="bioLabel" styleClass="detail-value" wrapText="true"/>
+                                    <Label fx:id="bioLabel" styleClass="form-control signup-field signup-textarea" style="-fx-background-color: #f8f9fa; -fx-padding: 12 16; -fx-border-radius: 6; -fx-wrap-text: true;" prefHeight="80"/>
+                                </VBox>
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                                    <Label text="Années d'expérience" styleClass="form-label"/>
+                                    <Label fx:id="experienceLabel" styleClass="form-control signup-field" style="-fx-background-color: #f8f9fa; -fx-padding: 8 12; -fx-border-radius: 6;"/>
+                                </VBox>
+                                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                    <Label text="LinkedIn" styleClass="form-label"/>
+                                    <Hyperlink fx:id="linkedinLink" styleClass="form-control signup-field" style="-fx-background-color: #f8f9fa; -fx-padding: 8 12; -fx-border-radius: 6;"/>
                                 </VBox>
                                 <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="3">
-                                    <Label text="LinkedIn" styleClass="form-label"/>
-                                    <Hyperlink fx:id="linkedinLink" styleClass="detail-value"/>
+                                    <Label text="Portfolio" styleClass="form-label"/>
+                                    <Hyperlink fx:id="portfolioLink" styleClass="form-control signup-field" style="-fx-background-color: #f8f9fa; -fx-padding: 8 12; -fx-border-radius: 6;"/>
                                 </VBox>
                                 <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                                    <Label text="Portfolio" styleClass="form-label"/>
-                                    <Hyperlink fx:id="portfolioLink" styleClass="detail-value"/>
-                                </VBox>
-                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.columnSpan="2">
                                     <Label text="CV" styleClass="form-label"/>
-                                    <Hyperlink fx:id="cvLink" styleClass="detail-value"/>
+                                    <Hyperlink fx:id="cvLink" styleClass="form-control signup-field" style="-fx-background-color: #f8f9fa; -fx-padding: 8 12; -fx-border-radius: 6;"/>
+                                </VBox>
+                                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="4">
+                                    <Label text="ID Formateur" styleClass="form-label"/>
+                                    <Label fx:id="idLabel" styleClass="form-control signup-field" style="-fx-background-color: #f8f9fa; -fx-padding: 8 12; -fx-border-radius: 6;"/>
+                                </VBox>
+                                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                    <Label text="Note moyenne" styleClass="form-label"/>
+                                    <Label fx:id="noteMoyenneLabel" styleClass="form-control signup-field" style="-fx-background-color: #f8f9fa; -fx-padding: 8 12; -fx-border-radius: 6;"/>
                                 </VBox>
                             </GridPane>
                         </VBox>
                     </VBox>
                 </ScrollPane>
 
-                <HBox spacing="14" alignment="CENTER_RIGHT" styleClass="signup-actions crud-form-actions">
-                    <padding><Insets top="12" right="20" bottom="18" left="20"/></padding>
-                    <Region HBox.hgrow="ALWAYS"/>
-                    <Button fx:id="closeButton" text="Fermer" onAction="#handleCloseButton" styleClass="btn-primary signup-btn-primary"/>
+                <!-- Pied de carte : actions -->
+                <HBox spacing="14" alignment="CENTER" styleClass="signup-actions" style="-fx-padding: 20 0 30 0;">
+                    <Button text="Retour à la liste" onAction="#handleCloseButton" styleClass="btn-secondary" prefWidth="150"/>
+                    <Button fx:id="editButton" text="MODIFIER" onAction="#handleEditButton" styleClass="signup-btn-primary" prefWidth="150"/>
                 </HBox>
             </VBox>
         </VBox>

@@ -55,6 +55,7 @@ public class FormateurFormController implements Initializable {
     // Formateur fields
     @FXML private TextField specialiteTextField;
     @FXML private TextArea bioTextArea;
+    @FXML private TextField experienceTextField;
     @FXML private Spinner<Integer> experienceSpinner;
     @FXML private TextField linkedinTextField;
     @FXML private TextField portfolioTextField;
@@ -64,6 +65,14 @@ public class FormateurFormController implements Initializable {
     @FXML private TextField noteTextField;
     @FXML private Button saveButton;
     @FXML private Button cancelButton;
+
+    // Role selection
+    @FXML private VBox roleTileFormateur;
+    @FXML private RadioButton rbFormateur;
+    @FXML private VBox panelFormateur;
+    
+    // OAuth buttons
+    @FXML private Button btnGoToLogin;
 
     // Error labels
     @FXML private Label errorEmail;
@@ -108,6 +117,7 @@ public class FormateurFormController implements Initializable {
 
     private Formateur formateur;
     private Mode mode;
+    private tn.formini.controllers.MainController mainController;
 
     public enum Mode {
         ADD, EDIT
@@ -125,10 +135,41 @@ public class FormateurFormController implements Initializable {
         telephoneField = telephoneTextField;
         dateNaissancePicker = dateNaissanceField;
         spinnerExperience = experienceSpinner;
+        
+        // Setup password toggle handlers
+        if (btnTogglePassword != null) {
+            btnTogglePassword.setOnAction(e -> togglePasswordVisibility());
+        }
+        if (btnTogglePasswordConfirm != null) {
+            btnTogglePasswordConfirm.setOnAction(e -> togglePasswordConfirmVisibility());
+        }
+        
+        // Setup role selection - Formateur is always selected
+        if (rbFormateur != null) {
+            rbFormateur.setSelected(true);
+            // Ensure formateur panel is always visible
+            panelFormateur.setVisible(true);
+            panelFormateur.setManaged(true);
+        }
 
-        gouvernoratField.setItems(TunisiaGovernorates.asObservableList());
+        gouvernoratComboBox.setItems(TunisiaGovernorates.asObservableList());
+        gouvernoratField = gouvernoratComboBox;
         experienceSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 70, 0));
         experienceSpinner.setEditable(true);
+        
+        // Initialize experienceTextField if it exists
+        if (experienceTextField != null) {
+            experienceTextField.textProperty().addListener((obs, o, n) -> {
+                try {
+                    int value = Integer.parseInt(n);
+                    if (value >= 0 && value <= 70) {
+                        experienceSpinner.getValueFactory().setValue(value);
+                    }
+                } catch (NumberFormatException e) {
+                    // Ignore invalid input
+                }
+            });
+        }
 
         setupUserComboBox();
         setupValidationListeners();
@@ -208,11 +249,15 @@ public class FormateurFormController implements Initializable {
         if (selectedFile != null) {
             uploadedPhotoFile = selectedFile;
             photoField.setText(selectedFile.getAbsolutePath());
-            lblPhotoFileName.setText(selectedFile.getName());
+            if (lblPhotoFileName != null) {
+                lblPhotoFileName.setText(selectedFile.getName());
+            }
 
             try {
                 Image image = new Image(selectedFile.toURI().toString());
-                imageViewPhoto.setImage(image);
+                if (imageViewPhoto != null) {
+                    imageViewPhoto.setImage(image);
+                }
             } catch (Exception e) {
                 System.err.println("Failed to load image: " + e.getMessage());
             }
@@ -220,6 +265,30 @@ public class FormateurFormController implements Initializable {
     }
 
     // onUploadCv defined later in file (single authoritative version)
+
+    @FXML
+    private void onUploadCv() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choisir un fichier CV");
+
+        FileChooser.ExtensionFilter pdfFilter = new FileChooser.ExtensionFilter("PDF Files", "*.pdf");
+        FileChooser.ExtensionFilter docFilter = new FileChooser.ExtensionFilter("Word Documents", "*.doc", "*.docx");
+        FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("Tous les fichiers", "*.*");
+
+        fileChooser.getExtensionFilters().addAll(pdfFilter, docFilter, allFilter);
+        fileChooser.setSelectedExtensionFilter(pdfFilter);
+
+        Stage stage = (Stage) btnUploadCv.getScene().getWindow();
+        File selectedFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedFile != null) {
+            uploadedCvFile = selectedFile;
+            cvTextField.setText(selectedFile.getAbsolutePath());
+            if (lblCvFileName != null) {
+                lblCvFileName.setText(selectedFile.getName());
+            }
+        }
+    }
 
 
     public void setMode(Mode mode) {
@@ -235,7 +304,6 @@ public class FormateurFormController implements Initializable {
         } else {
             passwordField.clear();
             passwordConfirmField.clear();
-            setPasswordSectionVisible(false);
             if (heroSubLabel != null) {
                 heroSubLabel.setText(
                     "Même formulaire qu'à l'ajout : vous pouvez modifier le profil et le compte, sauf le mot de passe (inchangé depuis cet écran).");
@@ -278,6 +346,10 @@ public class FormateurFormController implements Initializable {
         populateForm();
     }
 
+    public void setMainController(tn.formini.controllers.MainController mainController) {
+        this.mainController = mainController;
+    }
+
     private void populateForm() {
         if (formateur != null && formateur.getUser() != null) {
             User user = formateur.getUser();
@@ -299,13 +371,20 @@ public class FormateurFormController implements Initializable {
             int exp = formateur.getExperience_annees() != null ? formateur.getExperience_annees() : 0;
             experienceSpinner.getValueFactory().setValue(Math.min(70, Math.max(0, exp)));
             experienceSpinner.getEditor().setText(String.valueOf(exp));
+            
+            // Update experienceTextField if it exists
+            if (experienceTextField != null) {
+                experienceTextField.setText(String.valueOf(exp));
+            }
 
             linkedinTextField.setText(formateur.getLinkedin() != null ? formateur.getLinkedin() : "");
             portfolioTextField.setText(formateur.getPortfolio() != null ? formateur.getPortfolio() : "");
             cvTextField.setText(formateur.getCv() != null ? formateur.getCv() : "");
 
             if (formateur.getCv() != null && !formateur.getCv().isEmpty()) {
-                lblCvFileName.setText(stripToFileName(formateur.getCv()));
+                if (lblCvFileName != null) {
+                    lblCvFileName.setText(stripToFileName(formateur.getCv()));
+                }
             }
 
             if (noteTextField != null) {
@@ -318,13 +397,17 @@ public class FormateurFormController implements Initializable {
             
             photoField.setText(user.getPhoto() != null ? user.getPhoto() : "");
             if (user.getPhoto() != null && !user.getPhoto().isEmpty()) {
-                lblPhotoFileName.setText(stripToFileName(user.getPhoto()));
+                if (lblPhotoFileName != null) {
+                    lblPhotoFileName.setText(stripToFileName(user.getPhoto()));
+                }
             }
 
             if (user.getPhoto() != null && !user.getPhoto().isEmpty()) {
                 try {
                     Image image = new Image(user.getPhoto());
-                    imageViewPhoto.setImage(image);
+                    if (imageViewPhoto != null) {
+                        imageViewPhoto.setImage(image);
+                    }
                 } catch (Exception e) {
                     System.err.println("Failed to load image: " + e.getMessage());
                 }
@@ -351,8 +434,12 @@ public class FormateurFormController implements Initializable {
         gouvernoratField.setValue(null);
         dateNaissancePicker.setValue(null);
         photoField.clear();
-        lblPhotoFileName.setText("Aucune photo sélectionnée");
-        imageViewPhoto.setImage(null);
+        if (lblPhotoFileName != null) {
+            lblPhotoFileName.setText("Aucune photo sélectionnée");
+        }
+        if (imageViewPhoto != null) {
+            imageViewPhoto.setImage(null);
+        }
         uploadedPhotoFile = null;
 
         // Clear formateur fields
@@ -360,10 +447,18 @@ public class FormateurFormController implements Initializable {
         bioTextArea.clear();
         experienceSpinner.getValueFactory().setValue(0);
         experienceSpinner.getEditor().setText("0");
+        
+        // Clear experienceTextField if it exists
+        if (experienceTextField != null) {
+            experienceTextField.clear();
+        }
+        
         linkedinTextField.clear();
         portfolioTextField.clear();
         cvTextField.clear();
-        lblCvFileName.setText("Aucun fichier sélectionné");
+        if (lblCvFileName != null) {
+            lblCvFileName.setText("Aucun fichier sélectionné");
+        }
         uploadedCvFile = null;
         
         clearAllErrors();
@@ -378,6 +473,12 @@ public class FormateurFormController implements Initializable {
 
     private int readExperienceYears() {
         try {
+            // Try experienceTextField first if it exists
+            if (experienceTextField != null && !experienceTextField.getText().trim().isEmpty()) {
+                return Integer.parseInt(experienceTextField.getText().trim());
+            }
+            
+            // Fall back to spinner
             String t = experienceSpinner.getEditor().getText();
             if (t == null || t.isBlank()) {
                 Integer v = experienceSpinner.getValue();
@@ -481,7 +582,7 @@ public class FormateurFormController implements Initializable {
 
             formateur.setSpecialite(specialiteTextField.getText().trim().isEmpty() ? null : specialiteTextField.getText().trim());
             formateur.setBio(bioTextArea.getText().trim().isEmpty() ? null : bioTextArea.getText().trim());
-            formateur.setExperience_annees(experienceSpinner.getValue() == 0 ? null : experienceSpinner.getValue());
+            formateur.setExperience_annees(readExperienceYears() == 0 ? null : readExperienceYears());
             formateur.setLinkedin(linkedinTextField.getText().trim().isEmpty() ? null : linkedinTextField.getText().trim());
             formateur.setPortfolio(portfolioTextField.getText().trim().isEmpty() ? null : portfolioTextField.getText().trim());
 
@@ -615,8 +716,9 @@ public class FormateurFormController implements Initializable {
     }
 
     private void closeForm() {
-        if (cancelButton.getScene() != null && cancelButton.getScene().getWindow() != null) {
-            cancelButton.getScene().getWindow().hide();
+        if (mainController != null) {
+            // Retourner à la liste des formateurs
+            mainController.showFormateurManagement();
         }
     }
 
@@ -768,70 +870,6 @@ public class FormateurFormController implements Initializable {
         return true;
     }
     
-    private boolean validatePassword() {
-        String password = passwordField.getText();
-        
-        // For EDIT mode, password is optional
-        if (mode == Mode.EDIT && password.isEmpty()) {
-            hideError(errorPassword);
-            return true;
-        }
-        
-        // For ADD mode, password is required
-        if (password.isEmpty()) {
-            showError(errorPassword, "Le mot de passe est obligatoire");
-            return false;
-        }
-        
-        if (password.length() < 8) {
-            showError(errorPassword, "Minimum 8 caractères");
-            return false;
-        }
-        
-        if (!password.matches(".*[A-Z].*")) {
-            showError(errorPassword, "Une majuscule requise");
-            return false;
-        }
-        
-        if (!password.matches(".*[a-z].*")) {
-            showError(errorPassword, "Une minuscule requise");
-            return false;
-        }
-        
-        if (!password.matches(".*\\d.*")) {
-            showError(errorPassword, "Un chiffre requis");
-            return false;
-        }
-        
-        hideError(errorPassword);
-        return true;
-    }
-    
-    private boolean validatePasswordConfirm() {
-        String password = passwordField.getText();
-        String passwordConfirm = passwordConfirmField.getText();
-        
-        // For EDIT mode, password confirmation is optional if password is empty
-        if (mode == Mode.EDIT && password.isEmpty() && passwordConfirm.isEmpty()) {
-            hideError(errorPasswordConfirm);
-            return true;
-        }
-        
-        // If password is provided, confirmation is required
-        if (passwordConfirm.isEmpty()) {
-            showError(errorPasswordConfirm, "La confirmation est obligatoire");
-            return false;
-        }
-        
-        if (!password.equals(passwordConfirm)) {
-            showError(errorPasswordConfirm, "Les mots de passe ne correspondent pas");
-            return false;
-        }
-        
-        hideError(errorPasswordConfirm);
-        return true;
-    }
-    
     private boolean validateNom() {
         String nom = nomTextField.getText().trim();
         if (nom.isEmpty()) {
@@ -909,5 +947,169 @@ public class FormateurFormController implements Initializable {
         }
         String t = s.trim();
         return t.isEmpty() ? null : t;
+    }
+    
+    private boolean validatePassword() {
+        String password = passwordField.getText();
+        
+        // For EDIT mode, password is optional
+        if (mode == Mode.EDIT && password.isEmpty()) {
+            hideError(errorPassword);
+            return true;
+        }
+        
+        String errorMsg = SignupFieldValidation.validatePasswordStrength(password);
+        if (errorMsg != null) {
+            if (errorPassword != null) {
+                errorPassword.setText(errorMsg);
+                errorPassword.setVisible(true);
+                errorPassword.setManaged(true);
+            }
+            return false;
+        }
+        
+        if (errorPassword != null) {
+            errorPassword.setVisible(false);
+            errorPassword.setManaged(false);
+        }
+        return true;
+    }
+    
+    private boolean validatePasswordConfirm() {
+        String password = passwordField.getText();
+        String passwordConfirm = passwordConfirmField.getText();
+        
+        // For EDIT mode, password confirmation is optional if password is empty
+        if (mode == Mode.EDIT && password.isEmpty()) {
+            if (errorPasswordConfirm != null) {
+                errorPasswordConfirm.setVisible(false);
+                errorPasswordConfirm.setManaged(false);
+            }
+            return true;
+        }
+        
+        if (!password.equals(passwordConfirm)) {
+            if (errorPasswordConfirm != null) {
+                errorPasswordConfirm.setText("Les mots de passe ne correspondent pas");
+                errorPasswordConfirm.setVisible(true);
+                errorPasswordConfirm.setManaged(true);
+            }
+            return false;
+        }
+        
+        if (errorPasswordConfirm != null) {
+            errorPasswordConfirm.setVisible(false);
+            errorPasswordConfirm.setManaged(false);
+        }
+        return true;
+    }
+    
+    private void togglePasswordVisibility() {
+        if (passwordField != null && eyeIcon != null && eyeSlashIcon != null) {
+            if (passwordField instanceof PasswordField) {
+                // Show password
+                TextField visibleField = new TextField(passwordField.getText());
+                visibleField.setPromptText(passwordField.getPromptText());
+                visibleField.setStyle(passwordField.getStyle());
+                
+                // Replace in parent
+                if (passwordField.getParent() instanceof HBox) {
+                    HBox parent = (HBox) passwordField.getParent();
+                    int index = parent.getChildren().indexOf(passwordField);
+                    parent.getChildren().set(index, visibleField);
+                }
+                
+                // Toggle icons
+                eyeIcon.setVisible(false);
+                eyeIcon.setManaged(false);
+                eyeSlashIcon.setVisible(true);
+                eyeSlashIcon.setManaged(true);
+            } else {
+                // Hide password
+                PasswordField hiddenField = new PasswordField();
+                hiddenField.setText(passwordField.getText());
+                hiddenField.setPromptText(passwordField.getPromptText());
+                hiddenField.setStyle(passwordField.getStyle());
+                
+                // Replace in parent
+                if (passwordField.getParent() instanceof HBox) {
+                    HBox parent = (HBox) passwordField.getParent();
+                    int index = parent.getChildren().indexOf(passwordField);
+                    parent.getChildren().set(index, hiddenField);
+                }
+                
+                // Toggle icons
+                eyeIcon.setVisible(true);
+                eyeIcon.setManaged(true);
+                eyeSlashIcon.setVisible(false);
+                eyeSlashIcon.setManaged(false);
+            }
+        }
+    }
+    
+    private void togglePasswordConfirmVisibility() {
+        if (passwordConfirmField != null && eyeIconConfirm != null && eyeSlashIconConfirm != null) {
+            if (passwordConfirmField instanceof PasswordField) {
+                // Show password
+                TextField visibleField = new TextField(passwordConfirmField.getText());
+                visibleField.setPromptText(passwordConfirmField.getPromptText());
+                visibleField.setStyle(passwordConfirmField.getStyle());
+                
+                // Replace in parent
+                if (passwordConfirmField.getParent() instanceof HBox) {
+                    HBox parent = (HBox) passwordConfirmField.getParent();
+                    int index = parent.getChildren().indexOf(passwordConfirmField);
+                    parent.getChildren().set(index, visibleField);
+                }
+                
+                // Toggle icons
+                eyeIconConfirm.setVisible(false);
+                eyeIconConfirm.setManaged(false);
+                eyeSlashIconConfirm.setVisible(true);
+                eyeSlashIconConfirm.setManaged(true);
+            } else {
+                // Hide password
+                PasswordField hiddenField = new PasswordField();
+                hiddenField.setText(passwordConfirmField.getText());
+                hiddenField.setPromptText(passwordConfirmField.getPromptText());
+                hiddenField.setStyle(passwordConfirmField.getStyle());
+                
+                // Replace in parent
+                if (passwordConfirmField.getParent() instanceof HBox) {
+                    HBox parent = (HBox) passwordConfirmField.getParent();
+                    int index = parent.getChildren().indexOf(passwordConfirmField);
+                    parent.getChildren().set(index, hiddenField);
+                }
+                
+                // Toggle icons
+                eyeIconConfirm.setVisible(true);
+                eyeIconConfirm.setManaged(true);
+                eyeSlashIconConfirm.setVisible(false);
+                eyeSlashIconConfirm.setManaged(false);
+            }
+        }
+    }
+    
+    @FXML
+    private void onTogglePassword() {
+        togglePasswordVisibility();
+    }
+    
+    @FXML
+    private void onTogglePasswordConfirm() {
+        togglePasswordConfirmVisibility();
+    }
+    
+    // OAuth methods
+    public void onSignupWithGoogle(ActionEvent event) {
+        showMessage("Connexion Google non implémentée");
+    }
+    
+    public void onSignupWithGithub(ActionEvent event) {
+        showMessage("Connexion GitHub non implémentée");
+    }
+    
+    public void onGoToLogin(ActionEvent event) {
+        closeForm();
     }
 }
