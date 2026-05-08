@@ -1,8 +1,8 @@
 package tn.formini.services.UsersService;
 
 import java.util.Properties;
-import javax.mail.*;
-import javax.mail.internet.*;
+import jakarta.mail.*;
+import jakarta.mail.internet.*;
 
 /**
  * Email service using JavaMail with SMTP for sending verification emails.
@@ -142,6 +142,11 @@ public class EmailService {
             props.put("mail.smtp.port", port);
             props.put("mail.smtp.auth", String.valueOf(authEnabled));
             props.put("mail.smtp.starttls.enable", String.valueOf(starttlsEnabled));
+            props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+            props.put("mail.smtp.connectiontimeout", "10000");
+            props.put("mail.smtp.timeout", "10000");
+            props.put("mail.smtp.writetimeout", "10000");
+            props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
 
             Session session = Session.getInstance(props, new Authenticator() {
                 @Override

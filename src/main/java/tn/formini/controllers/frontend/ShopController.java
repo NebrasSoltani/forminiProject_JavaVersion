@@ -19,6 +19,7 @@ import javafx.scene.layout.VBox;
 import tn.formini.controllers.frontend.FrontMainController;
 import tn.formini.entities.produits.Produit;
 import tn.formini.services.AdvancedProductAIService;
+import tn.formini.services.SimpleAdvancedProductAIService;
 import tn.formini.services.cart.CartService;
 import tn.formini.services.produitsService.ProduitService;
 

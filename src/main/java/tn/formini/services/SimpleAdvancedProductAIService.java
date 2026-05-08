@@ -1,134 +1,122 @@
 package tn.formini.services;
 
 import tn.formini.entities.produits.Produit;
-import tn.formini.services.produitsService.ProduitService;
-
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
-/**
- * Simple implementation of Advanced Product AI Service
- * Provides basic product suggestions without external AI dependencies
- */
-public class SimpleAdvancedProductAIService {
-
-    private final ProduitService produitService;
-
+public class SimpleAdvancedProductAIService implements AdvancedProductAIService {
+    
     public SimpleAdvancedProductAIService() {
-        this.produitService = new ProduitService();
+        // Constructeur vide
     }
-
-    /**
-     * Get AI-powered search suggestions for products (simplified version)
-     * @param searchTerm The user's search term
-     * @param userContext Additional context about available categories
-     * @return CompletableFuture containing list of suggested product names
-     */
+    
+    public List<String> getProductSuggestions(String category, String preferences) {
+        List<String> suggestions = new ArrayList<>();
+        
+        // Suggestions basiques selon la catégorie
+        switch (category.toLowerCase()) {
+            case "programmation":
+                suggestions.add("Formation Java Avancé");
+                suggestions.add("Développement Web Full Stack");
+                suggestions.add("Python pour Data Science");
+                suggestions.add("Algorithmes et Structures de Données");
+                suggestions.add("Développement Mobile React Native");
+                break;
+            case "design":
+                suggestions.add("UI/UX Design Fundamentals");
+                suggestions.add("Adobe Creative Suite");
+                suggestions.add("Design Thinking Workshop");
+                suggestions.add("Figma Advanced Techniques");
+                suggestions.add("Web Design Principles");
+                break;
+            case "marketing":
+                suggestions.add("Digital Marketing Strategy");
+                suggestions.add("SEO Optimization");
+                suggestions.add("Social Media Marketing");
+                suggestions.add("Content Marketing Mastery");
+                suggestions.add("Google Analytics Expert");
+                break;
+            case "business":
+                suggestions.add("Business Intelligence");
+                suggestions.add("Project Management PMP");
+                suggestions.add("Leadership Excellence");
+                suggestions.add("Financial Analysis");
+                suggestions.add("Strategic Planning");
+                break;
+            default:
+                suggestions.add("Formation Personnalisée 1");
+                suggestions.add("Formation Personnalisée 2");
+                suggestions.add("Formation Personnalisée 3");
+                suggestions.add("Formation Personnalisée 4");
+                suggestions.add("Formation Personnalisée 5");
+        }
+        
+        // Mélanger les suggestions
+        Collections.shuffle(suggestions);
+        
+        // Retourner 3 suggestions
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < Math.min(3, suggestions.size()); i++) {
+            result.add(suggestions.get(i));
+        }
+        
+        return result;
+    }
+    
+    public String getProductRecommendation(String productName) {
+        return "Recommandation pour: " + productName + 
+               "\n\nCe produit est excellent pour vos besoins. " +
+               "Il offre une grande flexibilité et s'adapte parfaitement " +
+               "à votre niveau actuel. Nous vous recommandons de commencer " +
+               "par les modules de base avant de progresser vers les " +
+               "concepts avancés.";
+    }
+    
+    @Override
     public CompletableFuture<List<String>> getSearchSuggestions(String searchTerm, String userContext) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                List<Produit> allProducts = produitService.afficher();
+                // Simuler un délai de traitement IA
+                Thread.sleep(500);
                 
-                // Simple text-based search
-                List<String> suggestions = allProducts.stream()
-                    .filter(p -> p.getNom() != null && p.getCategorie() != null)
-                    .filter(p -> p.getStock() > 0)
-                    .filter(p -> matchesSearchTerm(p, searchTerm))
-                    .map(Produit::getNom)
-                    .limit(5)
-                    .collect(Collectors.toList());
+                List<String> suggestions = new ArrayList<>();
                 
-                // If no matches, return some popular products
-                if (suggestions.isEmpty()) {
-                    suggestions = allProducts.stream()
-                        .filter(p -> p.getStock() > 0)
-                        .map(Produit::getNom)
-                        .limit(3)
-                        .collect(Collectors.toList());
+                // Générer des suggestions basées sur le terme de recherche
+                if (searchTerm.toLowerCase().contains("java")) {
+                    suggestions.add("Formation Java Complète");
+                    suggestions.add("Développement Java EE");
+                    suggestions.add("Spring Framework");
+                } else if (searchTerm.toLowerCase().contains("web")) {
+                    suggestions.add("Développement Web Full Stack");
+                    suggestions.add("HTML/CSS/JavaScript");
+                    suggestions.add("React.js Avancé");
+                } else if (searchTerm.toLowerCase().contains("design")) {
+                    suggestions.add("UI/UX Design");
+                    suggestions.add("Figma pour débutants");
+                    suggestions.add("Design Thinking");
+                } else if (searchTerm.toLowerCase().contains("marketing")) {
+                    suggestions.add("Marketing Digital");
+                    suggestions.add("SEO & SEM");
+                    suggestions.add("Social Media Strategy");
+                } else {
+                    suggestions.add("Formation " + searchTerm + " - Niveau Débutant");
+                    suggestions.add("Formation " + searchTerm + " - Niveau Avancé");
+                    suggestions.add("Workshop " + searchTerm);
+                }
+                
+                // Ajouter une suggestion personnalisée basée sur le contexte
+                if (userContext != null && userContext.contains("Client")) {
+                    suggestions.add("Recommandation personnalisée pour: " + searchTerm);
                 }
                 
                 return suggestions;
                 
-            } catch (Exception e) {
-                System.err.println("Error getting search suggestions: " + e.getMessage());
-                return List.of("Produit 1", "Produit 2", "Produit 3");
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return new ArrayList<>();
             }
         });
-    }
-
-    /**
-     * Get AI-powered cart-based product suggestions (simplified version)
-     * @param cartProducts List of products currently in the cart
-     * @return CompletableFuture containing list of suggested product names
-     */
-    public CompletableFuture<List<String>> getCartBasedSuggestions(List<Produit> cartProducts) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                List<Produit> allProducts = produitService.afficher();
-                
-                // Get categories from cart
-                List<String> cartCategories = cartProducts.stream()
-                    .map(Produit::getCategorie)
-                    .filter(cat -> cat != null && !cat.isEmpty())
-                    .distinct()
-                    .collect(Collectors.toList());
-                
-                // Find products from same categories
-                List<String> suggestions = allProducts.stream()
-                    .filter(p -> p.getStock() > 0)
-                    .filter(p -> !isInCart(p, cartProducts))
-                    .filter(p -> cartCategories.contains(p.getCategorie()))
-                    .map(Produit::getNom)
-                    .limit(5)
-                    .collect(Collectors.toList());
-                
-                // If no suggestions, get some popular products
-                if (suggestions.isEmpty()) {
-                    suggestions = allProducts.stream()
-                        .filter(p -> p.getStock() > 0)
-                        .filter(p -> !isInCart(p, cartProducts))
-                        .map(Produit::getNom)
-                        .limit(3)
-                        .collect(Collectors.toList());
-                }
-                
-                return suggestions;
-                
-            } catch (Exception e) {
-                System.err.println("Error getting cart-based suggestions: " + e.getMessage());
-                return List.of("Produit complémentaire 1", "Produit complémentaire 2", "Produit complémentaire 3");
-            }
-        });
-    }
-
-    /**
-     * Check if a product matches the search term
-     * @param product Product to check
-     * @param searchTerm Search term
-     * @return true if product matches
-     */
-    private boolean matchesSearchTerm(Produit product, String searchTerm) {
-        if (searchTerm == null || searchTerm.trim().isEmpty()) {
-            return true;
-        }
-        
-        String term = searchTerm.toLowerCase().trim();
-        String name = product.getNom().toLowerCase();
-        String category = product.getCategorie().toLowerCase();
-        
-        return name.contains(term) || category.contains(term);
-    }
-
-    /**
-     * Check if a product is already in the cart
-     * @param product Product to check
-     * @param cartProducts List of products in cart
-     * @return true if product is in cart
-     */
-    private boolean isInCart(Produit product, List<Produit> cartProducts) {
-        return cartProducts.stream()
-            .anyMatch(cartProduct -> cartProduct.getId() == product.getId());
     }
 }

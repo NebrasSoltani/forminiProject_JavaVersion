@@ -110,4 +110,32 @@ public class OpenAIService {
     public boolean isConfigured() {
         return isConfigured;
     }
+    
+    /**
+     * Méthode pour obtenir une completion simple (utilisée par RealProductAIService)
+     */
+    public String getCompletion(String prompt) {
+        if (!isConfigured) {
+            return "1,2,3"; // IDs par défaut si non configuré
+        }
+        
+        try {
+            List<ChatMessage> messages = new ArrayList<>();
+            messages.add(new ChatMessage("system", "Tu es un assistant qui analyse des produits et retourne uniquement les IDs pertinents."));
+            messages.add(new ChatMessage("user", prompt));
+
+            ChatCompletionRequest request = ChatCompletionRequest.builder()
+                .model("gpt-3.5-turbo")
+                .messages(messages)
+                .maxTokens(50)
+                .temperature(0.3)
+                .build();
+
+            ChatCompletionResult result = service.createChatCompletion(request);
+            return result.getChoices().get(0).getMessage().getContent();
+        } catch (Exception e) {
+            System.err.println("Erreur API OpenAI: " + e.getMessage());
+            return "1,2,3"; // IDs par défaut en cas d'erreur
+        }
+    }
 }

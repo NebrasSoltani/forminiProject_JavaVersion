@@ -13,8 +13,21 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.geometry.Insets;
+import javafx.stage.Stage;
 import javafx.scene.layout.*;
 import javafx.geometry.Insets;
 import javafx.stage.Stage;
@@ -33,6 +46,10 @@ import tn.formini.services.SimpleCartAIService;
 import tn.formini.services.SimpleAdvancedProductAIService;
 import tn.formini.services.AdvancedProductAIService;
 import tn.formini.services.StripePaymentService;
+import tn.formini.services.SimpleCartAIService;
+import tn.formini.services.SimpleAdvancedProductAIService;
+import tn.formini.services.AdvancedProductAIService;
+import tn.formini.services.StripePaymentService;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -47,6 +64,8 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import javafx.scene.control.ButtonType;
+import java.util.stream.Collectors;
+import javafx.scene.control.ButtonType;
 
 public class CartController implements Initializable {
 
@@ -59,6 +78,9 @@ public class CartController implements Initializable {
     @FXML private Button btnValidate;
     @FXML private Button btnPrintInvoice;
     @FXML private Button btnGetSuggestions;
+    @FXML private Button btnPayStripe;
+    @FXML private FlowPane suggestionsContainer;
+    @FXML private FlowPane cartItemsContainer;
     @FXML private Button btnPayStripe;
     @FXML private FlowPane suggestionsContainer;
     @FXML private FlowPane cartItemsContainer;
@@ -110,12 +132,27 @@ public class CartController implements Initializable {
             btnPayStripe.disableProperty().bind(Bindings.isEmpty(cart.getItems()));
         }
         
+        // Initialize Stripe button
+        if (btnPayStripe != null) {
+            btnPayStripe.disableProperty().bind(Bindings.isEmpty(cart.getItems()));
+        }
+        
         // Initialiser les composants de suggestions IA
         if (btnGetSuggestions != null) {
             btnGetSuggestions.setOnAction(event -> handleGetSuggestions());
             // Désactiver si le panier est vide
             btnGetSuggestions.disableProperty().bind(Bindings.isEmpty(cart.getItems()));
         }
+        
+        // Initialiser le conteneur de cards du panier
+        if (cartItemsContainer != null) {
+            refreshCartCards();
+        }
+        
+        // Observer les changements dans le panier
+        cart.getItems().addListener((javafx.collections.ListChangeListener<CartItem>) change -> {
+            refreshCartCards();
+        });
         
         // Initialiser le conteneur de cards du panier
         if (cartItemsContainer != null) {
@@ -261,6 +298,126 @@ public class CartController implements Initializable {
         refreshCartCards();
     }
     
+
+    private void refreshCartCards() {
+        if (cartItemsContainer == null) return;
+        
+        Platform.runLater(() -> {
+            cartItemsContainer.getChildren().clear();
+            
+            for (CartItem item : cart.getItems()) {
+                VBox card = createCartItemCard(item);
+                cartItemsContainer.getChildren().add(card);
+            }
+        });
+    }
+    
+    private VBox createCartItemCard(CartItem item) {
+        VBox card = new VBox(15);
+        card.setStyle("-fx-background-color: white; -fx-border-color: #e9ecef; -fx-border-width: 1px; " +
+                     "-fx-border-radius: 15px; -fx-background-radius: 15px; -fx-padding: 20px; " +
+                     "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 3);");
+        card.setPrefWidth(280);
+        
+        // Header avec image et nom
+        HBox header = new HBox(15);
+        header.setAlignment(javafx.geometry.Pos.TOP_LEFT);
+        
+        // Image du produit
+        ImageView imageView = new ImageView();
+        imageView.setFitWidth(80);
+        imageView.setFitHeight(80);
+        imageView.setPreserveRatio(true);
+        imageView.setSmooth(true);
+        imageView.setStyle("-fx-background-color: #f8f9fa; -fx-border-radius: 8px; -fx-background-radius: 8px;");
+        
+        if (item.getProduit().getImage() != null && !item.getProduit().getImage().trim().isEmpty()) {
+            try {
+                imageView.setImage(new Image(item.getProduit().getImage().trim(), true));
+            } catch (Exception ignored) {
+                // Image par défaut si erreur
+                imageView.setImage(new Image("/images/default-product.png", true));
+            }
+        }
+        
+        // Info produit
+        VBox productInfo = new VBox(5);
+        Label nameLabel = new Label(item.getProduit().getNom());
+        nameLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-wrap-text: true;");
+        nameLabel.setMaxWidth(180);
+        
+        Label categoryLabel = new Label(item.getProduit().getCategorie());
+        categoryLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #667eea; -fx-background-color: #e3f2fd; " +
+                               "-fx-background-radius: 8px; -fx-padding: 4px 8px;");
+        
+        productInfo.getChildren().addAll(nameLabel, categoryLabel);
+        header.getChildren().addAll(imageView, productInfo);
+        
+        // Prix et quantité
+        HBox priceQtyBox = new HBox(15);
+        priceQtyBox.setAlignment(javafx.geometry.Pos.CENTER);
+        priceQtyBox.setStyle("-fx-background-color: #f8f9fa; -fx-background-radius: 10px; -fx-padding: 10px;");
+        
+        VBox priceBox = new VBox(3);
+        priceBox.setAlignment(javafx.geometry.Pos.CENTER);
+        Label unitPriceLabel = new Label(formatMoney(item.getProduit().getPrix()));
+        unitPriceLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #6c757d;");
+        Label totalPriceLabel = new Label(formatMoney(item.getLineTotal()));
+        totalPriceLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #667eea;");
+        priceBox.getChildren().addAll(unitPriceLabel, totalPriceLabel);
+        
+        // Contrôles de quantité
+        HBox qtyControls = new HBox(5);
+        qtyControls.setAlignment(javafx.geometry.Pos.CENTER);
+        
+        Button minusBtn = new Button("-");
+        minusBtn.setStyle("-fx-background-color: #d32f2f; -fx-text-fill: white; -fx-font-weight: bold; " +
+                         "-fx-background-radius: 8px; -fx-padding: 8px 12px; -fx-cursor: hand; -fx-border-radius: 8px; -fx-border-color: transparent;");
+        minusBtn.setOnAction(e -> updateQuantity(item, item.getQuantity() - 1));
+        
+        Label qtyLabel = new Label(String.valueOf(item.getQuantity()));
+        qtyLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; " +
+                         "-fx-background-color: #f8f9fa; -fx-background-radius: 8px; -fx-padding: 8px 16px; -fx-border-color: #dee2e6; -fx-border-width: 1px;");
+        
+        Button plusBtn = new Button("+");
+        plusBtn.setStyle("-fx-background-color: #2e7d32; -fx-text-fill: white; -fx-font-weight: bold; " +
+                        "-fx-background-radius: 8px; -fx-padding: 8px 12px; -fx-cursor: hand; -fx-border-radius: 8px; -fx-border-color: transparent;");
+        plusBtn.setOnAction(e -> updateQuantity(item, item.getQuantity() + 1));
+        
+        qtyControls.getChildren().addAll(minusBtn, qtyLabel, plusBtn);
+        
+        priceQtyBox.getChildren().addAll(priceBox, qtyControls);
+        
+        // Bouton supprimer
+        Button deleteBtn = new Button("🗑️ Supprimer");
+        deleteBtn.setStyle("-fx-background-color: #e53935; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px; " +
+                          "-fx-background-radius: 8px; -fx-padding: 10px 15px; -fx-cursor: hand; -fx-border-radius: 8px; -fx-border-color: transparent;");
+        deleteBtn.setMaxWidth(Double.MAX_VALUE);
+        deleteBtn.setOnAction(e -> removeFromCart(item));
+        
+        // Assemblage de la card
+        card.getChildren().addAll(header, priceQtyBox, deleteBtn);
+        
+        return card;
+    }
+    
+    private void updateQuantity(CartItem item, int newQuantity) {
+        if (newQuantity <= 0) {
+            removeFromCart(item);
+        } else if (newQuantity <= item.getProduit().getStock()) {
+            item.setQuantity(newQuantity);
+            refreshCartCards();
+        } else {
+            showAlert(Alert.AlertType.WARNING, "Stock limité", 
+                     "Seulement " + item.getProduit().getStock() + " articles disponibles.");
+        }
+    }
+    
+    private void removeFromCart(CartItem item) {
+        cart.remove(item);
+        refreshCartCards();
+    }
+    
     @FXML
     public void clearCart() {
         cart.clear();
@@ -276,6 +433,7 @@ public class CartController implements Initializable {
         if (suggestionsScrollPane != null) {
             suggestionsScrollPane.setVisible(false);
         }
+        refreshCartCards();
         refreshCartCards();
     }
     
@@ -293,16 +451,46 @@ public class CartController implements Initializable {
         }
 
         // Utiliser directement les suggestions par catégories
+        // Utiliser directement les suggestions par catégories
         List<Produit> cartProducts = cart.getItems().stream()
             .map(CartItem::getProduit)
             .toList();
 
+        System.out.println("Produits dans le panier: " + cartProducts.size());
         System.out.println("Produits dans le panier: " + cartProducts.size());
         for (int i = 0; i < cartProducts.size(); i++) {
             Produit p = cartProducts.get(i);
             System.out.println("  " + (i+1) + ". " + p.getNom() + " (" + p.getCategorie() + ")");
         }
 
+        try {
+            System.out.println("=== UTILISATION SUGGESTIONS PAR CATEGORIE ===");
+            List<Produit> categorySuggestions = cartAIService.getProduitsSimilairesParCategorie(cartProducts);
+            System.out.println("Suggestions trouvées: " + categorySuggestions.size());
+            
+            Platform.runLater(() -> {
+                showSuggestionsLoading(false);
+                displaySuggestions(categorySuggestions);
+            });
+            
+        } catch (Exception e) {
+            System.err.println("Erreur suggestions par catégorie: " + e.getMessage());
+            // Fallback vers suggestions aléatoires
+            try {
+                List<Produit> randomSuggestions = cartAIService.getProduitsComplementaires();
+                System.out.println("Fallback suggestions: " + randomSuggestions.size());
+                Platform.runLater(() -> {
+                    showSuggestionsLoading(false);
+                    displaySuggestions(randomSuggestions);
+                });
+            } catch (Exception finalError) {
+                System.err.println("Erreur fallback final: " + finalError.getMessage());
+                Platform.runLater(() -> {
+                    showSuggestionsLoading(false);
+                    showError("Erreur de suggestions", "Impossible d'obtenir des suggestions: " + finalError.getMessage());
+                });
+            }
+        }
         try {
             System.out.println("=== UTILISATION SUGGESTIONS PAR CATEGORIE ===");
             List<Produit> categorySuggestions = cartAIService.getProduitsSimilairesParCategorie(cartProducts);
@@ -449,7 +637,11 @@ public class CartController implements Initializable {
                     
                     showAlert(Alert.AlertType.INFORMATION, "Redirection Stripe", 
                             "Vous avez été redirigé vers la page de paiement Stripe.\n\n" +
-                            "Après le paiement, vous revenrez automatiquement à l'application.");
+                            "Après le paiement, vous revenez automatiquement à l'application.");
+                    
+                    // Simuler l'envoi d'email après paiement (pour tester)
+                    simulatePaymentSuccess();
+                    
                 } catch (Exception e) {
                     showAlert(Alert.AlertType.ERROR, "Erreur de navigation", 
                             "Impossible d'ouvrir le navigateur: " + e.getMessage() + "\n\n" +
@@ -462,8 +654,63 @@ public class CartController implements Initializable {
                     "Erreur lors de l'initialisation du paiement Stripe: " + e.getMessage());
         }
     }
-
     
+    private void simulatePaymentSuccess() {
+        try {
+            // Simuler l'envoi d'email de confirmation après paiement
+            showAlert(Alert.AlertType.INFORMATION, "Simulation d'envoi d'email", 
+                    "Simulation de l'envoi d'email de confirmation de paiement...\n\n" +
+                    "Cette fonctionnalité enverra un email avec la facture PDF au client après un paiement réussi.");
+            
+            // Appeler le service d'email pour tester
+            tn.formini.services.EmailService emailService = tn.formini.services.EmailService.getInstance();
+            
+            // Créer une facture PDF de test
+            java.io.ByteArrayOutputStream pdfStream = new java.io.ByteArrayOutputStream();
+            tn.formini.services.PDFInvoiceService pdfService = tn.formini.services.PDFInvoiceService.getInstance();
+            
+            // Créer une facture PDF pour le client réel
+            pdfService.generateInvoicePDF(
+                cart.getItems(),
+                cart.getGrandTotal(),
+                "Soujoud Chrigui",
+                "soujoudchrigui858@gmail.com",
+                "+21612345678",
+                "Tunis, Tunisia",
+                pdfStream
+            );
+            
+            // Convertir en base64 pour l'email
+            String pdfBase64 = java.util.Base64.getEncoder().encodeToString(pdfStream.toByteArray());
+            
+            // Envoyer l'email au client réel
+            String clientEmail = "soujoudchrigui858@gmail.com";
+            String clientName = "Soujoud Chrigui";
+            
+            boolean emailSent = emailService.sendPaymentConfirmationEmail(
+                clientEmail,
+                clientName,
+                cart.getGrandTotal(),
+                pdfBase64
+            );
+            
+            if (emailSent) {
+                showAlert(Alert.AlertType.INFORMATION, "Email envoyé avec succès", 
+                        "L'email de confirmation de paiement a été envoyé à " + clientEmail + "\n\n" +
+                        "✅ Facture PDF jointe\n" +
+                        "✅ Détails de la commande inclus\n" +
+                        "📧 Client: " + clientName);
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Erreur d'envoi d'email", 
+                        "L'envoi de l'email a échoué. Vérifiez la configuration Brevo.");
+            }
+            
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur de simulation", 
+                    "Erreur lors de la simulation d'envoi d'email: " + e.getMessage());
+        }
+    }
+
     private VBox detailsBox(Label... labels) {
         VBox box = new VBox(8);
         box.setPadding(new Insets(0, 0, 0, 0));
@@ -496,6 +743,14 @@ public class CartController implements Initializable {
     
     private void showError(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+    
+    private void showAlert(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
@@ -1006,6 +1261,7 @@ public class CartController implements Initializable {
     }
 
     
+    
     /**
      * Affiche un message de succès
      */
@@ -1058,7 +1314,13 @@ public class CartController implements Initializable {
                 .limit(4)
                 .collect(Collectors.toList());
 
+        // Limiter à 4 suggestions maximum
+        List<Produit> limitedSuggestions = produits.stream()
+                .limit(4)
+                .collect(Collectors.toList());
+
         suggestionSort = SuggestionSort.ORDER;
+        suggestionsSource.addAll(limitedSuggestions);
         suggestionsSource.addAll(limitedSuggestions);
 
         VBox toolbar = buildSuggestionToolbar(produits.size());
@@ -1279,6 +1541,23 @@ public class CartController implements Initializable {
         add.setStyle("-fx-background-color: #4caf50; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; " +
                     "-fx-background-radius: 8px; -fx-padding: 12px 16px; -fx-cursor: hand; -fx-border-radius: 8px; -fx-border-color: transparent;");
         HBox.setHgrow(add, Priority.ALWAYS);
+        // Boutons d'action
+        HBox actionButtons = new HBox(8);
+        actionButtons.setAlignment(javafx.geometry.Pos.CENTER);
+        
+        // Bouton pour voir les détails
+        Button detailsBtn = new Button("�️");
+        detailsBtn.setStyle("-fx-background-color: #2196f3; -fx-text-fill: white; -fx-font-weight: bold; " +
+                           "-fx-background-radius: 8px; -fx-padding: 8px 12px; -fx-cursor: hand; -fx-border-radius: 8px; -fx-border-color: transparent;");
+        detailsBtn.setOnAction(e -> {
+            showProductDetails(produit);
+        });
+        
+        // Bouton d'ajout coloré
+        Button add = new Button("🛒 Ajouter");
+        add.setStyle("-fx-background-color: #4caf50; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; " +
+                    "-fx-background-radius: 8px; -fx-padding: 12px 16px; -fx-cursor: hand; -fx-border-radius: 8px; -fx-border-color: transparent;");
+        HBox.setHgrow(add, Priority.ALWAYS);
         add.setMaxWidth(Double.MAX_VALUE);
         add.setDisable(produit.getStock() <= 0);
         
@@ -1286,6 +1565,8 @@ public class CartController implements Initializable {
             cart.add(produit);
             showInfo("Ajouté", nullToEmpty(produit.getNom()) + " a été ajouté au panier.");
         });
+        
+        actionButtons.getChildren().addAll(detailsBtn, add);
         
         actionButtons.getChildren().addAll(detailsBtn, add);
 
@@ -1298,9 +1579,36 @@ public class CartController implements Initializable {
             card.getChildren().add(descLabel);
         }
         card.getChildren().addAll(spacer, actionButtons);
+        card.getChildren().addAll(spacer, actionButtons);
         return card;
     }
 
+    private void showProductDetails(Produit produit) {
+        // Créer une boîte de dialogue pour afficher les détails
+        javafx.stage.Stage detailStage = new javafx.stage.Stage();
+        detailStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+        detailStage.setTitle("Détails du produit");
+        
+        VBox detailLayout = new VBox(15);
+        detailLayout.setStyle("-fx-background-color: white; -fx-padding: 20px; -fx-background-radius: 10px;");
+        detailLayout.setPrefSize(400, 500);
+        
+        // Image du produit
+        ImageView productImage = new ImageView();
+        productImage.setFitWidth(200);
+        productImage.setFitHeight(200);
+        productImage.setPreserveRatio(true);
+        productImage.setSmooth(true);
+        
+        if (produit.getImage() != null && !produit.getImage().trim().isEmpty()) {
+            try {
+                productImage.setImage(new Image(produit.getImage().trim(), true));
+            } catch (Exception e) {
+                // Image par défaut si erreur
+                productImage.setImage(new Image("https://via.placeholder.com/200x200/f0f0f0/666666?text=No+Image", true));
+            }
+        } else {
+            productImage.setImage(new Image("https://via.placeholder.com/200x200/f0f0f0/666666?text=No+Image", true));
     private void showProductDetails(Produit produit) {
         // Créer une boîte de dialogue pour afficher les détails
         javafx.stage.Stage detailStage = new javafx.stage.Stage();
@@ -1376,7 +1684,57 @@ public class CartController implements Initializable {
     private void hideSuggestionsPanel() {
         if (suggestionsScrollPane != null) {
             suggestionsScrollPane.setVisible(false);
+        
+        // Informations du produit
+        VBox infoBox = new VBox(10);
+        infoBox.setStyle("-fx-background-color: #f8f9fa; -fx-padding: 15px; -fx-background-radius: 8px;");
+        
+        Label nameLabel = new Label("📦 " + nullToEmpty(produit.getNom()));
+        nameLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+        
+        Label categoryLabel = new Label("🏷️ " + nullToEmpty(produit.getCategorie()));
+        categoryLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #667eea; -fx-font-weight: 500;");
+        
+        Label priceLabel = new Label("💰 " + formatMoney(produit.getPrix()));
+        priceLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #27ae60;");
+        
+        Label stockLabel = new Label("📊 Stock: " + produit.getStock() + " unités");
+        stockLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: " + 
+                           (produit.getStock() > 0 ? "#27ae60" : "#e74c3c") + ";");
+        
+        // Description
+        String desc = nullToEmpty(produit.getDescription()).trim();
+        Label descLabel = new Label("📝 " + (desc.isEmpty() ? "Aucune description disponible" : desc));
+        descLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #6c757d; -fx-wrap-text: true;");
+        descLabel.setMaxWidth(350);
+        
+        infoBox.getChildren().addAll(nameLabel, categoryLabel, priceLabel, stockLabel, descLabel);
+        
+        // Bouton fermer
+        Button closeButton = new Button("✅ Fermer");
+        closeButton.setStyle("-fx-background-color: #667eea; -fx-text-fill: white; -fx-font-weight: bold; " +
+                          "-fx-background-radius: 8px; -fx-padding: 10px 20px; -fx-cursor: hand;");
+        closeButton.setOnAction(e -> detailStage.close());
+        
+        // Assemblage
+        HBox imageBox = new HBox();
+        imageBox.setAlignment(javafx.geometry.Pos.CENTER);
+        imageBox.getChildren().add(productImage);
+        
+        detailLayout.getChildren().addAll(imageBox, infoBox, closeButton);
+        
+        // Scene et affichage
+        javafx.scene.Scene scene = new javafx.scene.Scene(detailLayout);
+        detailStage.setScene(scene);
+        detailStage.showAndWait();
+    }
+    
+    private void hideSuggestionsPanel() {
+        if (suggestionsScrollPane != null) {
+            suggestionsScrollPane.setVisible(false);
         }
+        if (noSuggestionsContainer != null) {
+            noSuggestionsContainer.setVisible(true);
         if (noSuggestionsContainer != null) {
             noSuggestionsContainer.setVisible(true);
         }

@@ -51,6 +51,8 @@ public class FrontMainController implements Initializable {
 
     @FXML public void showShop() { loadPage("/fxml/frontend/Shop.fxml"); }
 
+    @FXML public void showAISearch() { loadPage("/fxml/frontend/AISearchForm.fxml"); }
+
     @FXML public void showCart() { loadPage("/fxml/frontend/Cart.fxml"); }
 
     @FXML
