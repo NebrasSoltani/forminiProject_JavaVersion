@@ -176,6 +176,7 @@ public class MainController implements Initializable {
         
         Object controller = loadPage(fxmlPath);
         if (controller instanceof tn.formini.controllers.dashboard.DashboardRoleController roleController) {
+            roleController.setMainController(this);
             roleController.initializeDashboard(session.getCurrentUser());
         }
         updateActiveButton(btnDashboard);
@@ -249,6 +250,18 @@ public class MainController implements Initializable {
             contentArea.getScene().setRoot(root);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void showMyInscriptions() {
+        labelPageTitle.setText("Mes Inscriptions");
+        tn.formini.controllers.formations.MyInscriptionsController controller = 
+            (tn.formini.controllers.formations.MyInscriptionsController) loadPage("/fxml/formations/my-inscriptions.fxml");
+        if (controller != null) {
+            controller.setMainController(this);
+            tn.formini.services.UsersService.SessionManager session = tn.formini.services.UsersService.SessionManager.getInstance();
+            controller.setUser(session.getCurrentUser());
         }
     }
 

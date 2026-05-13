@@ -4,83 +4,81 @@
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="tn.formini.controllers.blog.BlogFormController"
-      spacing="24" styleClass="content-area">
+<ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: #0f172a; -fx-border-color: transparent;" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="tn.formini.controllers.blog.BlogFormController">
+    <VBox spacing="24" style="-fx-padding: 30; -fx-background-color: #0f172a;">
+        <children>
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <Button text="⬅" onAction="#goBack" style="-fx-background-color: #1e293b; -fx-text-fill: white; -fx-background-radius: 10; -fx-padding: 10; -fx-cursor: hand;"/>
+                <Label fx:id="labelFormTitle" text="Ajouter un Blog" style="-fx-font-size: 28px; -fx-font-weight: 900; -fx-text-fill: white;"/>
+            </HBox>
 
-    <HBox alignment="CENTER_LEFT" spacing="20">
-        <Button text="⬅" onAction="#goBack" styleClass="icon-btn"/>
-        <Label fx:id="labelFormTitle" text="Ajouter un Blog" styleClass="page-title"/>
-    </HBox>
+            <VBox style="-fx-background-color: #1e293b; -fx-background-radius: 20; -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0, 0, 5); -fx-border-color: #334155; -fx-border-radius: 20;">
+                <children>
+                    <GridPane hgap="30" vgap="20">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="ALWAYS" minWidth="350" />
+                            <ColumnConstraints hgrow="ALWAYS" minWidth="250" />
+                        </columnConstraints>
 
-    <VBox styleClass="form-container" VBox.vgrow="ALWAYS" alignment="TOP_CENTER">
-        <ScrollPane fitToWidth="true" styleClass="scroll-pane">
-            <GridPane hgap="30" vgap="20">
-                <padding><Insets bottom="30" left="30" right="30" top="30"/></padding>
-                <columnConstraints>
-                    <ColumnConstraints hgrow="ALWAYS" minWidth="350" />
-                    <ColumnConstraints hgrow="ALWAYS" minWidth="250" />
-                </columnConstraints>
+                        <!-- informations de base -->
+                        <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <Label text="Titre du Blog *" style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                            <TextField fx:id="fieldTitre" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 8; -fx-padding: 10;" promptText="Saisissez le titre du blog"/>
+                            <Label fx:id="errTitre" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;" visible="false"/>
+                        </VBox>
 
-                <!-- informations de base -->
-                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                    <Label text="Titre du Blog *" styleClass="form-label"/>
-                    <TextField fx:id="fieldTitre" styleClass="form-control" promptText="Saisissez le titre du blog"/>
-                    <Label fx:id="errTitre" styleClass="error-label" visible="false"/>
-                </VBox>
+                        <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <Label text="Catégorie *" style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                            <ComboBox fx:id="fieldCategorie" maxWidth="Infinity" style="-fx-background-color: #0f172a; -fx-border-color: #334155; -fx-border-radius: 8; -fx-padding: 5;" promptText="Sujet"/>
+                            <Label fx:id="errCategorie" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;" visible="false"/>
+                        </VBox>
 
-                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                    <Label text="Catégorie *" styleClass="form-label"/>
-                    <ComboBox fx:id="fieldCategorie" styleClass="form-control" maxWidth="Infinity" promptText="Sujet"/>
-                    <Label fx:id="errCategorie" styleClass="error-label" visible="false"/>
-                </VBox>
+                        <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
+                            <Label text="Résumé" style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                            <TextArea fx:id="fieldResume" prefHeight="80" style="-fx-control-inner-background: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 8;" promptText="Court aperçu..." wrapText="true"/>
+                        </VBox>
 
-                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
-                    <Label text="Résumé" styleClass="form-label"/>
-                    <TextArea fx:id="fieldResume" styleClass="form-control" prefHeight="80" promptText="Court aperçu..." wrapText="true"/>
-                </VBox>
+                        <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
+                            <Label text="Contenu complet *" style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                            <TextArea fx:id="fieldContenu" prefHeight="250" style="-fx-control-inner-background: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 8;" promptText="Écrivez votre article ici..." wrapText="true"/>
+                            <Label fx:id="errContenu" style="-fx-text-fill: #ef4444; -fx-font-size: 11px;" visible="false"/>
+                        </VBox>
 
-                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2">
-                    <Label text="Contenu complet *" styleClass="form-label"/>
-                    <TextArea fx:id="fieldContenu" styleClass="form-control" prefHeight="250" promptText="Écrivez votre article ici..." wrapText="true"/>
-                    <Label fx:id="errContenu" styleClass="error-label" visible="false"/>
-                </VBox>
+                        <!-- Media & Association -->
+                        <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                            <Label text="Image de couverture" style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <TextField fx:id="fieldImage" HBox.hgrow="ALWAYS" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 8; -fx-padding: 10;" promptText="URL de l'image"/>
+                                <Button text="📁" onAction="#browseImage" style="-fx-background-color: #334155; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 10;"/>
+                            </HBox>
+                        </VBox>
 
-                <!-- Media & Association -->
-                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="3">
-                    <Label text="Image de couverture" styleClass="form-label"/>
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <TextField fx:id="fieldImage" styleClass="form-control" promptText="URL de l'image" HBox.hgrow="ALWAYS"/>
-                        <Button text="📁" onAction="#browseImage" styleClass="icon-btn"/>
-                    </HBox>
-                </VBox>
+                        <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                            <Label text="Événement associé" style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                            <ComboBox fx:id="fieldEvenement" maxWidth="Infinity" style="-fx-background-color: #0f172a; -fx-border-color: #334155; -fx-border-radius: 8; -fx-padding: 5;" promptText="Lier à un événement"/>
+                        </VBox>
 
-                <VBox styleClass="form-group" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                    <Label text="Événement associé" styleClass="form-label"/>
-                    <ComboBox fx:id="fieldEvenement" styleClass="form-control" maxWidth="Infinity" promptText="Lier à un événement"/>
-                </VBox>
+                        <!-- Tags & Publication -->
+                        <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="4">
+                            <Label text="Mots-clés (Tags)" style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                            <TextField fx:id="fieldTags" style="-fx-background-color: #0f172a; -fx-text-fill: white; -fx-border-color: #334155; -fx-border-radius: 8; -fx-padding: 10;" promptText="java, dev, formation..."/>
+                        </VBox>
 
-                <!-- Tags & Publication -->
-                <VBox styleClass="form-group" GridPane.columnIndex="0" GridPane.rowIndex="4">
-                    <Label text="Mots-clés (Tags)" styleClass="form-label"/>
-                    <TextField fx:id="fieldTags" styleClass="form-control" promptText="java, dev, formation..."/>
-                </VBox>
+                        <HBox spacing="20" GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="CENTER_LEFT">
+                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <Label text="Date" style="-fx-text-fill: #94a3b8; -fx-font-weight: bold;"/>
+                                <DatePicker fx:id="fieldDatePublication" maxWidth="Infinity" style="-fx-control-inner-background: #0f172a;"/>
+                            </VBox>
+                            <CheckBox fx:id="fieldIsPublie" text="Publier" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                        </HBox>
+                    </GridPane>
+                </children>
+            </VBox>
 
-                <HBox spacing="20" GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="CENTER_LEFT">
-                    <VBox styleClass="form-group" HBox.hgrow="ALWAYS">
-                        <Label text="Date" styleClass="form-label"/>
-                        <DatePicker fx:id="fieldDatePublication" styleClass="form-control" maxWidth="Infinity"/>
-                    </VBox>
-                    <CheckBox fx:id="fieldIsPublie" text="Publier" styleClass="form-label"/>
-                </HBox>
-            </GridPane>
-        </ScrollPane>
+            <HBox spacing="20" alignment="CENTER_RIGHT">
+                <Button text="Annuler" onAction="#goBack" style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-border-color: #334155; -fx-border-radius: 25; -fx-padding: 12 30; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                <Button fx:id="btnSave" text="🚀 Enregistrer le Blog" onAction="#saveBlog" style="-fx-background-color: #4f46e5; -fx-text-fill: white; -fx-background-radius: 25; -fx-padding: 12 40; -fx-font-weight: bold; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(79,70,229,0.3), 10, 0, 0, 3);"/>
+            </HBox>
+        </children>
     </VBox>
-
-    <HBox spacing="20" alignment="CENTER_RIGHT">
-        <Button text="Annuler" onAction="#goBack" styleClass="btn-secondary" style="-fx-padding: 12 30;"/>
-        <Button fx:id="btnSave" text="🚀 Enregistrer le Blog" onAction="#saveBlog" styleClass="btn-primary" style="-fx-padding: 12 40;"/>
-    </HBox>
-
-</VBox>
+</ScrollPane>
